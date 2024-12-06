@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router'; // Importar RouterModule
+import { RouterModule, Router } from '@angular/router'; // Importar Router y RouterModule
 
 @Component({
   selector: 'app-side-login',
@@ -15,13 +15,20 @@ export class SideLoginComponent {
 
   // Solo mantenemos el ícono de 'home'
   menuItemsTop = [
-    { icon: 'home', label: 'Home', route: '/home', submenu: [], isSubmenuOpen: false }
+    { icon: 'home', label: 'Home', route: '/', submenu: [], isSubmenuOpen: false }
   ];
 
   // Cambiamos 'Cerrar sesión' por 'Login'
   menuItemsBottom = [
-    { icon: 'login', label: 'Login', route: '/login', submenu: [], isSubmenuOpen: false }
+    { icon: 'login', label: 'Login', route: '/prueba', submenu: [], isSubmenuOpen: false }
   ];
+
+  constructor(private router: Router) { } // Inyectamos el servicio Router
+
+  // Método para navegar a la ruta correspondiente
+  navigateTo(route: string) {
+    this.router.navigate([route]);
+  }
 
   toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;
