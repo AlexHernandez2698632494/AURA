@@ -138,10 +138,89 @@
     overflow: hidden;
   }
 
-  .divider {
-    margin: 0.5em 0;
-    border: none;
-    border-top: 1px solid #ccc;
-    width: 100%;
+/* Submenú */
+.submenu {
+    display: none; /* Ocultamos el submenú por defecto */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra suave para los submenús */
+  }
+  
+  .submenu-item {
+    padding: 10px 15px; /* Espaciado entre los elementos del submenú */
+    cursor: pointer;
+    font-size: 16px;
+    color: #555; /* Color gris para el texto */
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  .submenu-item a {
+    text-decoration: none;
+    color: #fff; /* Mantener el color de texto del submenú */
+  }
+  
+  .submenu-item:hover {
+    background-color: rgba(0, 188, 212, 0.1); /* Fondo suave en hover */
+    color: #fff; /* Cambio de color a cyan en hover */
+  }
+  
+  .submenu-item a:hover {
+    color: #00bcd4; /* Cambio de color del texto cuando se hace hover sobre el enlace */
+  }
+  
+  /* Mostrar submenú cuando esté abierto */
+  .menu-item.open .submenu {
+    display: block; /* Muestra el submenú cuando está abierto */
+  }
+  
+  /* Estilos para el item del menú principal */
+  .menu-item {
+    display: flex;
+    flex-direction: column; /* Alineación vertical para el ícono y el texto */
+    margin-bottom: 10px; /* Espaciado entre los ítems */
+  }
+  
+  /* Los íconos del menú */
+  .menu-item i {
+    font-size: 24px;
+    width: 40px;
+    text-align: center;
+  }
+  
+  /* Mostrar el submenú correctamente cuando está expandido */
+  .menu-item.open {
+    background-color: rgba(0, 188, 212, 0.1); /* Fondo del item principal al estar expandido */
+    border-radius: 5px; /* Bordes redondeados para los elementos expandidos */
+  }
+  
+  /* Para los textos del menú */
+  .menu-text {
+    font-size: 16px;
+    color: #fff; /* Color blanco para el texto */
+    margin-left: 10px;
+  }
+  
+  /* Añadir espaciado entre los items del menú principal */
+  .menu-item {
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  .menu-item:hover {
+    background-color: rgba(0, 188, 212, 0.6); /* Color de fondo al pasar el mouse */
+  }
+  
+  /* Mostrar el ícono y texto cuando no esté colapsada la barra */
+  .sidebar:not(.collapsed) .menu-text {
+    opacity: 1; /* Hacer visible el texto */
+    width: auto;
+  }
+  
+  .sidebar.collapsed .menu-text {
+    opacity: 0; /* Ocultar texto cuando está colapsada */
+    width: 0;
+    overflow: hidden;
   }
   
