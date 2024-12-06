@@ -1,0 +1,238 @@
+/* 
+body {
+    background: url(/public/background.jpg);
+    width: 100%;
+    height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    background-position: center;
+}
+
+.container {
+    background: rgb(0, 0, 0, 0.1);
+    width: 320px;
+    padding: 24px;
+    border-radius: 16px;
+    border: solid 5px rgb(255, 255, 255, 0.1);
+    backdrop-filter: blur(25px);
+    box-shadow: 0px 0px 30px 20px rgb(0, 0, 0, 0.1);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.login-title {
+    margin-bottom: 16px;
+}
+
+.input-box {
+    display: flex;
+    width: 100%;
+    position: relative;
+    margin-top: 20px;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 10px 16px 10px 38px;
+    border-radius: 99px;
+    border: solid 3px transparent;
+    background: rgb(255, 255, 255, 0.1);
+    outline: none;
+    caret-color: white;
+    color: white;
+    font-weight: 500;
+    transition: 0.25s;
+}
+
+.input-box input:focus {
+    border: solid 3px rgb(255, 255, 255, 0.25);
+}
+
+.input-box input::placeholder {
+    color: rgb(255, 255, 255, 0.75);
+}
+
+.input-box input::-ms-reveal {
+    filter: invert (100%);
+}
+
+
+.input-box i {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 14px;
+    color: rgb(255, 255, 255, 0.75);
+    font-size: 18px;
+    transition: 0.25s;
+}
+
+.input-box input:focus+i {
+    color: white;
+}
+
+.remember-forgot-box {
+    display: flex;
+    width: 100%;
+    margin-top: 16px;
+    justify-content: space-between;
+}
+
+.remember-forgot-box h5 {
+    font-weight: normal;
+}
+
+.remember-me {
+    display: flex;
+    gap: 8px;
+}
+
+
+.forgot-password:hover {
+text-decoration: underline;
+}
+
+.login-button {
+width: 100%;
+margin-top: 24px;
+padding: 10px 0;
+background: #32CDD5;
+border: none;
+border-radius: 99px;
+color: white;
+font-weight: bold;
+font-size: 15px;
+cursor: pointer;
+outline: transparent 3px solid;
+transition: 0.1s;
+}
+.login-button:focus {
+outline: #32CDD58A 3px solid;
+}
+
+.dont-have-an-account {
+font-weight: normal;
+margin-top: 12px;
+} */
+ /* Fondo general del contenedor */
+/* Estilo general del contenedor del login */
+/* General container */
+/* General Container */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: url('/src/assets/images/background.jpg') no-repeat center center;
+    background-size: cover;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  /* Login Box */
+  .login-box {
+    background-color: rgba(0, 0, 0, 0);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    width: 350px;
+  }
+  
+  .login-box h1 {
+    margin-bottom: 30px;
+    font-size: 28px;
+    color: #fff;
+    font-weight: bold;
+  }
+  
+  /* Input Group */
+  .input-group {
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 10px 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .input-group .icon {
+    color: #fff;
+    font-size: 16px;
+    margin-right: 10px;
+  }
+  
+  .input-group input {
+    border: none;
+    background: transparent;
+    outline: none;
+    color: #fff;
+    font-size: 16px;
+    flex-grow: 1;
+  }
+  
+  .input-group input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  /* Options */
+  .options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  
+  .options label {
+    display: flex;
+    align-items: center;
+  }
+  
+  .options a {
+    color: #65d6f9;
+    text-decoration: none;
+  }
+  
+  .options a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Button */
+  .login-button {
+    background-color: #65d6f9;
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+  }
+  
+  .login-button:hover {
+    background-color: #54c2e3;
+  }
+  
+  /* Register Link */
+  .register-link {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #fff;
+  }
+  
+  .register-link a {
+    color: #65d6f9;
+    text-decoration: none;
+  }
+  
+  .register-link a:hover {
+    text-decoration: underline;
+  }
+  

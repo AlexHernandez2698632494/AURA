@@ -3,11 +3,13 @@ import { provideRouter, Routes } from '@angular/router';
 import { AppComponent } from './app/app.component';
 import { HomeComponent } from './app/components/home/home.component';
 import { PruebaComponent } from './app/components/prueba/prueba.component';
+import { LoginComponent } from './app/components/login/login.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/Home', pathMatch: 'full' }, // Redirige por defecto
   { path: 'Home', component: HomeComponent }, // Define la ruta para el componente por defecto
-  { path: 'prueba', component: PruebaComponent }
+  { path: 'prueba', component: PruebaComponent },
+  { path: 'login', component: LoginComponent}
 ];
 
 bootstrapApplication(AppComponent, {

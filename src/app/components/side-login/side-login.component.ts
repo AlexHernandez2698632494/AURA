@@ -12,14 +12,15 @@ import { RouterModule, Router } from '@angular/router'; // Importar Router y Rou
 export class SideLoginComponent {
   isCollapsed = true; // Inicialmente está colapsada (solo íconos)
 
-  // Solo mantenemos el ícono de 'home'
+  // Añadimos el nuevo ítem "Prueba" debajo de "Home"
   menuItemsTop = [
-    { icon: 'home', label: 'Home', route: '/', submenu: [], isSubmenuOpen: false }
+    { icon: 'home', label: 'Home', route: '/', submenu: [], isSubmenuOpen: false },
+    { icon: 'info', label: 'Prueba', route: '/prueba', submenu: [], isSubmenuOpen: false } // Nuevo ítem
   ];
 
   // Cambiamos 'Cerrar sesión' por 'Login'
   menuItemsBottom = [
-    { icon: 'login', label: 'Login', route: '/prueba', submenu: [], isSubmenuOpen: false }
+    { icon: 'login', label: 'Login', route: '/login', submenu: [], isSubmenuOpen: false }
   ];
 
   constructor(private router: Router) { } // Inyectamos el servicio Router
