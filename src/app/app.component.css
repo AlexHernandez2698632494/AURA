@@ -1,0 +1,15 @@
+
+  /* Barra lateral */
+  .app-side {
+    width: 250px; /* Ajusta el tamaño de la barra lateral según sea necesario */
+    background-color: #f4f4f4; /* Color de fondo para la barra lateral */
+    height: 100vh; /* Asegura que ocupe toda la altura de la ventana */
+  }
+  
+
+  
+  /* Si el contenido tiene un div adicional, asegúrate de que se alinee correctamente */
+  .div-content {
+    margin-left: 20px; /* Esto asegura que el contenido no se superponga con la barra lateral */
+    padding: 20px;  
+  }

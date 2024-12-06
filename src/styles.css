@@ -4,4 +4,8 @@
     font-weight: bold; /* Para asegurar que todos los textos usen el peso Bold */
   }
 
+  .app-side{
+    margin-right: 30;
+  }
+
   
