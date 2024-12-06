@@ -1,16 +1,18 @@
 <div [class.collapsed]="isCollapsed" class="sidebar">
-    <!-- Botón para expandir/colapsar -->
-    <button class="toggle-btn" (click)="toggleSidebar()">
-      <i class="material-icons">menu</i>
-    </button>
-  
-    <!-- Lista de ítems del menú -->
-    <ul class="menu">
-      <li *ngFor="let item of menuItems" class="menu-item">
-        <i class="material-icons">{{ item.icon }}</i>
-        <!-- Solo muestra el texto si no está colapsado -->
-        <span *ngIf="!isCollapsed" class="menu-text">{{ item.label }}</span>
-      </li>
-    </ul>
-  </div>
-  
+  <!-- Botón para expandir/colapsar utilizando el checkbox -->
+  <input type="checkbox" id="checkbox" (change)="toggleSidebar()" [checked]="!isCollapsed">
+  <label for="checkbox" class="toggle">
+    <div class="bars" id="bar1"></div>
+    <div class="bars" id="bar2"></div>
+    <div class="bars" id="bar3"></div>
+  </label>
+
+  <!-- Lista de ítems del menú -->
+  <ul class="menu">
+    <li *ngFor="let item of menuItems" class="menu-item">
+      <i class="material-icons">{{ item.icon }}</i>
+      <!-- Solo muestra el texto si no está colapsado -->
+      <span *ngIf="!isCollapsed" class="menu-text">{{ item.label }}</span>
+    </li>
+  </ul>
+</div>
