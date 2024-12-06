@@ -6,7 +6,6 @@ import { RouterModule, Router } from '@angular/router'; // Importar Router y Rou
   selector: 'app-side-login',
   standalone: true,
   imports: [CommonModule, RouterModule], // Incluir RouterModule aquí
-
   templateUrl: './side-login.component.html',
   styleUrl: './side-login.component.css'
 })

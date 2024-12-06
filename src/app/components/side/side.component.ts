@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router'; // Importar RouterModule
+import { HomeComponent } from '../home/home.component';
 
 @Component({
   selector: 'app-side',
   standalone: true,
-  imports: [CommonModule, RouterModule], // Incluir RouterModule aquí
+  imports: [CommonModule, RouterModule, HomeComponent], // Incluir RouterModule aquí
   templateUrl: './side.component.html',
   styleUrls: ['./side.component.css'],
 })
@@ -13,7 +14,7 @@ export class SideComponent {
   isCollapsed = true; // Inicialmente está colapsada (solo íconos)
 
   menuItemsTop = [
-    { icon: 'home', label: 'Home', route: '/home', submenu: [], isSubmenuOpen: false },
+    { icon: 'home', label: 'Home', route: '/', submenu: [], isSubmenuOpen: false },
     { 
       icon: 'add', 
       label: 'Registrar', 
