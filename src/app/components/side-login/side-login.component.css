@@ -1,0 +1,341 @@
+/* Estilo base de la barra lateral */
+.sidebar {
+    width: 60px; /* Ancho cuando está colapsada */
+    height: 100vh;
+    background: linear-gradient(to bottom, #00bcd4, #009688);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0;
+    transition: width 0.3s ease-in-out;
+    overflow: hidden;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+  }
+  
+  .sidebar.collapsed {
+    width: 60px; /* Ancho cuando está colapsada */
+  }
+  
+  .sidebar:not(.collapsed) {
+    width: 200px; /* Ancho cuando está expandida */
+  }
+  
+  /* Botón de toggle */
+  .toggle {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    z-index: 1050;
+  }
+    
+    /* Botón para expandir/colapsar */
+    #checkbox {
+      display: none; /* Oculta el checkbox */
+    }
+    
+    .bars {
+      width: 100%;
+      height: 4px;
+      background-color: transparent; /* Hacemos que las barras tengan fondo transparente */
+      border-radius: 4px;
+      background: linear-gradient(to right, #00bcd4, #ffffff); /* Degradado celeste a blanco */
+    }
+    
+    #bar2 {
+      transition-duration: 0.8s;
+    }
+    
+    #bar1, #bar3 {
+      width: 70%;
+    }
+    
+    #checkbox:checked + .toggle .bars {
+      position: absolute;
+      transition-duration: 0.5s;
+    }
+    
+    #checkbox:checked + .toggle #bar2 {
+      transform: scaleX(0);
+      transition-duration: 0.5s;
+    }
+    
+    #checkbox:checked + .toggle #bar1 {
+      width: 100%;
+      transform: rotate(45deg);
+      transition-duration: 0.5s;
+    }
+    
+    #checkbox:checked + .toggle #bar3 {
+      width: 100%;
+      transform: rotate(-45deg);
+      transition-duration: 0.5s;
+    }
+    
+    #checkbox:checked + .toggle {
+      transition-duration: 0.5s;
+      transform: rotate(180deg);
+    }
+    
+    /* Lista del menú */
+    .menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      width: 100%;
+  }
+    
+  .menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 15px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+  }
+    
+  .menu-item:hover {
+    background: linear-gradient(to right, rgba(0, 188, 212, 0.6), rgba(0, 150, 136, 0.6));
+  }
+    /* Íconos del menú */
+    .menu-item i {
+      font-size: 24px;
+      width: 40px;
+      text-align: center;
+    }
+    
+    /* Estilos adicionales para los textos */
+    .menu-text {
+      margin-left: 10px;
+      font-size: 16px;
+      white-space: nowrap;
+      opacity: 0; /* Oculto por defecto */
+      transition: opacity 0.3s ease-in-out, width 0.3s ease-in-out;
+      width: 0;
+      overflow: hidden;
+    }
+    
+    .sidebar:not(.collapsed) .menu-text {
+      opacity: 1; /* Visible cuando no está colapsado */
+      width: auto;
+    }
+    
+    .sidebar.collapsed .menu-text {
+      opacity: 0; /* Oculta el texto cuando está colapsada */
+      width: 0; /* Oculta el espacio del texto */
+      overflow: hidden;
+    }
+  
+  /* Submenú */
+  .submenu {
+    display: none; /* Ocultamos el submenú por defecto */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  }
+    
+    .submenu-item {
+      padding: 10px 15px; /* Espaciado entre los elementos del submenú */
+      cursor: pointer;
+      font-size: 16px;
+      color: #555; /* Color gris para el texto */
+      transition: background-color 0.3s ease-in-out;
+    }
+    
+    .submenu-item a {
+      text-decoration: none;
+      color: #fff; /* Mantener el color de texto del submenú */
+    }
+    
+    .submenu-item:hover {
+      background-color: rgba(0, 188, 212, 0.1); /* Fondo suave en hover */
+      color: #fff; /* Cambio de color a cyan en hover */
+    }
+    
+    .submenu-item a:hover {
+      color: #00bcd4; /* Cambio de color del texto cuando se hace hover sobre el enlace */
+    }
+    
+    /* Mostrar submenú cuando esté abierto */
+    .menu-item.open .submenu {
+      display: block; /* Muestra el submenú cuando está abierto */
+    }
+    
+    /* Estilos para el item del menú principal */
+    .menu-item {
+      display: flex;
+      flex-direction: column; /* Alineación vertical para el ícono y el texto */
+      margin-bottom: 10px; /* Espaciado entre los ítems */
+    }
+    
+    /* Los íconos del menú */
+    .menu-item i {
+      font-size: 24px;
+      width: 40px;
+      text-align: center;
+    }
+    
+    /* Mostrar el submenú correctamente cuando está expandido */
+    .menu-item.open {
+      background-color: rgba(0, 188, 212, 0.1); /* Fondo del item principal al estar expandido */
+      border-radius: 5px; /* Bordes redondeados para los elementos expandidos */
+    }
+    
+    /* Para los textos del menú */
+    .menu-text {
+      font-size: 16px;
+      color: #fff; /* Color blanco para el texto */
+      margin-left: 10px;
+    }
+    
+    /* Añadir espaciado entre los items del menú principal */
+    .menu-item {
+      padding: 10px;
+      cursor: pointer;
+    }
+    
+    .menu-item:hover {
+      background-color: rgba(0, 188, 212, 0.6); /* Color de fondo al pasar el mouse */
+    }
+    
+    /* Mostrar el ícono y texto cuando no esté colapsada la barra */
+    .sidebar:not(.collapsed) .menu-text {
+      opacity: 1; /* Hacer visible el texto */
+      width: auto;
+    }
+    
+    .sidebar.collapsed .menu-text {
+      opacity: 0; /* Ocultar texto cuando está colapsada */
+      width: 0;
+      overflow: hidden;
+    }
+    
+    .separator hr {
+      border: none;
+      border-top: 1px solid #ccc; /* Color de la línea */
+      margin: 10px 0; /* Espaciado arriba y abajo */
+    }
+    
+    /* Media Queries para Responsividad */
+  /* Pantallas pequeñas (celulares) */
+  @media (max-width: 768px) {
+    /* Barra lateral */
+    .sidebar {
+        width: 50px; /* Más estrecha para aprovechar espacio */
+    }
+    .sidebar:not(.collapsed) {
+        width: 180px; /* Menor expansión para móviles */
+    }
+  
+    /* Íconos del menú */
+    .menu-item i {
+        font-size: 20px; /* Íconos más pequeños */
+    }
+  
+    /* Texto del menú principal */
+    .menu-text {
+        font-size: 12px; /* Texto reducido */
+    }
+  
+    /* Submenús */
+    .submenu-item {
+        font-size: 12px; /* Texto de submenús más pequeño */
+        padding: 8px 12px; /* Espaciado ajustado */
+    }
+  
+    /* Botón para expandir/colapsar */
+    .toggle {
+        width: 25px; /* Botón más pequeño */
+        height: 25px;
+    }
+    .bars {
+        height: 3px; /* Barras más delgadas */
+    }
+  
+    /* Espaciado y márgenes */
+    .menu-item {
+        padding: 8px; /* Reducir padding en los items */
+    }
+    .submenu-item {
+        padding: 8px 10px; /* Menos espacio entre submenús */
+    }
+  
+    /* Separador */
+    .separator hr {
+        margin: 8px 0; /* Menor espaciado en separador */
+    }
+  }
+  
+  
+  /* Pantallas medianas (laptops y tablets) */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .sidebar {
+        width: 60px; /* Ancho estándar */
+    }
+    .sidebar:not(.collapsed) {
+        width: 180px;
+    }
+    .menu-item i {
+        font-size: 22px; /* Tamaño intermedio de íconos */
+    }
+    .menu-text {
+        font-size: 15px; /* Texto ligeramente más grande */
+    }
+    .submenu-item {
+        font-size: 15px;
+        padding: 8px 12px; /* Espaciado más amplio */
+    }
+  }
+  
+  /* Pantallas grandes (computadoras, 1025px - 1920px) */
+  @media (min-width: 1025px) and (max-width: 1920px) {
+    .sidebar {
+        width: 70px; /* Barra lateral moderadamente amplia */
+    }
+    .sidebar:not(.collapsed) {
+        width: 220px; /* Ancho más amplio para computadoras */
+    }
+    .menu-item i {
+        font-size: 26px; /* Íconos más grandes */
+    }
+    .menu-text {
+        font-size: 15px; /* Texto suficientemente grande para computadoras */
+    }
+    .submenu-item {
+        font-size: 16px; /* Texto del submenú adaptado */
+        padding: 10px 15px; /* Espaciado moderado */
+    }
+  }
+  
+  /* Pantallas muy grandes (televisores, más de 1920px) */
+  @media (min-width: 1921px) {
+    .sidebar {
+        width: 80px; /* Barra lateral más ancha */
+    }
+    .sidebar:not(.collapsed) {
+        width: 260px; /* Ancho mayor para televisores */
+    }
+    .menu-item i {
+        font-size: 30px; /* Íconos más grandes para mejor visibilidad */
+    }
+    .menu-text {
+        font-size: 20px; /* Texto aún más grande para televisores */
+    }
+    .submenu-item {
+        font-size: 18px; /* Submenús más grandes para legibilidad */
+        padding: 12px 18px; /* Espaciado más amplio */
+    }
+  }
+  

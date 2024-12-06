@@ -12,7 +12,7 @@ import { RouterModule } from '@angular/router'; // Importar RouterModule
 export class SideComponent {
   isCollapsed = true; // Inicialmente está colapsada (solo íconos)
 
-  menuItems = [
+  menuItemsTop = [
     { icon: 'home', label: 'Home', route: '/home', submenu: [], isSubmenuOpen: false },
     { 
       icon: 'add', 
@@ -52,8 +52,12 @@ export class SideComponent {
       ]
     },
     { icon: 'lock', label: 'Cambiar Contraseña', route: '/cambiar-contraseña', submenu: [], isSubmenuOpen: false },
+  ];
+  
+  menuItemsBottom = [
     { icon: 'logout', label: 'Cerrar Sesión', route: '/logout', submenu: [], isSubmenuOpen: false },
   ];
+  
 
   toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;
@@ -61,7 +65,22 @@ export class SideComponent {
 
   toggleSubmenu(item: any) {
     if (item.submenu) {
+      // Si el menú está colapsado, expandirlo
+      if (this.isCollapsed) {
+        this.isCollapsed = false;
+      }
+  
+      // Cerrar todos los submenús de la sección superior, excepto el actual
+      this.menuItemsTop.forEach(menuItem => {
+        if (menuItem !== item) {
+          menuItem.isSubmenuOpen = false;
+        }
+      });
+  
+      // Alternar el submenú del elemento actual
       item.isSubmenuOpen = !item.isSubmenuOpen;
     }
   }
+    
+
 }

@@ -7,7 +7,7 @@
     </label>
   
     <ul class="menu">
-      <!-- Sección superior -->
+      <!-- Sección superior (solo home) -->
       <li *ngFor="let item of menuItemsTop" class="menu-item" [class.open]="item.isSubmenuOpen">
         <div (click)="toggleSubmenu(item)">
           <i class="material-icons">{{ item.icon }}</i>
@@ -16,21 +16,14 @@
             {{ item.isSubmenuOpen ? 'expand_less' : 'expand_more' }}
           </i>
         </div>
-      
-        <!-- Submenú -->
-        <ul *ngIf="!isCollapsed" class="submenu">
-          <li *ngFor="let subItem of item.submenu" class="submenu-item">
-            <a [routerLink]="subItem.route">{{ subItem.label }}</a>
-          </li>
-        </ul>
       </li>
-    
+  
       <!-- Línea separadora -->
       <li *ngIf="!isCollapsed" class="separator">
         <hr />
       </li>
-    
-      <!-- Sección inferior -->
+  
+      <!-- Sección inferior (login en lugar de cerrar sesión) -->
       <li *ngFor="let item of menuItemsBottom" class="menu-item">
         <div (click)="toggleSubmenu(item)">
           <i class="material-icons">{{ item.icon }}</i>
