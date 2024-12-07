@@ -1,141 +1,62 @@
-/* Contenedor principal del login */
-/* .login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  width: calc(100% - 60px); 
+/* Elimina márgenes y paddings por defecto */
+html, body {
   margin: 0;
   padding: 0;
-  background: url('../../../assets/imagen/background.jpg') no-repeat center center;
-  background-size: cover;
-  font-family: 'Poppins', sans-serif;
-}
-
-.login-box {
-  background-color: rgba(0, 0, 0, 0);
-  padding: 30px;
-  border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-  text-align: center;
-  width: 350px;
-}
-
-.login-box h1 {
-  margin-bottom: 30px;
-  font-size: 28px;
-  color: #fff;
-  font-weight: bold;
-}
-
-.input-group {
-  display: flex;
-  align-items: center;
-  background-color: rgba(255, 255, 255, 0.2);
-  padding: 10px 15px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-}
-
-.input-group input {
-  border: none;
-  background: transparent;
-  outline: none;
-  color: #fff;
-  font-size: 16px;
-  flex-grow: 1;
-}
-
-.input-group input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.options {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: #fff;
-  font-size: 14px;
-  margin-bottom: 20px;
-}
-
-.options a {
-  color: #65d6f9;
-  text-decoration: none;
-}
-
-.options a:hover {
-  text-decoration: underline;
-}
-
-.login-button {
-  background-color: #65d6f9;
-  color: #fff;
-  border: none;
-  padding: 12px 20px;
-  font-size: 16px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
   width: 100%;
-}
-
-.login-button:hover {
-  background-color: #54c2e3;
-}
-
-.register-link {
-  margin-top: 15px;
-  font-size: 14px;
-  color: #fff;
-}
-
-.register-link a {
-  color: #65d6f9;
-  text-decoration: none;
-}
-
-.register-link a:hover {
-  text-decoration: underline;
-} */
-/* Estilo para el contenedor principal */
-/* Estilo para el fondo de la ventana completa */
-.background {
-  margin: 0;
-  padding: 0;
   height: 100%;
-  background: url('../../../assets/imagen/background.jpg') no-repeat center center/cover; /* Imagen de fondo */
+  overflow: hidden; /* Evitar desplazamientos si no se requiere */
   font-family: Arial, sans-serif;
 }
 
-/* Contenedor del formulario */
+/* Fondo de la aplicación (la imagen debe cubrir toda la pantalla) */
+.background {
+  background-image: url('../../../assets/imagen/background.jpg'); /* Cambia esto por la URL de tu imagen */
+  background-size: cover;
+  background-position: center;
+  position: fixed;
+  top: 0; /* Asegura que la imagen comienza desde arriba */
+  left: 0; /* Asegura que la imagen comienza desde la izquierda */
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* Fondo detrás del contenido */
+}
+
+/* El contenedor principal debe tomar toda la ventana */
+.app-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* Estilo del contenedor del formulario */
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh; /* Centra el formulario en toda la ventana */
-}
-
-/* Caja del formulario */
-.login-box {
-  background: rgba(255, 255, 255, 0.8); /* Fondo blanco translúcido */
-  border: 2px solid #00bcd4; /* Borde celeste */
-  border-radius: 8px; /* Bordes redondeados */
-  padding: 20px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Sombra */
   width: 100%;
-  max-width: 400px; /* Ancho máximo del formulario */
+  height: 100%;
+  position: absolute; /* Para que se superponga sobre el fondo */
 }
 
-/* Título */
-h1 {
-  font-size: 24px;
+.login-box {
+  background: rgba(255, 255, 255, 0.2); /* Fondo transparente */
+  border: 2px solid #00c1ff; /* Borde celeste */
+  border-radius: 8px;
+  padding: 20px;
+  width: 300px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+  color: #ffffff; /* Texto blanco */
+}
+
+/* Título del formulario */
+.login-box h1 {
   text-align: center;
   margin-bottom: 20px;
-  color: #333;
+  font-size: 24px;
+  color: #ffffff;
 }
 
-/* Input y label */
+/* Estilo de los campos de entrada */
 .input-group {
   display: flex;
   align-items: center;
@@ -144,66 +65,69 @@ h1 {
 
 .input-group label {
   margin-right: 10px;
+  color: #ffffff;
 }
 
 .input-group input {
   flex: 1;
   padding: 10px;
-  border: 1px solid #ccc;
+  border: none;
   border-radius: 4px;
   outline: none;
-}
-
-.input-group input:focus {
-  border-color: #00bcd4;
-  box-shadow: 0 0 5px rgba(0, 188, 212, 0.5);
-}
-
-/* Opciones */
-.options {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   font-size: 14px;
-  margin-bottom: 20px;
+  color: #000000;
 }
 
-.options a {
-  color: #00bcd4;
-  text-decoration: none;
-}
-
-.options a:hover {
-  text-decoration: underline;
-}
-
-/* Botón */
+/* Botón de login */
 .login-button {
+  display: block;
   width: 100%;
-  background-color: #00bcd4;
-  color: #fff;
+  padding: 10px 0;
+  background-color: #00c1ff;
+  color: #ffffff;
   border: none;
-  padding: 10px;
   border-radius: 4px;
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
   cursor: pointer;
-  font-size: 16px;
+  transition: background-color 0.3s ease;
 }
 
 .login-button:hover {
-  background-color: #019bb5;
+  background-color: #008fc7;
 }
 
-/* Enlace de registro */
+/* Opciones adicionales */
+.options {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+}
+
+.options label, .options a {
+  font-size: 12px;
+  color: #ffffff;
+}
+
 .register-link {
   text-align: center;
+  font-size: 12px;
   margin-top: 10px;
 }
 
 .register-link a {
-  color: #00bcd4;
+  color: #00c1ff;
   text-decoration: none;
 }
 
 .register-link a:hover {
   text-decoration: underline;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  .login-box {
+    width: 90%;
+  }
 }
