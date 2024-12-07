@@ -26,10 +26,10 @@
 </form> -->
 <div class="app-container">
   <app-side-login class="app-side"></app-side-login> <!-- Barra lateral -->
-  <div class="main-content">
+  
     <router-outlet></router-outlet> <!-- Aquí se renderizan las vistas dinámicas -->
-  </div>
 </div>
+<div class="background">
 <div class="login-container">
     <div class="login-box">
       <h1>Login</h1>
@@ -52,11 +52,13 @@
           </label>
           <a href="#">Forgot password?</a>
         </div>
-        <button type="submit" class="login-button">Login</button>
+        <a href="/prueba" type="submit" class="login-button">Login</a>
         <p class="register-link">
           Don’t have an account? <a href="#">Register</a>
         </p>
       </form>
     </div>
   </div>
+</div>
+
   
