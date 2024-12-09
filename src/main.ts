@@ -14,6 +14,7 @@ import { IndexESensorsComponent } from './app/components/sensors/index-e/index-e
 import { IndexSessionComponent } from './app/components/session/index/index.component';
 import { IndexESessionComponent } from './app/components/session/index-e/index-e.component';
 import { IndexUsersComponent } from './app/components/users/index/index.component';
+import { ChangePasswordComponent } from './app/components/change-password/change-password.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
@@ -35,7 +36,7 @@ const routes: Routes = [
   { path: 'sessions/indexE', component: IndexESessionComponent },
   // rutas de usuarios:
   { path: 'users/index', component: IndexUsersComponent },
-  { path: 'users/cambiarContra', component: PruebaComponent },
+  { path: 'users/cambiarContra', component: ChangePasswordComponent },
   
 ];
 
