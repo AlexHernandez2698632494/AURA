@@ -6,7 +6,7 @@ import { HomeComponent } from '../home/home.component';
 @Component({
   selector: 'app-side',
   standalone: true,
-  imports: [CommonModule, RouterModule, HomeComponent], // Incluir RouterModule aquí
+  imports: [CommonModule, RouterModule], // Incluir RouterModule aquí
   templateUrl: './side.component.html',
   styleUrls: ['./side.component.css'],
 })

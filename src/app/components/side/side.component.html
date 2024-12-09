@@ -9,35 +9,40 @@
     <ul class="menu">
       <!-- Sección superior -->
       <li *ngFor="let item of menuItemsTop" class="menu-item" [class.open]="item.isSubmenuOpen">
-        <div (click)="toggleSubmenu(item)">
+        <div *ngIf="!item.submenu?.length">
+          <a [routerLink]="item.route">
+            <i class="material-icons">{{ item.icon }}</i>
+            <span *ngIf="!isCollapsed" class="menu-text">{{ item.label }}</span>
+          </a>
+        </div>
+    
+        <!-- Para los elementos con submenú -->
+        <div *ngIf="item.submenu?.length" (click)="toggleSubmenu(item)">
           <i class="material-icons">{{ item.icon }}</i>
           <span *ngIf="!isCollapsed" class="menu-text">{{ item.label }}</span>
-          <i *ngIf="item.submenu?.length && !isCollapsed" class="material-icons">
+          <i *ngIf="!isCollapsed" class="material-icons">
             {{ item.isSubmenuOpen ? 'expand_less' : 'expand_more' }}
           </i>
         </div>
-      
+    
         <!-- Submenú -->
-        <ul *ngIf="!isCollapsed" class="submenu">
+        <ul *ngIf="item.isSubmenuOpen && !isCollapsed" class="submenu">
           <li *ngFor="let subItem of item.submenu" class="submenu-item">
             <a [routerLink]="subItem.route">{{ subItem.label }}</a>
           </li>
         </ul>
       </li>
     
-      <!-- Línea separadora -->
-      <li *ngIf="!isCollapsed" class="separator">
-        <hr />
-      </li>
-    
-      <!-- Sección inferior -->
+      <!-- Sección inferior (sin submenú) -->
       <li *ngFor="let item of menuItemsBottom" class="menu-item">
-        <div (click)="toggleSubmenu(item)">
+        <a [routerLink]="item.route">
           <i class="material-icons">{{ item.icon }}</i>
           <span *ngIf="!isCollapsed" class="menu-text">{{ item.label }}</span>
-        </div>
+        </a>
       </li>
     </ul>
+    
+    
   </div>
   <router-outlet></router-outlet>
 

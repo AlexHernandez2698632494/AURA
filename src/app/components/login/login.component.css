@@ -5,7 +5,10 @@ html, body {
   width: 100%;
   height: 100%;
   overflow: hidden; /* Evitar desplazamientos si no se requiere */
-  font-family: Arial, sans-serif;
+  font-family: 'Arial Narrow', Arial, sans-serif;
+  margin-left: 20px; /* Esto asegura que el contenido no se superponga con la barra lateral */
+  padding: 0 0 0 20px; 
+
 }
 
 /* Fondo de la aplicación (la imagen debe cubrir toda la pantalla) */
