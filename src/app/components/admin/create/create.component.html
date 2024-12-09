@@ -4,3 +4,44 @@
       <router-outlet></router-outlet> <!-- Aquí se renderizan las vistas dinámicas -->
     </div>
   </div>
+  <div class="main-container">
+    <!-- Contenedor superior con flecha y título -->
+    <div class="header">
+      <button class="back-button" (click)="onBackClick()">
+        <span class="arrow">←</span>
+      </button>
+      <h1 class="title">Registro de nuevo administrador</h1>
+    </div>
+  
+    <!-- Contenedor principal del formulario -->
+    <div class="form-container">
+      <h2 class="form-title">Registro de administrador</h2>
+      <hr class="separator" />
+      <p class="form-description">Información general del administrador</p>
+      <p class="form-instruction">Ingrese la información que se solicita</p>
+  
+      <form>
+        <!-- Fila 1: Nombre y usuario -->
+        <div class="row">
+          <div class="input-field">
+            <label for="nombre">Nombre</label>
+            <input id="nombre" type="text" placeholder="Ingrese nombre" />
+          </div>
+          <div class="input-field">
+            <label for="usuario">Usuario</label>
+            <input id="usuario" type="text" placeholder="Ingrese usuario" />
+          </div>
+        </div>
+
+        <div class="input-field">
+          <label for="correo">Correo electrónico</label>
+          <input id="correo" type="email" placeholder="Ingrese correo" />
+        </div>
+  
+        <!-- Botón de registro -->
+        <button class="register-button" type="submit">Registrar administrador</button>
+      </form>
+    </div>
+  </div>
+  
+  
