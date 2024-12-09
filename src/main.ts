@@ -4,6 +4,7 @@ import { AppComponent } from './app/app.component';
 import { HomeComponent } from './app/components/home/home.component';
 import { PruebaComponent } from './app/components/prueba/prueba.component';
 import { LoginComponent } from './app/components/login/login.component';
+import { ForgotComponent } from './app/components/forgot/forgot.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
@@ -11,17 +12,18 @@ const routes: Routes = [
   { path: 'prueba', component: PruebaComponent },
   { path: 'login', component: LoginComponent },
   // Agregar rutas para los enlaces del menú:
-  { path: 'registrar/administrador', component: HomeComponent }, 
-  { path: 'control/administrador', component: PruebaComponent },
-  { path: 'eliminados/administradores', component: PruebaComponent },
-  { path: 'registrar/sensor', component: PruebaComponent },
-  { path: 'control/sensores', component: PruebaComponent },
-  { path: 'eliminados/sensores', component: PruebaComponent },
-  { path: 'control/sesiones', component: PruebaComponent },
-  { path: 'eliminados/sesiones', component: PruebaComponent },
-  { path: 'control/usuarios', component: PruebaComponent },
-  { path: 'cambiar-contraseña', component: PruebaComponent },
-  { path: 'logout', component: LoginComponent }
+  { path: 'admin/create', component: HomeComponent }, 
+  { path: 'admin/index', component: PruebaComponent },
+  { path: 'admin/indexE', component: PruebaComponent },
+  { path: 'sensors/create', component: PruebaComponent },
+  { path: 'sensors/index', component: PruebaComponent },
+  { path: 'sensors/indexE', component: PruebaComponent },
+  { path: 'sessions/index', component: PruebaComponent },
+  { path: 'sessions/indexE', component: PruebaComponent },
+  { path: 'users/index', component: PruebaComponent },
+  { path: 'users/cambiarContra', component: PruebaComponent },
+  { path: 'logout', component: LoginComponent },
+  { path: 'recuperarView', component: ForgotComponent}
 ];
 
 

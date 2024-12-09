@@ -20,9 +20,9 @@ export class SideComponent {
       label: 'Registrar', 
       isSubmenuOpen: false, 
       submenu: [
-        { label: 'Registrar Administrador', route: '/registrar/administrador' },
-        { label: 'Control Administrador', route: '/control/administrador' },
-        { label: 'Administradores Eliminados', route: '/eliminados/administradores' },
+        { label: 'Registrar Administrador', route: '/admin/create' },
+        { label: 'Control Administrador', route: '/admin/index' },
+        { label: 'Administradores Eliminados', route: '/admin/indexE' },
       ]
     },
     { 
@@ -30,9 +30,9 @@ export class SideComponent {
       label: 'Sensores', 
       isSubmenuOpen: false, 
       submenu: [
-        { label: 'Registrar Sensor', route: '/registrar/sensor' },
-        { label: 'Control Sensores', route: '/control/sensores' },
-        { label: 'Sensores Eliminados', route: '/eliminados/sensores' },
+        { label: 'Registrar Sensor', route: '/sensors/create' },
+        { label: 'Control Sensores', route: '/sensors/index' },
+        { label: 'Sensores Eliminados', route: '/sensors/indexE' },
       ]
     },
     { 
@@ -40,8 +40,8 @@ export class SideComponent {
       label: 'Ver Historial', 
       isSubmenuOpen: false, 
       submenu: [
-        { label: 'Control Sesiones', route: '/control/sesiones' },
-        { label: 'Sesiones Eliminadas', route: '/eliminados/sesiones' },
+        { label: 'Control Sesiones', route: '/sessions/index' },
+        { label: 'Sesiones Eliminadas', route: '/sessions/indexE' },
       ]
     },
     { 
@@ -49,10 +49,10 @@ export class SideComponent {
       label: 'Usuarios', 
       isSubmenuOpen: false, 
       submenu: [
-        { label: 'Control Usuarios', route: '/control/usuarios' },
+        { label: 'Control Usuarios', route: '/users/index' },
       ]
     },
-    { icon: 'lock', label: 'Cambiar Contraseña', route: '/cambiar-contraseña', submenu: [], isSubmenuOpen: false },
+    { icon: 'lock', label: 'Cambiar Contraseña', route: '/users/cambiarContra', submenu: [], isSubmenuOpen: false },
   ];
   
   menuItemsBottom = [
