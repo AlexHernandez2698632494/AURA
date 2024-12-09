@@ -5,25 +5,38 @@ import { HomeComponent } from './app/components/home/home.component';
 import { PruebaComponent } from './app/components/prueba/prueba.component';
 import { LoginComponent } from './app/components/login/login.component';
 import { ForgotComponent } from './app/components/forgot/forgot.component';
+import { CreateAdminComponent } from './app/components/admin/create/create.component';
+import { IndexAdminComponent } from './app/components/admin/index/index.component';
+import { IndexEAdminComponent } from './app/components/admin/index-e/index-e.component';
+import { CreateSensorsComponent } from './app/components/sensors/create/create.component';
+import { IndexSensorsComponent } from './app/components/sensors/index/index.component';
+import { IndexESensorsComponent } from './app/components/sensors/index-e/index-e.component';
+import { IndexSessionComponent } from './app/components/session/index/index.component';
+import { IndexESessionComponent } from './app/components/session/index-e/index-e.component';
+import { IndexUsersComponent } from './app/components/users/index/index.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
   { path: 'Home', component: HomeComponent },
   { path: 'prueba', component: PruebaComponent },
   { path: 'login', component: LoginComponent },
-  // Agregar rutas para los enlaces del menú:
-  { path: 'admin/create', component: HomeComponent }, 
-  { path: 'admin/index', component: PruebaComponent },
-  { path: 'admin/indexE', component: PruebaComponent },
-  { path: 'sensors/create', component: PruebaComponent },
-  { path: 'sensors/index', component: PruebaComponent },
-  { path: 'sensors/indexE', component: PruebaComponent },
-  { path: 'sessions/index', component: PruebaComponent },
-  { path: 'sessions/indexE', component: PruebaComponent },
-  { path: 'users/index', component: PruebaComponent },
-  { path: 'users/cambiarContra', component: PruebaComponent },
   { path: 'logout', component: LoginComponent },
-  { path: 'recuperarView', component: ForgotComponent}
+  { path: 'recuperarView', component: ForgotComponent},
+  // rutas de Admin:
+  { path: 'admin/create', component: CreateAdminComponent }, 
+  { path: 'admin/index', component: IndexAdminComponent },
+  { path: 'admin/indexE', component: IndexEAdminComponent },
+  // rutas de Sensores:
+  { path: 'sensors/create', component: CreateSensorsComponent },
+  { path: 'sensors/index', component: IndexSensorsComponent },
+  { path: 'sensors/indexE', component: IndexESensorsComponent },
+  // rutas de Sesiones:
+  { path: 'sessions/index', component: IndexSessionComponent },
+  { path: 'sessions/indexE', component: IndexESessionComponent },
+  // rutas de usuarios:
+  { path: 'users/index', component: IndexUsersComponent },
+  { path: 'users/cambiarContra', component: PruebaComponent },
+  
 ];
 
 
