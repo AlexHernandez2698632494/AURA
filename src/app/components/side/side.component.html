@@ -24,7 +24,7 @@
             {{ item.isSubmenuOpen ? 'expand_less' : 'expand_more' }}
           </i>
         </div>
-    
+
         <!-- Submenú -->
         <ul *ngIf="item.isSubmenuOpen && !isCollapsed" class="submenu">
           <li *ngFor="let subItem of item.submenu" class="submenu-item">
@@ -32,6 +32,10 @@
           </li>
         </ul>
       </li>
+
+      <div class="separator">
+        <hr />
+      </div>
     
       <!-- Sección inferior (sin submenú) -->
       <li *ngFor="let item of menuItemsBottom" class="menu-item">

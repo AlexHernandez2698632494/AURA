@@ -27,6 +27,7 @@
 
 /* Botón de toggle */
 .toggle {
+  margin-bottom: 20px;
   position: relative;
   width: 30px;
   height: 30px;
@@ -148,10 +149,11 @@
 }
   
   .submenu-item {
+    text-align: left;
     padding: 10px 15px; /* Espaciado entre los elementos del submenú */
     cursor: pointer;
     font-size: 16px;
-    color: #555; /* Color gris para el texto */
+    color: 156082; /* Color gris para el texto */
     transition: background-color 0.3s ease-in-out;
   }
   
@@ -166,7 +168,7 @@
   }
   
   .submenu-item a:hover {
-    color: #00bcd4; /* Cambio de color del texto cuando se hace hover sobre el enlace */
+    color: #156082; /* Cambio de color del texto cuando se hace hover sobre el enlace */
   }
   
   /* Mostrar submenú cuando esté abierto */
@@ -203,9 +205,13 @@
   
   /* Añadir espaciado entre los items del menú principal */
   .menu-item {
+    display: flex;
+    align-items: center; /* Alineación vertical centrada */
+    justify-content: flex-start; /* Íconos a la izquierda */
     padding: 10px;
     cursor: pointer;
-  }
+    transition: background-color 0.3s ease-in-out;
+  }z
   
   .menu-item:hover {
     background-color: rgba(0, 188, 212, 0.6); /* Color de fondo al pasar el mouse */
@@ -225,8 +231,19 @@
   
   .separator hr {
     border: none;
-    border-top: 1px solid #ccc; /* Color de la línea */
-    margin: 10px 0; /* Espaciado arriba y abajo */
+    border-top: 1px solid #ccc; /* Línea gris clara */
+    margin: 20px; /* Espaciado arriba y abajo */
+    width: 100%; /* Asegura que ocupe el ancho completo del contenedor */
+  }
+
+  a {
+    text-decoration: none; /* Elimina el subrayado */
+    color: inherit; /* Hereda el color del contenedor */
+  }
+
+  .menu .separator {
+    width: 100%;
+    margin: 10px 0;
   }
   
   /* Media Queries para Responsividad */
