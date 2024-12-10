@@ -1,6 +1,59 @@
 <div class="app-container">
-    <app-side class="app-side"></app-side> <!-- Barra lateral -->
-    <div class="main-content">
-      <router-outlet></router-outlet> <!-- Aquí se renderizan las vistas dinámicas -->
+  <app-side class="app-side"></app-side> <!-- Barra lateral -->
+  <div class="main-content">
+    <router-outlet></router-outlet> <!-- Aquí se renderizan las vistas dinámicas -->
+  </div>
+</div>
+<div class="main-container">
+  <div class="header">
+    <h2>Control de Administradores</h2>
+  </div>
+  <div class="sub-header">
+    <h3>administradores registrados</h3>
+    <hr />
+  </div>
+
+  <!-- Controles de tabla (Número de registros y buscar) -->
+  <div class="table-controls">
+    <div class="left">
+      <label for="records">Mostrar</label>
+      <select id="records" [(ngModel)]="recordsToShow">
+        <option *ngFor="let option of [5, 10, 15, 20]" [value]="option">{{ option }}</option>
+      </select>
+      <span>registros</span>
+    </div>
+    <div class="right">
+      <input type="text" placeholder="Buscar" [(ngModel)]="searchTerm" />
     </div>
   </div>
+
+  <!-- Tabla -->
+  <table>
+    <thead>
+      <tr>
+        <th>Nombre de Usuario</th>
+        <th>Nombre</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of filteredUsers()">
+        <td>{{ user.username }}</td>
+        <td>{{ user.name }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Información de registros y paginación -->
+  <div class="footer">
+    <div class="left">
+      Mostrando registros del {{ (currentPage - 1) * recordsToShow + 1 }}
+      al {{ Math.min(currentPage * recordsToShow, users.length) }}
+      de un total de {{ users.length }} registros
+    </div>
+    <div class="right pagination">
+      <button (click)="previousPage()" [disabled]="currentPage === 1">Anterior</button>
+      <span>{{ currentPage }}</span>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages()">Siguiente</button>
+    </div>
+  </div>
+</div>
