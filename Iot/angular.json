@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/io-t",
+            "outputPath": "dist/iot",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -59,7 +59,7 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "host": "0.0.0.0",
-            "port": 4200
+            "port": 4201
           },
           "configurations": {
             "production": {
