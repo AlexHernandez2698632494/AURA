@@ -13,6 +13,10 @@ export class AdminService {
   registerAdmin(adminData: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/user`, adminData);
   }
+  getUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/users`);
+  }
+  
 }
 
 export class AuthService {

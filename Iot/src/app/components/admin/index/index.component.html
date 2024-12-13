@@ -31,16 +31,24 @@
   <table>
     <thead>
       <tr>
-        <th>Nombre de Usuario</th>
         <th>Nombre</th>
+        <th>Correo</th>
+        <th>Usuario</th>
+        <th>Accion</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let user of filteredUsers()">
-        <td>{{ user.username }}</td>
-        <td>{{ user.name }}</td>
+        <td>{{ user.nombre }}</td>
+        <td>{{ user.correo }}</td>
+        <td>{{ user.usuario }}</td>
+        <td>
+          <button (click)="editUser(user)">Editar</button>
+          <button (click)="deleteUser(user._id)">Eliminar</button>
+        </td>
       </tr>
     </tbody>
+       
   </table>
 
   <!-- Información de registros y paginación -->

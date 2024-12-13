@@ -1,32 +1,49 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SideComponent } from '../../side/side.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AdminService } from '../../../services/admin.service';
 
 @Component({
   selector: 'app-index',
   standalone: true,
-  imports: [RouterOutlet, SideComponent, FormsModule,CommonModule],
+  imports: [RouterOutlet, SideComponent, FormsModule, CommonModule],
   templateUrl: './index.component.html',
-  styleUrl: './index.component.css'
+  styleUrls: ['./index.component.css']
 })
-export class IndexAdminComponent {
-  users = [
-    { type: 'Administrador', username: 'gerardo.1992', name: 'Gerardo Antonio Esquivel Ponce' },
-    { type: 'Administrador', username: 'ebarego.81', name: 'Carlos Enrique Barrera Gómez' },
-  ];
-  Math = Math;
+export class IndexAdminComponent implements OnInit {
+  users: any[] = []; // Lista de usuarios
   searchTerm: string = ''; // Valor del input de búsqueda
   recordsToShow: number = 10; // Número de registros a mostrar por página
   currentPage: number = 1; // Página actual
+  Math = Math;
+
+  constructor(private adminService: AdminService) {}
+
+  ngOnInit() {
+    this.loadUsers();
+  }
+
+  // Carga los usuarios desde el servicio
+  loadUsers() {
+    this.adminService.getUsers().subscribe({
+      next: (data) => {
+        this.users = data;
+        console.log('Usuarios cargados:', this.users); // Verifica si llegan los datos correctamente
+      },
+      error: (err) => {
+        console.error('Error al cargar los usuarios:', err);
+      }
+    });
+  }
 
   // Filtra usuarios según el término de búsqueda
   filteredUsers() {
     const filtered = this.users.filter(user =>
-      user.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      user.username.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      user.type.toLowerCase().includes(this.searchTerm.toLowerCase())
+      user.nombre.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+      user.usuario.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+      user.correo.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
     const start = (this.currentPage - 1) * this.recordsToShow;
     const end = start + this.recordsToShow;
@@ -50,5 +67,14 @@ export class IndexAdminComponent {
     if (this.currentPage > 1) {
       this.currentPage--;
     }
+  }
+
+  // Métodos para manejar acciones
+  editUser(user: any) {
+    console.log('Editar usuario:', user);
+  }
+
+  deleteUser(userId: string) {
+    console.log('Eliminar usuario con ID:', userId);
   }
 }
