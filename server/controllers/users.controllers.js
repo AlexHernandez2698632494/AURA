@@ -1,5 +1,7 @@
 import { User } from "../models/users.models.js";
 import  bcrypt from 'bcryptjs';
+import nodemailer from 'nodemailer'
+import crypto from 'crypto'
 
 export const getUsers = async (req, res) => {
   try {
@@ -21,17 +23,44 @@ export const getUserById = async (req, res) => {
 };
 
 export const createUser = async (req, res) => {
-  const { nombre, correo, usuario, contrasena } = req.body;
+  const { nombre, correo, usuario } = req.body;
 
-  // Encriptar la contraseña
+  // Generar contraseña aleatoria (16 caracteres)
+  const randomPassword = crypto.randomBytes(8).toString('hex');  // Genera 16 caracteres
+
+  // Encriptar la contraseña generada
   const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(contrasena, salt);
+  const hashedPassword = await bcrypt.hash(randomPassword, salt);
 
+  // Crear el usuario con la contraseña encriptada
   const user = new User({ nombre, correo, usuario, contrasena: hashedPassword });
 
   try {
+    // Guardar el usuario en la base de datos
     const newUser = await user.save();
-    res.status(201).json(newUser);
+
+    // Configurar el transportador de nodemailer
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER, // Correo desde las variables de entorno
+        pass: process.env.EMAIL_PASS, // Contraseña de aplicación desde las variables de entorno
+      },
+    });
+
+    // Configurar el contenido del correo
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: correo,
+      subject: 'Registro exitoso',
+      text: `Hola ${nombre},\n\nTu cuenta ha sido creada exitosamente.\n\nDetalles de acceso:\nUsuario: ${usuario}\nContraseña: ${randomPassword}\n\nPor favor, cambia tu contraseña después de iniciar sesión.\n\nSaludos,\nEl equipo`,
+    };
+
+    // Enviar el correo
+    await transporter.sendMail(mailOptions);
+
+    // Responder con éxito
+    res.status(201).json({ message: 'Usuario creado y correo enviado', user: newUser });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
