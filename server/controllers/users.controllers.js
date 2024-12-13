@@ -88,3 +88,38 @@ export const deleteUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const loginUser = async (req, res) => {
+  const { identifier, contrasena } = req.body;
+
+  try {
+    // Buscar usuario por correo o nombre de usuario
+    const user = await User.findOne({
+      $or: [{ correo: identifier }, { usuario: identifier }],
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    // Comparar contraseña
+    const isMatch = await bcrypt.compare(contrasena, user.contrasena);
+
+    if (!isMatch) {
+      return res.status(401).json({ message: "Contraseña incorrecta" });
+    }
+
+    // Generar respuesta en caso de éxito
+    res.status(200).json({
+      message: "Inicio de sesión exitoso",
+      user: {
+        id: user._id,
+        nombre: user.nombre,
+        correo: user.correo,
+        usuario: user.usuario,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
