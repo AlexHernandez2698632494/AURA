@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { SideComponent } from '../side/side.component';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-change-password',
   standalone: true,
-  imports: [RouterOutlet, SideComponent, FormsModule],
+  imports: [RouterOutlet, SideComponent, FormsModule, CommonModule],
   templateUrl: './change-password.component.html',
   styleUrls: ['./change-password.component.css']
 })

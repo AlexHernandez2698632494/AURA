@@ -1,32 +1,30 @@
-
 <div class="app-container">
   <app-side-login class="app-side"></app-side-login> <!-- Barra lateral -->
-  
-    <router-outlet></router-outlet> <!-- Aquí se renderizan las vistas dinámicas -->
+  <router-outlet></router-outlet> <!-- Aquí se renderizan las vistas dinámicas -->
 </div>
 <div class="background">
-<div class="login-container">
+  <div class="login-container">
     <div class="login-box">
       <h1>Login</h1>
-      <form>
+      <form (ngSubmit)="onSubmit()" [formGroup]="loginForm">
         <div class="input-group">
           <label for="username">
             <i class="fa fa-user"></i>
           </label>
-          <input type="text" id="username" placeholder="Username" />
+          <input type="text" id="username" formControlName="username" placeholder="Username" />
         </div>
         <div class="input-group">
           <label for="password">
             <i class="fa fa-lock"></i>
           </label>
-          <input type="password" id="password" placeholder="Password" />
+          <input type="password" id="password" formControlName="password" placeholder="Password" />
         </div>
         <!-- <div class="options">
           <label>
             <input type="checkbox" /> Remember me
           </label>
         </div> -->
-        <a href="/admin/index" type="submit" class="login-button">Login</a>
+        <button type="submit" class="login-button" [disabled]="loginForm.invalid">Login</button>
         <p class="forgot-link">
           <a href="/recuperarView">Olvidé mi contraseña</a>
         </p>
@@ -34,5 +32,3 @@
     </div>
   </div>
 </div>
-
-  
