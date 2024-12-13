@@ -43,12 +43,20 @@
         <td>{{ user.correo }}</td>
         <td>{{ user.usuario }}</td>
         <td>
-          <button (click)="editUser(user)">Editar</button>
-          <button (click)="deleteUser(user._id)">Eliminar</button>
+          <!-- Botón Actualizar -->
+          <button (click)="editUser(user)" class="btn-edit" title="Actualizar">
+            <i class="fas fa-sync-alt"></i>
+          </button>
+        
+          <!-- Botón Eliminar -->
+          <button (click)="deleteUser(user._id)" class="btn-delete" title="Eliminar">
+            <i class="fas fa-trash-alt"></i>
+          </button>
         </td>
+              
       </tr>
     </tbody>
-       
+
   </table>
 
   <!-- Información de registros y paginación -->

@@ -142,3 +142,41 @@
     font-weight: bold;
   }
   
+/* Estilo general de los botones */
+button {
+  width: 50px; /* Tamaño cuadrado del botón */
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  border-radius: 8px; /* Bordes redondeados */
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+/* Botón "Actualizar" */
+.btn-edit {
+  background-color: #ffc107; /* Fondo amarillo */
+}
+
+.btn-edit:hover {
+  background-color: #e0a800; /* Amarillo más oscuro al hover */
+  transform: scale(1.1); /* Efecto de zoom */
+}
+
+/* Botón "Eliminar" */
+.btn-delete {
+  background-color: #dc3545; /* Fondo rojo */
+}
+
+.btn-delete:hover {
+  background-color: #bd2130; /* Rojo más oscuro al hover */
+  transform: scale(1.1); /* Efecto de zoom */
+}
+
+/* Estilo del ícono */
+button i {
+  font-size: 20px; /* Tamaño del ícono */
+  color: #fff; /* Ícono blanco */
+}
