@@ -5,7 +5,6 @@
     </div>
   </div>
   <div class="main-container">
-    <!-- Contenedor superior con flecha y título -->
     <div class="header">
       <button class="back-button" (click)="onBackClick()">
         <span class="arrow">←</span>
@@ -13,35 +12,38 @@
       <h1 class="title">Registro de nuevo administrador</h1>
     </div>
   
-    <!-- Contenedor principal del formulario -->
     <div class="form-container">
       <h2 class="form-title">Registro de administrador</h2>
       <hr class="separator" />
       <p class="form-description">Información general del administrador</p>
       <p class="form-instruction">Ingrese la información que se solicita</p>
   
-      <form>
-        <!-- Fila 1: Nombre y usuario -->
+      <form [formGroup]="adminForm" (ngSubmit)="registerAdmin()">
         <div class="row">
           <div class="input-field">
             <label for="nombre">Nombre</label>
-            <input id="nombre" type="text" placeholder="Ingrese nombre" />
+            <input id="nombre" formControlName="nombre" type="text" placeholder="Ingrese nombre" />
           </div>
           <div class="input-field">
             <label for="usuario">Usuario</label>
-            <input id="usuario" type="text" placeholder="Ingrese usuario" />
+            <input id="usuario" formControlName="usuario" type="text" placeholder="Ingrese usuario" />
           </div>
         </div>
-
+  
         <div class="input-field">
           <label for="correo">Correo electrónico</label>
-          <input id="correo" type="email" placeholder="Ingrese correo" />
+          <input id="correo" formControlName="correo" type="email" placeholder="Ingrese correo" />
         </div>
   
-        <!-- Botón de registro -->
-        <button class="register-button" type="submit">Registrar administrador</button>
+        <div class="input-field">
+          <label for="contrasena">Contraseña</label>
+          <input id="contrasena" formControlName="contrasena" type="password" placeholder="Ingrese contraseña" />
+        </div>
+  
+        <button class="register-button" type="submit" [disabled]="adminForm.invalid">
+          Registrar administrador
+        </button>
       </form>
     </div>
   </div>
-  
   

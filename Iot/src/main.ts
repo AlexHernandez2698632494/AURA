@@ -1,6 +1,7 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter, Routes } from '@angular/router';
 import { AppComponent } from './app/app.component';
+import { provideHttpClient } from '@angular/common/http'; // Asegúrate de que esta línea esté presente
 import { HomeComponent } from './app/components/home/home.component';
 import { PruebaComponent } from './app/components/prueba/prueba.component';
 import { LoginComponent } from './app/components/login/login.component';
@@ -37,12 +38,11 @@ const routes: Routes = [
   // rutas de usuarios:
   { path: 'users/index', component: IndexUsersComponent },
   { path: 'users/cambiarContra', component: ChangePasswordComponent },
-  
 ];
-
 
 bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes), // Proveer las rutas al enrutador
+    provideHttpClient() // Agrega esta línea para asegurar que HttpClient esté disponible
   ],
 }).catch((err) => console.error(err));
