@@ -6,7 +6,7 @@ import { SideLoginComponent } from "./components/side-login/side-login.component
 @Component({
   selector: 'app-root',
   standalone: true, // El AppComponent también es standalone
-  imports: [RouterOutlet, SideComponent, SideLoginComponent], // Agrega SideComponent a los imports
+  imports: [RouterOutlet,], // Agrega SideComponent a los imports
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'], // Corrige el nombre de la propiedad
 })
