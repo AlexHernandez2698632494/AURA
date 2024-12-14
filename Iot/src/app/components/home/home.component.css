@@ -1,4 +1,38 @@
-*{
-    margin-left: 20px; /* Esto asegura que el contenido no se superponga con la barra lateral */
-    padding: 20px;  
-}
+/* Asegura que el mapa ocupe todo el espacio disponible */
+#map {
+    position: relative; /* Necesario para elementos posicionados dentro del mapa */
+    width: 100%; /* Asegura que ocupe todo el ancho disponible */
+    height: 100vh; /* Ocupa toda la altura de la ventana */
+    margin: 0; /* Elimina márgenes */
+    padding: 0; /* Elimina padding */
+    background-color: lightgray; /* Fondo temporal para depuración */
+    box-sizing: border-box; /* Asegura que el tamaño del contenedor incluya bordes/padding */
+    top: 0;
+    left: 0;
+    z-index: 0;
+  }
+  
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%; /* Asegura que ocupen toda la altura */
+    width: 100%; /* Asegura que ocupen todo el ancho */
+    overflow: hidden; /* Evita el desplazamiento innecesario */
+  }
+  
+
+  /* Selector sobre el mapa */
+  .map-selector {
+    position: absolute; /* Posiciona el selector sobre el mapa */
+    top: 5%; /* Ajusta la posición vertical (5% desde el borde superior) */
+    left: 50%; /* Centra horizontalmente */
+    transform: translate(-50%, 0); /* Ajusta para centrar horizontalmente */
+    z-index: 1000; /* Asegura que esté por encima del mapa */
+    background-color: white; /* Fondo blanco para visibilidad */
+    border: 1px solid #ccc; /* Borde para mejorar la estética */
+    padding: 5px 10px; /* Espaciado interno */
+    font-size: 16px; /* Tamaño de fuente */
+    border-radius: 5px; /* Bordes redondeados */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra para resaltar */
+  }
+  
