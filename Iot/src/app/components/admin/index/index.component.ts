@@ -15,7 +15,7 @@ import { AdminService } from '../../../services/admin.service';
 export class IndexAdminComponent implements OnInit {
   users: any[] = []; // Lista de usuarios
   searchTerm: string = ''; // Valor del input de búsqueda
-  recordsToShow: number = 10; // Número de registros a mostrar por página
+  recordsToShow: number = 5; // Número de registros a mostrar por página
   currentPage: number = 1; // Página actual
   Math = Math;
 

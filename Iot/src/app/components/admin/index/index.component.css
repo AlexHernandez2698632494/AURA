@@ -1,182 +1,190 @@
-/* Contenedor principal */
+
 .main-container {
-    font-family: Arial, sans-serif;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    margin-left:100px; /* Ajusta este valor según el tamaño de tu sidebar */
-    width: calc(100% - 120px); /* Asegura que el contenedor ocupe el espacio restante */
-    box-sizing: border-box; /* Incluye el padding y el border en el cálculo del ancho */
-  }
-  
-  /* Contenedor 1 - Título "Control de usuarios" */
-  .header {
-    text-align: center;
-    margin-bottom: 40px; /* Aumento del espacio entre los contenedores */
-    padding: 10px;
-    border-bottom: 2px solid #007bff; /* Borde para mejor visualización */
-    background-color: #f8f9fa; /* Fondo para diferenciarlo */
-  }
-  
-  .header h2 {
-    font-size: 20px;
-    font-weight: bold;
-    color: #333;
-  }
-  
-  /* Espacio entre los contenedores */
-  .space {
-    height: 20px; /* Ajusta el tamaño del espacio según sea necesario */
-  }
-  
-  /* Contenedor 2 - "Usuarios registrados" */
-  .sub-header {
-    text-align: center;
-    margin-bottom: 10px;
-    padding: 10px;
-    background-color: #f4f4f4; /* Fondo claro para el contenedor */
-  }
-  
-  .sub-header h3 {
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .sub-header hr {
-    border: 1px solid #ddd;
-    margin-top: 10px;
-    margin-bottom: 20px; /* Espacio entre la línea y la tabla */
-  }
-  
-  /* Resto de los estilos de la tabla y controles */
-  .table-controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  
-  .table-controls .left,
-  .table-controls .right {
-    display: flex;
-    align-items: center;
-  }
-  
-  .table-controls select,
-  .table-controls input {
-    font-size: 14px;
-    padding: 5px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-  
-  .table-controls select {
-    margin-left: 5px;
-  }
-  
-  .table-controls input {
-    width: 200px;
-  }
-  
-  /* Tabla */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    font-size: 14px;
-  }
-  
-  table th,
-  table td {
-    text-align: left;
-    padding: 10px;
-    border: 1px solid #ddd;
-  }
-  
-  table th {
-    background-color: #f4f4f4;
-    font-weight: bold;
-  }
-  
-  table tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-  
-  /* Pie de tabla */
-  .footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-  }
-  
-  .footer .left {
-    font-size: 13px;
-    color: #666;
-  }
-  
-  .footer .right {
-    display: flex;
-    align-items: center;
-  }
-  
-  .footer .pagination button {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
-    font-size: 13px;
-    cursor: pointer;
-    margin: 0 5px;
-  }
-  
-  .footer .pagination button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-  }
-  
-  .footer .pagination span {
-    font-size: 14px;
-    font-weight: bold;
-  }
-  
-/* Estilo general de los botones */
-button {
-  width: 50px; /* Tamaño cuadrado del botón */
-  height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: none;
-  border-radius: 8px; /* Bordes redondeados */
-  cursor: pointer;
-  transition: transform 0.2s ease, background-color 0.2s ease;
+   width: 90%;  
+  max-width: 1200px;  
+  margin-left: 90px; 
+  padding: 10px;
+  overflow-y: auto;
 }
 
-/* Botón "Actualizar" */
+
+/* Contenedor 1 - Control de Administradores */
+.header {
+  background-color: #fff; 
+  border-radius: 8px; 
+  padding: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.header h2 {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+/* Contenedor 2 - Administradores Registrados */
+.sub-header {
+   background-color: #fff; 
+  border: 1px solid #ddd; 
+  border-radius: 8px; 
+  padding: 20px;
+  text-align: center; 
+  margin-bottom: 20px;
+}
+
+.sub-header h3 {
+  font-size: 20px;
+  font-weight: 500;
+  color: #555;
+  margin: 0;
+}
+
+.sub-header hr {
+  width: 100%;
+  border: 1px solid #00bcd4; /* Línea celeste */
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+/* Controles de tabla (Mostrar registros y buscar) */
+.table-controls {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.table-controls .left {
+  display: flex;
+  align-items: center;
+}
+
+.table-controls label {
+  font-size: 14px;
+  margin-right: 10px;
+} 
+
+.table-controls select {
+  padding: 6px;
+  font-size: 14px;
+  margin-right: 10px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.table-controls input {
+  padding: 6px;
+  font-size: 14px;
+  width: 220px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.table-controls .right {
+  display: flex;
+  align-items: center;
+}
+
+/* Estilo personalizado para tabla con hover */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+table th,
+table td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+/* Target the second <td> element */
+table tr:nth-child(even) {
+  background-color: #f1f1f1;
+}
+
+
+
+/* Efecto hover: cambia el color de fondo de la fila a gris cuando el ratón está encima */
+table tr:hover {
+  background-color: #f2f2f2; /* Gris claro */
+}
+
+/* Estilos para los botones dentro de la tabla */
+.btn-edit,
+.btn-delete {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  margin-right: 8px; /* Separar los botones */
+}
+
 .btn-edit {
-  background-color: #ffc107; /* Fondo amarillo */
+  background-color: #ffcc00; /* Amarillo para editar */
+}
+
+.btn-delete {
+  background-color: #f44336; /* Rojo para eliminar */
 }
 
 .btn-edit:hover {
-  background-color: #e0a800; /* Amarillo más oscuro al hover */
-  transform: scale(1.1); /* Efecto de zoom */
-}
-
-/* Botón "Eliminar" */
-.btn-delete {
-  background-color: #dc3545; /* Fondo rojo */
+  background-color: #ff9900;
 }
 
 .btn-delete:hover {
-  background-color: #bd2130; /* Rojo más oscuro al hover */
-  transform: scale(1.1); /* Efecto de zoom */
+  background-color: #d32f2f;
 }
 
-/* Estilo del ícono */
-button i {
-  font-size: 20px; /* Tamaño del ícono */
-  color: #fff; /* Ícono blanco */
+.btn-edit i,
+.btn-delete i {
+  font-size: 16px;
+}
+
+/* Información de registros y paginación */
+.footer {
+  display: flex;
+  justify-content: space-between; /* Asegura que el contenido esté separado entre izquierda y derecha */
+  align-items: center;
+  font-size: 14px;
+  color: #555;
+  margin-top: 20px; /* Separar de la tabla */
+}
+
+.footer .left {
+  flex: 1; /* El texto de la izquierda tomará el espacio disponible */
+  text-align: left; /* Alineación a la izquierda */
+}
+
+.footer .right {
+  display: flex;
+  align-items: center; /* Los controles de paginación estarán alineados en fila */
+}
+
+.footer .pagination button {
+  padding: 6px 12px;
+  margin: 0 8px; /* Separar los botones de paginación */
+  background-color: #00bcd4;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.footer .pagination button:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
+.footer .pagination span {
+  margin: 0 8px; /* Separar los números de página */
+}
+
+.footer .pagination button:hover {
+  background-color: #0097a7;
 }
