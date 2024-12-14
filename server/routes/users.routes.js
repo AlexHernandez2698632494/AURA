@@ -6,14 +6,15 @@ import {
   updateUser,
   deleteUser,loginUser
 } from "../controllers/users.controllers.js";
+import { verifyToken } from "../Middleware/auth.js";
 
 const router = express.Router();
 
-router.get("/users", getUsers);
-router.get("/user/:id", getUserById);
-router.post("/user", createUser);
-router.put("/user/:id", updateUser);
-router.delete("/user/:id", deleteUser);
-router.post("/login",loginUser)
+router.get("/users", verifyToken, getUsers); // Protege la ruta
+router.get("/user/:id", verifyToken, getUserById); // Protege la ruta
+router.post("/user", createUser); // Ruta pública
+router.put("/user/:id", verifyToken, updateUser); // Protege la ruta
+router.delete("/user/:id", verifyToken, deleteUser); // Protege la ruta
+router.post("/login", loginUser); // Ruta pública para login
 
 export default router;

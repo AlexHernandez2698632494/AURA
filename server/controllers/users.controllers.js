@@ -2,6 +2,7 @@ import { User } from "../models/users.models.js";
 import  bcrypt from 'bcryptjs';
 import nodemailer from 'nodemailer'
 import crypto from 'crypto'
+import jwt from 'jsonwebtoken';
 
 export const getUsers = async (req, res) => {
   try {
@@ -78,7 +79,6 @@ export const updateUser = async (req, res) => {
   }
 };
 
-
 export const deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
@@ -109,9 +109,22 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ message: "Contraseña incorrecta" });
     }
 
-    // Generar respuesta en caso de éxito
+    // Generar token JWT
+    const token = jwt.sign(
+      {
+        id: user._id,
+        nombre: user.nombre,
+        correo: user.correo,
+        usuario: user.usuario,
+      },
+      process.env.JWT_SECRET, // Clave secreta desde variables de entorno
+      { expiresIn: '1h' } // Duración del token
+    );
+
+    // Enviar respuesta con el token
     res.status(200).json({
       message: "Inicio de sesión exitoso",
+      token,
       user: {
         id: user._id,
         nombre: user.nombre,
