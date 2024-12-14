@@ -34,6 +34,7 @@ export class IndexAdminComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al cargar los usuarios:', err);
+        // Aquí puedes manejar el error, como redirigir al login si el token es inválido
       }
     });
   }
