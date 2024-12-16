@@ -36,7 +36,7 @@ export class LoginComponent {
       contrasena: this.password,
     };
   
-    this.http.post('http://192.168.1.82:3000/login', loginData).subscribe(
+    this.http.post('http://localhost:3000/login', loginData).subscribe(
       (response: any) => {
         // Verifica que el token esté en la respuesta
         if (response.token) {

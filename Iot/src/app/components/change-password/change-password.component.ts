@@ -3,6 +3,7 @@ import { Router, RouterOutlet } from '@angular/router';
 import { SideComponent } from '../side/side.component';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-change-password',
@@ -12,6 +13,7 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./change-password.component.css']
 })
 export class ChangePasswordComponent {
+  currentPassword: string = '';
   newPassword: string = '';
   confirmNewPassword: string = '';
   showCurrentPassword = false;
@@ -21,11 +23,46 @@ export class ChangePasswordComponent {
   constructor(private router: Router) {}
 
   onSubmit() {
-    if (this.newPassword !== this.confirmNewPassword) {
-      alert('Las contraseñas no coinciden. Por favor, verifica.');
+    // Validación de campos vacíos
+    if (!this.currentPassword || !this.newPassword || !this.confirmNewPassword) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Todos los campos son obligatorios.',
+        confirmButtonText: 'Aceptar'
+      });
       return;
     }
-    alert('Contraseña cambiada exitosamente');
+
+    // Validación de contraseñas coincidentes
+    if (this.newPassword !== this.confirmNewPassword) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Las contraseñas no coinciden. Por favor, verifica.',
+        confirmButtonText: 'Aceptar'
+      });
+      return;
+    }
+
+    // Validación de longitud mínima
+    if (this.newPassword.length < 8 || this.confirmNewPassword.length < 8) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'La nueva contraseña debe tener al menos 8 caracteres.',
+        confirmButtonText: 'Aceptar'
+      });
+      return;
+    }
+
+    // Éxito
+    Swal.fire({
+      icon: 'success',
+      title: 'Éxito',
+      text: 'Contraseña cambiada exitosamente.',
+      confirmButtonText: 'Aceptar'
+    });
   }
 
   onBackClick(): void {
