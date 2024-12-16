@@ -159,4 +159,33 @@ export const loginUser = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+  
+};
+
+export const changePassword = async (req, res) => {
+  const { contrasenaActual, nuevaContrasena } = req.body;
+  const { user } = req;
+
+  try {
+    // Buscar usuario por el ID del token
+    const usuario = await User.findOne({ usuario: user.usuario });
+    if (!usuario) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    // Verificar contraseña actual
+    const isMatch = await bcrypt.compare(contrasenaActual, usuario.contrasena);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Contraseña actual incorrecta' });
+    }
+
+    // Actualizar contraseña
+    const salt = await bcrypt.genSalt(10);
+    usuario.contrasena = await bcrypt.hash(nuevaContrasena, salt);
+    await usuario.save();
+
+    res.status(200).json({ message: 'Contraseña cambiada exitosamente' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error en el servidor', error });
+  }
 };

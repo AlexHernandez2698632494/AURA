@@ -34,27 +34,16 @@ export class AdminService {
   getRoles(): Observable<any> {
     return this.http.get(`${this.apiUrl}/roles`);
   }
-}
+  changePassword(data: { contrasenaActual: string; nuevaContrasena: string }): Observable<any> {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No se encontró el token en localStorage');
+    }
 
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
 
-export class AuthService {
-  private apiUrl = 'http://localhost:3000';
-
-  constructor(private http: HttpClient) {}
-
-  login(username: string, password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, { username, password });
-  }
-
-  saveToken(token: string): void {
-    localStorage.setItem('authToken', token);
-  }
-
-  getToken(): string | null {
-    return localStorage.getItem('authToken');
-  }
-
-  logout(): void {
-    localStorage.removeItem('authToken');
+    return this.http.post(`${this.apiUrl}/change-password`, data, { headers });
   }
 }

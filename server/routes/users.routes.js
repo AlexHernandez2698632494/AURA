@@ -4,7 +4,9 @@ import {
   getUserById,
   createUser,
   updateUser,
-  deleteUser,loginUser
+  deleteUser,
+  loginUser, 
+  changePassword
 } from "../controllers/users.controllers.js";
 import { verifyToken } from "../Middleware/auth.js";
 
@@ -16,5 +18,6 @@ router.post("/user", createUser); // Ruta pública
 router.put("/user/:id", verifyToken, updateUser); // Protege la ruta
 router.delete("/user/:id", verifyToken, deleteUser); // Protege la ruta
 router.post("/login", loginUser); // Ruta pública para login
+router.post('/change-password',verifyToken, changePassword);
 
 export default router;
