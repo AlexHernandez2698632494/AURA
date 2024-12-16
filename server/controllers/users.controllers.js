@@ -1,89 +1,113 @@
 import { User } from "../models/users.models.js";
+import { Role } from "../models/role.models.js";
 import  bcrypt from 'bcryptjs';
 import nodemailer from 'nodemailer'
 import crypto from 'crypto'
 import jwt from 'jsonwebtoken';
 
+// Obtener todos los usuarios
 export const getUsers = async (req, res) => {
   try {
-    const users = await User.find();
+    const users = await User.find().populate("roleId"); // Popular información del rol
     res.json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
+// Obtener usuario por ID
 export const getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    const user = await User.findById(req.params.id).populate("roleId"); // Popular información del rol
+    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
+// Crear un nuevo usuario
 export const createUser = async (req, res) => {
-  const { nombre, correo, usuario } = req.body;
-
-  // Generar contraseña aleatoria (16 caracteres)
-  const randomPassword = crypto.randomBytes(8).toString('hex');  // Genera 16 caracteres
-
-  // Encriptar la contraseña generada
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(randomPassword, salt);
-
-  // Crear el usuario con la contraseña encriptada
-  const user = new User({ nombre, correo, usuario, contrasena: hashedPassword });
+  const { nombre, correo, usuario, roleId } = req.body;
 
   try {
+    // Verificar si el roleId proporcionado existe
+    const role = await Role.findById(roleId);
+    if (!role) return res.status(400).json({ message: "El roleId proporcionado no es válido" });
+
+    // Generar contraseña aleatoria
+    const randomPassword = crypto.randomBytes(8).toString("hex");
+
+    // Encriptar la contraseña generada
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(randomPassword, salt);
+
+    // Crear el usuario con la referencia al roleId
+    const user = new User({
+      nombre,
+      correo,
+      usuario,
+      contrasena: hashedPassword,
+      roleId,
+    });
+
     // Guardar el usuario en la base de datos
     const newUser = await user.save();
 
-    // Configurar el transportador de nodemailer
+    // Configurar y enviar correo de notificación
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      service: "gmail",
       auth: {
-        user: process.env.EMAIL_USER, // Correo desde las variables de entorno
-        pass: process.env.EMAIL_PASS, // Contraseña de aplicación desde las variables de entorno
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
-    // Configurar el contenido del correo
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: correo,
-      subject: 'Registro exitoso',
+      subject: "Registro exitoso",
       text: `Hola ${nombre},\n\nTu cuenta ha sido creada exitosamente.\n\nDetalles de acceso:\nUsuario: ${usuario}\nContraseña: ${randomPassword}\n\nPor favor, cambia tu contraseña después de iniciar sesión.\n\nSaludos,\nEl equipo`,
     };
 
-    // Enviar el correo
     await transporter.sendMail(mailOptions);
 
-    // Responder con éxito
-    res.status(201).json({ message: 'Usuario creado y correo enviado', user: newUser });
+    res.status(201).json({ message: "Usuario creado exitosamente", user: newUser });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
+// Actualizar un usuario
 export const updateUser = async (req, res) => {
+  const { roleId } = req.body;
+
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true, // Devuelve el documento actualizado
-    });
-    if (!user) return res.status(404).json({ message: "User not found" });
-    res.json(user);
+    // Verificar si se proporciona roleId y si es válido
+    if (roleId) {
+      const role = await Role.findById(roleId);
+      if (!role) return res.status(400).json({ message: "El roleId proporcionado no es válido" });
+    }
+
+    // Actualizar el usuario
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
+      new: true, // Retorna el documento actualizado
+    }).populate("roleId"); // Popular información del rol actualizado
+
+    if (!updatedUser) return res.status(404).json({ message: "Usuario no encontrado" });
+
+    res.json({ message: "Usuario actualizado exitosamente", user: updatedUser });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
+// Eliminar un usuario
 export const deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
-    res.json({ message: "User deleted" });
+    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+    res.json({ message: "Usuario eliminado exitosamente" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

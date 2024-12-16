@@ -31,6 +31,9 @@ export class AdminService {
     // Realizamos la solicitud GET con los encabezados configurados
     return this.http.get<any[]>(`${this.apiUrl}/users`, { headers });
   }
+  getRoles(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/roles`);
+  }
 }
 
 
