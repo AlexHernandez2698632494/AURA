@@ -209,6 +209,28 @@ table tr:hover {
   }
 }
 
+/* Pantallas grandes (Desktops, laptops, TVs) */
+@media (min-width: 1200px) {
+  .main-container {
+      width: 100%;  /* Asegura que el contenedor ocupe todo el ancho */
+      max-width: 1200px;  /* Limita el ancho máximo en pantallas grandes */
+      margin: 0 auto;  /* Centra el contenedor */
+  }
+
+  .header h2 {
+      font-size: 18px;
+  }
+
+  .sub-header h3 {
+      font-size: 20px;
+  }
+
+  .table-controls {
+      display: flex;
+      justify-content: space-between;
+  }
+}
+
 /* Tablets y pantallas medianas (768px a 1199px) */
 @media (max-width: 1199px) and (min-width: 768px) {
   .main-container {
@@ -342,7 +364,9 @@ table tr:hover {
 /* Televisores y pantallas muy grandes (más de 1600px) */
 @media (min-width: 1600px) {
   .main-container {
-      max-width: 1400px;
+      width: 100%;  /* Asegura que el contenedor ocupe todo el ancho */
+      max-width: 1400px;  /* Limita el ancho máximo en pantallas extra grandes */
+      margin: 0 auto;  /* Centra el contenedor */
   }
 
   .header h2 {
