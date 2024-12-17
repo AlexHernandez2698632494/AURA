@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 export class AdminService {
   private apiUrl = 'http://192.168.1.82:3000';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // Método para registrar un admin
   registerAdmin(adminData: any): Observable<any> {
@@ -31,10 +31,23 @@ export class AdminService {
     // Realizamos la solicitud GET con los encabezados configurados
     return this.http.get<any[]>(`${this.apiUrl}/users`, { headers });
   }
+  // Obtener roles (requiere token)
   getRoles(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/roles`);
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      throw new Error('No se encontró el token en el localStorage');
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+    });
+
+    return this.http.get<any[]>(`${this.apiUrl}/roles`, { headers });
   }
-  
+  createRole(roleData: { nombre: string; usuario: string; correo: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/roles`, roleData);
+  }
   changePassword(data: { contrasenaActual: string; nuevaContrasena: string }): Observable<any> {
     const token = localStorage.getItem('token');
     if (!token) {

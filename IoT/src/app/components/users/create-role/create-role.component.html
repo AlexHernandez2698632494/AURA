@@ -1,1 +1,36 @@
 <p>create-role works!</p>
+<div class="app-container">
+  <app-side class="app-side"></app-side> <!-- Barra lateral -->
+  <div class="main-content">
+    <router-outlet></router-outlet> <!-- Aquí se renderizan las vistas dinámicas -->
+  </div>
+</div>
+<div class="main-container">
+  <div class="header">
+    <button class="back-button" (click)="onBackClick()">
+      <span class="arrow">←</span>
+    </button>
+    <h1 class="title">Registro de nuevo rol</h1>
+  </div>
+
+  <div class="form-container">
+    <h2 class="form-title">Registro de rol</h2>
+    <hr class="separator" />
+    <p class="form-description">Información del rol</p>
+    <p class="form-instruction">Ingrese el nombre del rol</p>
+
+    <form [formGroup]="roleForm" (ngSubmit)="registerRole()">
+      <div class="row">
+        <div class="input-field">
+          <!-- Cambiar el label y el input para reflejar 'name' -->
+          <label for="nombre">Nombre del rol</label>
+          <input id="nombre" formControlName="name" type="text" placeholder="Ingrese el nombre del rol" />
+        </div>
+      </div>
+
+      <button class="register-button" type="submit" [disabled]="roleForm.invalid">
+        Registrar rol
+      </button>
+    </form>
+  </div>
+</div>

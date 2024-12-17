@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet,Router } from '@angular/router';
 import { SideComponent } from '../../side/side.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../../services/admin.service';
+import Swal from 'sweetalert2';  // Importar SweetAlert2
 
 @Component({
   selector: 'app-index-role',
@@ -18,7 +19,7 @@ export class IndexRoleComponent implements OnInit {
   currentPage: number = 1; // Página actual
   Math = Math;
 
-  constructor(private adminService: AdminService) {}
+  constructor(private adminService: AdminService, private router: Router) {}
 
   ngOnInit() {
     this.loadRoles();
@@ -26,6 +27,21 @@ export class IndexRoleComponent implements OnInit {
 
   // Carga los roles desde el servicio
   loadRoles() {
+        const token = localStorage.getItem('token');  // Recuperamos el token desde localStorage
+    
+        if (!token) {
+          // Mostrar una alerta si no se encuentra el token
+          Swal.fire({
+            icon: 'error',
+            title: 'No se encuentra el token',
+            text: 'Por favor, inicie sesión nuevamente.',
+          }).then(() => {
+            // Opcional: Redirigir al usuario a la página de login
+            this.router.navigate(['/login']);
+          });
+          return;  // No continuar si no hay token
+        }
+    
     this.adminService.getRoles().subscribe({
       next: (data) => {
         this.roles = data; // Asignamos los roles

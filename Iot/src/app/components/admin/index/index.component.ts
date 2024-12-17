@@ -1,25 +1,26 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet,Router } from '@angular/router';
 import { SideComponent } from '../../side/side.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../../services/admin.service';
+import Swal from 'sweetalert2';  // Importar SweetAlert2
 
 @Component({
-  selector: 'app-index',
+  selector: 'app-index-admin',
   standalone: true,
   imports: [RouterOutlet, SideComponent, FormsModule, CommonModule],
   templateUrl: './index.component.html',
   styleUrls: ['./index.component.css']
 })
 export class IndexAdminComponent implements OnInit {
-  users: any[] = []; // Lista de usuarios
-  searchTerm: string = ''; // Valor del input de búsqueda
-  recordsToShow: number = 5; // Número de registros a mostrar por página
-  currentPage: number = 1; // Página actual
+  users: any[] = [];
+  searchTerm: string = '';
+  recordsToShow: number = 5;
+  currentPage: number = 1;
   Math = Math;
 
-  constructor(private adminService: AdminService) {}
+  constructor(private adminService: AdminService, private router: Router) {}
 
   ngOnInit() {
     this.loadUsers();
@@ -27,19 +28,32 @@ export class IndexAdminComponent implements OnInit {
 
   // Carga los usuarios desde el servicio
   loadUsers() {
+    const token = localStorage.getItem('token');  // Recuperamos el token desde localStorage
+
+    if (!token) {
+      // Mostrar una alerta si no se encuentra el token
+      Swal.fire({
+        icon: 'error',
+        title: 'No se encuentra el token',
+        text: 'Por favor, inicie sesión nuevamente.',
+      }).then(() => {
+        // Opcional: Redirigir al usuario a la página de login
+        this.router.navigate(['/login']);
+      });
+      return;  // No continuar si no hay token
+    }
+
     this.adminService.getUsers().subscribe({
       next: (data) => {
         this.users = data;
-        console.log('Usuarios cargados:', this.users); // Verifica si llegan los datos correctamente
+        console.log('Usuarios cargados:', this.users);
       },
       error: (err) => {
         console.error('Error al cargar los usuarios:', err);
-        // Aquí puedes manejar el error, como redirigir al login si el token es inválido
       }
     });
   }
 
-  // Filtra usuarios según el término de búsqueda
   filteredUsers() {
     const filtered = this.users.filter(user =>
       user.nombre.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
@@ -51,26 +65,22 @@ export class IndexAdminComponent implements OnInit {
     return filtered.slice(start, end);
   }
 
-  // Calcula el total de páginas
   totalPages() {
     return Math.ceil(this.users.length / this.recordsToShow);
   }
 
-  // Cambia a la página siguiente
   nextPage() {
     if (this.currentPage < this.totalPages()) {
       this.currentPage++;
     }
   }
 
-  // Cambia a la página anterior
   previousPage() {
     if (this.currentPage > 1) {
       this.currentPage--;
     }
   }
 
-  // Métodos para manejar acciones
   editUser(user: any) {
     console.log('Editar usuario:', user);
   }

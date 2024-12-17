@@ -12,7 +12,7 @@ import { verifyToken } from "../Middleware/auth.js";
 
 const router = express.Router();
 
-router.get("/users", getUsers); // Protege la ruta
+router.get("/users",verifyToken, getUsers); // Protege la ruta
 router.get("/user/:id",verifyToken,  getUserById); // Protege la ruta
 router.post("/user", createUser); // Ruta pública
 router.put("/user/:id", verifyToken, updateUser); // Protege la ruta

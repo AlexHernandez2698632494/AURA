@@ -8,7 +8,7 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common'; // Importar CommonModule para *ngIf
 
 @Component({
-  selector: 'app-prueba',
+  selector: 'app-login',
   standalone: true, // Componente standalone
   imports: [RouterOutlet, SideLoginComponent, FormsModule, HttpClientModule, CommonModule], // Agregar CommonModule
   templateUrl: './login.component.html',

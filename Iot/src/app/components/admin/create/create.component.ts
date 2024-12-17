@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2'; // Importar SweetAlert2
 
 @Component({
-  selector: 'app-create',
+  selector: 'app-create-admin',
   imports: [RouterOutlet, SideComponent, CommonModule, ReactiveFormsModule],
   templateUrl: './create.component.html',
   styleUrl: './create.component.css'
