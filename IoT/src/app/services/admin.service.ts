@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class AdminService {
-  private apiUrl = 'http://localhost:3000';
+  private apiUrl = 'http://192.168.1.82:3000';
 
   constructor(private http: HttpClient) {}
 
@@ -31,9 +31,10 @@ export class AdminService {
     // Realizamos la solicitud GET con los encabezados configurados
     return this.http.get<any[]>(`${this.apiUrl}/users`, { headers });
   }
-  getRoles(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/roles`);
+  getRoles(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/roles`);
   }
+  
   changePassword(data: { contrasenaActual: string; nuevaContrasena: string }): Observable<any> {
     const token = localStorage.getItem('token');
     if (!token) {

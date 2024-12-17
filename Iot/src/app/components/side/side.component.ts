@@ -49,7 +49,9 @@ export class SideComponent {
       label: 'Usuarios', 
       isSubmenuOpen: false, 
       submenu: [
+        { label: 'Registrar rol', route: '/users/rol' },
         { label: 'Control Usuarios', route: '/users/index' },
+        { label: 'Control role', route: '/users/roles' },
       ]
     },
     { icon: 'lock', label: 'Cambiar Contraseña', route: '/users/cambiarContra', submenu: [], isSubmenuOpen: false },

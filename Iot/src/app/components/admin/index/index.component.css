@@ -188,3 +188,172 @@ table tr:hover {
 .footer .pagination button:hover {
   background-color: #0097a7;
 }
+
+/* Pantallas grandes (Desktops, laptops, TVs) */
+@media (min-width: 1200px) {
+  .main-container {
+      margin-left: 90px;
+  }
+
+  .header h2 {
+      font-size: 18px;
+  }
+
+  .sub-header h3 {
+      font-size: 20px;
+  }
+
+  .table-controls {
+      display: flex;
+      justify-content: space-between;
+  }
+}
+
+/* Tablets y pantallas medianas (768px a 1199px) */
+@media (max-width: 1199px) and (min-width: 768px) {
+  .main-container {
+      width: 95%;
+      margin-left: 20px;
+  }
+
+  .header h2 {
+      font-size: 16px;
+  }
+
+  .sub-header h3 {
+      font-size: 18px;
+  }
+
+  .table-controls {
+      flex-direction: column;
+      align-items: flex-start;
+  }
+
+  .table-controls select,
+  .table-controls input {
+      width: 100%;
+      margin-bottom: 10px;
+  }
+
+  table th,
+  table td {
+      padding: 10px;
+  }
+}
+
+/* Móviles grandes (480px a 767px) */
+@media (max-width: 767px) {
+  .main-container {
+      width: 100%;
+      margin-left: 0;
+  }
+
+  .header h2 {
+      font-size: 14px;
+  }
+
+  .sub-header h3 {
+      font-size: 16px;
+  }
+
+  .table-controls {
+      flex-direction: column;
+      align-items: flex-start;
+  }
+
+  .table-controls select,
+  .table-controls input {
+      width: 100%;
+      font-size: 12px;
+      margin-bottom: 10px;
+  }
+
+  table th,
+  table td {
+      padding: 8px;
+  }
+
+  .footer {
+      flex-direction: column;
+      align-items: flex-start;
+      font-size: 12px;
+  }
+
+  .footer .pagination button {
+      padding: 6px 10px;
+      font-size: 14px;
+  }
+
+  .btn-edit,
+  .btn-delete {
+      padding: 4px 8px;
+  }
+}
+
+/* Móviles pequeños (menos de 480px) */
+@media (max-width: 479px) {
+  .main-container {
+      width: 100%;
+      padding: 5px;
+  }
+
+  .header h2 {
+      font-size: 14px;
+  }
+
+  .sub-header h3 {
+      font-size: 16px;
+  }
+
+  .table-controls {
+      flex-direction: column;
+      align-items: flex-start;
+  }
+
+  .table-controls select,
+  .table-controls input {
+      font-size: 12px;
+      width: 100%;
+      margin-bottom: 8px;
+  }
+
+  table th,
+  table td {
+      padding: 8px;
+  }
+
+  .footer {
+      flex-direction: column;
+      align-items: flex-start;
+      font-size: 12px;
+  }
+
+  .footer .pagination button {
+      padding: 6px 10px;
+      font-size: 14px;
+  }
+
+  .btn-edit,
+  .btn-delete {
+      padding: 4px 8px;
+  }
+}
+
+/* Televisores y pantallas muy grandes (más de 1600px) */
+@media (min-width: 1600px) {
+  .main-container {
+      max-width: 1400px;
+  }
+
+  .header h2 {
+      font-size: 22px;
+  }
+
+  .sub-header h3 {
+      font-size: 24px;
+  }
+
+  .footer .pagination button {
+      padding: 8px 16px;
+  }
+}
