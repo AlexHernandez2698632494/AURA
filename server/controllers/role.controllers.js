@@ -94,3 +94,20 @@ export const deleteRole = async (req, res) => {
   }
 };
 
+export const restoreRole = async (req, res) => {
+  try {
+    // Buscar el rol por ID y actualizar su estadoEliminacion a 1
+    const role = await Role.findByIdAndUpdate(
+      req.params.id,
+      { estadoEliminacion: 0 }, // Cambiar estadoEliminacion a 1 (eliminado)
+      { new: true } // Devuelve el rol actualizado
+    );
+    
+    // Si no se encuentra el rol
+    if (!role) return res.status(404).json({ message: "Role no encontrado" });
+    
+    res.json({ message: "Role eliminado exitosamente", role });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterOutlet,Router } from '@angular/router';
+import { RouterOutlet, Router } from '@angular/router';
 import { SideComponent } from '../../side/side.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -19,7 +19,7 @@ export class IndexDeleteRoleComponent {
   currentPage: number = 1; // Página actual
   Math = Math;
 
-  constructor(private adminService: AdminService, private router: Router) {}
+  constructor(private adminService: AdminService, private router: Router) { }
 
   ngOnInit() {
     this.loadRoles();
@@ -27,21 +27,21 @@ export class IndexDeleteRoleComponent {
 
   // Carga los roles desde el servicio
   loadRoles() {
-        const token = localStorage.getItem('token');  // Recuperamos el token desde localStorage
-    
-        if (!token) {
-          // Mostrar una alerta si no se encuentra el token
-          Swal.fire({
-            icon: 'error',
-            title: 'No se encuentra el token',
-            text: 'Por favor, inicie sesión nuevamente.',
-          }).then(() => {
-            // Opcional: Redirigir al usuario a la página de login
-            this.router.navigate(['/login']);
-          });
-          return;  // No continuar si no hay token
-        }
-    
+    const token = localStorage.getItem('token');  // Recuperamos el token desde localStorage
+
+    if (!token) {
+      // Mostrar una alerta si no se encuentra el token
+      Swal.fire({
+        icon: 'error',
+        title: 'No se encuentra el token',
+        text: 'Por favor, inicie sesión nuevamente.',
+      }).then(() => {
+        // Opcional: Redirigir al usuario a la página de login
+        this.router.navigate(['/login']);
+      });
+      return;  // No continuar si no hay token
+    }
+
     this.adminService.getDeleteRoles().subscribe({
       next: (data) => {
         this.roles = data; // Asignamos los roles
@@ -52,7 +52,7 @@ export class IndexDeleteRoleComponent {
       }
     });
   }
-  
+
 
   // Filtra roles según el término de búsqueda
   filteredRoles() {
@@ -63,7 +63,7 @@ export class IndexDeleteRoleComponent {
     const end = start + this.recordsToShow;
     return filtered.slice(start, end);
   }
-    
+
 
   // Calcula el total de páginas
   totalPages() {
@@ -88,13 +88,13 @@ export class IndexDeleteRoleComponent {
   restoreRole(roleId: string, roleName: string) {
     Swal.fire({
       title: '¿Estás seguro?',
-      text: `¿Está seguro que desea eliminar el rol: "${roleName}"?`,
+      text: `¿Está seguro que desea restaurar el rol: "${roleName}"?`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
-      confirmButtonText: 'eliminar',
-      cancelButtonText: 'cancelar'
+      confirmButtonColor: '#008f1f',
+      cancelButtonText: 'cancelar',
+      confirmButtonText: 'restaurar',
     }).then((result) => {
       if (result.isConfirmed) {
         const token = localStorage.getItem('token');
@@ -108,12 +108,12 @@ export class IndexDeleteRoleComponent {
           });
           return;
         }
-  
-        this.adminService.deleteRole(roleId).subscribe({
+
+        this.adminService.restoreRole(roleId).subscribe({
           next: (response) => {
             Swal.fire(
-              'Eliminado',
-              `El rol "${roleName}" ha sido eliminado exitosamente.`,
+              'Restaurado',
+              `El rol "${roleName}" ha sido restaurado exitosamente.`,
               'success'
             );
             this.loadRoles(); // Recargar la lista de roles
@@ -130,5 +130,5 @@ export class IndexDeleteRoleComponent {
       }
     });
   }
-  
+
 }

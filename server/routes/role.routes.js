@@ -6,6 +6,7 @@ import {
   updateRole,
   deleteRole,
   getDeleteRoles,
+  restoreRole,
 } from "../controllers/role.controllers.js";
 import { verifyToken } from "../Middleware/auth.js";
 
@@ -18,5 +19,6 @@ router.get("/roles/:id", verifyToken, getRoleById); // Obtener un rol por ID
 router.post("/roles", createRole); // Crear un rol
 router.put("/roles/:id", verifyToken, updateRole); // Actualizar un rol
 router.delete("/roles/:id", verifyToken, deleteRole); // Eliminar un rol
+router.delete("/roles/restore/:id", verifyToken, restoreRole); 
 
 export default router;

@@ -68,7 +68,13 @@ export class AdminService {
       headers: { Authorization: `Bearer ${token}` }
     });
   }
-  
+  restoreRole(roleId: string) {
+    const token = localStorage.getItem('token');
+    console.log(roleId)
+    return this.http.delete(`${this.apiUrl}/roles/restore/${roleId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
   changePassword(data: { contrasenaActual: string; nuevaContrasena: string }): Observable<any> {
     const token = localStorage.getItem('token');
     if (!token) {
