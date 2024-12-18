@@ -1,364 +1,303 @@
-
 .main-container {
-    width: 90%;  
-   max-width: 1200px;  
-   margin-left: 90px; 
-   padding: 10px;
-   overflow-y: auto;
- }
- 
- 
- /* Contenedor 1 - Control de Administradores */
- .header {
-   background-color: #fff; 
-   border-radius: 8px; 
-   padding: 10px;
-   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-   text-align: center;
-   margin-bottom: 20px;
- }
- 
- .header h2 {
-   font-size: 18px;
-   font-weight: bold;
-   color: #333;
-   margin: 0;
- }
- 
- /* Contenedor 2 - Administradores Registrados */
- .sub-header {
-    background-color: #fff; 
-   border: 1px solid #ddd; 
-   border-radius: 8px; 
-   padding: 20px;
-   text-align: center; 
-   margin-bottom: 20px;
- }
- 
- .sub-header h3 {
-   font-size: 20px;
-   font-weight: 500;
-   color: #555;
-   margin: 0;
- }
- 
- .sub-header hr {
-   width: 100%;
-   border: 1px solid #00bcd4; /* Línea celeste */
-   margin-top: 10px;
-   margin-bottom: 10px;
- }
- 
- /* Controles de tabla (Mostrar registros y buscar) */
- .table-controls {
-   display: flex;
-   justify-content: space-between;
-   margin-bottom: 20px;
- }
- 
- .table-controls .left {
-   display: flex;
-   align-items: center;
- }
- 
- .table-controls label {
-   font-size: 14px;
-   margin-right: 10px;
- } 
- 
- .table-controls select {
-   padding: 6px;
-   font-size: 14px;
-   margin-right: 10px;
-   border-radius: 4px;
-   border: 1px solid #ddd;
- }
- 
- .table-controls input {
-   padding: 6px;
-   font-size: 14px;
-   width: 220px;
-   border-radius: 4px;
-   border: 1px solid #ddd;
- }
- 
- .table-controls .right {
-   display: flex;
-   align-items: center;
- }
- 
- /* Estilo personalizado para tabla con hover */
- table {
-   width: 100%;
-   border-collapse: collapse;
-   margin-bottom: 20px;
- }
- 
- table th,
- table td {
-   padding: 12px;
-   text-align: left;
-   border: 1px solid #ddd;
- }
- 
- /* Target the second <td> element */
- table tr:nth-child(even) {
-   background-color: #f1f1f1;
- }
- 
- 
- 
- /* Efecto hover: cambia el color de fondo de la fila a gris cuando el ratón está encima */
- table tr:hover {
-   background-color: #f2f2f2; /* Gris claro */
- }
- 
- /* Estilos para los botones dentro de la tabla */
- .btn-edit,
- .btn-delete {
-   padding: 6px 12px;
-   border: none;
-   border-radius: 4px;
-   color: #fff;
-   cursor: pointer;
-   font-size: 14px;
-   margin-right: 8px; /* Separar los botones */
- }
- 
- .btn-edit {
-   background-color: #ffcc00; /* Amarillo para editar */
- }
- 
- .btn-delete {
-   background-color: #f44336; /* Rojo para eliminar */
- }
- 
- .btn-edit:hover {
-   background-color: #ff9900;
- }
- 
- .btn-delete:hover {
-   background-color: #d32f2f;
- }
- 
- .btn-edit i,
- .btn-delete i {
-   font-size: 16px;
- }
- 
- /* Información de registros y paginación */
- .footer {
-   display: flex;
-   justify-content: space-between; /* Asegura que el contenido esté separado entre izquierda y derecha */
-   align-items: center;
-   font-size: 14px;
-   color: #555;
-   margin-top: 20px; /* Separar de la tabla */
- }
- 
- .footer .left {
-   flex: 1; /* El texto de la izquierda tomará el espacio disponible */
-   text-align: left; /* Alineación a la izquierda */
- }
- 
- .footer .right {
-   display: flex;
-   align-items: center; /* Los controles de paginación estarán alineados en fila */
- }
- 
- .footer .pagination button {
-   padding: 6px 12px;
-   margin: 0 8px; /* Separar los botones de paginación */
-   background-color: #00bcd4;
-   color: #fff;
-   border: none;
-   border-radius: 4px;
-   cursor: pointer;
- }
- 
- .footer .pagination button:disabled {
-   background-color: #ddd;
-   cursor: not-allowed;
- }
- 
- .footer .pagination span {
-   margin: 0 8px; /* Separar los números de página */
- }
- 
- .footer .pagination button:hover {
-   background-color: #0097a7;
- }
- 
- /* Pantallas grandes (Desktops, laptops, TVs) */
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-left:100px; /* Ajusta este valor según el tamaño de tu sidebar */
+  width: calc(100% - 120px); /* Asegura que el contenedor ocupe el espacio restante */
+  box-sizing: border-box; /* Incluye el padding y el border en el cálculo del ancho */
+}
+
+
+/* Contenedor 1 - Control de Administradores */
+.header {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.header h2 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.space {
+  height: 20px;
+  /* Ajusta el tamaño del espacio según sea necesario */
+}
+
+/* Contenedor 2 - Administradores Registrados */
+.sub-header {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.sub-header h3 {
+  font-size: 16px;
+  font-weight: 500;
+  color: #555;
+}
+
+.sub-header hr {
+  width: 100%;
+  border: 1px solid #00bcd4;
+  /* Línea celeste */
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+/* Controles de tabla (Mostrar registros y buscar) */
+.table-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.table-controls .left {
+  display: flex;
+  align-items: center;
+}
+
+.table-controls label {
+  font-size: 14px;
+  margin-right: 10px;
+}
+
+.table-controls select {
+  padding: 6px;
+  font-size: 14px;
+  margin-right: 10px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.table-controls input {
+  padding: 6px;
+  font-size: 14px;
+  width: 220px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.table-controls .right {
+  display: flex;
+  align-items: center;
+}
+
+/* Estilo personalizado para tabla con hover */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+table th,
+table td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+/* Target the second <td> element */
+table tr:nth-child(even) {
+  background-color: #f1f1f1;
+}
+
+
+
+/* Efecto hover: cambia el color de fondo de la fila a gris cuando el ratón está encima */
+table tr:hover {
+  background-color: #f2f2f2;
+  /* Gris claro */
+}
+
+/* Estilos para los botones dentro de la tabla */
+.btn-edit,
+.btn-delete {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  margin-right: 8px;
+  /* Separar los botones */
+}
+
+.btn-edit {
+  background-color: #ffcc00;
+  /* Amarillo para editar */
+}
+
+.btn-delete {
+  background-color: #f44336;
+  /* Rojo para eliminar */
+}
+
+.btn-edit:hover {
+  background-color: #ff9900;
+}
+
+.btn-delete:hover {
+  background-color: #d32f2f;
+}
+
+.btn-edit i,
+.btn-delete i {
+  font-size: 16px;
+}
+
+/* Información de registros y paginación */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  /* Asegura que el contenido esté separado entre izquierda y derecha */
+  align-items: center;
+  font-size: 14px;
+  color: #555;
+  margin-top: 20px;
+  /* Separar de la tabla */
+}
+
+.footer .left {
+  flex: 1;
+  /* El texto de la izquierda tomará el espacio disponible */
+  text-align: left;
+  /* Alineación a la izquierda */
+}
+
+.footer .right {
+  display: flex;
+  align-items: center;
+  /* Los controles de paginación estarán alineados en fila */
+}
+
+.footer .pagination button {
+  padding: 6px 12px;
+  margin: 0 8px;
+  /* Separar los botones de paginación */
+  background-color: #00bcd4;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.footer .pagination button:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
+.footer .pagination span {
+  margin: 0 8px;
+  /* Separar los números de página */
+}
+
+.footer .pagination button:hover {
+  background-color: #0097a7;
+}
+
+/* Pantallas grandes (Desktops, laptops, TVs) */
 /* Pantallas grandes (Desktops, laptops, TVs) */
 @media (min-width: 1200px) {
   .main-container {
-      width: 100%;  /* Asegura que el contenedor ocupe todo el ancho */
-      max-width: 1200px;  /* Limita el ancho máximo en pantallas grandes */
-      margin: 0 auto;  /* Centra el contenedor */
+    width: 100%;
+    /* Asegura que el contenedor ocupe todo el ancho */
+    max-width: 1200px;
+    /* Limita el ancho máximo en pantallas grandes */
+    margin: 0 auto;
+    /* Centra el contenedor */
   }
 
   .header h2 {
-      font-size: 18px;
+    font-size: 18px;
   }
 
   .sub-header h3 {
-      font-size: 20px;
+    font-size: 20px;
   }
 
   .table-controls {
-      display: flex;
-      justify-content: space-between;
-  }
-}
-
-/* Tablets y pantallas medianas (768px a 1199px) */
-@media (max-width: 1199px) and (min-width: 768px) {
-  .main-container {
-      width: 95%;
-      margin-left: 20px;
-  }
-
-  .header h2 {
-      font-size: 16px;
-  }
-
-  .sub-header h3 {
-      font-size: 18px;
-  }
-
-  .table-controls {
-      flex-direction: column;
-      align-items: flex-start;
-  }
-
-  .table-controls select,
-  .table-controls input {
-      width: 100%;
-      margin-bottom: 10px;
-  }
-
-  table th,
-  table td {
-      padding: 10px;
+    display: flex;
+    justify-content: space-between;
   }
 }
 
 /* Móviles grandes (480px a 767px) */
-@media (max-width: 767px) {
+@media (max-width: 629px) {
   .main-container {
-      width: 100%;
-      margin-left: 0;
-  }
-
-  .header h2 {
-      font-size: 14px;
-  }
-
-  .sub-header h3 {
-      font-size: 16px;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-left:100px;
+    width: calc(100% - 120px); 
+    box-sizing: border-box;
   }
 
   .table-controls {
-      flex-direction: column;
-      align-items: flex-start;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .table-controls select,
   .table-controls input {
-      width: 100%;
-      font-size: 12px;
-      margin-bottom: 10px;
+    width: 100%;
+    font-size: 12px;
+    margin-bottom: 10px;
   }
 
   table th,
   table td {
-      padding: 8px;
+    padding: 8px;
   }
 
   .footer {
-      flex-direction: column;
-      align-items: flex-start;
-      font-size: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 12px;
   }
 
   .footer .pagination button {
-      padding: 6px 10px;
-      font-size: 14px;
+    padding: 6px 10px;
+    font-size: 14px;
   }
 
   .btn-edit,
   .btn-delete {
-      padding: 4px 8px;
+    padding: 4px 8px;
   }
 }
-
-/* Móviles pequeños (menos de 480px) */
-@media (max-width: 479px) {
-  .main-container {
-      width: 100%;
-      padding: 5px;
-  }
-
-  .header h2 {
-      font-size: 14px;
-  }
-
-  .sub-header h3 {
-      font-size: 16px;
-  }
-
-  .table-controls {
-      flex-direction: column;
-      align-items: flex-start;
-  }
-
-  .table-controls select,
-  .table-controls input {
-      font-size: 12px;
-      width: 100%;
-      margin-bottom: 8px;
-  }
-
-  table th,
-  table td {
-      padding: 8px;
-  }
-
-  .footer {
-      flex-direction: column;
-      align-items: flex-start;
-      font-size: 12px;
-  }
-
-  .footer .pagination button {
-      padding: 6px 10px;
-      font-size: 14px;
-  }
-
-  .btn-edit,
-  .btn-delete {
-      padding: 4px 8px;
-  }
-}
-
 /* Televisores y pantallas muy grandes (más de 1600px) */
 @media (min-width: 1600px) {
   .main-container {
-      width: 100%;  /* Asegura que el contenedor ocupe todo el ancho */
-      max-width: 1400px;  /* Limita el ancho máximo en pantallas extra grandes */
-      margin: 0 auto;  /* Centra el contenedor */
+    width: 100%;
+    /* Asegura que el contenedor ocupe todo el ancho */
+    max-width: 1400px;
+    /* Limita el ancho máximo en pantallas extra grandes */
+    margin: 0 auto;
+    /* Centra el contenedor */
   }
 
   .header h2 {
-      font-size: 22px;
+    font-size: 22px;
   }
 
   .sub-header h3 {
-      font-size: 24px;
+    font-size: 24px;
   }
 
   .footer .pagination button {
-      padding: 8px 16px;
+    padding: 8px 16px;
   }
 }

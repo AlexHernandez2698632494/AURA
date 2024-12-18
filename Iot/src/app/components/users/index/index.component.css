@@ -1,144 +1,281 @@
 /* Contenedor principal */
 .main-container {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-left: 100px;
+  /* Ajusta este valor según el tamaño de tu sidebar */
+  width: calc(100% - 120px);
+  /* Asegura que el contenedor ocupe el espacio restante */
+  box-sizing: border-box;
+  /* Incluye el padding y el border en el cálculo del ancho */
+}
+
+/* Contenedor 1 - Título "Control de usuarios" */
+.header {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.header h2 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+/* Espacio entre los contenedores */
+.space {
+  height: 20px;
+  /* Ajusta el tamaño del espacio según sea necesario */
+}
+
+/* Contenedor 2 - "Usuarios registrados" */
+.sub-header {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  text-align: center;
+  margin-bottom: 10px;
+  padding: 20px;
+}
+
+.sub-header h3 {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.sub-header hr {
+  width: 100%;
+  border: 1px solid #00bcd4;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  /* Espacio entre la línea y la tabla */
+}
+
+/* Resto de los estilos de la tabla y controles */
+.table-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.table-controls .left {
+  display: flex;
+  align-items: center;
+}
+
+.table-controls label {
+  font-size: 14px;
+  margin-right: 10px;
+}
+
+.table-controls select {
+  padding: 6px;
+  font-size: 14px;
+  margin-right: 10px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.table-controls input {
+  padding: 6px;
+  font-size: 14px;
+  width: 220px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.table-controls .right {
+  display: flex;
+  align-items: center;
+}
+
+/* Tabla */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+table th,
+table td {
+  text-align: left;
+  padding: 12px;
+  border: 1px solid #ddd;
+}
+
+table tr:nth-child(even) {
+  background-color: #f1f1f1;
+}
+
+table tr:hover {
+  background-color: #f2f2f2;
+  /* Gris claro */
+}
+
+/* Pie de tabla */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #555;
+  margin-top: 20px;
+}
+
+.footer .left {
+  flex: 1;
+  text-align: left;
+  font-size: 13px;
+  color: #666;
+}
+
+.footer .right {
+  display: flex;
+  align-items: center;
+}
+
+.footer .pagination button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  margin: 0 5px;
+}
+
+.footer .pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.footer .pagination span {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.footer .pagination button:hover {
+  background-color: #0097a7;
+}
+
+@media (min-width: 1200px) {
+  .main-container {
+    margin-top: 50px;
+    width: 100%;
+    /* Asegura que el contenedor ocupe todo el ancho */
+    max-width: 1300px;
+    /* Limita el ancho máximo en pantallas grandes */
+    margin: 0 auto;
+    /* Centra el contenedor */
+  }
+
+  .header h2 {
+    font-size: 18px;
+  }
+
+  .sub-header h3 {
+    font-size: 20px;
+  }
+
+  .table-controls {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+@media (min-width: 1200px) {
+  .main-container {
+    width: 100%;
+    /* Asegura que el contenedor ocupe todo el ancho */
+    max-width: 1200px;
+    /* Limita el ancho máximo en pantallas grandes */
+    margin: 0 auto;
+    /* Centra el contenedor */
+  }
+
+  .header h2 {
+    font-size: 18px;
+  }
+
+  .sub-header h3 {
+    font-size: 20px;
+  }
+
+  .table-controls {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+/* Móviles grandes (480px a 767px) */
+@media (max-width: 629px) {
+  .main-container {
     font-family: Arial, sans-serif;
     padding: 20px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    margin-left:100px; /* Ajusta este valor según el tamaño de tu sidebar */
-    width: calc(100% - 120px); /* Asegura que el contenedor ocupe el espacio restante */
-    box-sizing: border-box; /* Incluye el padding y el border en el cálculo del ancho */
+    margin-left:100px;
+    width: calc(100% - 120px); 
+    box-sizing: border-box;
   }
-  
-  /* Contenedor 1 - Título "Control de usuarios" */
-  .header {
-    text-align: center;
-    margin-bottom: 40px; /* Aumento del espacio entre los contenedores */
-    padding: 10px;
-    border-bottom: 2px solid #007bff; /* Borde para mejor visualización */
-    background-color: #f8f9fa; /* Fondo para diferenciarlo */
-  }
-  
-  .header h2 {
-    font-size: 20px;
-    font-weight: bold;
-    color: #333;
-  }
-  
-  /* Espacio entre los contenedores */
-  .space {
-    height: 20px; /* Ajusta el tamaño del espacio según sea necesario */
-  }
-  
-  /* Contenedor 2 - "Usuarios registrados" */
-  .sub-header {
-    text-align: center;
-    margin-bottom: 10px;
-    padding: 10px;
-    background-color: #f4f4f4; /* Fondo claro para el contenedor */
-  }
-  
-  .sub-header h3 {
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .sub-header hr {
-    border: 1px solid #ddd;
-    margin-top: 10px;
-    margin-bottom: 20px; /* Espacio entre la línea y la tabla */
-  }
-  
-  /* Resto de los estilos de la tabla y controles */
+
   .table-controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
+    flex-direction: column;
+    align-items: flex-start;
   }
-  
-  .table-controls .left,
-  .table-controls .right {
-    display: flex;
-    align-items: center;
-  }
-  
+
   .table-controls select,
   .table-controls input {
-    font-size: 14px;
-    padding: 5px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-  
-  .table-controls select {
-    margin-left: 5px;
-  }
-  
-  .table-controls input {
-    width: 200px;
-  }
-  
-  /* Tabla */
-  table {
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    font-size: 14px;
+    font-size: 12px;
+    margin-bottom: 10px;
   }
-  
-  table th,
-  table td {
-    text-align: left;
-    padding: 10px;
-    border: 1px solid #ddd;
-  }
-  
-  table th {
-    background-color: #f4f4f4;
-    font-weight: bold;
-  }
-  
-  table tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-  
-  /* Pie de tabla */
+
   .footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 12px;
   }
-  
-  .footer .left {
-    font-size: 13px;
-    color: #666;
-  }
-  
-  .footer .right {
-    display: flex;
-    align-items: center;
-  }
-  
+
   .footer .pagination button {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
-    font-size: 13px;
-    cursor: pointer;
-    margin: 0 5px;
-  }
-  
-  .footer .pagination button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-  }
-  
-  .footer .pagination span {
+    padding: 6px 10px;
     font-size: 14px;
-    font-weight: bold;
   }
-  
+
+  .btn-edit,
+  .btn-delete {
+    padding: 4px 8px;
+  }
+}
+/* Televisores y pantallas muy grandes (más de 1600px) */
+@media (min-width: 1600px) {
+  .main-container {
+    width: 100%;
+    /* Asegura que el contenedor ocupe todo el ancho */
+    max-width: 1400px;
+    /* Limita el ancho máximo en pantallas extra grandes */
+    margin: 0 auto;
+    /* Centra el contenedor */
+  }
+
+  .header h2 {
+    font-size: 22px;
+  }
+
+  .sub-header h3 {
+    font-size: 24px;
+  }
+
+  .footer .pagination button {
+    padding: 8px 16px;
+  }
+}

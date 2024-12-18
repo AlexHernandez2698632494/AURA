@@ -1,36 +1,87 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { RouterOutlet, Router } from '@angular/router';
 import { SideComponent } from '../../side/side.component';
 import { CommonModule } from '@angular/common';
+import { AdminService } from '../../../services/admin.service';
 import { FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-index',
   standalone: true,
-  imports: [RouterOutlet, SideComponent, FormsModule,CommonModule],
+  imports: [RouterOutlet, SideComponent, FormsModule, CommonModule],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css'
 })
-export class IndexUsersComponent {
-  users = [
-    { type: 'Administrador', username: 'gerardo.1992', name: 'Gerardo Antonio Esquivel Ponce' },
-    { type: 'Administrador', username: 'ebarego.81', name: 'Carlos Enrique Barrera Gómez' },
-  ];
+export class IndexUsersComponent implements OnInit {
+  users: any[] = [];
+  roles: any[] = [];
   Math = Math;
-  searchTerm: string = ''; // Valor del input de búsqueda
-  recordsToShow: number = 10; // Número de registros a mostrar por página
-  currentPage: number = 1; // Página actual
+  searchTerm: string = '';
+  recordsToShow: number = 10;
+  currentPage: number = 1;
+
+  constructor(private adminService: AdminService, private router: Router) { }
+
+  ngOnInit() {
+    this.loadUsers();
+  }
+
+  loadUsers() {
+    const token = localStorage.getItem('token');  // Recuperamos el token desde localStorage
+
+    if (!token) {
+      // Mostrar una alerta si no se encuentra el token
+      Swal.fire({
+        icon: 'error',
+        title: 'No se encuentra el token',
+        text: 'Por favor, inicie sesión nuevamente.',
+      }).then(() => {
+        // Opcional: Redirigir al usuario a la página de login
+        this.router.navigate(['/login']);
+      });
+      return;  // No continuar si no hay token
+    }
+
+    this.adminService.getUsers().subscribe({
+      next: (data) => {
+        this.users = data;
+        console.log('Usuarios cargados:', this.users);
+      },
+      error: (err) => {
+        console.error('Error al cargar los usuarios:', err);
+      }
+    }
+    );
+    this.adminService.getRoles().subscribe({
+      next: (data) => {
+        this.roles = data;
+        console.log('roles cargados:', this.roles);
+      },
+      error: (err) => {
+        console.error('Error al cargar los roles:', err);
+      }
+    });
+  }
 
   // Filtra usuarios según el término de búsqueda
   filteredUsers() {
-    const filtered = this.users.filter(user =>
-      user.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      user.username.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      user.type.toLowerCase().includes(this.searchTerm.toLowerCase())
+    const filtereduser = this.users.filter(user =>
+      user.usuario.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+      user.nombre.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
     const start = (this.currentPage - 1) * this.recordsToShow;
     const end = start + this.recordsToShow;
-    return filtered.slice(start, end);
+    return filtereduser.slice(start, end);
+  }
+
+  filteredRoles() {
+    const filteredrole = this.roles.filter(role =>
+      role.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+    );
+    const start = (this.currentPage - 1) * this.recordsToShow;
+    const end = start + this.recordsToShow;
+    return filteredrole.slice(start, end);
   }
 
   // Calcula el total de páginas
