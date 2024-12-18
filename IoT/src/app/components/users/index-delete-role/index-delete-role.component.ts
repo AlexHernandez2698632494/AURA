@@ -7,12 +7,12 @@ import { AdminService } from '../../../services/admin.service';
 import Swal from 'sweetalert2';  // Importar SweetAlert2
 
 @Component({
-  selector: 'app-index-role',
+  selector: 'app-index-delete-role',
   imports: [RouterOutlet, SideComponent, FormsModule, CommonModule],
-  templateUrl: './index-role.component.html',
-  styleUrl: './index-role.component.css'
+  templateUrl: './index-delete-role.component.html',
+  styleUrl: './index-delete-role.component.css'
 })
-export class IndexRoleComponent implements OnInit {
+export class IndexDeleteRoleComponent {
   roles: any[] = []; // Lista de roles
   searchTerm: string = ''; // Valor del input de búsqueda
   recordsToShow: number = 5; // Número de registros a mostrar por página
@@ -42,7 +42,7 @@ export class IndexRoleComponent implements OnInit {
           return;  // No continuar si no hay token
         }
     
-    this.adminService.getRoles().subscribe({
+    this.adminService.getDeleteRoles().subscribe({
       next: (data) => {
         this.roles = data; // Asignamos los roles
         console.log('Roles cargados:', this.roles); // Verifica si llegan correctamente
@@ -85,7 +85,7 @@ export class IndexRoleComponent implements OnInit {
   }
 
   // Métodos para manejar acciones
-  deleteRole(roleId: string, roleName: string) {
+  restoreRole(roleId: string, roleName: string) {
     Swal.fire({
       title: '¿Estás seguro?',
       text: `¿Está seguro que desea eliminar el rol: "${roleName}"?`,

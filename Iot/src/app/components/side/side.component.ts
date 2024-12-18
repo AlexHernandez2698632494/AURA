@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router'; // Importar RouterModule
 import { HomeComponent } from '../home/home.component';
+import { routes } from '../../app.routes';
 
 @Component({
   selector: 'app-side',
@@ -52,6 +53,7 @@ export class SideComponent {
         { label: 'Registrar rol', route: '/users/rol' },
         { label: 'Control Usuarios', route: '/users/index' },
         { label: 'Control role', route: '/users/roles' },
+        { label: 'Rol eliminado', route: '/users/role/restore'}
       ]
     },
     { icon: 'lock', label: 'Cambiar Contraseña', route: '/users/cambiarContra', submenu: [], isSubmenuOpen: false },

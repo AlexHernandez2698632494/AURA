@@ -48,6 +48,27 @@ export class AdminService {
   createRole(roleData: { nombre: string; usuario: string; correo: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/roles`, roleData);
   }
+  getDeleteRoles(): Observable<any[]> {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      throw new Error('No se encontró el token en el localStorage');
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+    });
+
+    return this.http.get<any[]>(`${this.apiUrl}/roles/delete`, { headers });
+  }
+  deleteRole(roleId: string) {
+    const token = localStorage.getItem('token');
+    console.log(roleId)
+    return this.http.delete(`${this.apiUrl}/roles/${roleId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+  }
+  
   changePassword(data: { contrasenaActual: string; nuevaContrasena: string }): Observable<any> {
     const token = localStorage.getItem('token');
     if (!token) {

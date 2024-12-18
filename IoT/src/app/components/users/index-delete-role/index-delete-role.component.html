@@ -1,13 +1,14 @@
+<p>index-delete-role works!</p>
 <div class="app-container">
     <app-side class="app-side"></app-side> <!-- Barra lateral -->
   </div>
   <router-outlet></router-outlet> <!-- Aquí se renderizan las vistas dinámicas -->
   <div class="main-container">
     <div class="header">
-      <h2>Control de Roles</h2>
+      <h2>Restauración de Roles</h2>
     </div>
     <div class="sub-header">
-      <h3>Roles registrados</h3>
+      <h3>Roles eliminados</h3>
       <hr />
       <!-- Controles de tabla (Número de registros y buscar) -->
       <div class="table-controls">
@@ -36,7 +37,7 @@
             <td>{{ role.name }}</td>
             <td>
               <!-- Botón Eliminar -->
-              <button (click)="deleteRole(role._id, role.name)" class="btn-delete" title="Eliminar">
+              <button (click)="restoreRole(role._id, role.name)" class="btn-delete" title="Eliminar">
                 <i class="fas fa-trash-alt"></i>
               </button>              
             </td>

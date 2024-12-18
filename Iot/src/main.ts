@@ -18,6 +18,7 @@ import { IndexUsersComponent } from './app/components/users/index/index.componen
 import { ChangePasswordComponent } from './app/components/change-password/change-password.component';
 import { IndexRoleComponent } from './app/components/users/index-role/index-role.component';
 import { CreateRoleComponent } from './app/components/users/create-role/create-role.component';
+import { IndexDeleteRoleComponent } from './app/components/users/index-delete-role/index-delete-role.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
@@ -42,7 +43,7 @@ const routes: Routes = [
   { path: 'users/cambiarContra', component: ChangePasswordComponent },
   { path: 'users/roles', component: IndexRoleComponent },
   { path: 'users/rol', component: CreateRoleComponent },
-
+  { path: 'users/role/restore',component:IndexDeleteRoleComponent}
 ];
 
 bootstrapApplication(AppComponent, {
