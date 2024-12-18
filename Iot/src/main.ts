@@ -19,6 +19,7 @@ import { ChangePasswordComponent } from './app/components/change-password/change
 import { IndexRoleComponent } from './app/components/users/index-role/index-role.component';
 import { CreateRoleComponent } from './app/components/users/create-role/create-role.component';
 import { IndexDeleteRoleComponent } from './app/components/users/index-delete-role/index-delete-role.component';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 const routes: Routes = [
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
@@ -49,6 +50,6 @@ const routes: Routes = [
 bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes), // Proveer las rutas al enrutador
-    provideHttpClient() // Agrega esta línea para asegurar que HttpClient esté disponible
+    provideHttpClient(), provideAnimationsAsync() // Agrega esta línea para asegurar que HttpClient esté disponible
   ],
 }).catch((err) => console.error(err));

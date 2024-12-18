@@ -10,10 +10,14 @@ export class AdminService {
 
   constructor(private http: HttpClient) { }
 
-  // Método para registrar un admin
-  registerAdmin(adminData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/user`, adminData);
-  }
+// Registrar un nuevo administrador
+registerAdmin(adminData: any): Observable<any> {
+  const token = localStorage.getItem('token');
+  const headers = new HttpHeaders({
+    'Authorization': `Bearer ${token}`,
+  });
+  return this.http.post(`${this.apiUrl}/user`, adminData, { headers });
+}
 
   // Método para obtener los usuarios con el token en los encabezados
   getUsers(): Observable<any[]> {

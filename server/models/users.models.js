@@ -5,7 +5,7 @@ const UserSchema = new mongoose.Schema({
   correo: { type: String, required: true, unique: true },
   usuario: { type: String, required: true, unique: true },
   contrasena: { type: String, required: true },
-  roleId: { type: mongoose.Schema.Types.ObjectId, ref: "Role" }, // Referencia al rol
+  roleId: [{ type: mongoose.Schema.Types.ObjectId, ref: "Role" }]  // Cambié esto a un arreglo de ObjectIds
 });
 
 export const User = mongoose.model("User", UserSchema);

@@ -27,34 +27,32 @@ export const getUserById = async (req, res) => {
 };
 
 // Crear un nuevo usuario
-export const createUser = async (req, res) => {
-  const { nombre, correo, usuario, roleId } = req.body;
+export const createUser = async (req, res) => { 
+  const { nombre, correo, usuario, roles } = req.body;
 
   try {
-    // Verificar si el roleId proporcionado existe
-    const role = await Role.findById(roleId);
-    if (!role) return res.status(400).json({ message: "El roleId proporcionado no es válido" });
+    // Verificar si los roles proporcionados existen
+    const validRoles = await Role.find({ _id: { $in: roles.map((role) => role.id) } });
+    if (validRoles.length !== roles.length) {
+      return res.status(400).json({ message: "Algunos roles no son válidos" });
+    }
 
-    // Generar contraseña aleatoria
     const randomPassword = crypto.randomBytes(8).toString("hex");
-
-    // Encriptar la contraseña generada
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(randomPassword, salt);
 
-    // Crear el usuario con la referencia al roleId
+    // Crear el usuario con los roles (ahora usando roleId como un arreglo)
     const user = new User({
       nombre,
       correo,
       usuario,
       contrasena: hashedPassword,
-      roleId,
+      roleId: validRoles.map((role) => role._id),  // Usamos el arreglo de _id de roles
     });
 
-    // Guardar el usuario en la base de datos
     const newUser = await user.save();
 
-    // Configurar y enviar correo de notificación
+    // Crear el transportador de correo
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -63,6 +61,7 @@ export const createUser = async (req, res) => {
       },
     });
 
+    // Opciones de correo electrónico
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: correo,
@@ -70,9 +69,16 @@ export const createUser = async (req, res) => {
       text: `Hola ${nombre},\n\nTu cuenta ha sido creada exitosamente.\n\nDetalles de acceso:\nUsuario: ${usuario}\nContraseña: ${randomPassword}\n\nPor favor, cambia tu contraseña después de iniciar sesión.\n\nSaludos,\nEl equipo`,
     };
 
+    // Enviar el correo electrónico
     await transporter.sendMail(mailOptions);
 
-    res.status(201).json({ message: "Usuario creado exitosamente", user: newUser });
+    // Devolver la respuesta con todos los detalles del usuario y sus roles
+    const userWithRoles = await User.findById(newUser._id).populate('roleId'); // Poblar los roles
+
+    res.status(201).json({
+      message: "Usuario creado exitosamente",
+      user: userWithRoles,
+    });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
