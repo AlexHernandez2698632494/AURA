@@ -11,7 +11,6 @@
   <div class="sub-header">
     <h3>Administradores registrados</h3>
     <hr />
-    <!-- Controles de tabla (Número de registros y buscar) -->
     <div class="table-controls">
       <div class="left">
         <label for="records">Mostrar</label>
@@ -21,7 +20,10 @@
         <span>registros</span>
       </div>
       <div class="right">
-        <input type="text" placeholder="Buscar" [(ngModel)]="searchTerm" />
+        <mat-form-field class="search-input">
+          <mat-label class="search-label">buscar</mat-label>
+          <input matInput type="text" [(ngModel)]="searchTerm">
+        </mat-form-field>
       </div>
     </div>
 
@@ -31,7 +33,6 @@
         <tr>
           <th>Nombre</th>
           <th>Correo</th>
-          <th>Usuario</th>
           <th>Accion</th>
         </tr>
       </thead>
@@ -42,19 +43,15 @@
           <td>{{ user.usuario }}</td>
           <td>
             <!-- Botón Actualizar -->
-            <button (click)="editUser(user)" class="btn-edit" title="Actualizar">
-              <i class="fas fa-sync-alt"></i>
+            <button mat-icon-button (click)="editUser(user)" class="btn-edit" title="Actualizar">
+              <mat-icon>cached</mat-icon>
             </button>
-
-            <!-- Botón Eliminar -->
-            <button (click)="deleteUser(user._id)" class="btn-delete" title="Eliminar">
-              <i class="fas fa-trash-alt"></i>
-            </button>
+            <button mat-icon-button (click)="deleteUser(user)" class="btn-delete" title="Eliminar">
+              <mat-icon>delete</mat-icon>
+            </button>            
           </td>
-
         </tr>
       </tbody>
-
     </table>
 
     <!-- Información de registros y paginación -->
@@ -65,9 +62,15 @@
         de un total de {{ users.length }} registros
       </div>
       <div class="right pagination">
-        <button (click)="previousPage()" [disabled]="currentPage === 1">Anterior</button>
+        <button mat-fab extended (click)="previousPage()" [disabled]="currentPage === 1">
+          <mat-icon>arrow_back</mat-icon>
+          Anterior
+        </button>
         <span>{{ currentPage }}</span>
-        <button (click)="nextPage()" [disabled]="currentPage === totalPages()">Siguiente</button>
+        <button mat-fab extended (click)="nextPage()" [disabled]="currentPage === totalPages()">
+          <mat-icon>arrow_forward</mat-icon>
+          Siguiente
+        </button>
       </div>
     </div>
   </div>

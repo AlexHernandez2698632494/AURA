@@ -5,12 +5,32 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../../services/admin.service';
 import Swal from 'sweetalert2';  // Importar SweetAlert2
-import { MatDialog } from '@angular/material/dialog';
 import { EditUserDialogComponent } from '../../../modals/edit-user-dialog/edit-user-dialog.component';
+
+import { MatDialog } from '@angular/material/dialog';
+import { MatTableModule } from '@angular/material/table';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDividerModule } from '@angular/material/divider';
 @Component({
   selector: 'app-index-admin',
   standalone: true,
-  imports: [RouterOutlet, SideComponent, FormsModule, CommonModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterOutlet,
+    SideComponent,
+    MatTableModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSelectModule,
+    MatDividerModule,
+  ],
   templateUrl: './index.component.html',
   styleUrls: ['./index.component.css']
 })
@@ -111,7 +131,31 @@ export class IndexAdminComponent implements OnInit {
     });
   }  
   
-  deleteUser(userId: string) {
-    console.log('Eliminar usuario con ID:', userId);
+deleteUser(user: any) {
+    // Mostrar un cuadro de confirmación con el nombre del usuario
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: `¿Estás seguro que deseas eliminar el usuario ${user.nombre}?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminarlo!',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Llamar al servicio para eliminar el usuario
+        this.adminService.deleteUser(user._id).subscribe({
+          next: (response) => {
+            Swal.fire('Eliminado!', `El usuario ${user.nombre} ha sido eliminado correctamente.`, 'success');
+            // Eliminar el usuario localmente de la lista
+            this.users = this.users.filter(u => u._id !== user._id);
+          },
+          error: (err) => {
+            Swal.fire('Error', `No se pudo eliminar el usuario ${user.nombre}.`, 'error');
+            console.error('Error al eliminar el usuario:', err);
+          }
+        });
+      }
+    });
   }
-}
+}   

@@ -5,7 +5,8 @@ const UserSchema = new mongoose.Schema({
   correo: { type: String, required: true, unique: true },
   usuario: { type: String, required: true, unique: true },
   contrasena: { type: String, required: true },
-  roleId: [{ type: mongoose.Schema.Types.ObjectId, ref: "Role" }]  // Cambié esto a un arreglo de ObjectIds
+  roleId: [{ type: mongoose.Schema.Types.ObjectId, ref: "Role" }],
+  estadoEliminacion: { type: Number, default: 0, enum: [0, 1] }  // Agregado estadoEliminacion
 });
 
 export const User = mongoose.model("User", UserSchema);

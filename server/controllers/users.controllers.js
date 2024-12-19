@@ -8,7 +8,16 @@ import jwt from 'jsonwebtoken';
 // Obtener todos los usuarios
 export const getUsers = async (req, res) => {
   try {
-    const users = await User.find().populate("roleId"); // Popular información del rol
+    const users = await User.find({ estadoEliminacion: 0 }).populate("roleId"); // Solo los usuarios activos
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getDeleteUsers = async (req, res) => {
+  try {
+    const users = await User.find({ estadoEliminacion: 1 }).populate("roleId"); // Solo los usuarios activos
     res.json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -18,8 +27,11 @@ export const getUsers = async (req, res) => {
 // Obtener usuario por ID
 export const getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).populate("roleId"); // Popular información del rol
-    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+    const user = await User.findOne({ 
+      _id: req.params.id, 
+      estadoEliminacion: 0  // Solo el usuario activo
+    }).populate("roleId"); 
+        if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -28,7 +40,7 @@ export const getUserById = async (req, res) => {
 
 // Crear un nuevo usuario
 export const createUser = async (req, res) => { 
-  const { nombre, correo, usuario, roles } = req.body;
+  const { nombre, correo, usuario, roles, estadoEliminacion } = req.body;
 
   try {
     // Verificar si los roles proporcionados existen
@@ -47,7 +59,8 @@ export const createUser = async (req, res) => {
       correo,
       usuario,
       contrasena: hashedPassword,
-      roleId: validRoles.map((role) => role._id),  // Usamos el arreglo de _id de roles
+      roleId: validRoles.map((role) => role._id),
+      estadoEliminacion: estadoEliminacion || 0, // Asignar estadoEliminacion (por defecto 0 si no se pasa)
     });
 
     const newUser = await user.save();
@@ -126,17 +139,41 @@ export const updateUser = async (req, res) => {
   }
 };
 
-
 // Eliminar un usuario
 export const deleteUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndDelete(req.params.id);
+    const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
-    res.json({ message: "Usuario eliminado exitosamente" });
+
+    user.estadoEliminacion = 1;
+    await user.save();
+
+    res.json({ message: "Usuario desactivado exitosamente" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const restoreUser = async (req, res) => {
+  try {
+    // Buscar y actualizar el estadoEliminacion del usuario
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { estadoEliminacion: 0 }, // Cambiar estadoEliminacion a 0 (activo)
+      { new: true } // Devolver el documento actualizado
+    );
+
+    // Si no se encuentra el usuario
+    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+
+    console.log("Usuario restaurado:", user); // Puedes eliminar este log después de verificar
+
+    res.json({ message: "Usuario restaurado exitosamente", user });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 
 export const loginUser = async (req, res) => {
   const { identifier, contrasena } = req.body;
