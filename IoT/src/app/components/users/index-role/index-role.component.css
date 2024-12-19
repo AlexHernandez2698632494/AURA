@@ -1,16 +1,20 @@
 .main-container {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 1100px;
   font-family: Arial, sans-serif;
   padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  margin-left:100px; /* Ajusta este valor según el tamaño de tu sidebar */
+  margin-left:15%; /* Ajusta este valor según el tamaño de tu sidebar */
   width: calc(100% - 120px); /* Asegura que el contenedor ocupe el espacio restante */
-  box-sizing: border-box; /* Incluye el padding y el border en el cálculo del ancho */
+  box-sizing: border-box;
 }
 
 
 /* Contenedor 1 - Control de Administradores */
 .header {
+  border: 1px solid #ddd;
+  border-radius: 8px;
   background-color: #fff;
   border-radius: 8px;
   padding: 10px;
@@ -20,15 +24,10 @@
 }
 
 .header h2 {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: bold;
   color: #333;
   margin: 0;
-}
-
-.space {
-  height: 20px;
-  /* Ajusta el tamaño del espacio según sea necesario */
 }
 
 /* Contenedor 2 - Administradores Registrados */
@@ -42,7 +41,7 @@
 }
 
 .sub-header h3 {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 500;
   color: #555;
 }
@@ -81,31 +80,38 @@
   border: 1px solid #ddd;
 }
 
-.table-controls input {
-  padding: 6px;
+.search-input {
+  margin-top: 10px;
+  background-color: #fff;
   font-size: 14px;
   width: 220px;
-  border-radius: 4px;
-  border: 1px solid #ddd;
+  height: 65px;
+  box-sizing: border-box;
+}
+.search-input input{
+  height: 20px;
 }
 
-.table-controls .right {
-  display: flex;
-  align-items: center;
+.search-label{
+  height: auto;
 }
 
-/* Estilo personalizado para tabla con hover */
 table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
 }
 
-table th,
 table td {
   padding: 12px;
   text-align: left;
   border: 1px solid #ddd;
+}
+
+table th {
+  padding: 12px;
+  border: 1px solid #ddd;
+  font-weight: bold;
 }
 
 /* Target the second <td> element */
@@ -117,45 +123,31 @@ table tr:nth-child(even) {
 
 /* Efecto hover: cambia el color de fondo de la fila a gris cuando el ratón está encima */
 table tr:hover {
-  background-color: #f2f2f2;
+  background-color: #cfcfcf;
   /* Gris claro */
 }
 
-/* Estilos para los botones dentro de la tabla */
-.btn-edit,
 .btn-delete {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 6px 12px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   color: #fff;
   cursor: pointer;
   font-size: 14px;
-  margin-right: 8px;
-  /* Separar los botones */
-}
-
-.btn-edit {
-  background-color: #ffcc00;
-  /* Amarillo para editar */
-}
-
-.btn-delete {
   background-color: #f44336;
-  /* Rojo para eliminar */
 }
-
-.btn-edit:hover {
-  background-color: #ff9900;
+.btn-delete mat-icon {
+  font-size: 20px;      
+  margin: 0;              
 }
-
 .btn-delete:hover {
-  background-color: #d32f2f;
+  background-color: #b32828;
 }
 
-.btn-edit i,
-.btn-delete i {
-  font-size: 16px;
-}
+
 
 /* Información de registros y paginación */
 .footer {
@@ -171,9 +163,9 @@ table tr:hover {
 
 .footer .left {
   flex: 1;
-  /* El texto de la izquierda tomará el espacio disponible */
   text-align: left;
-  /* Alineación a la izquierda */
+  font-size: 15px;
+  color: #666;
 }
 
 .footer .right {
@@ -194,44 +186,18 @@ table tr:hover {
 }
 
 .footer .pagination button:disabled {
-  background-color: #ddd;
-  cursor: not-allowed;
+  background-color: #b1b1b1;
+  cursor:not-allowed;
 }
 
 .footer .pagination span {
   margin: 0 8px;
-  /* Separar los números de página */
 }
 
 .footer .pagination button:hover {
   background-color: #0097a7;
 }
 
-/* Pantallas grandes (Desktops, laptops, TVs) */
-/* Pantallas grandes (Desktops, laptops, TVs) */
-@media (min-width: 1200px) {
-  .main-container {
-    width: 100%;
-    /* Asegura que el contenedor ocupe todo el ancho */
-    max-width: 1200px;
-    /* Limita el ancho máximo en pantallas grandes */
-    margin: 0 auto;
-    /* Centra el contenedor */
-  }
-
-  .header h2 {
-    font-size: 18px;
-  }
-
-  .sub-header h3 {
-    font-size: 20px;
-  }
-
-  .table-controls {
-    display: flex;
-    justify-content: space-between;
-  }
-}
 
 /* Móviles grandes (480px a 767px) */
 @media (max-width: 629px) {
@@ -276,28 +242,5 @@ table tr:hover {
   .btn-edit,
   .btn-delete {
     padding: 4px 8px;
-  }
-}
-/* Televisores y pantallas muy grandes (más de 1600px) */
-@media (min-width: 1600px) {
-  .main-container {
-    width: 100%;
-    /* Asegura que el contenedor ocupe todo el ancho */
-    max-width: 1400px;
-    /* Limita el ancho máximo en pantallas extra grandes */
-    margin: 0 auto;
-    /* Centra el contenedor */
-  }
-
-  .header h2 {
-    font-size: 22px;
-  }
-
-  .sub-header h3 {
-    font-size: 24px;
-  }
-
-  .footer .pagination button {
-    padding: 8px 16px;
   }
 }

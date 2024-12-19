@@ -1,19 +1,19 @@
-/* Contenedor principal */
 .main-container {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 1100px;
   font-family: Arial, sans-serif;
   padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  margin-left: 100px;
-  /* Ajusta este valor según el tamaño de tu sidebar */
-  width: calc(100% - 120px);
-  /* Asegura que el contenedor ocupe el espacio restante */
+  margin-left:15%; /* Ajusta este valor según el tamaño de tu sidebar */
+  width: calc(100% - 120px); /* Asegura que el contenedor ocupe el espacio restante */
   box-sizing: border-box;
-  /* Incluye el padding y el border en el cálculo del ancho */
 }
 
 /* Contenedor 1 - Título "Control de usuarios" */
 .header {
+  border: 1px solid #ddd;
+  border-radius: 8px;
   background-color: #fff;
   border-radius: 8px;
   padding: 10px;
@@ -23,39 +23,33 @@
 }
 
 .header h2 {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: bold;
   color: #333;
   margin: 0;
-}
-
-/* Espacio entre los contenedores */
-.space {
-  height: 20px;
-  /* Ajusta el tamaño del espacio según sea necesario */
 }
 
 /* Contenedor 2 - "Usuarios registrados" */
 .sub-header {
   background-color: #fff;
   border: 1px solid #ddd;
+  border-radius: 8px;
   text-align: center;
   margin-bottom: 10px;
   padding: 20px;
 }
 
 .sub-header h3 {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 500;
   color: #333;
 }
 
-.sub-header hr {
+hr {
   width: 100%;
   border: 1px solid #00bcd4;
   margin-top: 10px;
   margin-bottom: 20px;
-  /* Espacio entre la línea y la tabla */
 }
 
 /* Resto de los estilos de la tabla y controles */
@@ -84,39 +78,47 @@
   border: 1px solid #ddd;
 }
 
-.table-controls input {
-  padding: 6px;
+.search-input {
+  margin-top: 10px;
+  background-color: #fff;
   font-size: 14px;
   width: 220px;
-  border-radius: 4px;
-  border: 1px solid #ddd;
+  height: 65px;
+  box-sizing: border-box;
+}
+.search-input input{
+  height: 20px;
 }
 
-.table-controls .right {
-  display: flex;
-  align-items: center;
+.search-label{
+  height: auto;
 }
 
-/* Tabla */
 table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
 }
 
-table th,
 table td {
   text-align: left;
   padding: 12px;
   border: 1px solid #ddd;
 }
 
+table th {
+  padding: 12px;
+  border: 1px solid #ddd;
+  font-weight: bold;
+}
+
+
 table tr:nth-child(even) {
   background-color: #f1f1f1;
 }
 
 table tr:hover {
-  background-color: #f2f2f2;
+  background-color: #cfcfcf;
   /* Gris claro */
 }
 
@@ -133,7 +135,7 @@ table tr:hover {
 .footer .left {
   flex: 1;
   text-align: left;
-  font-size: 13px;
+  font-size: 15px;
   color: #666;
 }
 
@@ -143,14 +145,14 @@ table tr:hover {
 }
 
 .footer .pagination button {
-  background-color: #007bff;
+  background-color: #00bcd4;
   color: #fff;
   border: none;
   border-radius: 4px;
   padding: 6px 12px;
   font-size: 13px;
   cursor: pointer;
-  margin: 0 5px;
+  margin: 0 8px;
 }
 
 .footer .pagination button:disabled {
@@ -161,59 +163,11 @@ table tr:hover {
 .footer .pagination span {
   font-size: 14px;
   font-weight: bold;
+  margin: 0 8px;
 }
 
 .footer .pagination button:hover {
   background-color: #0097a7;
-}
-
-@media (min-width: 1200px) {
-  .main-container {
-    margin-top: 50px;
-    width: 100%;
-    /* Asegura que el contenedor ocupe todo el ancho */
-    max-width: 1300px;
-    /* Limita el ancho máximo en pantallas grandes */
-    margin: 0 auto;
-    /* Centra el contenedor */
-  }
-
-  .header h2 {
-    font-size: 18px;
-  }
-
-  .sub-header h3 {
-    font-size: 20px;
-  }
-
-  .table-controls {
-    display: flex;
-    justify-content: space-between;
-  }
-}
-
-@media (min-width: 1200px) {
-  .main-container {
-    width: 100%;
-    /* Asegura que el contenedor ocupe todo el ancho */
-    max-width: 1200px;
-    /* Limita el ancho máximo en pantallas grandes */
-    margin: 0 auto;
-    /* Centra el contenedor */
-  }
-
-  .header h2 {
-    font-size: 18px;
-  }
-
-  .sub-header h3 {
-    font-size: 20px;
-  }
-
-  .table-controls {
-    display: flex;
-    justify-content: space-between;
-  }
 }
 
 /* Móviles grandes (480px a 767px) */
@@ -223,10 +177,10 @@ table tr:hover {
     padding: 20px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    margin-left:100px;
-    width: calc(100% - 120px); 
+    margin-left: 100px;
+    width: calc(100% - 120px);
     box-sizing: border-box;
-  }
+  } 
 
   .table-controls {
     flex-direction: column;
@@ -254,28 +208,5 @@ table tr:hover {
   .btn-edit,
   .btn-delete {
     padding: 4px 8px;
-  }
-}
-/* Televisores y pantallas muy grandes (más de 1600px) */
-@media (min-width: 1600px) {
-  .main-container {
-    width: 100%;
-    /* Asegura que el contenedor ocupe todo el ancho */
-    max-width: 1400px;
-    /* Limita el ancho máximo en pantallas extra grandes */
-    margin: 0 auto;
-    /* Centra el contenedor */
-  }
-
-  .header h2 {
-    font-size: 22px;
-  }
-
-  .sub-header h3 {
-    font-size: 24px;
-  }
-
-  .footer .pagination button {
-    padding: 8px 16px;
   }
 }

@@ -4,11 +4,27 @@ import { SideComponent } from '../../side/side.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../../services/admin.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
 import Swal from 'sweetalert2';  // Importar SweetAlert2
 
 @Component({
   selector: 'app-index-delete-role',
-  imports: [RouterOutlet, SideComponent, FormsModule, CommonModule],
+  imports: [RouterOutlet, 
+    SideComponent, 
+    FormsModule, 
+    CommonModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatTableModule,
+    MatIconModule,
+  ],
   templateUrl: './index-delete-role.component.html',
   styleUrl: './index-delete-role.component.css'
 })

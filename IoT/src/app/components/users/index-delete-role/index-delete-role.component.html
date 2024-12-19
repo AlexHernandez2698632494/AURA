@@ -1,4 +1,3 @@
-<p>index-delete-role works!</p>
 <div class="app-container">
     <app-side class="app-side"></app-side> <!-- Barra lateral -->
   </div>
@@ -20,7 +19,10 @@
           <span>registros</span>
         </div>
         <div class="right">
-          <input type="text" placeholder="Buscar" [(ngModel)]="searchTerm" />
+          <mat-form-field class="search-input">
+            <mat-label class="search-label">buscar</mat-label>
+            <input matInput type="text" [(ngModel)]="searchTerm" >
+          </mat-form-field>
         </div>
       </div>
   
@@ -37,7 +39,7 @@
             <td>{{ role.name }}</td>
             <td>
               <!-- Botón Eliminar -->
-              <button (click)="restoreRole(role._id, role.name)" class="btn-restore" title="Restaurar">
+              <button  mat-icon-button (click)="restoreRole(role._id, role.name)" class="btn-restore" title="Restaurar">
                 <i class="fas fa-arrow-alt-circle-up"></i>
               </button>              
             </td>
@@ -53,9 +55,15 @@
           de un total de {{ roles.length }} registros
         </div>
         <div class="right pagination">
-          <button (click)="previousPage()" [disabled]="currentPage === 1">Anterior</button>
+          <button mat-fab extended (click)="previousPage()" [disabled]="currentPage === 1">
+            <mat-icon>arrow_back</mat-icon>
+            Anterior
+          </button>
           <span>{{ currentPage }}</span>
-          <button (click)="nextPage()" [disabled]="currentPage === totalPages()">Siguiente</button>
+          <button mat-fab extended (click)="nextPage()" [disabled]="currentPage === totalPages()">
+            <mat-icon>arrow_forward</mat-icon>
+            Siguiente
+          </button>
         </div>
       </div>
     </div>

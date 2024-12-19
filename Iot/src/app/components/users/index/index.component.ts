@@ -4,12 +4,27 @@ import { SideComponent } from '../../side/side.component';
 import { CommonModule } from '@angular/common';
 import { AdminService } from '../../../services/admin.service';
 import { FormsModule } from '@angular/forms';
+import { MatTableModule } from '@angular/material/table';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-index',
   standalone: true,
-  imports: [RouterOutlet, SideComponent, FormsModule, CommonModule],
+  imports: [RouterOutlet, 
+    SideComponent, 
+    FormsModule, 
+    CommonModule,
+    MatTableModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatDividerModule,
+  MatIconModule],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css'
 })

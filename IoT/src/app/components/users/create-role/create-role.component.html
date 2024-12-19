@@ -1,4 +1,3 @@
-<p>create-role works!</p>
 <div class="app-container">
   <app-side class="app-side"></app-side> <!-- Barra lateral -->
   <div class="main-content">
@@ -7,28 +6,42 @@
 </div>
 <div class="main-container">
   <div class="header">
-    <button class="back-button" (click)="onBackClick()">
-      <span class="arrow">←</span>
+    <button mat-button class="back-button" (click)="onBackClick()">
+      <mat-icon>arrow_back</mat-icon>
     </button>
-    <h1 class="title">Registro de nuevo rol</h1>
+    <h2 class="title">Registro de nuevo rol</h2>
   </div>
 
   <div class="form-container">
     <h2 class="form-title">Registro de rol</h2>
     <hr class="separator" />
-    <p class="form-description">Información del rol</p>
-    <p class="form-instruction">Ingrese el nombre del rol</p>
-
     <form [formGroup]="roleForm" (ngSubmit)="registerRole()">
       <div class="row">
         <div class="input-field">
-          <!-- Cambiar el label y el input para reflejar 'name' -->
-          <label for="nombre">Nombre del rol</label>
-          <input id="nombre" formControlName="name" type="text" placeholder="Ingrese el nombre del rol" />
+          <!-- Componente de Angular Material -->
+          <mat-form-field appearance="fill" class="input-field">
+            <mat-label>Nombre del rol</mat-label>
+            <input
+              matInput
+              id="nombre"
+              formControlName="name"
+              type="text"
+              placeholder="Ingrese el nombre del rol"
+            />
+            <mat-error *ngIf="roleForm.get('name')?.hasError('required')">
+              El nombre del rol es obligatorio.
+            </mat-error>
+          </mat-form-field>
         </div>
       </div>
 
-      <button class="register-button" type="submit" [disabled]="roleForm.invalid">
+      <button
+        mat-raised-button
+        color="primary"
+        class="register-button"
+        type="submit"
+        [disabled]="roleForm.invalid"
+      >
         Registrar rol
       </button>
     </form>

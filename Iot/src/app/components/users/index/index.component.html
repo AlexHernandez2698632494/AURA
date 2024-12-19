@@ -20,7 +20,10 @@
           <span>registros</span>
         </div>
         <div class="right">
-          <input type="text" placeholder="Buscar" [(ngModel)]="searchTerm" />
+          <mat-form-field class="search-input">
+            <mat-label class="search-label">buscar</mat-label>
+            <input matInput type="text" [(ngModel)]="searchTerm" >
+          </mat-form-field>
         </div>
       </div>
     
@@ -50,9 +53,15 @@
           de un total de {{ users.length }} registros
         </div>
         <div class="right pagination">
-          <button (click)="previousPage()" [disabled]="currentPage === 1">Anterior</button>
+          <button mat-fab extended (click)="previousPage()" [disabled]="currentPage === 1">
+            <mat-icon>arrow_back</mat-icon>
+            Anterior
+          </button>
           <span>{{ currentPage }}</span>
-          <button (click)="nextPage()" [disabled]="currentPage === totalPages()">Siguiente</button>
+          <button mat-fab extended (click)="nextPage()" [disabled]="currentPage === totalPages()">
+            <mat-icon>arrow_forward</mat-icon>
+            Siguiente
+          </button>
         </div>
       </div>
     </div>

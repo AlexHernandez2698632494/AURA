@@ -1,62 +1,69 @@
 <div class="app-container">
-    <app-side class="app-side"></app-side> <!-- Barra lateral -->
+  <app-side class="app-side"></app-side> <!-- Barra lateral -->
+</div>
+<router-outlet></router-outlet> <!-- Aquí se renderizan las vistas dinámicas -->
+<div class="main-container">
+  <div class="header">
+    <h2>Control de Roles</h2>
   </div>
-  <router-outlet></router-outlet> <!-- Aquí se renderizan las vistas dinámicas -->
-  <div class="main-container">
-    <div class="header">
-      <h2>Control de Roles</h2>
-    </div>
-    <div class="sub-header">
-      <h3>Roles registrados</h3>
-      <hr />
-      <!-- Controles de tabla (Número de registros y buscar) -->
-      <div class="table-controls">
-        <div class="left">
-          <label for="records">Mostrar</label>
-          <select id="records" [(ngModel)]="recordsToShow">
-            <option *ngFor="let option of [5, 10, 15, 20]" [value]="option">{{ option }}</option>
-          </select>
-          <span>registros</span>
-        </div>
-        <div class="right">
-          <input type="text" placeholder="Buscar" [(ngModel)]="searchTerm" />
-        </div>
+  <div class="sub-header">
+    <h3>Roles registrados</h3>
+    <hr />
+    <!-- Controles de tabla (Número de registros y buscar) -->
+    <div class="table-controls">
+      <div class="left">
+        <label for="records">Mostrar</label>
+        <select id="records" [(ngModel)]="recordsToShow">
+          <option *ngFor="let option of [5, 10, 15, 20]" [value]="option">{{ option }}</option>
+        </select>
+        <span>registros</span>
       </div>
-  
-      <!-- Tabla -->
-      <table>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Acción</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let role of filteredRoles()">
-            <td>{{ role.name }}</td>
-            <td>
-              <!-- Botón Eliminar -->
-              <button (click)="deleteRole(role._id, role.name)" class="btn-delete" title="Eliminar">
-                <i class="fas fa-trash-alt"></i>
-              </button>              
-            </td>
-          </tr>
-        </tbody>
-      </table>
-  
-      <!-- Información de registros y paginación -->
-      <div class="footer">
-        <div class="left">
-          Mostrando registros del {{ (currentPage - 1) * recordsToShow + 1 }}
-          al {{ Math.min(currentPage * recordsToShow, roles.length) }}
-          de un total de {{ roles.length }} registros
-        </div>
-        <div class="right pagination">
-          <button (click)="previousPage()" [disabled]="currentPage === 1">Anterior</button>
-          <span>{{ currentPage }}</span>
-          <button (click)="nextPage()" [disabled]="currentPage === totalPages()">Siguiente</button>
-        </div>
+      <div class="right">
+        <mat-form-field class="search-input">
+          <mat-label class="search-label">buscar</mat-label>
+          <input matInput type="text" [(ngModel)]="searchTerm" >
+        </mat-form-field>
       </div>
     </div>
+
+    <!-- Tabla -->
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let role of filteredRoles()">
+          <td>{{ role.name }}</td>
+          <td>
+            <button mat-icon-button (click)="deleteRole(role._id, role.name)" class="btn-delete" title="Eliminar">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Información de registros y paginación -->
+    <div class="footer">
+      <div class="left">
+        Mostrando registros del {{ (currentPage - 1) * recordsToShow + 1 }}
+        al {{ Math.min(currentPage * recordsToShow, roles.length) }}
+        de un total de {{ roles.length }} registros
+      </div>
+      <div class="right pagination">
+        <button mat-fab extended (click)="previousPage()" [disabled]="currentPage === 1">
+          <mat-icon>arrow_back</mat-icon>
+          Anterior
+        </button>
+        <span>{{ currentPage }}</span>
+        <button mat-fab extended (click)="nextPage()" [disabled]="currentPage === totalPages()">
+          <mat-icon>arrow_forward</mat-icon>
+          Siguiente
+        </button>
+      </div>
+    </div>
   </div>
-  
+</div>

@@ -5,11 +5,23 @@ import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AdminService } from '../../../services/admin.service';
 import { CommonModule } from '@angular/common';
-import Swal from 'sweetalert2'; // Importar SweetAlert2
+import Swal from 'sweetalert2';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-create-role',
-  imports: [RouterOutlet, SideComponent, CommonModule, ReactiveFormsModule],
+  imports: [RouterOutlet, 
+    SideComponent, 
+    CommonModule, 
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule
+  ],
   templateUrl: './create-role.component.html',
   styleUrls: ['./create-role.component.css']
 })
