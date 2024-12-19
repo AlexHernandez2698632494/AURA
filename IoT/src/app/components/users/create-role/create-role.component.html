@@ -4,46 +4,49 @@
     <router-outlet></router-outlet> <!-- Aquí se renderizan las vistas dinámicas -->
   </div>
 </div>
-<div class="main-container">
-  <div class="header">
-    <button mat-button class="back-button" (click)="onBackClick()">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    <h2 class="title">Registro de nuevo rol</h2>
-  </div>
-
-  <div class="form-container">
-    <h2 class="form-title">Registro de rol</h2>
-    <hr class="separator" />
-    <form [formGroup]="roleForm" (ngSubmit)="registerRole()">
-      <div class="row">
-        <div class="input-field">
-          <!-- Componente de Angular Material -->
-          <mat-form-field appearance="fill" class="input-field">
-            <mat-label>Nombre del rol</mat-label>
-            <input
-              matInput
-              id="nombre"
-              formControlName="name"
-              type="text"
-              placeholder="Ingrese el nombre del rol"
-            />
-            <mat-error *ngIf="roleForm.get('name')?.hasError('required')">
-              El nombre del rol es obligatorio.
-            </mat-error>
-          </mat-form-field>
-        </div>
-      </div>
-
-      <button
-        mat-raised-button
-        color="primary"
-        class="register-button"
-        type="submit"
-        [disabled]="roleForm.invalid"
-      >
-        Registrar rol
+<div class="center">
+  <div class="main-container">
+    <div class="header">
+      <button mat-button class="back-button" (click)="onBackClick()">
+        <mat-icon>arrow_back</mat-icon>
       </button>
-    </form>
+      <h2 class="title">Registro de nuevo rol</h2>
+    </div>
+  
+    <div class="form-container">
+      <h2 class="form-title">Registro de rol</h2>
+      <hr class="separator" />
+      <form [formGroup]="roleForm" (ngSubmit)="registerRole()">
+        <div class="row">
+          <div class="input-field">
+            <!-- Componente de Angular Material -->
+            <mat-form-field appearance="fill" class="input-field">
+              <mat-label>Nombre del rol</mat-label>
+              <input
+                matInput
+                id="nombre"
+                formControlName="name"
+                type="text"
+                placeholder="Ingrese el nombre del rol"
+              />
+              <mat-error *ngIf="roleForm.get('name')?.hasError('required')">
+                El nombre del rol es obligatorio.
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+  
+        <button
+          mat-raised-button
+          color="primary"
+          class="register-button"
+          type="submit"
+          [disabled]="roleForm.invalid"
+        >
+          Registrar rol
+        </button>
+      </form>
+    </div>
   </div>
 </div>
+

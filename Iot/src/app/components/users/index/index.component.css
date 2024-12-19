@@ -1,11 +1,14 @@
+.center{
+  display: flex;
+  justify-content: center;  /* Centra horizontalmente */
+  min-height: 100vh; 
+}
+
 .main-container {
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+  width: 80%;
   max-width: 1100px;
   font-family: Arial, sans-serif;
-  padding: 20px;
-  margin-left:15%; /* Ajusta este valor según el tamaño de tu sidebar */
+  padding: 20px; /* Ajusta este valor según el tamaño de tu sidebar */
   width: calc(100% - 120px); /* Asegura que el contenedor ocupe el espacio restante */
   box-sizing: border-box;
 }
@@ -95,18 +98,25 @@ hr {
 }
 
 table {
+  table-layout: fixed;
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
 }
 
 table td {
+  font-weight: 80;
+  font-size: 18px;
   text-align: left;
   padding: 12px;
   border: 1px solid #ddd;
 }
+table td span{
+  font-weight: 80;
+}
 
 table th {
+  font-size: 18px;
   padding: 12px;
   border: 1px solid #ddd;
   font-weight: bold;
@@ -175,20 +185,20 @@ table tr:hover {
   .main-container {
     font-family: Arial, sans-serif;
     padding: 20px;
-    border: 1px solid #ddd;
     border-radius: 8px;
-    margin-left: 100px;
-    width: calc(100% - 120px);
-    box-sizing: border-box;
+    margin-left: 60px;
   } 
 
   .table-controls {
     flex-direction: column;
     align-items: flex-start;
   }
+  .search-input {
+    width: 80%; 
+    margin: 0 auto; 
+  }
 
-  .table-controls select,
-  .table-controls input {
+  .table-controls select{
     width: 100%;
     font-size: 12px;
     margin-bottom: 10px;
@@ -205,8 +215,12 @@ table tr:hover {
     font-size: 14px;
   }
 
-  .btn-edit,
   .btn-delete {
     padding: 4px 8px;
+  }
+
+  th, td {
+    font-size: 14px;  
+    word-wrap: break-word;
   }
 }
