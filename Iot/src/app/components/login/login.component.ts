@@ -24,6 +24,14 @@ export class LoginComponent {
 
   constructor(private http: HttpClient, private router: Router) {}
 
+  // Método para obtener la URL correcta dependiendo del entorno
+  private getApiUrl(): string {
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return 'http://localhost:3000';  // Si está en el dispositivo local, usar localhost
+    }
+    return 'http://192.168.1.82:3000'; // Si está en otro dispositivo, usar la IP
+  }
+
   // Método para manejar el inicio de sesión
   login() {
     if (!this.usernameOrEmail || !this.password) {
@@ -35,8 +43,9 @@ export class LoginComponent {
       identifier: this.usernameOrEmail,
       contrasena: this.password,
     };
-  
-    this.http.post('http://localhost:3000/login', loginData).subscribe(
+
+    // Usamos la URL correcta dependiendo del entorno
+    this.http.post(`${this.getApiUrl()}/login`, loginData).subscribe(
       (response: any) => {
         // Verifica que el token esté en la respuesta
         if (response.token) {
@@ -55,6 +64,4 @@ export class LoginComponent {
       }
     );
   }
-  
-  
 }

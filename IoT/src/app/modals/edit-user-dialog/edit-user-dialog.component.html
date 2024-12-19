@@ -1,0 +1,36 @@
+<h2 mat-dialog-title>Editar Usuario</h2>
+
+<mat-dialog-content>
+  <!-- Campo para el nombre del usuario -->
+  <mat-form-field appearance="fill">
+    <mat-label>Nombre</mat-label>
+    <input matInput [(ngModel)]="data.nombre" />
+  </mat-form-field>
+
+  <!-- Campo para el correo del usuario -->
+  <mat-form-field appearance="fill">
+    <mat-label>Correo</mat-label>
+    <input matInput [(ngModel)]="data.correo" />
+  </mat-form-field>
+
+  <!-- Campo para el nombre de usuario -->
+  <mat-form-field appearance="fill">
+    <mat-label>Usuario</mat-label>
+    <input matInput [(ngModel)]="data.usuario" />
+  </mat-form-field>
+
+  <!-- Selector de roles -->
+  <mat-form-field appearance="fill">
+    <mat-label>Roles</mat-label>
+    <mat-select [(value)]="selectedRoles" multiple>
+      <mat-option *ngFor="let role of roles$ | async" [value]="role._id">
+        {{ role.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button mat-raised-button color="primary" class="register-button" type="submit" [disabled]="adminForm.invalid" (click)="onSave()">Guardar</button>
+</mat-dialog-actions>

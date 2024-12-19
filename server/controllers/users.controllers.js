@@ -86,27 +86,46 @@ export const createUser = async (req, res) => {
 
 // Actualizar un usuario
 export const updateUser = async (req, res) => {
-  const { roleId } = req.body;
+  const { roleId, removeRoleId, nombre, usuario, correo } = req.body;
 
   try {
-    // Verificar si se proporciona roleId y si es válido
-    if (roleId) {
-      const role = await Role.findById(roleId);
-      if (!role) return res.status(400).json({ message: "El roleId proporcionado no es válido" });
+    // Buscar el usuario
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+
+    // Verificar y actualizar los roles si se pasan en la solicitud
+    if (roleId && Array.isArray(roleId)) {
+      const roles = await Role.find({ '_id': { $in: roleId } });
+      if (roles.length !== roleId.length) {
+        return res.status(400).json({ message: "Uno o más roleId proporcionados no son válidos" });
+      }
+      // Actualizar los roles del usuario
+      user.roleId = roleId;
     }
 
-    // Actualizar el usuario
-    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true, // Retorna el documento actualizado
-    }).populate("roleId"); // Popular información del rol actualizado
+    // Verificar y eliminar el rol si se pasa en la solicitud
+    if (removeRoleId) {
+      // Eliminar el rol de los roles actuales del usuario
+      user.roleId = user.roleId.filter(role => role.toString() !== removeRoleId);
+    }
 
-    if (!updatedUser) return res.status(404).json({ message: "Usuario no encontrado" });
+    // Actualizar otros campos (nombre, usuario, correo)
+    if (nombre) user.nombre = nombre;
+    if (usuario) user.usuario = usuario;
+    if (correo) user.correo = correo;
+
+    // Guardar el usuario actualizado
+    await user.save();
+
+    // Regresar el usuario actualizado con los roles
+    const updatedUser = await User.findById(req.params.id).populate("roleId");
 
     res.json({ message: "Usuario actualizado exitosamente", user: updatedUser });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
+
 
 // Eliminar un usuario
 export const deleteUser = async (req, res) => {
@@ -148,7 +167,7 @@ export const loginUser = async (req, res) => {
         usuario: user.usuario,
       },
       process.env.JWT_SECRET, // Clave secreta desde variables de entorno
-      { expiresIn: '1h' } // Duración del token
+      { expiresIn: '24h' } // Duración del token
     );
 
     // Enviar respuesta con el token

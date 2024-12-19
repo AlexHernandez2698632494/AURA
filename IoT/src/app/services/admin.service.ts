@@ -1,94 +1,94 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AdminService {
-  private apiUrl = 'http://localhost:3000';
+  private apiUrl2 = 'http://localhost:3000';  // URL para desarrollo en localhost
+  private apiUrl = 'http://192.168.1.82:3000'; // URL para acceder desde otro dispositivo
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-// Registrar un nuevo administrador
-registerAdmin(adminData: any): Observable<any> {
-  const token = localStorage.getItem('token');
-  const headers = new HttpHeaders({
-    'Authorization': `Bearer ${token}`,
-  });
-  return this.http.post(`${this.apiUrl}/user`, adminData, { headers });
-}
-
-  // Método para obtener los usuarios con el token en los encabezados
-  getUsers(): Observable<any[]> {
-    const token = localStorage.getItem('token');  // Recuperamos el token desde localStorage
-
-    if (!token) {
-      throw new Error('No se encontró el token en el localStorage');
+  // Método para verificar si la aplicación está en el dispositivo local
+  private getApiUrl(): string {
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return this.apiUrl2;  // Si está en el dispositivo local, usar localhost
     }
-
-    // Configuramos los encabezados con el token
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`, // Añadimos el token en el encabezado Authorization
-    });
-
-    // Realizamos la solicitud GET con los encabezados configurados
-    return this.http.get<any[]>(`${this.apiUrl}/users`, { headers });
+    return this.apiUrl;  // Si está en otro dispositivo, usar la IP
   }
-  // Obtener roles (requiere token)
-  getRoles(): Observable<any[]> {
-    const token = localStorage.getItem('token');
 
-    if (!token) {
-      throw new Error('No se encontró el token en el localStorage');
-    }
-
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-    });
-
-    return this.http.get<any[]>(`${this.apiUrl}/roles`, { headers });
-  }
-  createRole(roleData: { nombre: string; usuario: string; correo: string }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/roles`, roleData);
-  }
-  getDeleteRoles(): Observable<any[]> {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-      throw new Error('No se encontró el token en el localStorage');
-    }
-
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-    });
-
-    return this.http.get<any[]>(`${this.apiUrl}/roles/delete`, { headers });
-  }
-  deleteRole(roleId: string) {
-    const token = localStorage.getItem('token');
-    console.log(roleId)
-    return this.http.delete(`${this.apiUrl}/roles/${roleId}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-  }
-  restoreRole(roleId: string) {
-    const token = localStorage.getItem('token');
-    console.log(roleId)
-    return this.http.delete(`${this.apiUrl}/roles/restore/${roleId}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-  }
-  changePassword(data: { contrasenaActual: string; nuevaContrasena: string }): Observable<any> {
+  private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
     if (!token) {
       throw new Error('No se encontró el token en localStorage');
     }
-
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
     });
+  }
 
-    return this.http.post(`${this.apiUrl}/change-password`, data, { headers });
+  registerAdmin(adminData: any): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.post(`${this.getApiUrl()}/user`, adminData, { headers }).pipe(
+      catchError(err => throwError(err))
+    );
+  }
+
+  getUsers(): Observable<any[]> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<any[]>(`${this.getApiUrl()}/users`, { headers }).pipe(
+      catchError(err => throwError(err))
+    );
+  }
+
+  updateUser(userId: string, userData: any): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.put(`${this.getApiUrl()}/user/${userId}`, userData, { headers }).pipe(
+      catchError(err => throwError(err))
+    );
+  }
+
+  getRoles(): Observable<any[]> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<any[]>(`${this.getApiUrl()}/roles`, { headers }).pipe(
+      catchError(err => throwError(err))
+    );
+  }
+
+  createRole(roleData: { nombre: string; usuario: string; correo: string }): Observable<any> {
+    return this.http.post(`${this.getApiUrl()}/roles`, roleData).pipe(
+      catchError(err => throwError(err))
+    );
+  }
+
+  getDeleteRoles(): Observable<any[]> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<any[]>(`${this.getApiUrl()}/roles/delete`, { headers }).pipe(
+      catchError(err => throwError(err))
+    );
+  }
+
+  deleteRole(roleId: string): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.delete(`${this.getApiUrl()}/roles/${roleId}`, { headers }).pipe(
+      catchError(err => throwError(err))
+    );
+  }
+
+  restoreRole(roleId: string): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.delete(`${this.getApiUrl()}/roles/restore/${roleId}`, { headers }).pipe(
+      catchError(err => throwError(err))
+    );
+  }
+
+  changePassword(data: { contrasenaActual: string; nuevaContrasena: string }): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.post(`${this.getApiUrl()}/change-password`, data, { headers }).pipe(
+      catchError(err => throwError(err))
+    );
   }
 }
