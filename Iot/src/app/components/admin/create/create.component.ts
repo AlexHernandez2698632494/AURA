@@ -34,9 +34,9 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 })
 export class CreateAdminComponent implements OnInit {
   adminForm: FormGroup;
-  availableRoles: any[] = [];  // Lista de roles disponibles (con objetos que contienen id y nombre)
-  selectedRoles: any[] = [];   // Roles seleccionados por el usuario (almacenamos ids, no nombres)
-  readonly separatorKeysCodes: number[] = [ENTER, COMMA]; // Para permitir separar roles por coma
+  availableAuthorities: any[] = [];  // Lista de autoridades disponibles
+  selectedAuthorities: any[] = [];   // Autoridades seleccionadas
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA]; // Para separar autoridades
 
   constructor(
     private router: Router,
@@ -44,79 +44,69 @@ export class CreateAdminComponent implements OnInit {
     private adminService: AdminService
   ) {
     this.adminForm = this.fb.group({
-      nombre: ['', [Validators.required]],       // Validación para el campo nombre
-      usuario: ['', [Validators.required]],      // Validación para el campo usuario
-      correo: ['', [Validators.required, Validators.email]],  // Validación para el campo correo
-      roles: [[], [Validators.required]]         // Validación para los roles seleccionados
+      nombre: ['', [Validators.required]],
+      usuario: ['', [Validators.required]],
+      correo: ['', [Validators.required, Validators.email]],
+      authorities: [[], [Validators.required]] // Cambiar roles a authorities
     });
   }
 
   ngOnInit(): void {
-    // Obtener los roles desde el backend
-    this.adminService.getRoles().subscribe(
-      (roles) => {
-        this.availableRoles = roles; // Guardamos el rol completo (id + nombre)
+    this.adminService.getAuthorities().subscribe(
+      (authorities) => {
+        this.availableAuthorities = authorities; // Actualizar disponibles
       },
       (error) => {
-        console.error('Error al obtener roles', error);
-        Swal.fire('Error', 'No se pudieron cargar los roles', 'error');
+        console.error('Error al obtener autoridades', error);
+        Swal.fire('Error', 'No se pudieron cargar las autoridades', 'error');
       }
     );
   }
 
-  onBackClick(): void {
-    // Regresar a la vista de administrador
-    this.router.navigate(['/admin/index']);
-  }
-
-  onRoleSelection(event: any): void {
-    // Obtener los nombres de los roles seleccionados
+  onAuthoritySelection(event: any): void {
     const value = event.value;
-    this.selectedRoles = value;
-    // Actualizar los roles seleccionados en el formulario
-    this.adminForm.patchValue({ roles: this.selectedRoles });
+    this.selectedAuthorities = value;
+    this.adminForm.patchValue({ authorities: this.selectedAuthorities });
   }
 
-  removeRole(role: string): void {
-    // Remover un rol específico de la lista de roles seleccionados
-    this.selectedRoles = this.selectedRoles.filter((r) => r !== role);
-    this.adminForm.patchValue({ roles: this.selectedRoles });
+  removeAuthority(authority: string): void {
+    this.selectedAuthorities = this.selectedAuthorities.filter((a) => a !== authority);
+    this.adminForm.patchValue({ authorities: this.selectedAuthorities });
   }
 
   registerAdmin(): void {
     if (this.adminForm.valid) {
-      const adminData = this.adminForm.value;  // Obtener los datos del formulario
+      const adminData = this.adminForm.value;
 
-      // Convertir los nombres de los roles seleccionados a los respectivos IDs
-      const rolesWithIds = this.selectedRoles.map(roleName => {
-        const role = this.availableRoles.find(r => r.name === roleName);
-        return role ? { id: role._id } : null;
-      }).filter(role => role); // Filtrar cualquier valor nulo (en caso de que no se haya encontrado un rol)
+      const authoritiesWithIds = this.selectedAuthorities.map(authorityName => {
+        const authority = this.availableAuthorities.find(a => a.name === authorityName);
+        return authority ? { id: authority._id } : null;
+      }).filter(authority => authority);
 
-      // Crear el payload con los roles con IDs
       const adminPayload = {
         nombre: adminData.nombre,
         usuario: adminData.usuario,
         correo: adminData.correo,
-        roles: rolesWithIds  // Enviar los roles con el formato de _id
+        authorities: authoritiesWithIds // Cambiar roles a authorities
       };
 
-      // Llamar al servicio para registrar al administrador
       this.adminService.registerAdmin(adminPayload).subscribe(
         (response) => {
-          // Si el registro fue exitoso, mostramos un mensaje de éxito
           Swal.fire('Éxito', 'Administrador registrado correctamente', 'success');
-          this.router.navigate(['/admin/index']);  // Redirigir al listado de administradores
+          this.router.navigate(['/admin/index']);
         },
         (error) => {
-          // Si hay error en el registro, mostramos un mensaje de error
           console.error('Error al registrar administrador', error);
           Swal.fire('Error', 'No se pudo registrar al administrador', 'error');
         }
       );
     } else {
-      // Si el formulario no es válido, mostramos una advertencia
       Swal.fire('Advertencia', 'Por favor, complete todos los campos correctamente', 'warning');
     }
+  }
+
+  onBackClick(): void {
+    // Regresar a la vista de administrador
+    this.router.navigate(['/admin/index']);
   }
 }

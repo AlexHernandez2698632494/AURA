@@ -46,37 +46,38 @@
         </mat-form-field>
       </div>
 
-      <!-- Campo de Roles -->
-      <div class="input-field">
-        <mat-form-field appearance="fill">
-          <mat-label>Roles</mat-label>
+      <!-- Campo de Autoridades -->
+<div class="input-field">
+  <mat-form-field appearance="fill">
+    <mat-label>Autoridades</mat-label>
 
-          <!-- mat-select para elegir múltiples roles -->
-          <mat-select
-      formControlName="roles"
+    <!-- mat-select para elegir múltiples autoridades -->
+    <mat-select
+      formControlName="authorities"
       multiple
-      (selectionChange)="onRoleSelection($event)"
+      (selectionChange)="onAuthoritySelection($event)"
     >
-    <mat-option *ngFor="let role of availableRoles" [value]="role.name">
-      {{ role.name }}
-    </mat-option>
-          </mat-select>
+      <mat-option *ngFor="let authority of availableAuthorities" [value]="authority.name">
+        {{ authority.name }}
+      </mat-option>
+    </mat-select>
 
-          <!-- Lista de roles seleccionados con chips -->
-          <mat-chip-set>
-            <mat-chip
-              *ngFor="let role of selectedRoles"
-              [removable]="true"
-              (removed)="removeRole(role)"
-            >
-              {{ role }}
-              <button matChipRemove>
-                <mat-icon>cancel</mat-icon>
-              </button>
-            </mat-chip>
-          </mat-chip-set>
-        </mat-form-field>
-      </div>
+    <!-- Lista de autoridades seleccionadas con chips -->
+    <mat-chip-set>
+      <mat-chip
+        *ngFor="let authority of selectedAuthorities"
+        [removable]="true"
+        (removed)="removeAuthority(authority)"
+      >
+        {{ authority }}
+        <button matChipRemove>
+          <mat-icon>cancel</mat-icon>
+        </button>
+      </mat-chip>
+    </mat-chip-set>
+  </mat-form-field>
+</div>
+
 
       <button mat-raised-button color="primary" class="register-button" type="submit" [disabled]="adminForm.invalid">
         Registrar administrador

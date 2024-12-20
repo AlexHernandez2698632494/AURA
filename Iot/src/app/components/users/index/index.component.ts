@@ -15,47 +15,47 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-index',
   standalone: true,
-  imports: [RouterOutlet, 
-    SideComponent, 
-    FormsModule, 
+  imports: [
+    RouterOutlet,
+    SideComponent,
+    FormsModule,
     CommonModule,
     MatTableModule,
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
     MatDividerModule,
-  MatIconModule],
+    MatIconModule
+  ],
   templateUrl: './index.component.html',
   styleUrl: './index.component.css'
 })
 export class IndexUsersComponent implements OnInit {
   users: any[] = [];
-  roles: any[] = [];
+  authorities: any[] = [];
   Math = Math;
   searchTerm: string = '';
   recordsToShow: number = 10;
   currentPage: number = 1;
 
-  constructor(private adminService: AdminService, private router: Router) { }
+  constructor(private adminService: AdminService, private router: Router) {}
 
   ngOnInit() {
     this.loadUsers();
   }
 
   loadUsers() {
-    const token = localStorage.getItem('token');  // Recuperamos el token desde localStorage
+    const token = localStorage.getItem('token'); // Recuperamos el token desde localStorage
 
     if (!token) {
-      // Mostrar una alerta si no se encuentra el token
       Swal.fire({
         icon: 'error',
         title: 'No se encuentra el token',
         text: 'Por favor, inicie sesión nuevamente.',
       }).then(() => {
-        // Opcional: Redirigir al usuario a la página de login
         this.router.navigate(['/login']);
       });
-      return;  // No continuar si no hay token
+      return; // No continuar si no hay token
     }
 
     this.adminService.getUsers().subscribe({
@@ -66,15 +66,15 @@ export class IndexUsersComponent implements OnInit {
       error: (err) => {
         console.error('Error al cargar los usuarios:', err);
       }
-    }
-    );
-    this.adminService.getRoles().subscribe({
+    });
+
+    this.adminService.getAuthorities().subscribe({
       next: (data) => {
-        this.roles = data;
-        console.log('roles cargados:', this.roles);
+        this.authorities = data;
+        console.log('Autoridades cargadas:', this.authorities);
       },
       error: (err) => {
-        console.error('Error al cargar los roles:', err);
+        console.error('Error al cargar las autoridades:', err);
       }
     });
   }
@@ -90,13 +90,13 @@ export class IndexUsersComponent implements OnInit {
     return filtereduser.slice(start, end);
   }
 
-  filteredRoles() {
-    const filteredrole = this.roles.filter(role =>
-      role.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+  filteredAuthorities() {
+    const filteredAuthorities = this.authorities.filter(authority =>
+      authority.name.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
     const start = (this.currentPage - 1) * this.recordsToShow;
     const end = start + this.recordsToShow;
-    return filteredrole.slice(start, end);
+    return filteredAuthorities.slice(start, end);
   }
 
   // Calcula el total de páginas

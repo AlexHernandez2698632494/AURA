@@ -71,37 +71,9 @@ export class AdminService {
       catchError(err => throwError(err))
     );
   }
-
-  getRoles(): Observable<any[]> {
+  getAuthorities(): Observable<any[]> {
     const headers = this.getAuthHeaders();
-    return this.http.get<any[]>(`${this.getApiUrl()}/roles`, { headers }).pipe(
-      catchError(err => throwError(err))
-    );
-  }
-
-  createRole(roleData: { nombre: string; usuario: string; correo: string }): Observable<any> {
-    return this.http.post(`${this.getApiUrl()}/roles`, roleData).pipe(
-      catchError(err => throwError(err))
-    );
-  }
-
-  getDeleteRoles(): Observable<any[]> {
-    const headers = this.getAuthHeaders();
-    return this.http.get<any[]>(`${this.getApiUrl()}/roles/delete`, { headers }).pipe(
-      catchError(err => throwError(err))
-    );
-  }
-
-  deleteRole(roleId: string): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.delete(`${this.getApiUrl()}/roles/${roleId}`, { headers }).pipe(
-      catchError(err => throwError(err))
-    );
-  }
-
-  restoreRole(roleId: string): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.delete(`${this.getApiUrl()}/roles/restore/${roleId}`, { headers }).pipe(
+    return this.http.get<any[]>(`${this.getApiUrl()}/authorities`, { headers }).pipe(
       catchError(err => throwError(err))
     );
   }

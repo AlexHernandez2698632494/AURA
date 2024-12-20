@@ -16,9 +16,6 @@ import { IndexSessionComponent } from './app/components/session/index/index.comp
 import { IndexESessionComponent } from './app/components/session/index-e/index-e.component';
 import { IndexUsersComponent } from './app/components/users/index/index.component';
 import { ChangePasswordComponent } from './app/components/change-password/change-password.component';
-import { IndexRoleComponent } from './app/components/users/index-role/index-role.component';
-import { CreateRoleComponent } from './app/components/users/create-role/create-role.component';
-import { IndexDeleteRoleComponent } from './app/components/users/index-delete-role/index-delete-role.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 const routes: Routes = [
@@ -42,9 +39,6 @@ const routes: Routes = [
   // rutas de usuarios:
   { path: 'users/index', component: IndexUsersComponent },
   { path: 'users/cambiarContra', component: ChangePasswordComponent },
-  { path: 'users/roles', component: IndexRoleComponent },
-  { path: 'users/rol', component: CreateRoleComponent },
-  { path: 'users/role/restore',component:IndexDeleteRoleComponent}
 ];
 
 bootstrapApplication(AppComponent, {

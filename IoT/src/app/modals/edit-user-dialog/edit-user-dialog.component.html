@@ -19,12 +19,12 @@
     <input matInput [(ngModel)]="data.usuario" />
   </mat-form-field>
 
-  <!-- Selector de roles -->
+  <!-- Selector de autoridades -->
   <mat-form-field appearance="fill">
-    <mat-label>Roles</mat-label>
-    <mat-select [(value)]="selectedRoles" multiple>
-      <mat-option *ngFor="let role of roles$ | async" [value]="role._id">
-        {{ role.name }}
+    <mat-label>Autoridades</mat-label>
+    <mat-select [(value)]="selectedAuthorities" multiple>
+      <mat-option *ngFor="let authority of authorities$ | async" [value]="authority._id">
+        {{ authority.name }}
       </mat-option>
     </mat-select>
   </mat-form-field>
@@ -32,5 +32,14 @@
 
 <mat-dialog-actions>
   <button mat-button (click)="onCancel()">Cancelar</button>
-  <button mat-raised-button color="primary" class="register-button" type="submit" [disabled]="adminForm.invalid" (click)="onSave()">Guardar</button>
+  <button
+    mat-raised-button
+    color="primary"
+    class="register-button"
+    type="submit"
+    [disabled]="adminForm.invalid"
+    (click)="onSave()"
+  >
+    Guardar
+  </button>
 </mat-dialog-actions>

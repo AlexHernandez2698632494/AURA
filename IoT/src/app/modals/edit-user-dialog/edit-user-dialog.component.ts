@@ -20,116 +20,102 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
     MatFormFieldModule,
     MatInputModule,
     FormsModule,
-    ReactiveFormsModule, // Asegúrate de importar ReactiveFormsModule
+    ReactiveFormsModule,
     CommonModule,
     MatButtonModule,
-    MatSelectModule
+    MatSelectModule,
   ],
   templateUrl: './edit-user-dialog.component.html',
-  styleUrls: ['./edit-user-dialog.component.css']
+  styleUrls: ['./edit-user-dialog.component.css'],
 })
 export class EditUserDialogComponent {
-  roles$: Observable<any[]>; // Lista de roles disponibles
-  selectedRoles: string[] = []; // IDs de los roles asignados al usuario
-  initialRoles: string[] = []; // Roles iniciales del usuario (antes de ser editados)
+  authorities$: Observable<any[]>; // Lista de autoridades disponibles
+  selectedAuthorities: string[] = []; // IDs de las autoridades asignadas al usuario
+  initialAuthorities: string[] = []; // Autoridades iniciales del usuario (antes de ser editadas)
 
-  // Datos iniciales del usuario (usuario, correo, nombre)
   initialUsuario: string;
   initialNombre: string;
   initialCorreo: string;
 
-  // Declarar el FormGroup para el formulario
   adminForm: FormGroup;
 
   constructor(
     public dialogRef: MatDialogRef<EditUserDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private adminService: AdminService,
-    private fb: FormBuilder // Inyección de FormBuilder para crear el formulario
+    private fb: FormBuilder
   ) {
-    // Obtener los roles disponibles desde el servicio
-    this.roles$ = this.adminService.getRoles();
+    // Obtener las autoridades disponibles desde el servicio
+    this.authorities$ = this.adminService.getAuthorities();
 
-    // Extraer los roles actuales del usuario
-    if (data.roleId && Array.isArray(data.roleId)) {
-      this.initialRoles = data.roleId.map((role: any) => role._id); // Extraer los _id de los roles
-      this.selectedRoles = [...this.initialRoles]; // Inicializar los roles seleccionados
+    // Extraer las autoridades actuales del usuario
+    if (data.authorities && Array.isArray(data.authorities)) {
+      this.initialAuthorities = data.authorities.map((authority: any) => authority._id); // Extraer los _id de las autoridades
+      this.selectedAuthorities = [...this.initialAuthorities]; // Inicializar las autoridades seleccionadas
     }
 
-    // Almacenar los datos iniciales del usuario (usuario, nombre, correo)
     this.initialUsuario = data.usuario;
     this.initialNombre = data.nombre;
     this.initialCorreo = data.correo;
 
-    // Crear el formulario con validaciones
     this.adminForm = this.fb.group({
-      usuario: [this.data.usuario, Validators.required],   // Campo de usuario con validación de requerido
-      nombre: [this.data.nombre, Validators.required],     // Campo de nombre con validación de requerido
-      correo: [this.data.correo, [Validators.required, Validators.email]], // Campo de correo con validación de requerido y formato de email
-      roles: [this.selectedRoles] // Los roles no tienen validación, pero se usan para controlarlos
+      usuario: [this.data.usuario, Validators.required],
+      nombre: [this.data.nombre, Validators.required],
+      correo: [this.data.correo, [Validators.required, Validators.email]],
+      authorities: [this.selectedAuthorities],
     });
   }
 
   onSave() {
     const updatedUserData: any = {};
-  
-    // Verificar si los datos del usuario (nombre, usuario, correo) han cambiado
+
     if (this.data.usuario !== this.initialUsuario) {
       updatedUserData.usuario = this.data.usuario;
     }
-  
+
     if (this.data.nombre !== this.initialNombre) {
       updatedUserData.nombre = this.data.nombre;
     }
-  
+
     if (this.data.correo !== this.initialCorreo) {
       updatedUserData.correo = this.data.correo;
     }
-  
-    // Verificar si los roles han cambiado
-    if (JSON.stringify(this.selectedRoles) !== JSON.stringify(this.initialRoles)) {
-      updatedUserData.roleId = [...this.selectedRoles]; // Si se agregan o cambian roles
+
+    if (JSON.stringify(this.selectedAuthorities) !== JSON.stringify(this.initialAuthorities)) {
+      updatedUserData.authorities = [...this.selectedAuthorities]; // Si se agregan o cambian autoridades
     }
-  
-    // Si se han eliminado roles, agregarlos al campo removeRoleId
-    const removedRoles = this.initialRoles.filter(role => !this.selectedRoles.includes(role));
-    if (removedRoles.length > 0) {
-      updatedUserData.removeRoleId = removedRoles; // Roles eliminados
+
+    const removedAuthorities = this.initialAuthorities.filter(
+      (authority) => !this.selectedAuthorities.includes(authority)
+    );
+    if (removedAuthorities.length > 0) {
+      updatedUserData.removeAuthorities = removedAuthorities; // Autoridades eliminadas
     }
-  
-    // Si no hay cambios en ningún campo, no enviamos la solicitud
+
     if (Object.keys(updatedUserData).length === 0) {
-      return; // No enviamos la solicitud si no hay cambios
+      return;
     }
-  
-    // Llamada al servicio para actualizar los datos del usuario
+
     this.adminService.updateUser(this.data._id, updatedUserData).subscribe({
       next: (response) => {
-        console.log('Usuario actualizado:', response);
-        
-        // Mostrar mensaje de éxito con SweetAlert2
         Swal.fire({
           title: 'Éxito!',
           text: 'El usuario se ha actualizado correctamente.',
           icon: 'success',
-          confirmButtonText: 'Aceptar'
+          confirmButtonText: 'Aceptar',
         });
-  
-        this.dialogRef.close(response.user); // Devuelve los datos actualizados
+        this.dialogRef.close(response.user);
       },
       error: (err) => {
-        console.error('Error actualizando el usuario:', err);
-        
-        // Mostrar mensaje de error con SweetAlert2
         Swal.fire({
           title: 'Error!',
           text: 'Ocurrió un error al actualizar el usuario. Intente nuevamente.',
           icon: 'error',
-          confirmButtonText: 'Aceptar'
+          confirmButtonText: 'Aceptar',
         });
-      }
+      },
     });
-  }  
+  }
 
   onCancel() {
     this.dialogRef.close();

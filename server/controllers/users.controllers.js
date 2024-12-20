@@ -15,6 +15,15 @@ export const getUsers = async (req, res) => {
   }
 };
 
+export const getAuthorities = async (req, res) => {
+  try {
+    const authorities = await Authority.find(); // Obtiene todas las autoridades
+    res.status(200).json(authorities);          // Devuelve las autoridades como un array en formato JSON
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener las autoridades', error: error.message });
+  }
+}; 
+
 // Obtener todos los usuarios eliminados (estadoEliminacion = 1)
 export const getDeleteUsers = async (req, res) => {
   try {

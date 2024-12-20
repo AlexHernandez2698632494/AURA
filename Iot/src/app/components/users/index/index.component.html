@@ -1,10 +1,10 @@
 <div class="app-container">
-  <app-side class="app-side"></app-side> <!-- Barra lateral -->
+  <app-side class="app-side"></app-side>
   <div class="main-content">
-    <router-outlet></router-outlet> <!-- Aquí se renderizan las vistas dinámicas -->
+    <router-outlet></router-outlet>
   </div>
 </div>
-<Div class="center">
+<div class="center">
   <div class="main-container">
     <div class="header">
       <h2>Control de usuarios</h2>
@@ -22,25 +22,27 @@
         </div>
         <div class="right">
           <mat-form-field class="search-input">
-            <mat-label class="search-label">buscar</mat-label>
+            <mat-label class="search-label">Buscar</mat-label>
             <input matInput type="text" [(ngModel)]="searchTerm">
           </mat-form-field>
         </div>
       </div>
-  
-      <!-- Tabla -->
+
       <table>
         <thead>
           <tr>
-            <th>Tipo de Usuario</th>
-            <th>Nombre del Usuario</th>
+            <th>Autoridades</th>
+            <th>Usuario</th>
             <th>Nombre</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let user of filteredUsers()">
-            <td><span *ngFor="let role of user.roleId; let last = last">{{role.name}}
-                <span *ngIf="!last"> , </span>
+            <td>
+              <!-- Recorremos las autoridades del usuario -->
+              <span *ngFor="let authority of user.authorities; let last = last">
+                {{ authority.name }}
+                <span *ngIf="!last">, </span>
               </span>
             </td>
             <td>{{ user.usuario }}</td>
@@ -48,8 +50,7 @@
           </tr>
         </tbody>
       </table>
-  
-      <!-- Información de registros y paginación -->
+
       <div class="footer">
         <div class="left">
           Mostrando registros del {{ (currentPage - 1) * recordsToShow + 1 }}
@@ -70,4 +71,4 @@
       </div>
     </div>
   </div>
-</Div>
+</div>
