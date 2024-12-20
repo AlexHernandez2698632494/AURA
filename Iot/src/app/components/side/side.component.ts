@@ -27,6 +27,36 @@ export class SideComponent {
       ]
     },
     { 
+      icon: 'notifications', 
+      label: 'Alertas', 
+      isSubmenuOpen: false, 
+      submenu: [
+        { label: 'Registrar Alertas', route: '/alert/create' },
+        { label: 'Control de Alertas', route: '/alert/index' },
+        { label: 'Alertas Eliminadas', route: '/alert/indexE' },
+      ]
+    },
+    { 
+      icon: 'subscriptions', 
+      label: 'Suscripciones', 
+      isSubmenuOpen: false, 
+      submenu: [
+        { label: 'Registrar Suscripciones', route: '/suscription/create' },
+        { label: 'Control de Suscripciones', route: '/suscription/index' },
+        { label: 'Suscripciones Eliminadas', route: '/suscription/indexE' },
+      ]
+    },
+    { 
+      icon: 'apps', 
+      label: 'Servicios', 
+      isSubmenuOpen: false, 
+      submenu: [
+        { label: 'Registrar Servicio', route: '/services/create' },
+        { label: 'Control de Servicios', route: '/services/index' },
+        { label: 'Servicios Eliminados', route: '/services/indexE' },
+      ]
+    },
+    { 
       icon: 'sensors', 
       label: 'Sensores', 
       isSubmenuOpen: false, 
@@ -59,7 +89,6 @@ export class SideComponent {
   menuItemsBottom = [
     { icon: 'logout', label: 'Cerrar Sesión', route: '/logout', submenu: [], isSubmenuOpen: false },
   ];
-  
 
   toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;
@@ -83,6 +112,4 @@ export class SideComponent {
       item.isSubmenuOpen = !item.isSubmenuOpen;
     }
   }
-    
-
 }

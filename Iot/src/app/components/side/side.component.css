@@ -208,7 +208,7 @@
     display: flex;
     align-items: center; /* Alineación vertical centrada */
     justify-content: flex-start; /* Íconos a la izquierda */
-    padding: 10px;
+    padding: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease-in-out;
   }z
@@ -306,13 +306,13 @@
       width: 180px;
   }
   .menu-item i {
-      font-size: 22px; /* Tamaño intermedio de íconos */
+      font-size: 2px; /* Tamaño intermedio de íconos */
   }
   .menu-text {
-      font-size: 15px; /* Texto ligeramente más grande */
+      font-size: 1px; /* Texto ligeramente más grande */
   }
   .submenu-item {
-      font-size: 15px;
+      font-size: 1px;
       padding: 8px 12px; /* Espaciado más amplio */
   }
 }
