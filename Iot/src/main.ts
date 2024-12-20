@@ -12,19 +12,19 @@ import { IndexAdminComponent } from './app/components/admin/index/index.componen
 import { IndexEAdminComponent } from './app/components/admin/index-e/index-e.component';
 
 //alert
-import { CreateAlertComponent } from './app/alert/create/create.component';
-import { IndexAlertComponent } from './app/alert/index/index.component';
-import { IndexEAlertComponent } from './app/alert/index-e/index-e.component';
+import { CreateAlertComponent } from './app/components/alert/create/create.component';
+import { IndexAlertComponent } from './app/components/alert/index/index.component';
+import { IndexEAlertComponent } from './app/components/alert/index-e/index-e.component';
 
 //suscription
-import { CreateSuscriptionComponent } from './app/suscription/create/create.component';
-import { IndexSuscriptionComponent } from './app/suscription/index/index.component';
-import { IndexESuscriptionComponent } from './app/suscription/index-e/index-e.component';
+import { CreateSuscriptionComponent } from './app/components/suscription/create/create.component';
+import { IndexSuscriptionComponent } from './app/components/suscription/index/index.component';
+import { IndexESuscriptionComponent } from './app/components/suscription/index-e/index-e.component';
 
 //service
-import { CreateServiceComponent } from './app/service/create/create.component';
-import { IndexServiceComponent } from './app/service/index/index.component';
-import { IndexEServiceComponent } from './app/service/index-e/index-e.component';
+import { CreateServiceComponent } from './app/components/service/create/create.component';
+import { IndexServiceComponent } from './app/components/service/index/index.component';
+import { IndexEServiceComponent } from './app/components/service/index-e/index-e.component';
 
 //sensors
 import { CreateSensorsComponent } from './app/components/sensors/create/create.component';
