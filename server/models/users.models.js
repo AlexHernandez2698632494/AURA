@@ -5,7 +5,7 @@ const UserSchema = new mongoose.Schema({
   correo: { type: String, required: true, unique: true },
   usuario: { type: String, required: true, unique: true },
   contrasena: { type: String, required: true },
-  roleId: [{ type: mongoose.Schema.Types.ObjectId, ref: "Role" }],
+  authorities: [{ type: mongoose.Schema.Types.ObjectId, ref: "authority" }],
   estadoEliminacion: { type: Number, default: 0, enum: [0, 1] }  // Agregado estadoEliminacion
 });
 
