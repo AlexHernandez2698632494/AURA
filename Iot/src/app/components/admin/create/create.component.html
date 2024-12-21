@@ -1,87 +1,79 @@
-<div class="app-container">
-  <app-side class="app-side"></app-side> <!-- Barra lateral -->
-  <div class="main-content">
-    <router-outlet></router-outlet> <!-- Renderiza vistas dinámicas -->
-  </div>
+<div>
+  <app-side></app-side> <!-- Barra lateral -->
+  <router-outlet></router-outlet> <!-- Renderiza vistas dinámicas -->
 </div>
-
-<div class="main-container">
-  <div class="header">
-    <button mat-icon-button class="back-button" (click)="onBackClick()">
-      <mat-icon>arrow_back</mat-icon> <!-- Icono de regresar -->
-    </button>
-    <h1 class="title">Registro de nuevo administrador</h1>
-  </div>
-
-  <div class="form-container">
-    <h2 class="form-title">Registro de administrador</h2>
-    <hr class="separator" />
-    <p class="form-description">Información general del administrador</p>
-    <p class="form-instruction">Ingrese la información que se solicita</p>
-
-    <!-- Formulario -->
-    <form [formGroup]="adminForm" (ngSubmit)="registerAdmin()">
-      <div class="row">
-        <div class="input-field">
-          <mat-form-field appearance="fill">
-            <mat-label>Nombre</mat-label>
-            <input matInput id="nombre" formControlName="nombre" type="text" placeholder="Ingrese nombre" />
-            <mat-icon matSuffix>person</mat-icon>
-          </mat-form-field>
-        </div>
-        <div class="input-field">
-          <mat-form-field appearance="fill">
-            <mat-label>Usuario</mat-label>
-            <input matInput id="usuario" formControlName="usuario" type="text" placeholder="Ingrese usuario" />
-            <mat-icon matSuffix>account_circle</mat-icon>
-          </mat-form-field>
-        </div>
-      </div>
-
-      <div class="input-field">
-        <mat-form-field appearance="fill">
-          <mat-label>Correo electrónico</mat-label>
-          <input matInput id="correo" formControlName="correo" type="email" placeholder="Ingrese correo" />
-          <mat-icon matSuffix>email</mat-icon>
-        </mat-form-field>
-      </div>
-
-      <!-- Campo de Autoridades -->
-<div class="input-field">
-  <mat-form-field appearance="fill">
-    <mat-label>Autoridades</mat-label>
-
-    <!-- mat-select para elegir múltiples autoridades -->
-    <mat-select
-      formControlName="authorities"
-      multiple
-      (selectionChange)="onAuthoritySelection($event)"
-    >
-      <mat-option *ngFor="let authority of availableAuthorities" [value]="authority.name">
-        {{ authority.name }}
-      </mat-option>
-    </mat-select>
-
-    <!-- Lista de autoridades seleccionadas con chips -->
-    <mat-chip-set>
-      <mat-chip
-        *ngFor="let authority of selectedAuthorities"
-        [removable]="true"
-        (removed)="removeAuthority(authority)"
-      >
-        {{ authority }}
-        <button matChipRemove>
-          <mat-icon>cancel</mat-icon>
-        </button>
-      </mat-chip>
-    </mat-chip-set>
-  </mat-form-field>
-</div>
-
-
-      <button mat-raised-button color="primary" class="register-button" type="submit" [disabled]="adminForm.invalid">
-        Registrar administrador
+<div class="center">
+  <div class="main-container">
+    <div class="header">
+      <button mat-icon-button class="back-button" (click)="onBackClick()">
+        <mat-icon>arrow_back</mat-icon> <!-- Icono de regresar -->
       </button>
-    </form>
+      <h1 class="title">Registro de nuevo administrador</h1>
+    </div>
+  
+    <div class="form-container">
+      <h2 class="form-title">Registro de administrador</h2>
+      <hr class="separator" />
+      <p class="form-description">Información general del administrador</p>
+      <p class="form-instruction">Ingrese la información que se solicita</p>
+  
+      <!-- Formulario -->
+      <form [formGroup]="adminForm" (ngSubmit)="registerAdmin()">
+        <div class="row">
+          <div class="input-field">
+            <mat-form-field appearance="fill">
+              <mat-label>Nombre</mat-label>
+              <input matInput id="nombre" formControlName="nombre" type="text" placeholder="Ingrese nombre" />
+              <mat-icon matSuffix>person</mat-icon>
+            </mat-form-field>
+          </div>
+          <div class="input-field">
+            <mat-form-field appearance="fill">
+              <mat-label>Usuario</mat-label>
+              <input matInput id="usuario" formControlName="usuario" type="text" placeholder="Ingrese usuario" />
+              <mat-icon matSuffix>account_circle</mat-icon>
+            </mat-form-field>
+          </div>
+        </div>
+  
+        <div class="input-field">
+          <mat-form-field appearance="fill">
+            <mat-label>Correo electrónico</mat-label>
+            <input matInput id="correo" formControlName="correo" type="email" placeholder="Ingrese correo" />
+            <mat-icon matSuffix>email</mat-icon>
+          </mat-form-field>
+        </div>
+  
+        <!-- Campo de Autoridades -->
+        <div class="input-field">
+          <mat-form-field appearance="fill">
+            <mat-label>Autoridades</mat-label>
+  
+            <!-- mat-select para elegir múltiples autoridades -->
+            <mat-select formControlName="authorities" multiple (selectionChange)="onAuthoritySelection($event)">
+              <mat-option *ngFor="let authority of availableAuthorities" [value]="authority.name">
+                {{ authority.name }}
+              </mat-option>
+            </mat-select>
+  
+            <!-- Lista de autoridades seleccionadas con chips -->
+            <mat-chip-set>
+              <mat-chip *ngFor="let authority of selectedAuthorities" [removable]="true"
+                (removed)="removeAuthority(authority)">
+                {{ authority }}
+                <button matChipRemove>
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip>
+            </mat-chip-set>
+          </mat-form-field>
+        </div>
+  
+  
+        <button mat-raised-button color="primary" class="register-button" type="submit" [disabled]="adminForm.invalid">
+          Registrar administrador
+        </button>
+      </form>
+    </div>
   </div>
 </div>

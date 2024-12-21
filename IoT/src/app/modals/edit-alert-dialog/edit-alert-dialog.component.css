@@ -1,0 +1,57 @@
+/* Estilo para el contenedor del diálogo */
+mat-dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    min-width: 300px;
+  }
+  
+  /* Estilo para el título del diálogo */
+  h2[mat-dialog-title] {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1976d2;
+    margin: 0;
+    padding-bottom: 16px;
+  }
+  
+  /* Estilo para los campos del formulario */
+  mat-form-field {
+    width: 100%;
+  }
+  
+  /* Estilo para los botones en mat-dialog-actions */
+  mat-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 16px;
+  }
+  
+  mat-dialog-actions button {
+    min-width: 100px;  /* Da un tamaño adecuado a los botones */
+  }
+  
+  /* Estilo específico para el botón "Guardar" */
+  .register-button {
+    background-color: #006DA5; /* Color de fondo cuando está deshabilitado */
+    color: white;  /* Color del texto cuando está deshabilitado */
+    min-width: 120px;  /* Establece un ancho mínimo */
+    padding: 8px 16px; /* Ajuste de relleno */
+    border-radius: 4px; /* Bordes redondeados */
+  }
+  
+  /* Estilo al hacer hover sobre el botón Guardar */
+  .register-button:hover {
+    background-color: #006DA5; /* Cambiar el color de fondo a un azul más oscuro */
+    color: white; /* Cambiar el color del texto a blanco */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Agregar sombra sutil al botón */
+  }
+  
+  /* Estilo cuando el botón está deshabilitado */
+  .register-button[disabled] {
+    background-color: #006DA5; /* Color de fondo cuando está deshabilitado */
+    color: white;  /* Color del texto cuando está deshabilitado */
+    cursor: not-allowed;  /* Cambia el cursor para indicar que está deshabilitado */
+  }

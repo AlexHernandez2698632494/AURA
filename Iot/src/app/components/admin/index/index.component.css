@@ -1,11 +1,14 @@
+.center{
+  display: flex;
+  justify-content: center;  /* Centra horizontalmente */
+  min-height: 100vh; 
+}
+
 .main-container {
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  max-width: 1100px;
-  padding: 20px;
-  margin-left:10%;
-  width: calc(100% - 120px);
+  width: 80%;
+  max-width: 85%;
+  padding: 20px; /* Ajusta este valor según el tamaño de tu sidebar */
+  width: calc(100% - 120px); /* Asegura que el contenedor ocupe el espacio restante */
   box-sizing: border-box;
 }
 
@@ -193,7 +196,6 @@ table tr:hover {
 
 @media (max-width: 629px) {
   .main-container {
-    font-family: Arial, sans-serif;
     padding: 20px;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -228,5 +230,9 @@ table tr:hover {
   .btn-edit,
   .btn-delete {
     padding: 4px 8px;
+  }
+  th, td {
+    font-size: 14px;  
+    word-wrap: break-word;
   }
 }
