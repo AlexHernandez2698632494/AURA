@@ -1,22 +1,22 @@
-<h2 mat-dialog-title>Editar Sensor</h2>
+<h2 mat-dialog-title>Ver Sensor</h2>
 
 <mat-dialog-content>
   <!-- Campo para el nombre del sensor -->
   <mat-form-field appearance="fill">
     <mat-label>Nombre</mat-label>
-    <input matInput formControlName="name" />
+    <input matInput [value]="initialSensorName" disabled />
   </mat-form-field>
 
   <!-- Campo para la ubicación del sensor -->
   <mat-form-field appearance="fill">
     <mat-label>Ubicación</mat-label>
-    <input matInput formControlName="location" />
+    <input matInput [value]="initialSensorLocation" disabled />
   </mat-form-field>
 
-  <!-- Selector de tipo de sensor -->
+  <!-- Campo para el tipo de sensor -->
   <mat-form-field appearance="fill">
     <mat-label>Tipo de Sensor</mat-label>
-    <mat-select formControlName="type">
+    <mat-select [value]="selectedSensorType" disabled>
       <mat-option *ngFor="let sensor of sensorTypes$ | async" [value]="sensor._id">
         {{ sensor.name }}
       </mat-option>
@@ -25,15 +25,5 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
-  <button mat-button (click)="onCancel()">Cancelar</button>
-  <button
-    mat-raised-button
-    color="primary"
-    class="register-button"
-    type="submit"
-    [disabled]="sensorForm.invalid"
-    (click)="onSave()"
-  >
-    Guardar
-  </button>
+  <button mat-button (click)="onClose()">Cerrar</button>
 </mat-dialog-actions>

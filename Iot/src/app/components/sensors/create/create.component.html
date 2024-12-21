@@ -1,1 +1,244 @@
-<p>create works!</p>
+<div class="app-container">
+    <app-side class="app-side"></app-side>
+    <div class="main-content">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+  
+  <div class="main-container">
+    <div class="header">
+      <button mat-icon-button class="back-button" (click)="onBackClick()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1 class="title">Registro de nuevo sensor</h1>
+    </div>
+  
+    <div class="form-container">
+      <h2 class="form-title">Registro de sensores</h2>
+      <hr class="separator" />
+      <p class="form-description">Seleccione el tipo de sensor y complete los datos requeridos</p>
+  
+      <form [formGroup]="sensorForm" (ngSubmit)="registerSensor()">
+        <!-- Selección del tipo de sensor -->
+        <div>
+          <mat-radio-group formControlName="sensorType" class="radio-group">
+            <mat-radio-button value="jsonMqtt">JSON/MQTT</mat-radio-button>
+            <mat-radio-button value="lorawanMqtt">LoraWAN/MQTT</mat-radio-button>
+            <mat-radio-button value="jsonHttp">JSON/HTTP</mat-radio-button>
+          </mat-radio-group>
+        </div>
+  
+        <!-- Contenedor para JSON/MQTT -->
+        <div *ngIf="sensorForm.get('sensorType')?.value === 'jsonMqtt'">
+          <h3>Información General</h3>
+          <div class="row">
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Device ID</mat-label>
+              <input matInput formControlName="deviceId" />
+            </mat-form-field>
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="name" />
+            </mat-form-field>
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Tipo de Entidad</mat-label>
+              <input matInput formControlName="entityType" />
+            </mat-form-field>
+          </div>
+          <div class="row">
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Zona Horaria</mat-label>
+              <input matInput formControlName="timezone" />
+            </mat-form-field>
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Seleccionar Path</mat-label>
+              <mat-select formControlName="path">
+                <mat-option *ngFor="let path of paths" [value]="path">{{ path }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Seleccionar Servicio</mat-label>
+              <mat-select formControlName="service">
+                <mat-option *ngFor="let service of services" [value]="service">{{ service }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="row">
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Protocolo</mat-label>
+              <input matInput formControlName="protocol" />
+            </mat-form-field>
+          </div>
+  
+          <h3>Locación</h3>
+          <div class="row">
+            <mat-form-field class="col-full" appearance="fill">
+              <mat-label>Coordenadas</mat-label>
+              <input matInput formControlName="coordinates" />
+            </mat-form-field>
+          </div>
+  
+          <button mat-raised-button color="primary" class="register-button" type="submit" [disabled]="sensorForm.invalid">
+            Registrar Sensor
+          </button>
+        </div>
+  
+        <!-- Contenedor para LoraWAN/MQTT -->
+        <div *ngIf="sensorForm.get('sensorType')?.value === 'lorawanMqtt'">
+          <h3>Información General</h3>
+          <div class="row">
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Device ID</mat-label>
+              <input matInput formControlName="deviceId" />
+            </mat-form-field>
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="name" />
+            </mat-form-field>
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Tipo de Entidad</mat-label>
+              <input matInput formControlName="entityType" />
+            </mat-form-field>
+          </div>
+          <div class="row">
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Zona Horaria</mat-label>
+              <input matInput formControlName="timezone" />
+            </mat-form-field>
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Seleccionar Path</mat-label>
+              <mat-select formControlName="path">
+                <mat-option *ngFor="let path of paths" [value]="path">{{ path }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+  
+          <h3>LoraWAN</h3>
+          <div class="row">
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Host</mat-label>
+              <input matInput formControlName="host" />
+            </mat-form-field>
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Protocolo</mat-label>
+              <input matInput formControlName="protocol" />
+            </mat-form-field>
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Puerto</mat-label>
+              <input matInput formControlName="port" />
+            </mat-form-field>
+          </div>
+          <div class="row">
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Usuario</mat-label>
+              <input matInput formControlName="user" />
+            </mat-form-field>
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Contraseña</mat-label>
+              <input matInput formControlName="password" />
+            </mat-form-field>
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Proveedor</mat-label>
+              <input matInput formControlName="provider" />
+            </mat-form-field>
+          </div>
+          <div class="row">
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Mantener Activo</mat-label>
+              <input matInput formControlName="keepAlive" />
+            </mat-form-field>
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Dev EUI</mat-label>
+              <input matInput formControlName="devEui" />
+            </mat-form-field>
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>App EUI</mat-label>
+              <input matInput formControlName="appEui" />
+            </mat-form-field>
+          </div>
+          <div class="row">
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Application ID</mat-label>
+              <input matInput formControlName="applicationId" />
+            </mat-form-field>
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Application Key</mat-label>
+              <input matInput formControlName="applicationKey" />
+            </mat-form-field>
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Data Model</mat-label>
+              <input matInput formControlName="dataModel" />
+            </mat-form-field>
+          </div>
+  
+          <h3>Locación</h3>
+          <div class="row">
+            <mat-form-field class="col-full" appearance="fill">
+              <mat-label>Coordenadas</mat-label>
+              <input matInput formControlName="coordinates" />
+            </mat-form-field>
+          </div>
+  
+          <button mat-raised-button color="primary" class="register-button" type="submit" [disabled]="sensorForm.invalid">
+            Registrar Sensor
+          </button>
+        </div>
+  
+        <!-- Contenedor para JSON/HTTP -->
+        <div *ngIf="sensorForm.get('sensorType')?.value === 'jsonHttp'">
+          <h3>Información General</h3>
+          <div class="row">
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Device ID</mat-label>
+              <input matInput formControlName="deviceId" />
+            </mat-form-field>
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="name" />
+            </mat-form-field>
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Tipo de Entidad</mat-label>
+              <input matInput formControlName="entityType" />
+            </mat-form-field>
+          </div>
+          <div class="row">
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Zona Horaria</mat-label>
+              <input matInput formControlName="timezone" />
+            </mat-form-field>
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Seleccionar Path</mat-label>
+              <mat-select formControlName="path">
+                <mat-option *ngFor="let path of paths" [value]="path">{{ path }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Seleccionar Servicio</mat-label>
+              <mat-select formControlName="service">
+                <mat-option *ngFor="let service of services" [value]="service">{{ service }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="row">
+            <mat-form-field class="col" appearance="fill">
+              <mat-label>Protocolo</mat-label>
+              <input matInput formControlName="protocol" />
+            </mat-form-field>
+          </div>
+  
+          <h3>Locación</h3>
+          <div class="row">
+            <mat-form-field class="col-full" appearance="fill">
+              <mat-label>Coordenadas</mat-label>
+              <input matInput formControlName="coordinates" />
+            </mat-form-field>
+          </div>
+    
+          <button mat-raised-button color="primary" class="register-button" type="submit" [disabled]="sensorForm.invalid">
+            Registrar Sensor
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
