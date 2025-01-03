@@ -1,1 +1,81 @@
-<p>index-e works!</p>
+<div class="app-container">
+  <app-side class="app-side"></app-side> <!-- Barra lateral -->
+  <div class="main-content">
+    <router-outlet></router-outlet> <!-- Aquí se renderizan las vistas dinámicas -->
+  </div>
+</div>
+<div class="main-container">
+  <div class="header">
+    <h2>Control de Sensores Eliminados</h2>
+  </div>
+  <div class="sub-header">
+    <h3>Sensores registrados</h3>
+    <hr />
+    <div class="table-controls">
+      <div class="left">
+        <label for="records">Mostrar</label>
+        <select id="records" [(ngModel)]="recordsToShow">
+          <option *ngFor="let option of [5, 10, 15, 20]" [value]="option">{{ option }}</option>
+        </select>
+        <span>registros</span>
+      </div>
+      <div class="right">
+        <mat-form-field class="search-input">
+          <mat-label class="search-label">buscar</mat-label>
+          <input matInput type="text" [(ngModel)]="searchTerm">
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Tabla -->
+    <table>
+      <thead>
+        <tr>
+          <th>Id del Dispositivo</th>
+          <th>Entidad</th>
+          <th>Tipo de Entidad</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of filteredUsers()">
+          <td>a</td>
+          <td></td>
+          <td>ad</td>
+          <td>
+            <!-- Botón Actualizar -->
+            <button mat-icon-button (click)="viewSensor(user)" class="btn-view" title="ver">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button mat-icon-button (click)="editSensor(user)" class="btn-edit" title="Actualizar">
+              <mat-icon>cached</mat-icon>
+            </button>
+            <button mat-icon-button (click)="deleteUser(user)" class="btn-delete" title="Eliminar">
+              <mat-icon>delete</mat-icon>
+            </button>            
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Información de registros y paginación -->
+    <div class="footer">
+      <div class="left">
+        Mostrando registros del {{ (currentPage - 1) * recordsToShow + 1 }}
+        al {{ Math.min(currentPage * recordsToShow, users.length) }}
+        de un total de {{ users.length }} registros
+      </div>
+      <div class="right pagination">
+        <button mat-fab extended (click)="previousPage()" [disabled]="currentPage === 1">
+          <mat-icon>arrow_back</mat-icon>
+          Anterior
+        </button>
+        <span>{{ currentPage }}</span>
+        <button mat-fab extended (click)="nextPage()" [disabled]="currentPage === totalPages()">
+          <mat-icon>arrow_forward</mat-icon>
+          Siguiente
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
