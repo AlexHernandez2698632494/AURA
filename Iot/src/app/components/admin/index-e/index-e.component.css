@@ -1,15 +1,15 @@
+.center{
+  display: flex;
+  justify-content: center;  /* Centra horizontalmente */
+  min-height: 100vh; 
+}
+
 .main-container {
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    max-width: 1100px;
-    font-family: Arial, sans-serif;
-    padding: 20px;
-    margin-left: 15%;
-    /* Ajusta este valor según el tamaño de tu sidebar */
-    width: calc(100% - 120px);
-    /* Asegura que el contenedor ocupe el espacio restante */
-    box-sizing: border-box;
+  width: 80%;
+  max-width: 85%;
+  padding: 20px; /* Ajusta este valor según el tamaño de tu sidebar */
+  width: calc(100% - 120px); /* Asegura que el contenedor ocupe el espacio restante */
+  box-sizing: border-box;
   }
   
   
@@ -26,7 +26,7 @@
   }
   
   .header h2 {
-    font-size: 18px;
+    font-size: 22px;
     font-weight: bold;
     color: #333;
     margin: 0;
@@ -34,19 +34,19 @@
   
   /* Contenedor 2 - Administradores Registrados */
   .sub-header {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
-    padding: 20px;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
+    padding: 20px;
   }
   
   .sub-header h3 {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 500;
-    color: #555;
-    margin: 0;
+    color: #333;
   }
   
   .sub-header hr {
@@ -61,7 +61,8 @@
   .table-controls {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
+    align-items: center;
+    margin-bottom: 10px;
   }
   
   .table-controls .left {
@@ -138,12 +139,8 @@
     cursor: pointer;
     font-size: 14px;
     margin-right: 8px;
-    /* Separar los botones */
-  }
-  
-  .btn-restore {
     background-color: #008f1f;
-    /* Rojo para eliminar */
+    /* Separar los botones */
   }
   
   .btn-restore:hover {
@@ -155,16 +152,13 @@
     font-size: 16px;
   }
   
-  /* Información de registros y paginación */
   .footer {
     display: flex;
     justify-content: space-between;
-    /* Asegura que el contenido esté separado entre izquierda y derecha */
     align-items: center;
     font-size: 14px;
     color: #555;
     margin-top: 20px;
-    /* Separar de la tabla */
   }
   
   .footer .left {
@@ -181,14 +175,14 @@
   }
   
   .footer .pagination button {
-    padding: 6px 12px;
-    margin: 0 8px;
-    /* Separar los botones de paginación */
     background-color: #00bcd4;
     color: #fff;
     border: none;
     border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 13px;
     cursor: pointer;
+    margin: 0 8px;
   }
   
   .footer .pagination button:disabled {
@@ -197,6 +191,8 @@
   }
   
   .footer .pagination span {
+    font-size: 14px;
+    font-weight: bold;
     margin: 0 8px;
   }
   
@@ -207,12 +203,9 @@
   /* Móviles grandes (480px a 767px) */
   @media (max-width: 629px) {
     .main-container {
-      font-family: Arial, sans-serif;
       padding: 20px;
-      border: 1px solid #ddd;
       border-radius: 8px;
-      margin-left:100px;
-      width: calc(100% - 120px); 
+      margin-left: 60px;
       box-sizing: border-box;
     }
   
@@ -221,8 +214,7 @@
       align-items: flex-start;
     }
   
-    .table-controls select,
-    .table-controls input {
+    .table-controls select{
       width: 100%;
       font-size: 12px;
       margin-bottom: 10px;
@@ -231,6 +223,7 @@
     table th,
     table td {
       padding: 8px;
+      word-wrap: break-word;
     }
   
     .footer {

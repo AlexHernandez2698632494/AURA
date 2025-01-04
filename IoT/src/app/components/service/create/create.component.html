@@ -1,1 +1,57 @@
-<p>create works!</p>
+<div>
+    <app-side></app-side>
+    <router-outlet></router-outlet>
+</div>
+<div class="center">
+    <div class="main-container">
+        <div class="header">
+            <button mat-icon-button class="back-button" (click)="onBackClick()">
+                <mat-icon>arrow_back</mat-icon> <!-- Icono de regresar -->
+            </button>
+            <h1 class="title">Registro de nuevo servicio</h1>
+        </div>
+
+        <div class="form-container">
+            <h2 class="form-title">Registro de servicios</h2>
+            <hr class="separator" />
+            <p class="form-instruction">Ingrese la información que se solicita</p>
+
+            <!-- Formulario -->
+            <form [formGroup]="serviceForm">
+                <div class="row">
+                    <div class="input-field">
+                        <mat-form-field appearance="fill">
+                            <mat-label>Api Key</mat-label>
+                            <input matInput id="apiKey" formControlName="apiKey" type="text" placeholder="Api Key" />
+                            <mat-icon matSuffix>key</mat-icon>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field">
+                        <mat-form-field appearance="fill">
+                            <mat-label>Tipo de Entidad</mat-label>
+                            <input matInput id="tipoEntidad" formControlName="tipoEntidad" type="text"
+                                placeholder="Ingrese tipo de entidad" />
+                            <mat-icon matSuffix>email</mat-icon>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field">
+                        <mat-form-field appearance="fill">
+                            <mat-label>Direccion</mat-label>
+                            <input matInput id="path" formControlName="path" type="text"
+                                placeholder="Ingrese la direccion" />
+                            <mat-icon matSuffix>location_on</mat-icon>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <button mat-raised-button color="primary" class="register-button" type="submit"
+                    [disabled]="serviceForm.invalid">
+                    Registrar servicio
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

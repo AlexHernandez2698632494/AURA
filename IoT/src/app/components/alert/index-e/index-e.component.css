@@ -1,0 +1,244 @@
+.center{
+    display: flex;
+    justify-content: center;  /* Centra horizontalmente */
+    min-height: 100vh; 
+  }
+  
+  .main-container {
+    width: 80%;
+    max-width: 85%;
+    padding: 20px; /* Ajusta este valor según el tamaño de tu sidebar */
+    width: calc(100% - 120px); /* Asegura que el contenedor ocupe el espacio restante */
+    box-sizing: border-box;
+    }
+    
+    
+    /* Contenedor 1 - Control de Administradores */
+    .header {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .header h2 {
+      font-size: 22px;
+      font-weight: bold;
+      color: #333;
+      margin: 0;
+    }
+    
+    /* Contenedor 2 - Administradores Registrados */
+    .sub-header {
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 10px;
+      padding: 20px;
+    }
+    
+    .sub-header h3 {
+      font-size: 18px;
+      font-weight: 500;
+      color: #333;
+    }
+    
+    .sub-header hr {
+      width: 100%;
+      border: 1px solid #00bcd4;
+      /* Línea celeste */
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+    
+    /* Controles de tabla (Mostrar registros y buscar) */
+    .table-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .table-controls .left {
+      display: flex;
+      align-items: center;
+    }
+    
+    .table-controls label {
+      font-size: 14px;
+      margin-right: 10px;
+    }
+    
+    .table-controls select {
+      padding: 6px;
+      font-size: 14px;
+      margin-right: 10px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+    
+    .search-input {
+      margin-top: 10px;
+      background-color: #fff;
+      font-size: 14px;
+      width: 220px;
+      height: 65px;
+      box-sizing: border-box;
+    }
+    
+    .search-input input {
+      height: 20px;
+    }
+    
+    .search-label {
+      height: auto;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    
+    table td {
+      padding: 12px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+    
+    table th {
+      padding: 12px;
+      border: 1px solid #ddd;
+      font-weight: bold;
+    }
+    
+    /* Target the second <td> element */
+    table tr:nth-child(even) {
+      background-color: #f1f1f1;
+    }
+    
+    
+    
+    /* Efecto hover: cambia el color de fondo de la fila a gris cuando el ratón está encima */
+    table tr:hover {
+      background-color: #cfcfcf;
+      /* Gris claro */
+    }
+    
+    .btn-restore {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 8px;
+      background-color: #008f1f;
+      /* Separar los botones */
+    }
+    
+    .btn-restore:hover {
+      background-color: #008512;
+    }
+    
+    .btn-edit i,
+    .btn-restore i {
+      font-size: 16px;
+    }
+    
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      color: #555;
+      margin-top: 20px;
+    }
+    
+    .footer .left {
+      flex: 1;
+      text-align: left;
+      font-size: 15px;
+      color: #666;
+    }
+    
+    .footer .right {
+      display: flex;
+      align-items: center;
+      /* Los controles de paginación estarán alineados en fila */
+    }
+    
+    .footer .pagination button {
+      background-color: #00bcd4;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      margin: 0 8px;
+    }
+    
+    .footer .pagination button:disabled {
+      background-color: #ddd;
+      cursor: not-allowed;
+    }
+    
+    .footer .pagination span {
+      font-size: 14px;
+      font-weight: bold;
+      margin: 0 8px;
+    }
+    
+    .footer .pagination button:hover {
+      background-color: #0097a7;
+    }
+    
+    /* Móviles grandes (480px a 767px) */
+    @media (max-width: 629px) {
+      .main-container {
+        padding: 20px;
+        border-radius: 8px;
+        margin-left: 60px;
+        box-sizing: border-box;
+      }
+    
+      .table-controls {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    
+      .table-controls select{
+        width: 100%;
+        font-size: 12px;
+        margin-bottom: 10px;
+      }
+    
+      table th,
+      table td {
+        padding: 8px;
+        word-wrap: break-word;
+      }
+    
+      .footer {
+        flex-direction: column;
+        align-items: flex-start;
+        font-size: 12px;
+      }
+    
+      .footer .pagination button {
+        padding: 6px 10px;
+        font-size: 14px;
+      }
+    
+      .btn-edit,
+      .btn-delete {
+        padding: 4px 8px;
+      }
+    }

@@ -1,1 +1,76 @@
-<p>index works!</p>
+<div>
+    <app-side></app-side> <!-- Barra lateral -->
+    <router-outlet></router-outlet> <!-- Aquí se renderizan las vistas dinámicas -->
+</div>
+<div class="center">
+    <div class="main-container">
+      <div class="header">
+        <h2>Control de Servicios</h2>
+      </div>
+      <div class="sub-header">
+        <h3>Servicios registrados</h3>
+        <hr />
+        <div class="table-controls">
+          <div class="left">
+            <label for="records">Mostrar</label>
+            <select id="records">
+              <option *ngFor="let option of [5, 10, 15, 20]" [value]="option">{{ option }}</option>
+            </select>
+            <span>registros</span>
+          </div>
+          <div class="right">
+            <mat-form-field class="search-input">
+              <mat-label class="search-label">buscar</mat-label>
+              <input matInput type="text">
+            </mat-form-field>
+          </div>
+        </div>
+  
+        <!-- Tabla -->
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Correo</th>
+              <th>Accion</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>a</td>
+              <td>g</td>
+              <td>
+                <!-- Botón Actualizar -->
+                <button mat-icon-button (click)="editService()" class="btn-edit" title="Actualizar">
+                  <mat-icon>cached</mat-icon>
+                </button>
+                <button mat-icon-button (click)="deleteService()" class="btn-delete" title="Eliminar">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+  
+        <!-- Información de registros y paginación -->
+        <div class="footer">
+          <div class="left">
+            Mostrando registros del 
+            al 
+            de un total de registros
+          </div>
+          <div class="right pagination">
+            <button mat-fab extended>
+              <mat-icon>arrow_back</mat-icon>
+              Anterior
+            </button>
+            <span>1</span>
+            <button mat-fab extended>
+              <mat-icon>arrow_forward</mat-icon>
+              Siguiente
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
