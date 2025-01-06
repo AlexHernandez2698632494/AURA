@@ -1,19 +1,19 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { SideLoginComponent } from '../side-login/side-login.component';
+import { SideComponent } from '../side/side.component';
+import { NavComponent } from '../nav/nav.component';
 import * as L from 'leaflet';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, SideLoginComponent],
+  imports: [RouterOutlet, SideComponent, NavComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
-export class HomeComponent implements AfterViewInit {
+export class HomeComponent implements AfterViewInit, OnDestroy {
   title = 'Home';
 
-  // Coordenadas y zoom de los distintos campus y El Salvador
   private campusLocations = {
     default: {
       coords: [13.7942, -88.8965] as [number, number], // Centro de El Salvador
@@ -48,8 +48,16 @@ export class HomeComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.initializeIcons(); // Asegura que los íconos se inicialicen correctamente
-    this.initializeMap();   // Inicializa el mapa con las coordenadas de El Salvador
+    this.initializeIcons();
+    this.initializeMap();
+
+    // Forzar actualización del tamaño del mapa cuando la ventana cambie de tamaño
+    window.addEventListener('resize', () => {
+      console.log('Redimensionando mapa...');
+      if (this.map) {
+        this.map.invalidateSize();
+      }
+    });
   }
 
   private initializeMap(location = this.campusLocations.default): void {
@@ -74,15 +82,13 @@ export class HomeComponent implements AfterViewInit {
       }, 0);
     }
   }
-  
-  // Método para actualizar el mapa al seleccionar una ubicación
+
   onLocationChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
     const location = selectElement.value;
 
     let newLocation = this.campusLocations.default; // Por defecto: El Salvador
 
-    // Asigna las coordenadas y zoom de acuerdo a la opción seleccionada
     if (location === 'antiguo') {
       newLocation = this.campusLocations.antiguo;
     } else if (location === 'soyapango') {
@@ -92,13 +98,19 @@ export class HomeComponent implements AfterViewInit {
     }
 
     if (this.map) {
-      // Cambia el centro del mapa y el zoom
       this.map.setView(newLocation.coords, newLocation.zoom);
-      // Cambia el marcador
       L.marker(newLocation.coords).addTo(this.map).openPopup();
     } else {
-      // Si el mapa no está inicializado, inicialízalo con las nuevas coordenadas
       this.initializeMap(newLocation);
     }
+  }
+
+  ngOnDestroy(): void {
+    // Eliminar el listener cuando se destruya el componente
+    window.removeEventListener('resize', () => {
+      if (this.map) {
+        this.map.invalidateSize();
+      }
+    });
   }
 }

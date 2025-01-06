@@ -1,0 +1,6 @@
+<div [ngClass]="{'hidden': !isLargeScreen}">
+  <app-side></app-side>
+</div>
+<div [ngClass]="{'hidden': isLargeScreen}">
+  <app-bottom-tab></app-bottom-tab>
+</div>

@@ -37,13 +37,15 @@ import { IndexUsersComponent } from './app/components/users/index/index.componen
 
 import { ChangePasswordComponent } from './app/components/change-password/change-password.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { MoreComponent } from './app/components/more/more.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
   { path: 'Home', component: HomeComponent },
   { path: 'prueba', component: PruebaComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'logout', component: LoginComponent },
+  { path: 'more', component: MoreComponent},
+  // { path: 'logout', component: LoginComponent },
   { path: 'recuperarView', component: ForgotComponent},
   // rutas de Admin:
   { path: 'admin/create', component: CreateAdminComponent }, 

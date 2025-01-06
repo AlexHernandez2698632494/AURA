@@ -1,7 +1,7 @@
 <div class="app-container">
-  <app-side-login class="app-side"></app-side-login> <!-- Barra lateral -->
+  <!-- <app-nav></app-nav>  -->
   <router-outlet></router-outlet>
-  <!-- Contenedor principal -->
+
   <div class="main-content">
     <!-- Selector de ubicación -->
     <select id="location" class="map-selector" (change)="onLocationChange($event)">
@@ -12,5 +12,9 @@
 
     <!-- Contenedor para el mapa -->
     <div id="map"></div>
+
+    <!-- Contenedor para el bottom tab -->
+    <div id="bottom-tab-container">
+      <app-nav></app-nav>    </div>
   </div>
 </div>

@@ -1,0 +1,13 @@
+<div *ngIf="isAuthenticated" class="more-menu">
+    <h3>Opciones adicionales</h3>
+    <ul>
+      <li (click)="navigateTo('/extra-feature')">Funcionalidad Adicional</li>
+      <li (click)="navigateTo('/settings')">Configuraciones</li>
+      <!-- Agrega más opciones según sea necesario -->
+    </ul>
+  </div>
+  
+  <div *ngIf="!isAuthenticated" class="no-auth">
+    <p>No tienes acceso a este contenido. Inicia sesión para continuar.</p>
+  </div>
+  

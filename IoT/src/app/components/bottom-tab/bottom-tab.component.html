@@ -1,0 +1,15 @@
+<!-- Bottom Tab Navigator -->
+<div class="bottom-tab-navigator">
+    <ul class="tab-items">
+      <li
+        *ngFor="let item of menuItems"
+        [class.active]="isActive(item.route)"
+        class="tab-item"
+        (click)="router.navigate([item.route])"
+      >
+        <i class="material-icons">{{ item.icon }}</i>
+        <span>{{ item.label }}</span>
+      </li>
+    </ul>
+  </div>
+  

@@ -1,0 +1,24 @@
+.more-menu {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
+  .more-menu ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .more-menu ul li {
+    padding: 8px;
+    cursor: pointer;
+  }
+  
+  .more-menu ul li:hover {
+    background-color: #ddd;
+  }
+  
+  .no-auth {
+    color: red;
+  }
+  

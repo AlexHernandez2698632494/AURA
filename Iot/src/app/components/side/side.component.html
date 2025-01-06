@@ -1,53 +1,53 @@
+<!-- Sidebar -->
 <div [class.collapsed]="isCollapsed" class="sidebar">
-    <input type="checkbox" id="checkbox" (change)="toggleSidebar()" [checked]="!isCollapsed">
-    <label for="checkbox" class="toggle">
-      <div class="bars" id="bar1"></div>
-      <div class="bars" id="bar2"></div>
-      <div class="bars" id="bar3"></div>
-    </label>
-  
-    <ul class="menu">
-      <!-- Sección superior -->
-      <li *ngFor="let item of menuItemsTop" class="menu-item" [class.open]="item.isSubmenuOpen">
-        <div *ngIf="!item.submenu?.length">
-          <a [routerLink]="item.route">
-            <i class="material-icons">{{ item.icon }}</i>
-            <span *ngIf="!isCollapsed" class="menu-text">{{ item.label }}</span>
-          </a>
-        </div>
-    
-        <!-- Para los elementos con submenú -->
-        <div *ngIf="item.submenu?.length" (click)="toggleSubmenu(item)">
-          <i class="material-icons">{{ item.icon }}</i>
-          <span *ngIf="!isCollapsed" class="menu-text">{{ item.label }}</span>
-          <i *ngIf="!isCollapsed" class="material-icons">
-            {{ item.isSubmenuOpen ? 'expand_less' : 'expand_more' }}
-          </i>
-        </div>
-
-        <!-- Submenú -->
-        <ul *ngIf="item.isSubmenuOpen && !isCollapsed" class="submenu">
-          <li *ngFor="let subItem of item.submenu" class="submenu-item">
-            <a [routerLink]="subItem.route">{{ subItem.label }}</a>
-          </li>
-        </ul>
-      </li>
-
-      <div class="separator">
-        <hr />
+  <div class="sidebar-header">
+    <!-- Contenedor para alinear -->
+    <div class="header-content">
+      <!-- Mostrar imágenes -->
+      <div class="images" *ngIf="!isCollapsed">
+        <img src="https://github.com/AlexHernandez2698632494/pictures/blob/main/SIMATI/Logo%20IIIE-02%20-%20copia.png?raw=true" alt="Image 1" />
+        <img src="https://github.com/AlexHernandez2698632494/pictures/blob/main/SIMATI/SIMATI%20UDB%202.0.png?raw=true" alt="Image 2" />
       </div>
-    
-      <!-- Sección inferior (sin submenú) -->
-      <li *ngFor="let item of menuItemsBottom" class="menu-item">
-        <a [routerLink]="item.route">
-          <i class="material-icons">{{ item.icon }}</i>
-          <span *ngIf="!isCollapsed" class="menu-text">{{ item.label }}</span>
-        </a>
-      </li>
-    </ul>
-    
-    
+      <!-- Botón toggle -->
+      <div class="toggle">
+        <input id="checkbox2" type="checkbox" (change)="toggleSidebar()" />
+        <label class="toggle2" for="checkbox2">
+          <div id="bar4" class="bars"></div>
+          <div id="bar5" class="bars"></div>
+          <div id="bar6" class="bars"></div>
+        </label>
+      </div>
+    </div>
   </div>
-  <router-outlet></router-outlet>
 
-  
+  <ul class="menu">
+    <!-- Sección superior -->
+    <li *ngFor="let item of menuItemsTop" class="menu-item" [class.open]="item.isSubmenuOpen">
+      <div (click)="item.submenu.length === 0 ? navigateTo(item.route) : toggleSubmenu(item)">
+        <i class="material-icons">{{ item.icon }}</i>
+        <span *ngIf="!isCollapsed">{{ item.label }}</span>
+        <!-- <i *ngIf="!isCollapsed" class="material-icons">
+          {{ item.isSubmenuOpen ? 'expand_less' : 'expand_more' }}
+        </i> -->
+      </div>
+      <!-- Submenú -->
+      <ul class="submenu" *ngIf="item.isSubmenuOpen">
+        <li *ngFor="let subItem of item.submenu" class="submenu-item">
+          <a [routerLink]="subItem.route">{{ subItem.label }}</a>
+        </li>
+      </ul>
+    </li>
+
+    <div class="separator">
+      <hr />
+    </div>
+
+    <!-- Sección inferior (sin submenú) -->
+    <li *ngFor="let item of menuItemsBottom" class="menu-item" (click)="logout()">
+      <a href="javascript:void(0)">
+        <i class="material-icons">{{ item.icon }}</i>
+        <span *ngIf="!isCollapsed">{{ item.label }}</span>
+      </a>
+    </li>
+  </ul>
+</div>

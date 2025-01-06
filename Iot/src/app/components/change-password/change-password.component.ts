@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { SideComponent } from '../side/side.component';
+import { NavComponent } from '../nav/nav.component';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
@@ -9,7 +10,7 @@ import { AdminService } from '../../services/admin.service';
 @Component({
   selector: 'app-change-password',
   standalone: true,
-  imports: [RouterOutlet, SideComponent, FormsModule, CommonModule],
+  imports: [RouterOutlet, SideComponent, NavComponent , FormsModule, CommonModule],
   templateUrl: './change-password.component.html',
   styleUrls: ['./change-password.component.css']
 })

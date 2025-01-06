@@ -1,358 +1,227 @@
-/* Estilo base de la barra lateral */
 .sidebar {
-  width: 60px; /* Ancho cuando está colapsada */
+  width: 250px;
   height: 100vh;
-  background: linear-gradient(to bottom, #00bcd4, #009688);
-  color: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 10px 0;
-  transition: width 0.3s ease-in-out;
-  overflow: hidden;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  background-color: white;
   position: fixed;
   top: 0;
   left: 0;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  transition: width 0.3s;
   z-index: 1000;
 }
 
 .sidebar.collapsed {
-  width: 60px; /* Ancho cuando está colapsada */
+  width: 80px;
 }
 
-.sidebar:not(.collapsed) {
-  width: 200px; /* Ancho cuando está expandida */
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  /* width: 150%; */
+  background-color: white;
 }
 
-/* Botón de toggle */
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.images {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.images img:first-child {
+  width: 85px;
+  max-width: 95px;
+}
+
+.images img:last-child {
+  width: 100px;
+  max-width: 95px;
+}
+
 .toggle {
-  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
   position: relative;
-  width: 30px;
-  height: 30px;
+}
+
+#checkbox2 {
+  display: none;
+}
+
+.toggle2 {
+  position: relative;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  z-index: 1050;
+  gap: 12px;
+  transition-duration: .5s;
 }
-  
-  /* Botón para expandir/colapsar */
-  #checkbox {
-    display: none; /* Oculta el checkbox */
-  }
-  
-  .bars {
-    width: 100%;
-    height: 4px;
-    background-color: transparent; /* Hacemos que las barras tengan fondo transparente */
-    border-radius: 4px;
-    background: linear-gradient(to right, #00bcd4, #ffffff); /* Degradado celeste a blanco */
-  }
-  
-  #bar2 {
-    transition-duration: 0.8s;
-  }
-  
-  #bar1, #bar3 {
-    width: 70%;
-  }
-  
-  #checkbox:checked + .toggle .bars {
-    position: absolute;
-    transition-duration: 0.5s;
-  }
-  
-  #checkbox:checked + .toggle #bar2 {
-    transform: scaleX(0);
-    transition-duration: 0.5s;
-  }
-  
-  #checkbox:checked + .toggle #bar1 {
-    width: 100%;
-    transform: rotate(45deg);
-    transition-duration: 0.5s;
-  }
-  
-  #checkbox:checked + .toggle #bar3 {
-    width: 100%;
-    transform: rotate(-45deg);
-    transition-duration: 0.5s;
-  }
-  
-  #checkbox:checked + .toggle {
-    transition-duration: 0.5s;
-    transform: rotate(180deg);
-  }
-  
-  /* Lista del menú */
-  .menu {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    width: 100%;
-}
-  
-.menu-item {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
-}
-  
-.menu-item:hover {
-  background: linear-gradient(to right, rgba(0, 188, 212, 0.6), rgba(0, 150, 136, 0.6));
-}
-  /* Íconos del menú */
-  .menu-item i {
-    font-size: 24px;
-    color: #fff;
-    width: 40px;
-    text-align: center;
-  }
-  
-  /* Estilos adicionales para los textos */
-  .menu-text {
-    margin-left: 10px;
-    font-size: 16px;
-    white-space: nowrap;
-    opacity: 0; /* Oculto por defecto */
-    transition: opacity 0.3s ease-in-out, width 0.3s ease-in-out;
-    width: 0;
-    overflow: hidden;
-  }
-  
-  .sidebar:not(.collapsed) .menu-text {
-    opacity: 1; /* Visible cuando no está colapsado */
-    width: auto;
-  }
-  
-  .sidebar.collapsed .menu-text {
-    opacity: 0; /* Oculta el texto cuando está colapsada */
-    width: 0; /* Oculta el espacio del texto */
-    overflow: hidden;
-  }
 
-/* Submenú */
-.submenu {
-  display: none; /* Ocultamos el submenú por defecto */
+.bars {
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, #003366, #5ab1f7);
+  border-radius: 6px;
+}
+
+#bar5 {
+  transition-duration: .8s;
+}
+
+#bar4,
+#bar6 {
+  width: 80%;
+}
+
+#checkbox2:checked+.toggle2 .bars {
+  position: absolute;
+  transition-duration: .5s;
+}
+
+#checkbox2:checked+.toggle2 #bar5 {
+  transform: scaleX(0);
+  transition-duration: .5s;
+}
+
+#checkbox2:checked+.toggle2 #bar4 {
+  width: 100%;
+  transform: rotate(45deg);
+  transition-duration: .5s;
+}
+
+#checkbox2:checked+.toggle2 #bar6 {
+  width: 100%;
+  transform: rotate(-45deg);
+  transition-duration: .5s;
+}
+
+#checkbox2:checked+.toggle2 {
+  transition-duration: .5s;
+  transform: rotate(180deg);
+}
+
+.sidebar:not(.collapsed) .toggle2 {
+  width: 40px;
+  height: 40px;
+}
+
+.menu {
   list-style: none;
   padding: 0;
   margin: 0;
-  color: white;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra suave */
-}
-  
-  .submenu-item {
-    text-align: left;
-    padding: 10px 15px; /* Espaciado entre los elementos del submenú */
-    cursor: pointer;
-    font-size: 16px;
-    color: 156082; /* Color gris para el texto */
-    transition: background-color 0.3s ease-in-out;
-  }
-  
-  .submenu-item a {
-    text-decoration: none;
-    color: #fff; /* Mantener el color de texto del submenú */
-  }
-  
-  .submenu-item:hover {
-    background-color: rgba(0, 188, 212, 0.1); /* Fondo suave en hover */
-    color: #fff; /* Cambio de color a cyan en hover */
-  }
-  
-  .submenu-item a:hover {
-    color: #156082; /* Cambio de color del texto cuando se hace hover sobre el enlace */
-  }
-  
-  /* Mostrar submenú cuando esté abierto */
-  .menu-item.open .submenu {
-    display: block; /* Muestra el submenú cuando está abierto */
-  }
-  
-  /* Estilos para el item del menú principal */
-  .menu-item {
-    display: flex;
-    flex-direction: column; /* Alineación vertical para el ícono y el texto */
-    margin-bottom: 10px; /* Espaciado entre los ítems */
-  }
-  
-  /* Los íconos del menú */
-  .menu-item i {
-    font-size: 24px;
-    width: 40px;
-    text-align: center;
-  }
-  
-  /* Mostrar el submenú correctamente cuando está expandido */
-  .menu-item.open {
-    background-color: rgba(0, 188, 212, 0.1); /* Fondo del item principal al estar expandido */
-    border-radius: 5px; /* Bordes redondeados para los elementos expandidos */
-  }
-  
-  /* Para los textos del menú */
-  .menu-text {
-    font-size: 16px;
-    color: #fff; /* Color blanco para el texto */
-    margin-left: 10px;
-  }
-  
-  /* Añadir espaciado entre los items del menú principal */
-  .menu-item {
-    display: flex;
-    align-items: center; /* Alineación vertical centrada */
-    justify-content: flex-start; /* Íconos a la izquierda */
-    padding: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
-  }z
-  
-  .menu-item:hover {
-    background-color: rgba(0, 188, 212, 0.6); /* Color de fondo al pasar el mouse */
-  }
-  
-  /* Mostrar el ícono y texto cuando no esté colapsada la barra */
-  .sidebar:not(.collapsed) .menu-text {
-    opacity: 1; /* Hacer visible el texto */
-    width: auto;
-  }
-  
-  .sidebar.collapsed .menu-text {
-    opacity: 0; /* Ocultar texto cuando está colapsada */
-    width: 0;
-    overflow: hidden;
-  }
-  
-  .separator hr {
-    border: none;
-    border-top: 1px solid #ccc; /* Línea gris clara */
-    margin: 20px; /* Espaciado arriba y abajo */
-    width: 100%; /* Asegura que ocupe el ancho completo del contenedor */
-  }
-
-  a {
-    text-decoration: none; /* Elimina el subrayado */
-    color: inherit; /* Hereda el color del contenedor */
-  }
-
-  .menu .separator {
-    width: 100%;
-    margin: 10px 0;
-  }
-  
-  /* Media Queries para Responsividad */
-/* Pantallas pequeñas (celulares) */
-@media (max-width: 768px) {
-  /* Barra lateral */
-  .sidebar {
-      width: 50px; /* Más estrecha para aprovechar espacio */
-  }
-  .sidebar:not(.collapsed) {
-      width: 180px; /* Menor expansión para móviles */
-  }
-
-  /* Íconos del menú */
-  .menu-item i {
-      font-size: 20px; /* Íconos más pequeños */
-  }
-
-  /* Texto del menú principal */
-  .menu-text {
-      font-size: 12px; /* Texto reducido */
-  }
-
-  /* Submenús */
-  .submenu-item {
-      font-size: 12px; /* Texto de submenús más pequeño */
-      padding: 8px 12px; /* Espaciado ajustado */
-  }
-
-  /* Botón para expandir/colapsar */
-  .toggle {
-      width: 25px; /* Botón más pequeño */
-      height: 25px;
-  }
-  .bars {
-      height: 3px; /* Barras más delgadas */
-  }
-
-  /* Espaciado y márgenes */
-  .menu-item {
-      padding: 8px; /* Reducir padding en los items */
-  }
-  .submenu-item {
-      padding: 8px 10px; /* Menos espacio entre submenús */
-  }
-
-  /* Separador */
-  .separator hr {
-      margin: 8px 0; /* Menor espaciado en separador */
-  }
+  background-color: white;
 }
 
-
-/* Pantallas medianas (laptops y tablets) */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .sidebar {
-      width: 60px; /* Ancho estándar */
-  }
-  .sidebar:not(.collapsed) {
-      width: 180px;
-  }
-  .menu-item i {
-      font-size: 2px; /* Tamaño intermedio de íconos */
-  }
-  .menu-text {
-      font-size: 1px; /* Texto ligeramente más grande */
-  }
-  .submenu-item {
-      font-size: 1px;
-      padding: 8px 12px; /* Espaciado más amplio */
-  }
+.menu-item {
+  display: block;
+  padding: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  position: relative;
 }
 
-/* Pantallas grandes (computadoras, 1025px - 1920px) */
-@media (min-width: 1025px) and (max-width: 1920px) {
-  .sidebar {
-      width: 70px; /* Barra lateral moderadamente amplia */
-  }
-  .sidebar:not(.collapsed) {
-      width: 220px; /* Ancho más amplio para computadoras */
-  }
-  .menu-item i {
-      font-size: 26px; /* Íconos más grandes */
-  }
-  .menu-text {
-      font-size: 15px; /* Texto suficientemente grande para computadoras */
-  }
-  .submenu-item {
-      font-size: 16px; /* Texto del submenú adaptado */
-      padding: 10px 15px; /* Espaciado moderado */
-  }
+.menu-item:hover {
+  background-color: #e0e0e0;
 }
 
-/* Pantallas muy grandes (televisores, más de 1920px) */
-@media (min-width: 1921px) {
-  .sidebar {
-      width: 80px; /* Barra lateral más ancha */
-  }
-  .sidebar:not(.collapsed) {
-      width: 260px; /* Ancho mayor para televisores */
-  }
-  .menu-item i {
-      font-size: 30px; /* Íconos más grandes para mejor visibilidad */
-  }
-  .menu-text {
-      font-size: 20px; /* Texto aún más grande para televisores */
-  }
-  .submenu-item {
-      font-size: 18px; /* Submenús más grandes para legibilidad */
-      padding: 12px 18px; /* Espaciado más amplio */
-  }
+.menu-item .material-icons {
+  color: #003366;
+  font-size: 25px;
 }
+
+.menu-item span {
+  margin-left: 10px;
+  color: #003366;
+  font-size: 16px;
+}
+
+.submenu {
+  list-style: none;
+  padding-left: 20px;
+  background-color: white;
+  margin: 0;
+  padding: 0;
+  border-left: 3px solid #003366;
+  display: none;
+  width: 100%;
+  margin-top: 5px;
+  position: relative;
+}
+
+.submenu-item {
+  padding: 10px;
+  font-size: 14px;
+  color: #003366;
+  display: block;
+  transition: background-color 0.3s;
+}
+
+.submenu-item:hover {
+  background-color: #e0e0e0;
+}
+
+.submenu-item a {
+  text-decoration: none;
+  color: #003366;
+}
+
+.submenu-item a:hover {
+  color: #0066cc;
+}
+
+.menu-item.open .submenu {
+  display: block;
+}
+
+.separator {
+  margin-top: 20px;
+}
+
+.separator hr {
+  border: 0;
+  border-top: 1px solid #003366;
+}
+
+.sidebar.collapsed .submenu {
+  display: none;
+}
+
+.sidebar.collapsed .submenu-item {
+  display: none;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.images {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.toggle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
