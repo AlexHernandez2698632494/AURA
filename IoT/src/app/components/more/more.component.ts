@@ -103,6 +103,12 @@ export class MoreComponent implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit(): void {
+    // Redirige a '/home' si el ancho de la pantalla es mayor a 1025px
+    if (window.innerWidth > 1025) {
+      this.router.navigate(['/home']);
+      return; // Detiene la ejecución del resto del código
+    }
+
     const storedAuthorities = JSON.parse(localStorage.getItem('authorities') || '[]');
     const storedToken = localStorage.getItem('token');
     this.authorities = storedAuthorities;

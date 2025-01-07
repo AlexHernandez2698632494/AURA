@@ -251,3 +251,48 @@ export const changePassword = async (req, res) => {
     res.status(500).json({ message: "Error en el servidor", error });
   }
 };
+
+export const restorePassword = async (req, res) => {
+  const { usuario } = req.body;
+
+  try {
+    // Buscar al usuario por nombre de usuario
+    const user = await User.findOne({ usuario });
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    // Generar una nueva contraseña aleatoria
+    const newPassword = crypto.randomBytes(8).toString("hex");
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Actualizar la contraseña en la base de datos
+    user.contrasena = hashedPassword;
+    await user.save();
+
+    // Configurar transporte para envío de correo
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    // Configurar opciones del correo
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: user.correo,
+      subject: "Restablecimiento de contraseña",
+      text: `Hola ${user.nombre},\n\nTu contraseña ha sido restablecida exitosamente.\n\nNueva contraseña: ${newPassword}\n\nPor favor, inicia sesión y cambia tu contraseña lo antes posible.\n\nSaludos,\nEl equipo`,
+    };
+
+    // Enviar correo electrónico
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: "Contraseña restablecida y enviada al correo" });
+  } catch (error) {
+    res.status(500).json({ message: "Error al restablecer la contraseña", error: error.message });
+  }
+};

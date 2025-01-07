@@ -9,7 +9,8 @@ import {
   changePassword,
   getDeleteUsers,
   restoreUser,
-  getAuthorities
+  getAuthorities,
+  restorePassword
 } from "../controllers/users.controllers.js";
 import { verifyToken } from "../Middleware/auth.js";
 
@@ -25,5 +26,5 @@ router.delete("/user/:id", verifyToken, deleteUser); // Protege la ruta
 router.delete("/user/restore/:id", verifyToken, restoreUser)
 router.post("/login", loginUser); // Ruta pública para login
 router.post('/change-password',verifyToken, changePassword);
-
+router.post("/restore-password", restorePassword);
 export default router;

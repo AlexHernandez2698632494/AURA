@@ -4,16 +4,15 @@
 <div class="background">
   <div class="login-container">
     <div class="login-box">
-      <h1>Recuperación de contraseña
-      </h1>
-      <form>
+      <h1>Recuperación de contraseña</h1>
+      <form (submit)="onSubmit($event)">
         <div class="input-group">
           <label for="username">
             <i class="fa fa-user"></i>
           </label>
-          <input type="text" id="username" placeholder="Username" />
+          <input type="text" id="username" placeholder="Username" [(ngModel)]="username" name="username" required />
         </div>
-        <a href="/" type="submit" class="login-button">Ingresar</a>
+        <button type="submit" class="login-button">Restablecer Contraseña</button>
       </form>
     </div>
   </div>

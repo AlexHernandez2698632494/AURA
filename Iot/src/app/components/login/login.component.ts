@@ -28,6 +28,8 @@ export class LoginComponent {
   private getApiUrl(): string {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
       return 'http://localhost:3000';  // Si está en el dispositivo local, usar localhost
+    }else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return 'http://192.168.1.82:3000';  // Si está en el dispositivo local, usar localhost
     }
     return 'http://192.168.1.14:3000'; // Si está en otro dispositivo, usar la IP
   }

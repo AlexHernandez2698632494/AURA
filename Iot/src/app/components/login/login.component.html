@@ -1,13 +1,12 @@
 <div class="app-container">
- <!-- <app-side class="app-side"></app-side>--> <!-- Barra lateral -->
-<app-nav></app-nav>
-  <router-outlet></router-outlet> <!-- Aquí se renderizan las vistas dinámicas -->
+  <app-nav></app-nav>
+  <router-outlet></router-outlet>
 </div>
 
 <div class="background">
   <div class="login-container">
     <div class="login-box">
-      <h1>Login</h1>
+      <h1>Iniciar Sesión </h1>
       <form (submit)="login(); $event.preventDefault()"> <!-- Conectar con método login -->
         <div class="input-group">
           <label for="username">
@@ -34,10 +33,10 @@
           />
         </div>
         <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
-        <button type="submit" class="login-button">Login</button>
+        <button type="submit" class="login-button">Iniciar Sesión </button>
       </form>
       <p class="forgot-link">
-        <a href="/recuperarView">Olvidé mi contraseña</a>
+        <a href="/recuperarView" class="forgot-password">Olvidé mi contraseña</a>
       </p>
     </div>
   </div>
