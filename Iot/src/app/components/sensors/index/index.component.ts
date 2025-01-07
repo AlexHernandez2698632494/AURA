@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet,Router } from '@angular/router';
-import { SideComponent } from '../../side/side.component';
+import { NavComponent } from '../../nav/nav.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../../services/admin.service';
@@ -23,7 +23,7 @@ import { MatDividerModule } from '@angular/material/divider';
     CommonModule,
     FormsModule,
     RouterOutlet,
-    SideComponent,
+    NavComponent,
     MatTableModule,
     MatFormFieldModule,
     MatInputModule,

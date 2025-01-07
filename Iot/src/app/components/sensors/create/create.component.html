@@ -1,10 +1,9 @@
-<div class="app-container">
-    <app-side class="app-side"></app-side>
-    <div class="main-content">
-      <router-outlet></router-outlet>
-    </div>
-  </div>
-  
+<div>
+  <app-nav></app-nav>
+  <router-outlet></router-outlet>
+</div>
+
+<div class="center">
   <div class="main-container">
     <div class="header">
       <button mat-icon-button class="back-button" (click)="onBackClick()">
@@ -233,7 +232,7 @@
               <input matInput formControlName="coordinates" />
             </mat-form-field>
           </div>
-    
+  
           <button mat-raised-button color="primary" class="register-button" type="submit" [disabled]="sensorForm.invalid">
             Registrar Sensor
           </button>
@@ -241,4 +240,4 @@
       </form>
     </div>
   </div>
-  
+</div>

@@ -51,7 +51,7 @@
     
     .sub-header hr {
       width: 100%;
-      border: 1px solid #00bcd4;
+      border: 1px solid #003366;
       /* Línea celeste */
       margin-top: 10px;
       margin-bottom: 10px;
@@ -59,8 +59,7 @@
     
     /* Controles de tabla (Mostrar registros y buscar) */
     .table-controls {
-      display: flex;
-      justify-content: space-between;
+      justify-content: space-evenly;
       align-items: center;
       margin-bottom: 10px;
     }
@@ -175,7 +174,7 @@
     }
     
     .footer .pagination button {
-      background-color: #00bcd4;
+      background-color: #003366;
       color: #fff;
       border: none;
       border-radius: 4px;
@@ -197,18 +196,30 @@
     }
     
     .footer .pagination button:hover {
-      background-color: #0097a7;
+      background-color: #004891;
     }
     
-    /* Móviles grandes (480px a 767px) */
-    @media (max-width: 629px) {
+    @media (max-width: 1024px) {
+      .center {
+        display: flex;
+        justify-content: center;
+        padding: 0 0 35px 0;
+      }
       .main-container {
-        padding: 20px;
-        border-radius: 8px;
-        margin-left: 60px;
+        padding: 0 10px;
+        width: 95%;
+        max-width: 95%;
         box-sizing: border-box;
       }
     
+      .title {
+        flex: 1;
+        text-align: center;
+        font-size: 19px;
+        font-weight: bold;
+        color: #333;
+        margin: 0;
+      }
       .table-controls {
         flex-direction: column;
         align-items: flex-start;
@@ -217,28 +228,48 @@
       .table-controls select{
         width: 100%;
         font-size: 12px;
-        margin-bottom: 10px;
+      }
+      .search-input{
+        width: 100%;
       }
     
-      table th,
-      table td {
-        padding: 8px;
-        word-wrap: break-word;
+      .table tbody {
+        overflow-x: scroll; 
       }
     
-      .footer {
-        flex-direction: column;
-        align-items: flex-start;
-        font-size: 12px;
+      .table table {
+        min-width: 600px; 
       }
-    
-      .footer .pagination button {
-        padding: 6px 10px;
-        font-size: 14px;
-      }
-    
       .btn-edit,
       .btn-delete {
         padding: 4px 8px;
       }
+      th, td {
+        font-size: 14px;  
+      }
+    
+      .footer {
+        flex-direction: column; 
+        align-items: center;
+        font-size: 12px;
+        gap: 10px;
+      }
+    
+      .footer .pagination {
+        display: flex;
+        justify-content: center; 
+        width: 100%;
+      }
+    
+      .footer .pagination button {
+        padding: 4px 8px; 
+        font-size: 12px;
+        margin: 0 4px;
+      }
+    
+      .footer .pagination span {
+        font-size: 12px;
+      }
+    
     }
+    

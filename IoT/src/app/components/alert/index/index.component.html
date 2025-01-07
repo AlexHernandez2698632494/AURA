@@ -1,6 +1,6 @@
 <div>
-    <app-side></app-side>
-    <router-outlet></router-outlet>
+  <app-nav></app-nav> <!-- Barra lateral -->
+  <router-outlet></router-outlet> <!-- Renderiza vistas dinámicas -->
 </div>
 <div class="center">
     <div class="main-container">
@@ -25,41 +25,41 @@
             </mat-form-field>
           </div>
         </div>
-  
-        <table>
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Variable</th>
-              <th>Inicio</th>
-              <th>Fin</th>
-              <th>Color</th>
-              <th>Nivel</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>alerta</td>
-              <td>cantidad de lluvia</td>
-              <td>2</td>
-              <td>3</td>
-              <td><p>#0057e3</p></td>
-              <td>1</td>
-              <td>1</td>
-              <td>
-                <button mat-icon-button  class="btn-edit"  (click)="editAlert()" title="Actualizar">
-                    <mat-icon>cached</mat-icon>
-                  </button>
-                  <button mat-icon-button class="btn-delete" (click)="deleteAlert()" title="Eliminar">
-                    <mat-icon>delete</mat-icon>
-                  </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-  
+        <div class="table">
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Variable</th>
+                <th>Inicio</th>
+                <th>Fin</th>
+                <th>Color</th>
+                <th>Nivel</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>alerta</td>
+                <td>cantidad de lluvia</td>
+                <td>2</td>
+                <td>3</td>
+                <td><p>#0057e3</p></td>
+                <td>1</td>
+                <td>1</td>
+                <td>
+                  <button mat-icon-button  class="btn-edit"  (click)="editAlert()" title="Actualizar">
+                      <mat-icon>cached</mat-icon>
+                    </button>
+                    <button mat-icon-button class="btn-delete" (click)="deleteAlert()" title="Eliminar">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <div class="footer">
           <div class="left">
             Mostrando registros de al de un total de  registros

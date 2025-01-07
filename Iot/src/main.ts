@@ -62,7 +62,7 @@ const routes: Routes = [
     // rutas de Servicios:
     { path: 'services/create', component: CreateServiceComponent }, 
     { path: 'services/index', component: IndexServiceComponent },
-    { path: 'services/indexE', component: IndexServiceComponent },
+    { path: 'services/indexE', component: IndexEServiceComponent },
   // rutas de Sensores:
   { path: 'sensors/create', component: CreateSensorsComponent },
   { path: 'sensors/index', component: IndexSensorsComponent },

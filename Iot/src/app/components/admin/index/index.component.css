@@ -47,14 +47,13 @@
 
 hr {
   width: 100%;
-  border: 1px solid #00bcd4;
+  border: 1px solid #003366;
   margin-top: 10px;
   margin-bottom: 20px;
 }
 
 .table-controls {
-  display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   align-items: center;
   margin-bottom: 10px;
 }
@@ -94,22 +93,37 @@ hr {
   height: auto;
 }
 
-table {
+.table{
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 20px;
 }
 
-table td {
+.table th, 
+.table td {
+  padding: 12px;
+  border: 1px solid #ddd;
   text-align: left;
-  padding: 12px;
-  border: 1px solid #ddd;
+  font-size: 14px;
 }
 
-table th {
-  padding: 12px;
-  border: 1px solid #ddd;
-  font-weight: bold;
+.table tbody {
+  overflow-x: auto; /* Scroll lateral dentro del cuerpo de la tabla */
+}
+
+.table-container thead {
+  display: table; /* Mantiene el encabezado en formato de tabla */
+  width: 100%; /* Asegura que el ancho coincida con el cuerpo */
+}
+
+.table-container tbody tr {
+  display: table; /* Cada fila sigue siendo una tabla dentro del cuerpo */
+  width: 100%; /* Asegura el ancho completo */
 }
 
 table tr:nth-child(even) {
@@ -169,7 +183,7 @@ table tr:hover {
 }
 
 .footer .pagination button {
-   background-color: #00bcd4;
+   background-color: #003366;
   color: #fff;
   border: none;
   border-radius: 4px;
@@ -191,48 +205,79 @@ table tr:hover {
 }
 
 .footer .pagination button:hover {
-  background-color: #0097a7;
+  background-color: #004891;
 }
 
-@media (max-width: 629px) {
+@media (max-width: 1024px) {
+  .center {
+    display: flex;
+    justify-content: center;
+    padding: 0 0 35px 0;
+  }
   .main-container {
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    margin-left: 100px;
-    width: calc(100% - 120px);
+    padding: 0 10px;
+    width: 95%;
+    max-width: 95%;
     box-sizing: border-box;
   }
 
+  .title {
+    flex: 1;
+    text-align: center;
+    font-size: 19px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+  }
   .table-controls {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .table-controls select,
-  .table-controls input {
+  .table-controls select{
     width: 100%;
     font-size: 12px;
-    margin-bottom: 10px;
+  }
+  .search-input{
+    width: 100%;
   }
 
-  .footer {
-    flex-direction: column;
-    align-items: flex-start;
-    font-size: 12px;
+  .table tbody {
+    overflow-x: scroll; 
   }
 
-  .footer .pagination button {
-    padding: 6px 10px;
-    font-size: 14px; 
+  .table table {
+    min-width: 600px; 
   }
-
   .btn-edit,
   .btn-delete {
     padding: 4px 8px;
   }
   th, td {
     font-size: 14px;  
-    word-wrap: break-word;
   }
+
+  .footer {
+    flex-direction: column; 
+    align-items: center;
+    font-size: 12px;
+    gap: 10px;
+  }
+
+  .footer .pagination {
+    display: flex;
+    justify-content: center; 
+    width: 100%;
+  }
+
+  .footer .pagination button {
+    padding: 4px 8px; 
+    font-size: 12px;
+    margin: 0 4px;
+  }
+
+  .footer .pagination span {
+    font-size: 12px;
+  }
+
 }

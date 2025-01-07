@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { SideComponent } from '../side/side.component';
 import { NavComponent } from '../nav/nav.component';
 import { FormsModule } from '@angular/forms'; // Para manejar ngModel
 import { HttpClientModule } from '@angular/common/http'; // Para solicitudes HTTP
@@ -11,7 +10,7 @@ import { CommonModule } from '@angular/common'; // Importar CommonModule para *n
 @Component({
   selector: 'app-login',
   standalone: true, // Componente standalone
-  imports: [RouterOutlet, SideComponent, NavComponent, FormsModule, HttpClientModule, CommonModule], // Agregar CommonModule
+  imports: [RouterOutlet,  NavComponent, FormsModule, HttpClientModule, CommonModule], // Agregar CommonModule
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'], // styleUrls en plural
 })
@@ -30,7 +29,7 @@ export class LoginComponent {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
       return 'http://localhost:3000';  // Si está en el dispositivo local, usar localhost
     }
-    return 'http://192.168.1.82:3000'; // Si está en otro dispositivo, usar la IP
+    return 'http://192.168.1.14:3000'; // Si está en otro dispositivo, usar la IP
   }
 
   // Método para manejar el inicio de sesión

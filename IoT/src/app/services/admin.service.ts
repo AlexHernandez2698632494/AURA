@@ -8,7 +8,7 @@ import { catchError } from 'rxjs/operators';
 })
 export class AdminService {
   private apiUrl2 = 'http://localhost:3000';  // URL para desarrollo en localhost
-  private apiUrl = 'http://192.168.1.82:3000'; // URL para acceder desde otro dispositivo
+  private apiUrl = 'http://192.168.1.14:3000'; // URL para acceder desde otro dispositivo
 
   constructor(private http: HttpClient) {}
 

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet, Router } from '@angular/router';
-import { SideComponent } from '../../side/side.component';
+import { NavComponent } from '../../nav/nav.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -14,7 +14,7 @@ import Swal from 'sweetalert2';  // Importar SweetAlert2
 @Component({
   selector: 'app-index-e',
   imports: [RouterOutlet,
-    SideComponent,
+    NavComponent,
     FormsModule,
     CommonModule,
     MatInputModule,

@@ -1,9 +1,6 @@
-<div class="app-container">
- <!-- <app-side class="app-side"></app-side>--> <!-- Barra lateral -->
+<div>
   <app-nav></app-nav>
-  <div class="main-content">
-    <router-outlet></router-outlet> <!-- Aquí se renderizan las vistas dinámicas -->
-  </div>
+  <router-outlet></router-outlet>
 </div>
 <div class="center">
   <div class="main-container">
@@ -28,32 +25,32 @@
           </mat-form-field>
         </div>
       </div>
-
-      <!-- Tabla -->
-      <table>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Correo</th>
-            <th>Accion</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let user of filteredUsers()">
-            <td>{{ user.nombre }}</td>
-            <td>{{ user.correo }}</td>
-            <td>
-              <!-- Botón Actualizar -->
-              <button mat-icon-button (click)="editUser(user)" class="btn-edit" title="Actualizar">
-                <mat-icon>cached</mat-icon>
-              </button>
-              <button mat-icon-button (click)="deleteUser(user)" class="btn-delete" title="Eliminar">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Correo</th>
+              <th>Accion</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of filteredUsers()">
+              <td>{{ user.nombre }}</td>
+              <td>{{ user.correo }}</td>
+              <td>
+                <!-- Botón Actualizar -->
+                <button mat-icon-button (click)="editUser(user)" class="btn-edit" title="Actualizar">
+                  <mat-icon>cached</mat-icon>
+                </button>
+                <button mat-icon-button (click)="deleteUser(user)" class="btn-delete" title="Eliminar">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <!-- Información de registros y paginación -->
       <div class="footer">
