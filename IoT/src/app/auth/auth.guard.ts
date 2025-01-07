@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router, UrlTree } from '@angular/router';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -7,24 +7,20 @@ import { CanActivate, Router, UrlTree } from '@angular/router';
 export class AuthGuard implements CanActivate {
   constructor(private router: Router) {}
 
-  canActivate(): boolean | UrlTree {
-    const token = sessionStorage.getItem('token'); // Obtener el token de sessionStorage
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+    const userAuthorities = JSON.parse(sessionStorage.getItem('authorities') || '[]'); // Obtén las autoridades del usuario desde sessionStorage.
+    const routeAuthorities = route.data['authorities'] || []; // Obtén las autoridades requeridas de los datos de la ruta.
 
-    if (token && !this.isTokenExpired(token)) {
-      return true; // Permitir acceso si el token es válido
-    } else {
-      sessionStorage.removeItem('token'); // Limpiar token inválido o inexistente
-      return this.router.parseUrl('/login'); // Redirigir al inicio de sesión
-    }
-  }
+    // Verifica si el usuario tiene alguna de las autoridades requeridas.
+    const hasPermission = routeAuthorities.some((authority: string) =>
+      userAuthorities.includes(authority)
+    );
 
-  private isTokenExpired(token: string): boolean {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1])); // Decodificar payload del JWT
-      const expiration = payload.exp * 1000; // Convertir a milisegundos
-      return Date.now() > expiration; // Comparar con la fecha actual
-    } catch (error) {
-      return true; // Si el token no es decodificable, se considera inválido
+    if (!hasPermission) {
+      this.router.navigate(['/403']); // Redirige a una página segura si no tiene permiso.
+      return false;
     }
+
+    return true;
   }
 }
