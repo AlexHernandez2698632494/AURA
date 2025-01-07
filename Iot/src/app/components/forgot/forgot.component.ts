@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { SideLoginComponent } from "../side-login/side-login.component";
+import { NavComponent } from '../nav/nav.component';
 
 @Component({
   selector: 'app-forgot',
-  imports: [RouterOutlet,SideLoginComponent],
+  imports: [RouterOutlet, NavComponent],
   templateUrl: './forgot.component.html',
   styleUrl: './forgot.component.css'
 })
