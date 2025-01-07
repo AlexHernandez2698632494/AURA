@@ -17,8 +17,8 @@ export class NavComponent {
   @HostListener('window:resize', ['$event'])
   onResize(event: Event): void {
     // Verifica que el evento resize se esté disparando
-    console.log('Redimensionando...', window.innerWidth);
+  //  console.log('Redimensionando...', window.innerWidth);
     this.isLargeScreen = window.innerWidth > 1024;
-    console.log('isLargeScreen actualizado:', this.isLargeScreen);  // Verifica si el valor se actualiza
+   // console.log('isLargeScreen actualizado:', this.isLargeScreen);  // Verifica si el valor se actualiza
   }
 }

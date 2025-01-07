@@ -1,24 +1,106 @@
-.more-menu {
-    background-color: #f8f9fa;
-    padding: 10px;
-    border-radius: 5px;
+/* Estilo base del componente */
+.sidebar {
+  width: 100%; /* Barra lateral que ocupa todo el ancho de la pantalla */
+  background-color: white; /* Fondo blanco */
+  color: #003366; /* Texto color #003366 */
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Ocupa toda la altura de la pantalla */
+  padding-top: 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+.sidebar-header {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #003366;
+  margin-bottom: 20px;
+}
+
+/* Estilo de la lista del menú */
+.menu-list {
+  list-style: none;
+  padding: 0;
+}
+
+.menu-item {
+  padding: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #ddd;
+  color: #003366;
+  font-size: 18px;
+}
+
+.menu-item:hover {
+  background-color: #f0f0f0;
+}
+
+.arrow {
+  font-size: 14px;
+}
+
+.submenu {
+  list-style: none;
+  padding: 0;
+  margin-top: 5px; /* Añadido margen superior para separar un poco los submenús */
+}
+
+.submenu li {
+  padding-left: 30px;
+  gap: 10px; /* Añadido padding superior para separar los elementos dentro del submenú */
+  font-size: 16px;
+  transition: all 0.3s ease; /* Efecto de transición al hacer hover */
+}
+
+.submenu li:hover {
+  background-color: #f0f0f0; /* Cambio de color de fondo cuando el mouse pasa por encima */
+}
+
+.submenu li a {
+  color: #003366;
+  text-decoration: none;
+  font-size: 16px; /* Asegura un tamaño de texto adecuado */
+}
+
+.submenu li a:hover {
+  text-decoration: underline;
+}
+
+/* Estilo para el menú inferior */
+.bottom-menu {
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+/* Estilo responsivo para dispositivos menores a 1024px */
+@media (max-width: 1024px) {
+  .sidebar {
+    display: flex;
   }
-  
-  .more-menu ul {
-    list-style: none;
-    padding: 0;
+
+  :host {
+    display: block;
   }
-  
-  .more-menu ul li {
-    padding: 8px;
-    cursor: pointer;
+}
+
+@media (min-width: 1025px) {
+  :host {
+    display: none;
   }
-  
-  .more-menu ul li:hover {
-    background-color: #ddd;
-  }
-  
-  .no-auth {
-    color: red;
-  }
-  
+}
+
+/* Estilo para el fondo de la página */
+body {
+  background-color: white;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #003366;
+}

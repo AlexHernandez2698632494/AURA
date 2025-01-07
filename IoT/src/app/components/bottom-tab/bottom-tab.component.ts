@@ -30,15 +30,24 @@ export class BottomTabComponent implements OnInit{
       this.menuItems = [
         { icon: 'home', label: 'Home', route: '/' },
         { icon: 'lock', label: 'Cambiar Contraseña', route: '/users/cambiarContra' },
-        { icon: 'logout', label: 'Cerrar Sesión', route: '/logout' },
+        { icon: 'logout', label: 'Cerrar Sesión', route: '/logout', action: this.logout.bind(this) },
       ];
     } else if (storedToken && this.authorities.length > 0) {
       this.menuItems = [
         { icon: 'home', label: 'Home', route: '/' },
         { icon: 'more_horiz', label: 'More', route: '/more' },
-        { icon: 'logout', label: 'Cerrar Sesión', route: '/logout' },
+        { icon: 'logout', label: 'Cerrar Sesión', route: '/logout', action: this.logout.bind(this) },
       ];
     }
+  }
+
+  // Método para cerrar sesión
+  logout() {
+    // Elimina todos los elementos del localStorage
+    localStorage.clear();
+    
+    // Redirige a la página de inicio de sesión o a la página principal
+    this.router.navigate(['/login']);
   }
 
   isActive(route: string): boolean {
