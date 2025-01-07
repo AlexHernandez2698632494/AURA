@@ -52,13 +52,13 @@ export class LoginComponent {
         // Verifica que el token esté en la respuesta
         if (response.token) {
           console.log('Token recibido:', response.token);
-          localStorage.setItem('token', response.token); // Guarda el token en localStorage
+          sessionStorage.setItem('token', response.token); // Guarda el token en sessionStorage
   
           // Maneja los authorities (roles del usuario)
           if (response.user && response.user.authorities) {
             const authorities = Array.isArray(response.user.authorities) ? response.user.authorities : [response.user.authorities]; // Asegúrate de que sea un array
             console.log('Authorities recibidos:', authorities);
-            localStorage.setItem('authorities', JSON.stringify(authorities)); // Guarda los roles en localStorage
+            sessionStorage.setItem('authorities', JSON.stringify(authorities)); // Guarda los roles en sessionStorage
   
             // Lógica para redirigir según el role
             let routeToNavigate = '/';  // Ruta predeterminada si no hay roles específicos

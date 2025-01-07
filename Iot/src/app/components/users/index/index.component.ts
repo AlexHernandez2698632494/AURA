@@ -45,7 +45,7 @@ export class IndexUsersComponent implements OnInit {
   }
 
   loadUsers() {
-    const token = localStorage.getItem('token'); // Recuperamos el token desde localStorage
+    const token = sessionStorage.getItem('token'); // Recuperamos el token desde sessionStorage
 
     if (!token) {
       Swal.fire({

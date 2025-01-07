@@ -14,7 +14,7 @@ export class SideComponent implements OnInit {
   isCollapsed = true; // Inicialmente está colapsada (solo íconos)
   currentRoute: string = ''; // Ruta activa
 
-  // Menú predeterminado para cuando el localStorage esté vacío
+  // Menú predeterminado para cuando el sessionStorage esté vacío
   defaultMenuItems = [
     { icon: 'home', label: 'Home', route: '/', submenu: [], isSubmenuOpen: false, authorities: [] },
     { icon: 'info', label: 'Prueba', route: '/prueba', submenu: [], isSubmenuOpen: false, authorities: [] },
@@ -122,9 +122,9 @@ export class SideComponent implements OnInit {
       this.currentRoute = this.router.url;
     });
 
-    // Cargar las autoridades del usuario desde localStorage
-    const storedAuthorities = JSON.parse(localStorage.getItem('authorities') || '[]');
-    const storedToken = localStorage.getItem('token');
+    // Cargar las autoridades del usuario desde sessionStorage
+    const storedAuthorities = JSON.parse(sessionStorage.getItem('authorities') || '[]');
+    const storedToken = sessionStorage.getItem('token');
     this.authorities = storedAuthorities;
 
     // Verificar las condiciones
@@ -205,9 +205,9 @@ export class SideComponent implements OnInit {
   }
 
   logout(): void {
-    // Eliminar todos los datos de localStorage
-    localStorage.clear();
-    console.log("Sesión cerrada y localStorage limpiado.");
+    // Eliminar todos los datos de sessionStorage
+    sessionStorage.clear();
+    console.log("Sesión cerrada y sessionStorage limpiado.");
     // Redirigir a la página de inicio de sesión
     this.router.navigate(['/login']);
   }

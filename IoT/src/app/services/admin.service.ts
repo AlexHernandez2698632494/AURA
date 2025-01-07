@@ -21,9 +21,9 @@ export class AdminService {
   }
 
   private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (!token) {
-      throw new Error('No se encontró el token en localStorage');
+      throw new Error('No se encontró el token en sessionStorage');
     }
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`,

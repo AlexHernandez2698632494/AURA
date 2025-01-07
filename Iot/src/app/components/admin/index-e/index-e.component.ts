@@ -42,7 +42,7 @@ export class IndexEAdminComponent {
   }
 
   loadUsers() {
-    const token = localStorage.getItem('token');  // Recuperamos el token desde localStorage
+    const token = sessionStorage.getItem('token');  // Recuperamos el token desde localStorage
 
     if (!token) {
       // Mostrar una alerta si no se encuentra el token

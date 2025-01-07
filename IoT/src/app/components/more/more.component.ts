@@ -109,8 +109,8 @@ export class MoreComponent implements OnInit {
       return; // Detiene la ejecución del resto del código
     }
 
-    const storedAuthorities = JSON.parse(localStorage.getItem('authorities') || '[]');
-    const storedToken = localStorage.getItem('token');
+    const storedAuthorities = JSON.parse(sessionStorage.getItem('authorities') || '[]');
+    const storedToken = sessionStorage.getItem('token');
     this.authorities = storedAuthorities;
 
     if (!storedToken || (this.authorities.length === 0 && !storedToken)) {
@@ -174,7 +174,7 @@ export class MoreComponent implements OnInit {
   }
 
   logout(): void {
-    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
     this.router.navigate(['/login']);
   }
 }

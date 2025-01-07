@@ -47,7 +47,7 @@ export class IndexServiceComponent implements OnInit {
 
   // Carga los usuarios desde el servicio
   loadServices() {
-    const token = localStorage.getItem('token');  // Recuperamos el token desde localStorage
+    const token = sessionStorage.getItem('token');  // Recuperamos el token desde sessionStorage
 
     if (!token) {
       // Mostrar una alerta si no se encuentra el token

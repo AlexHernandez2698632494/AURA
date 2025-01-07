@@ -16,8 +16,8 @@ export class BottomTabComponent implements OnInit{
   constructor(public router: Router) {}
 
   ngOnInit(): void {
-    const storedAuthorities = JSON.parse(localStorage.getItem('authorities') || '[]');
-    const storedToken = localStorage.getItem('token');
+    const storedAuthorities = JSON.parse(sessionStorage.getItem('authorities') || '[]');
+    const storedToken = sessionStorage.getItem('token');
     this.authorities = storedAuthorities;
 
     if (!storedToken || (this.authorities.length === 0 && !storedToken)) {
@@ -43,8 +43,8 @@ export class BottomTabComponent implements OnInit{
 
   // Método para cerrar sesión
   logout() {
-    // Elimina todos los elementos del localStorage
-    localStorage.clear();
+    // Elimina todos los elementos del sessionStorage
+    sessionStorage.clear();
     
     // Redirige a la página de inicio de sesión o a la página principal
     this.router.navigate(['/login']);
