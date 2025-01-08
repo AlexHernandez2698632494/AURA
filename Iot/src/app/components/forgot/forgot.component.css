@@ -1,137 +1,151 @@
-/* Elimina márgenes y paddings por defecto */
-html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden; /* Evitar desplazamientos si no se requiere */
-    font-family: 'Arial Narrow', Arial, sans-serif;
-    margin-left: 20px; /* Esto asegura que el contenido no se superponga con la barra lateral */
-    padding: 0 0 0 20px; 
-  
-  }
-  
-  /* Fondo de la aplicación (la imagen debe cubrir toda la pantalla) */
-  .background {
-    background-image: url('../../../assets/imagen/background.jpg'); /* Cambia esto por la URL de tu imagen */
-    background-size: cover;
-    background-position: center;
-    position: fixed;
-    top: 0; /* Asegura que la imagen comienza desde arriba */
-    left: 0; /* Asegura que la imagen comienza desde la izquierda */
-    width: 100%;
-    height: 100%;
-    z-index: -1; /* Fondo detrás del contenido */
-  }
-  
-  /* El contenedor principal debe tomar toda la ventana */
-  .app-container {
-    width: 100%;
-    height: 100%;
-    position: relative;
-  }
-  
-  /* Estilo del contenedor del formulario */
-  .login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    position: absolute; /* Para que se superponga sobre el fondo */
-  }
-  
-  .login-box {
-    background: rgba(255, 255, 255, 0.2); /* Fondo transparente */
-    border: 2px solid #00c1ff; /* Borde celeste */
-    border-radius: 8px;
-    padding: 20px;
-    width: 300px;
-    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
-    color: #ffffff; /* Texto blanco */
-  }
-  
-  /* Título del formulario */
-  .login-box h1 {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 24px;
-    color: #ffffff;
-  }
-  
-  /* Estilo de los campos de entrada */
-  .input-group {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-  }
-  
-  .input-group label {
-    margin-right: 10px;
-    color: #ffffff;
-  }
-  
-  .input-group input {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    border-radius: 4px;
-    outline: none;
-    font-size: 14px;
-    color: #000000;
-  }
-  
-  /* Botón de login */
-  .login-button {
-    display: block;
-    width: 100%;
-    padding: 10px 0;
-    background-color: #00c1ff;
-    color: #ffffff;
-    border: none;
-    border-radius: 4px;
-    text-align: center;
-    text-decoration: none;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .login-button:hover {
-    background-color: #008fc7;
-  }
-  
-  /* Opciones adicionales */
-  .options {
-    display: flex;
-    justify-content: space-between;
-    margin: 10px 0;
-  }
-  
-  .options label, .options a {
-    font-size: 12px;
-    color: #ffffff;
-  }
-  
-  .register-link {
-    text-align: center;
-    font-size: 12px;
-    margin-top: 10px;
-  }
-  
-  .register-link a {
-    color: #00c1ff;
-    text-decoration: none;
-  }
-  
-  .register-link a:hover {
-    text-decoration: underline;
-  }
-  
-  /* Responsividad */
-  @media (max-width: 768px) {
-    .login-box {
-      width: 90%;
-    }
-  }
-  
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('../../../assets/imagen/background-space.png') no-repeat center center/cover;
+  z-index: -1;
+}
+
+.app-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-box {
+background: rgba(255, 255, 255, 0.1);
+padding: 2rem;
+width: 30%;
+border-radius: 12px;
+border: 1px solid #999;
+box-shadow: 0 4px 10px rgba(0, 0, blue0, 0.2);
+text-align: center;
+backdrop-filter: blur(15px);
+}
+
+.login-box h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: white;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
+.input-group label {
+  margin-right: 0.8rem;
+  color: white;
+}
+
+.input-group input {
+  flex: 1;
+  background: transparent;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  outline: none;
+  font-size: 14px;
+  color: white;
+}
+
+.login-button {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  color: #003366;
+  background-color: white;
+  border: 2px solid #003366;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.login-button:hover {
+  background-color: #003366;
+  color: white;
+  border: 2px solid white;
+
+}
+
+.forgot-link {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.forgot-password {
+  font-size: 15px;
+  color: #003366;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.forgot-password:hover {
+  color: #fff;
+  text-decoration: underline;
+  transform: scale(1.05);
+}
+
+
+@media (max-width: 1024px) {
+.login-box {
+  width: 90%;
+  backdrop-filter: blur(5px);
+}
+}
+@media (min-width: 2500px) {
+.background {
+  background-size: cover;
+  background-position: center;
+}
+
+.login-box {
+  width: 50%; /* Hacer más grande */
+  padding: 5rem; /* Incrementar padding */
+  border-radius: 20px; /* Bordes más notorios */
+  border: 2px solid #ccc;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4); /* Más sombra */
+}
+.input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 3rem;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+}
+.login-box h1 {
+  font-size: 60px; /* Texto más grande */
+}
+
+.input-group input {
+  font-size: 20px; /* Texto más grande */
+  padding: 15px; /* Espacio adicional */
+}
+
+.login-button {
+  font-size:2.5rem;/* más grande */
+  padding: 1.5rem; /* Más espacio interno */
+}
+
+.forgot-password {
+  font-size: 30px; /* Texto más grande */
+}
+}
