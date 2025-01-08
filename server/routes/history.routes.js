@@ -4,6 +4,7 @@ import {
   getDeletedHistory,
   deleteHistory,
   restoreHistory,
+  getDelete,
 } from "../controllers/history.controllers.js";
 import { verifyToken } from "../Middleware/auth.js";
 
@@ -13,5 +14,6 @@ router.get("/history", verifyToken, getHistory); // Obtener entradas activas
 router.get("/history/delete", verifyToken, getDeletedHistory); // Entradas eliminadas
 router.delete("/history/:id", verifyToken, deleteHistory); // Eliminar entrada lógicamente
 router.patch("/history/restore/:id", verifyToken, restoreHistory); // Restaurar entrada
+router.get("/history/CleanSlate", verifyToken,getDelete)
 
 export default router;

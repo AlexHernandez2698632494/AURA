@@ -59,7 +59,8 @@ hr {
 
 /* Resto de los estilos de la tabla y controles */
 .table-controls {
-  justify-content: space-evenly;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
 }
