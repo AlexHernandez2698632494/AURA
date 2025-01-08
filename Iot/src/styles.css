@@ -1,6 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
+@font-face {
+  font-family: 'simati';
+  src: url('/assets/fonts/arialnarroww.ttf') format('truetype'),
+  /* url('assets/fonts/ariblk.ttf') format('truetype'), */
+  url('assets/fonts/trollhunters.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 * {
-    font-family: 'Arial Narrow';
+    font-family: 'simati';
     font-weight: bold; /* Para asegurar que todos los textos usen el peso Bold */
   }
 
