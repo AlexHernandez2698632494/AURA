@@ -38,7 +38,9 @@ export class IndexSessionComponent implements OnInit {
   currentPage: number = 1;
   Math = Math;
 
-  constructor(private historyService: HistoryService, private router: Router) {}
+  constructor(
+    private historyService: HistoryService, 
+    private router: Router) {}
 
   ngOnInit() {
     this.loadSessions();
@@ -48,6 +50,7 @@ export class IndexSessionComponent implements OnInit {
     this.historyService.getHistory().subscribe({
       next: (data) => {
         this.sessions = data;
+        console.log('Historial cargado ', this.sessions)
       },
       error: (err) => {
         console.error('Error al cargar las sesiones:', err);

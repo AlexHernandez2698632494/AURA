@@ -35,10 +35,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let record of filteredRecords()">
-                            <td>{{ record.username }}</td>
-                            <td>{{ record.datetime }}</td>
-                            <td>{{ record.action }}</td>
+                        <tr *ngFor="let history of filteredSessions()">
+                            <td>{{ history.username }}</td>
+                            <td>{{ history.datetime }}</td>
+                            <td>{{ history.action }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -47,8 +47,8 @@
             <div class="footer">
                 <div class="left">
                     Mostrando registros del {{ (currentPage - 1) * recordsToShow + 1 }}
-                    al {{ Math.min(currentPage * recordsToShow, history.length) }}
-                    de un total de {{ history.length }} registros
+                    al {{ Math.min(currentPage * recordsToShow, sessions.length) }}
+                    de un total de {{ sessions.length }} registros
                 </div>
                 <div class="right pagination">
                     <button mat-fab extended (click)="previousPage()" [disabled]="currentPage === 1">
