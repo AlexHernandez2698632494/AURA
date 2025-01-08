@@ -1,9 +1,11 @@
 import { User } from "../models/users.models.js";
 import { Authority } from "../models/authorities.models.js"; // Importar el modelo Authority
+import { History } from "../models/history.models.js";
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
+import moment from "moment";
 
 // Obtener todos los usuarios activos
 export const getUsers = async (req, res) => {
@@ -190,7 +192,7 @@ export const loginUser = async (req, res) => {
   try {
     const user = await User.findOne({
       $or: [{ correo: identifier }, { usuario: identifier }],
-    }).populate("authorities", "name"); // Poblar authorities
+    }).populate("authorities", "name");
 
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
@@ -208,7 +210,14 @@ export const loginUser = async (req, res) => {
       { expiresIn: "24h" }
     );
 
-    const authorities = user.authorities.map((auth) => auth.name);
+    // Registrar en la tabla history
+    const currentDateTime = moment().format("DD/MM/YYYY HH:mm:ss");
+    const historyEntry = new History({
+      username: user.usuario,
+      datetime: currentDateTime,
+      action: "login", // Acción realizada
+    });
+    await historyEntry.save();
 
     res.status(200).json({
       message: "Inicio de sesión exitoso",
@@ -218,7 +227,7 @@ export const loginUser = async (req, res) => {
         nombre: user.nombre,
         correo: user.correo,
         usuario: user.usuario,
-        authorities, // Incluir authorities
+        authorities: user.authorities.map((auth) => auth.name),
       },
     });
   } catch (error) {
