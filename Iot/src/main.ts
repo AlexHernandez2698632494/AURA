@@ -163,10 +163,11 @@ const routes: Routes = [
     path: 'users/cambiarContra',
     component: ChangePasswordComponent,
   },
-  // Ruta para manejar 404
-  { path: '**', component: FoundComponent },
-  { path:'403', component:ForbiddenComponent}
-];
+ // Ruta para 403 Forbidden
+ { path: '403', component: ForbiddenComponent },
+
+ // Ruta comodín para 404 Not Found
+ { path: '**', component: FoundComponent },];
 
 bootstrapApplication(AppComponent, {
   providers: [
