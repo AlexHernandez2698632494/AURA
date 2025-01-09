@@ -32,7 +32,7 @@ import { NavComponent } from '../../nav/nav.component';
   templateUrl: './index-e.component.html',
   styleUrls: ['./index-e.component.css'],
 })
-export class IndexSessionComponent implements OnInit {
+export class IndexESessionComponent implements OnInit {
   sessions: any[] = [];
   searchTerm: string = '';
   recordsToShow: number = 5;
