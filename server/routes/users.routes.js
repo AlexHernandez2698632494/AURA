@@ -10,7 +10,8 @@ import {
   getDeleteUsers,
   restoreUser,
   getAuthorities,
-  restorePassword
+  restorePassword,
+  logoutUser
 } from "../controllers/users.controllers.js";
 import { verifyToken } from "../Middleware/auth.js";
 
@@ -27,4 +28,5 @@ router.delete("/user/restore/:id", verifyToken, restoreUser)
 router.post("/login", loginUser); // Ruta pública para login
 router.post('/change-password',verifyToken, changePassword);
 router.post("/restore-password", restorePassword);
+router.post("/logout", logoutUser)
 export default router;

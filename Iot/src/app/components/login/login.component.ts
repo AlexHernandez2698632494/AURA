@@ -35,33 +35,42 @@ export class LoginComponent {
   }
 
   // Método para manejar el inicio de sesión
-  login() {
-    if (!this.usernameOrEmail || !this.password) {
-      this.errorMessage = 'Por favor, complete todos los campos.';
-      return;
-    }
-  
-    const loginData = {
-      identifier: this.usernameOrEmail,
-      contrasena: this.password,
-    };
-  
-    // Usamos la URL correcta dependiendo del entorno
-    this.http.post(`${this.getApiUrl()}/login`, loginData).subscribe(
-      (response: any) => {
-        // Verifica que el token esté en la respuesta
-        if (response.token) {
-          console.log('Token recibido:', response.token);
-          sessionStorage.setItem('token', response.token); // Guarda el token en sessionStorage
-  
-          // Maneja los authorities (roles del usuario)
-          if (response.user && response.user.authorities) {
-            const authorities = Array.isArray(response.user.authorities) ? response.user.authorities : [response.user.authorities]; // Asegúrate de que sea un array
+// Método para manejar el inicio de sesión
+login() {
+  if (!this.usernameOrEmail || !this.password) {
+    this.errorMessage = 'Por favor, complete todos los campos.';
+    return;
+  }
+
+  const loginData = {
+    identifier: this.usernameOrEmail,
+    contrasena: this.password,
+  };
+
+  // Usamos la URL correcta dependiendo del entorno
+  this.http.post(`${this.getApiUrl()}/login`, loginData).subscribe(
+    (response: any) => {
+      // Verifica que el token esté en la respuesta
+      if (response.token) {
+        console.log('Token recibido:', response.token);
+        sessionStorage.setItem('token', response.token); // Guarda el token en sessionStorage
+
+        // Maneja el nombre de usuario y authorities (roles del usuario)
+        if (response.user) {
+          const username = response.user.usuario || ''; // Extrae el nombre de usuario, si existe
+          console.log(username)
+          console.log(response.user.user)
+          sessionStorage.setItem('username', username); // Guarda el nombre del usuario
+
+          if (response.user.authorities) {
+            const authorities = Array.isArray(response.user.authorities)
+              ? response.user.authorities
+              : [response.user.authorities]; // Asegúrate de que sea un array
             console.log('Authorities recibidos:', authorities);
             sessionStorage.setItem('authorities', JSON.stringify(authorities)); // Guarda los roles en sessionStorage
-  
+
             // Lógica para redirigir según el role
-            let routeToNavigate = '/';  // Ruta predeterminada si no hay roles específicos
+            let routeToNavigate = '/'; // Ruta predeterminada si no hay roles específicos
 
             // Definir las rutas de acuerdo a las autoridades
             const routes: { [key: string]: string } = {
@@ -93,7 +102,7 @@ export class LoginComponent {
             for (let authority of authorities) {
               if (routes[authority]) {
                 routeToNavigate = routes[authority];
-                break;  // Salir del ciclo al encontrar la primera autoridad válida
+                break; // Salir del ciclo al encontrar la primera autoridad válida
               }
             }
 
@@ -103,15 +112,19 @@ export class LoginComponent {
             console.warn('No se recibieron authorities en la respuesta del usuario');
           }
         } else {
-          console.error('No se recibió un token en la respuesta');
-          this.errorMessage = 'Error al procesar el inicio de sesión.';
+          console.warn('No se recibieron datos del usuario en la respuesta');
         }
-      },
-      (error) => {
-        console.error('Error en el login:', error);
-        this.errorMessage =
-          error.error?.message || 'Error al iniciar sesión. Inténtelo de nuevo.';
+      } else {
+        console.error('No se recibió un token en la respuesta');
+        this.errorMessage = 'Error al procesar el inicio de sesión.';
       }
-    );
-  }
+    },
+    (error) => {
+      console.error('Error en el login:', error);
+      this.errorMessage =
+        error.error?.message || 'Error al iniciar sesión. Inténtelo de nuevo.';
+    }
+  );
+}
+
 }

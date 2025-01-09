@@ -305,3 +305,21 @@ export const restorePassword = async (req, res) => {
     res.status(500).json({ message: "Error al restablecer la contraseña", error: error.message });
   }
 };
+
+export const logoutUser = async (req, res) => {
+  const { username } = req.body;
+
+  try {
+    const currentDateTime = moment().format("DD/MM/YYYY HH:mm:ss");
+    const historyEntry = new History({
+      username,
+      datetime: currentDateTime,
+      action: "logout", // Acción realizada
+    });
+    await historyEntry.save();
+
+    res.status(200).json({ message: "Cierre de sesión registrado exitosamente" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
