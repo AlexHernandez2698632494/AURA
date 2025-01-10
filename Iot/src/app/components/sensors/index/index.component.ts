@@ -54,7 +54,7 @@ export class IndexSensorsComponent {
 
   // Carga los usuarios desde el servicio
   loadUsers() {
-    const token = localStorage.getItem('token');  // Recuperamos el token desde localStorage
+    const token = sessionStorage.getItem('token');  // Recuperamos el token desde sessionStorage
 
     if (!token) {
       // Mostrar una alerta si no se encuentra el token

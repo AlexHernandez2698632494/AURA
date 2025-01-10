@@ -63,7 +63,7 @@ const routes: Routes = [
     path: 'admin/indexE',
     component: IndexEAdminComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['delete_user', 'super_administrador', 'administrador'] },
+    data: { authorities: ['restore_user', 'super_administrador', 'administrador'] },
   },
   // rutas de Alertas:
   {
@@ -82,7 +82,7 @@ const routes: Routes = [
     path: 'alert/indexE',
     component: IndexEAlertComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['delete_alert', 'super_administrador', 'administrador'] },
+    data: { authorities: ['restore_alert', 'super_administrador', 'administrador'] },
   },
   // rutas de Suscripciones:
   {
@@ -101,7 +101,7 @@ const routes: Routes = [
     path: 'suscription/indexE',
     component: IndexESuscriptionComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['delete_suscription', 'super_administrador', 'administrador'] },
+    data: { authorities: ['restore_suscription', 'super_administrador', 'administrador'] },
   },
   // rutas de Servicios:
   {
@@ -120,7 +120,7 @@ const routes: Routes = [
     path: 'services/indexE',
     component: IndexEServiceComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['delete_iot_service', 'super_administrador', 'administrador'] },
+    data: { authorities: ['restore_iot_service', 'super_administrador', 'administrador'] },
   },
   // rutas de Sensores:
   {
@@ -139,7 +139,7 @@ const routes: Routes = [
     path: 'sensors/indexE',
     component: IndexESensorsComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['delete_sensors', 'super_administrador', 'administrador'] },
+    data: { authorities: ['restore_sensors', 'super_administrador', 'administrador'] },
   },
   // rutas de Sesiones:
   {

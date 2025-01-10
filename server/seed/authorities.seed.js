@@ -39,6 +39,14 @@ const authorities = [
   { name: "delete_suscription" },
   { name: "delete_user" },
   { name: "delete_iot_service" },
+
+    // Restaurar (RESTORE)
+    { name: "restore_alert" },
+    { name: "restore_sensors" },
+    { name: "restore_suscription" },
+    { name: "restore_user" },
+    { name: "restore_iot_service" },
+  
 ];
 
 const seedDatabase = async () => {
