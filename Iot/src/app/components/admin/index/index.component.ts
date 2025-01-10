@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterOutlet,Router } from '@angular/router';
+import { RouterOutlet, Router } from '@angular/router';
 import { NavComponent } from '../../nav/nav.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../../services/admin.service';
-import Swal from 'sweetalert2';  // Importar SweetAlert2
+import Swal from 'sweetalert2'; // Importar SweetAlert2
 import { EditUserDialogComponent } from '../../../modals/edit-user-dialog/edit-user-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
@@ -14,6 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDividerModule } from '@angular/material/divider';
+
 @Component({
   selector: 'app-index-admin',
   standalone: true,
@@ -31,7 +32,7 @@ import { MatDividerModule } from '@angular/material/divider';
     MatDividerModule,
   ],
   templateUrl: './index.component.html',
-  styleUrls: ['./index.component.css']
+  styleUrls: ['./index.component.css'],
 })
 export class IndexAdminComponent implements OnInit {
   users: any[] = [];
@@ -39,6 +40,7 @@ export class IndexAdminComponent implements OnInit {
   recordsToShow: number = 5;
   currentPage: number = 1;
   Math = Math;
+  userPermissions: string[] = []; // Almacenar permisos del usuario
 
   constructor(
     private adminService: AdminService,
@@ -47,24 +49,39 @@ export class IndexAdminComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.loadPermissions(); // Cargar permisos al iniciar
     this.loadUsers();
+  }
+
+  // Cargar los permisos del usuario desde sessionStorage
+  loadPermissions() {
+    const authorities = sessionStorage.getItem('authorities');
+    if (authorities) {
+      this.userPermissions = JSON.parse(authorities);
+    }
+  }
+
+  hasPermission(permission: string): boolean {
+    return this.userPermissions.includes(permission);
+  }
+
+  hasAnyPermission(permissions: string[]): boolean {
+    return permissions.some((permission) => this.userPermissions.includes(permission));
   }
 
   // Carga los usuarios desde el servicio
   loadUsers() {
-    const token = sessionStorage.getItem('token');  // Recuperamos el token desde sessionStorage
+    const token = sessionStorage.getItem('token'); // Recuperamos el token desde sessionStorage
 
     if (!token) {
-      // Mostrar una alerta si no se encuentra el token
       Swal.fire({
         icon: 'error',
         title: 'No se encuentra el token',
         text: 'Por favor, inicie sesión nuevamente.',
       }).then(() => {
-        // Opcional: Redirigir al usuario a la página de login
         this.router.navigate(['/login']);
       });
-      return;  // No continuar si no hay token
+      return; // No continuar si no hay token
     }
 
     this.adminService.getUsers().subscribe({
@@ -74,15 +91,16 @@ export class IndexAdminComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al cargar los usuarios:', err);
-      }
+      },
     });
   }
 
   filteredUsers() {
-    const filtered = this.users.filter(user =>
-      user.nombre.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      user.usuario.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      user.correo.toLowerCase().includes(this.searchTerm.toLowerCase())
+    const filtered = this.users.filter(
+      (user) =>
+        user.nombre.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        user.usuario.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        user.correo.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
     const start = (this.currentPage - 1) * this.recordsToShow;
     const end = start + this.recordsToShow;
@@ -110,28 +128,25 @@ export class IndexAdminComponent implements OnInit {
       width: '400px',
       data: { ...user }, // Pasa una copia del usuario al modal
     });
-  
+
     dialogRef.afterClosed().subscribe((updatedUser) => {
       if (updatedUser) {
-        // Asegúrate de pasar ambos parámetros: el userId y el userData
         this.adminService.updateUser(updatedUser._id, updatedUser).subscribe({
           next: (data) => {
-            // Si la actualización en el servidor fue exitosa, entonces actualiza la tabla
-            const index = this.users.findIndex(u => u._id === updatedUser._id);
+            const index = this.users.findIndex((u) => u._id === updatedUser._id);
             if (index > -1) {
-              this.users[index] = { ...updatedUser }; // Sobrescribe los datos del usuario con los nuevos datos
+              this.users[index] = { ...updatedUser };
             }
           },
           error: (err) => {
             console.error('Error al actualizar el usuario:', err);
-          }
+          },
         });
       }
     });
-  }  
-  
-deleteUser(user: any) {
-    // Mostrar un cuadro de confirmación con el nombre del usuario
+  }
+
+  deleteUser(user: any) {
     Swal.fire({
       title: '¿Estás seguro?',
       text: `¿Estás seguro que deseas eliminar el usuario ${user.nombre}?`,
@@ -142,19 +157,23 @@ deleteUser(user: any) {
       confirmButtonText: 'Sí, eliminarlo!',
     }).then((result) => {
       if (result.isConfirmed) {
-        // Llamar al servicio para eliminar el usuario
-        this.adminService.deleteUser(user._id).subscribe({
+        const usuarioHistory = sessionStorage.getItem('username');
+        if (!usuarioHistory) {
+          Swal.fire('Error', 'No se encontró el usuario autenticado en sessionStorage.', 'error');
+          return;
+        }
+
+        this.adminService.deleteUser(user._id, usuarioHistory).subscribe({
           next: (response) => {
             Swal.fire('Eliminado!', `El usuario ${user.nombre} ha sido eliminado correctamente.`, 'success');
-            // Eliminar el usuario localmente de la lista
-            this.users = this.users.filter(u => u._id !== user._id);
+            this.users = this.users.filter((u) => u._id !== user._id);
           },
           error: (err) => {
             Swal.fire('Error', `No se pudo eliminar el usuario ${user.nombre}.`, 'error');
             console.error('Error al eliminar el usuario:', err);
-          }
+          },
         });
       }
     });
   }
-}   
+}

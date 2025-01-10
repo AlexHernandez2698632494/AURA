@@ -20,8 +20,8 @@
         </div>
         <div class="right">
           <mat-form-field class="search-input">
-            <mat-label class="search-label">buscar</mat-label>
-            <input matInput type="text" [(ngModel)]="searchTerm">
+            <mat-label class="search-label">Buscar</mat-label>
+            <input matInput type="text" [(ngModel)]="searchTerm" />
           </mat-form-field>
         </div>
       </div>
@@ -31,19 +31,35 @@
             <tr>
               <th>Nombre</th>
               <th>Correo</th>
-              <th>Accion</th>
+              <th *ngIf="hasAnyPermission(['edit_user', 'delete_user', 'super_administrador', 'administrador'])">
+                Acción
+              </th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let user of filteredUsers()">
               <td>{{ user.nombre }}</td>
               <td>{{ user.correo }}</td>
-              <td>
+              <td *ngIf="hasAnyPermission(['edit_user', 'delete_user', 'super_administrador', 'administrador'])">
                 <!-- Botón Actualizar -->
-                <button mat-icon-button (click)="editUser(user)" class="btn-edit" title="Actualizar">
+                <button
+                  *ngIf="hasPermission('edit_user') || hasAnyPermission(['super_administrador', 'administrador'])"
+                  mat-icon-button
+                  (click)="editUser(user)"
+                  class="btn-edit"
+                  title="Actualizar"
+                >
                   <mat-icon>cached</mat-icon>
                 </button>
-                <button mat-icon-button (click)="deleteUser(user)" class="btn-delete" title="Eliminar">
+
+                <!-- Botón Eliminar -->
+                <button
+                  *ngIf="hasPermission('delete_user') || hasAnyPermission(['super_administrador', 'administrador'])"
+                  mat-icon-button
+                  (click)="deleteUser(user)"
+                  class="btn-delete"
+                  title="Eliminar"
+                >
                   <mat-icon>delete</mat-icon>
                 </button>
               </td>
@@ -51,8 +67,6 @@
           </tbody>
         </table>
       </div>
-
-      <!-- Información de registros y paginación -->
       <div class="footer">
         <div class="left">
           Mostrando registros del {{ (currentPage - 1) * recordsToShow + 1 }}

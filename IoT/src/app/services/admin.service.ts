@@ -58,19 +58,21 @@ export class AdminService {
     );
   }
 
-  deleteUser(userId: string): Observable<any> {
+  deleteUser(userId: string, usuarioHistory: string): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.delete(`${this.getApiUrl()}/user/${userId}`, { headers }).pipe(
+    const body = { usuarioHistory }; // Agregar el usuario que realiza la acción
+    return this.http.patch(`${this.getApiUrl()}/user/${userId}`, body, { headers }).pipe(
       catchError(err => throwError(err))
     );
   }
-
-  restoreUser(userId: string): Observable<any> {
+  restoreUser(userId: string, usuarioHistory: string): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.delete(`${this.getApiUrl()}/user/restore/${userId}`, { headers }).pipe(
+    const body = { usuarioHistory };  // Agregar el usuarioHistory al cuerpo de la solicitud
+    return this.http.patch(`${this.getApiUrl()}/user/restore/${userId}`, body, { headers }).pipe(
       catchError(err => throwError(err))
     );
   }
+  
   getAuthorities(): Observable<any[]> {
     const headers = this.getAuthHeaders();
     return this.http.get<any[]>(`${this.getApiUrl()}/authorities`, { headers }).pipe(

@@ -68,51 +68,44 @@ export class EditUserDialogComponent {
 
   onSave() {
     const updatedUserData: any = {};
-
-    if (this.data.usuario !== this.initialUsuario) {
-      updatedUserData.usuario = this.data.usuario;
+  
+    // Recuperar el usuario autenticado desde sessionStorage
+    const usuarioHistory = sessionStorage.getItem('username');
+    if (!usuarioHistory) {
+      Swal.fire("Error", "No se encontró el usuario autenticado en sessionStorage.", "error");
+      return;
     }
-
-    if (this.data.nombre !== this.initialNombre) {
-      updatedUserData.nombre = this.data.nombre;
-    }
-
-    if (this.data.correo !== this.initialCorreo) {
-      updatedUserData.correo = this.data.correo;
-    }
-
+    updatedUserData.usuarioHistory = usuarioHistory; // Agregar el usuario que realiza la acción
+  
+    // Verificar campos editados
+    if (this.data.usuario !== this.initialUsuario) updatedUserData.usuario = this.adminForm.value.usuario;
+    if (this.data.nombre !== this.initialNombre) updatedUserData.nombre = this.adminForm.value.nombre;
+    if (this.data.correo !== this.initialCorreo) updatedUserData.correo = this.adminForm.value.correo;
+  
+    // Manejar autoridades
     if (JSON.stringify(this.selectedAuthorities) !== JSON.stringify(this.initialAuthorities)) {
-      updatedUserData.authorities = [...this.selectedAuthorities]; // Si se agregan o cambian autoridades
+      updatedUserData.authorities = this.selectedAuthorities;
     }
-
+  
     const removedAuthorities = this.initialAuthorities.filter(
       (authority) => !this.selectedAuthorities.includes(authority)
     );
     if (removedAuthorities.length > 0) {
-      updatedUserData.removeAuthorities = removedAuthorities; // Autoridades eliminadas
+      updatedUserData.removeAuthorities = removedAuthorities;
     }
-
+  
     if (Object.keys(updatedUserData).length === 0) {
+      this.dialogRef.close(); // No hay cambios
       return;
     }
-
+  
     this.adminService.updateUser(this.data._id, updatedUserData).subscribe({
       next: (response) => {
-        Swal.fire({
-          title: 'Éxito!',
-          text: 'El usuario se ha actualizado correctamente.',
-          icon: 'success',
-          confirmButtonText: 'Aceptar',
-        });
+        Swal.fire("Éxito", "El usuario se ha actualizado correctamente.", "success");
         this.dialogRef.close(response.user);
       },
       error: (err) => {
-        Swal.fire({
-          title: 'Error!',
-          text: 'Ocurrió un error al actualizar el usuario. Intente nuevamente.',
-          icon: 'error',
-          confirmButtonText: 'Aceptar',
-        });
+        Swal.fire("Error", "No se pudo actualizar el usuario. Intente nuevamente.", "error");
       },
     });
   }

@@ -102,6 +102,18 @@ export class IndexEAdminComponent {
 
  // Función para restaurar el usuario
  restoreUser(userId: string, userName: string) {
+  // Obtener el username desde sessionStorage
+  const usuarioHistory = sessionStorage.getItem('username'); // Asegúrate de que 'username' esté guardado en sessionStorage.
+
+  if (!usuarioHistory) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'No se encontró el usuario en la sesión. Por favor, inicia sesión nuevamente.',
+    });
+    return;
+  }
+
   Swal.fire({
     title: '¿Estás seguro?',
     text: `¿Quieres restaurar al usuario ${userName}?`,
@@ -111,7 +123,7 @@ export class IndexEAdminComponent {
     cancelButtonText: 'Cancelar'
   }).then((result) => {
     if (result.isConfirmed) {
-      this.adminService.restoreUser(userId).subscribe({
+      this.adminService.restoreUser(userId, usuarioHistory).subscribe({
         next: () => {
           Swal.fire(
             'Restaurado!',

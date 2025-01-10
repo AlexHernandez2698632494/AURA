@@ -77,6 +77,8 @@ export class CreateAdminComponent implements OnInit {
   registerAdmin(): void {
     if (this.adminForm.valid) {
       const adminData = this.adminForm.value;
+ // Obtener el usuario autenticado desde sessionStorage
+ const authenticatedUser = sessionStorage.getItem('username');
 
       const authoritiesWithIds = this.selectedAuthorities.map(authorityName => {
         const authority = this.availableAuthorities.find(a => a.name === authorityName);
@@ -87,7 +89,8 @@ export class CreateAdminComponent implements OnInit {
         nombre: adminData.nombre,
         usuario: adminData.usuario,
         correo: adminData.correo,
-        authorities: authoritiesWithIds // Cambiar roles a authorities
+        authorities: authoritiesWithIds, // Cambiar roles a authorities
+        usuarioHistory: authenticatedUser 
       };
 
       this.adminService.registerAdmin(adminPayload).subscribe(
