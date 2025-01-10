@@ -53,7 +53,7 @@ export const getUserById = async (req, res) => {
 
 // Crear un nuevo usuario
 export const createUser = async (req, res) => {
-  const { nombre, correo, usuario, authorities, estadoEliminacion } = req.body;
+  const { nombre, correo, usuario, authorities, estadoEliminacion, usuarioHistory } = req.body;
 
   try {
     // Verificar si las autoridades proporcionadas existen
@@ -68,7 +68,7 @@ export const createUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(randomPassword, salt);
 
-    // Crear el usuario con las autoridades (ahora usando authorities como un arreglo)
+    // Crear el usuario
     const user = new User({
       nombre,
       correo,
@@ -80,7 +80,16 @@ export const createUser = async (req, res) => {
 
     const newUser = await user.save();
 
-    // Crear el transportador de correo
+    // Registrar la acción en el historial
+    const currentDateTime = moment().format("DD/MM/YYYY HH:mm:ss");
+    const historyEntry = new History({
+      username: usuarioHistory,  // Aquí usamos el usuario autenticado
+      datetime: currentDateTime,
+      action: "create_user", // Acción realizada
+    });
+    await historyEntry.save();
+
+    // Enviar correo de notificación
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -89,18 +98,16 @@ export const createUser = async (req, res) => {
       },
     });
 
-    // Opciones de correo electrónico
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: correo,
       subject: "Registro exitoso",
-      text: `Hola ${nombre},\n\nTu cuenta ha sido creada exitosamente.\n\nDetalles de acceso:\nUsuario: ${usuario}\nContraseña: ${randomPassword}\n\nPor favor, cambia tu contraseña después de iniciar sesión.\n\nSaludos,\nEl equipo`,
+      text: `Hola ${nombre},\n\nTu cuenta ha sido creada exitosamente.\nUsuario: ${usuario}\nContraseña: ${randomPassword}\n\nPor favor, cambia tu contraseña después de iniciar sesión.\nSaludos, El equipo.`,
     };
 
-    // Enviar el correo electrónico
     await transporter.sendMail(mailOptions);
 
-    // Devolver la respuesta con todos los detalles del usuario y sus autoridades
+    // Responder con los detalles del usuario creado
     const userWithAuthorities = await User.findById(newUser._id).populate("authorities");
 
     res.status(201).json({
@@ -112,39 +119,44 @@ export const createUser = async (req, res) => {
   }
 };
 
+
 // Actualizar un usuario
 export const updateUser = async (req, res) => {
-  const { authorities, removeAuthorityId, nombre, usuario, correo } = req.body;
+  const { authorities, removeAuthorityId, nombre, usuario, correo, usuarioHistory } = req.body;
 
   try {
-    // Buscar el usuario
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
-    // Verificar y actualizar las autoridades si se pasan en la solicitud
     if (authorities && Array.isArray(authorities)) {
       const validAuthorities = await Authority.find({ "_id": { $in: authorities } });
       if (validAuthorities.length !== authorities.length) {
         return res.status(400).json({ message: "Una o más autoridades no son válidas" });
       }
-      // Actualizar las autoridades del usuario
       user.authorities = validAuthorities.map(auth => auth._id);
     }
 
-    // Verificar y eliminar la autoridad si se pasa en la solicitud
     if (removeAuthorityId) {
       user.authorities = user.authorities.filter(auth => auth.toString() !== removeAuthorityId);
     }
 
-    // Actualizar otros campos (nombre, usuario, correo)
     if (nombre) user.nombre = nombre;
     if (usuario) user.usuario = usuario;
     if (correo) user.correo = correo;
 
-    // Guardar el usuario actualizado
     await user.save();
 
-    // Regresar el usuario actualizado con las autoridades
+    // Obtener el usuario autenticado
+
+    // Registrar la acción de actualización en el historial
+    const currentDateTime = moment().format("DD/MM/YYYY HH:mm:ss");
+    const historyEntry = new History({
+      username: usuarioHistory, // Registrar el username del usuario autenticado
+      datetime: currentDateTime,
+      action: "update_user", // Acción realizada
+    });
+    await historyEntry.save();
+
     const updatedUser = await User.findById(req.params.id).populate("authorities");
 
     res.json({ message: "Usuario actualizado exitosamente", user: updatedUser });
@@ -155,21 +167,37 @@ export const updateUser = async (req, res) => {
 
 // Eliminar un usuario (actualiza estadoEliminacion a 1)
 export const deleteUser = async (req, res) => {
+  const { usuarioHistory } = req.body; // Usuario que realiza la acción
+
   try {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
+    // Actualizar el estado del usuario
     user.estadoEliminacion = 1;
     await user.save();
 
-    res.json({ message: "Usuario desactivado exitosamente" });
+    // Registrar la acción de eliminación en el historial
+    const currentDateTime = moment().format("DD/MM/YYYY HH:mm:ss");
+    const historyEntry = new History({
+      username: usuarioHistory, // Usuario que realiza la acción
+      datetime: currentDateTime,
+      action: "delete_user", // Acción realizada
+      description: `El usuario ${usuarioHistory} desactivó al usuario ${user.usuario}`, // Descripción detallada
+    });
+    await historyEntry.save();
+
+    res.json({ message: "Usuario desactivado exitosamente " });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
+
 // Restaurar un usuario (cambia estadoEliminacion a 0)
 export const restoreUser = async (req, res) => {
+  const { usuarioHistory } = req.body; // El usuario que realiza la acción
+  
   try {
     const user = await User.findByIdAndUpdate(
       req.params.id,
@@ -179,11 +207,22 @@ export const restoreUser = async (req, res) => {
 
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
+    // Registrar la acción de restauración en el historial
+    const currentDateTime = moment().format("DD/MM/YYYY HH:mm:ss");
+    const historyEntry = new History({
+      username: usuarioHistory, // El usuario que realiza la acción
+      datetime: currentDateTime,
+      action: "restore_user", // Acción realizada
+      description: `El usuario ${usuarioHistory} restauró al usuario ${user.usuario}`, // Descripción detallada
+    });
+    await historyEntry.save();
+
     res.json({ message: "Usuario restaurado exitosamente", user });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // Login de usuario
 export const loginUser = async (req, res) => {

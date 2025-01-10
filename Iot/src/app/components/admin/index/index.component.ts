@@ -130,8 +130,7 @@ export class IndexAdminComponent implements OnInit {
     });
   }  
   
-deleteUser(user: any) {
-    // Mostrar un cuadro de confirmación con el nombre del usuario
+  deleteUser(user: any) {
     Swal.fire({
       title: '¿Estás seguro?',
       text: `¿Estás seguro que deseas eliminar el usuario ${user.nombre}?`,
@@ -142,11 +141,16 @@ deleteUser(user: any) {
       confirmButtonText: 'Sí, eliminarlo!',
     }).then((result) => {
       if (result.isConfirmed) {
-        // Llamar al servicio para eliminar el usuario
-        this.adminService.deleteUser(user._id).subscribe({
+        const usuarioHistory = sessionStorage.getItem('username');
+        if (!usuarioHistory) {
+          Swal.fire('Error', 'No se encontró el usuario autenticado en sessionStorage.', 'error');
+          return;
+        }
+  
+        // Enviar la solicitud con usuarioHistory
+        this.adminService.deleteUser(user._id, usuarioHistory).subscribe({
           next: (response) => {
             Swal.fire('Eliminado!', `El usuario ${user.nombre} ha sido eliminado correctamente.`, 'success');
-            // Eliminar el usuario localmente de la lista
             this.users = this.users.filter(u => u._id !== user._id);
           },
           error: (err) => {
@@ -157,4 +161,5 @@ deleteUser(user: any) {
       }
     });
   }
+  
 }   
