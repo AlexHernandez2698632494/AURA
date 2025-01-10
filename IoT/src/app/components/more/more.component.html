@@ -1,29 +1,36 @@
 <!-- more.component.html -->
 
-<div class="sidebar">
-  <div class="sidebar-header">
-    <h2>Menu</h2>
+<div class="wrapper">
+  <!-- Barra lateral -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h2>Menu</h2>
+    </div>
+
+    <div class="sidebar-content">
+      <!-- Menú Superior -->
+      <ul class="menu-list">
+        <li *ngFor="let item of menuItemsTop">
+          <div class="menu-item" (click)="onMenuItemClick(item)">
+            <span class="label">{{ item.label }}</span>
+            <span *ngIf="item.submenu.length > 0" class="arrow">{{ item.isSubmenuOpen ? '▲' : '▼' }}</span>
+          </div>
+
+          <!-- Submenú -->
+          <ul *ngIf="item.isSubmenuOpen && item.submenu.length > 0">
+            <li *ngFor="let subItem of item.submenu">
+              <a (click)="navigateTo(subItem.route)">
+                {{ subItem.label }}
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    
   </div>
 
-  <div class="sidebar-content">
-    <!-- Menú Superior -->
-    <ul class="menu-list">
-      <li *ngFor="let item of menuItemsTop">
-        <div class="menu-item" (click)="onMenuItemClick(item)">
-          <span class="label">{{ item.label }}</span>
-          <span *ngIf="item.submenu.length > 0" class="arrow">{{ item.isSubmenuOpen ? '▲' : '▼' }}</span>
-        </div>
-
-        <!-- Submenú -->
-        <ul *ngIf="item.isSubmenuOpen && item.submenu.length > 0">
-          <li *ngFor="let subItem of item.submenu">
-            <a (click)="navigateTo(subItem.route)">
-              {{ subItem.label }}
-            </a>
-          </li>
-        </ul>
-      </li>
-    </ul>
+  <!-- Contenido principal -->
+  <div class="main-content"><app-nav></app-nav>
   </div>
-  <app-nav></app-nav>
 </div>

@@ -1,16 +1,33 @@
-/* Estilo base del componente */
+/* Aseguramos que el contenido principal tenga el espacio correcto */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: white;
+  font-family: Arial, sans-serif;
+  color: #003366;
+  overflow-x: hidden; /* Evitar el desplazamiento horizontal */
+}
+
+/* Wrapper que contiene la barra lateral y el contenido principal */
+.wrapper {
+  display: flex;
+  height: 100vh; /* Aseguramos que el contenedor ocupe toda la altura */
+}
+
+/* Barra lateral */
 .sidebar {
-  width: 100%; /* Barra lateral que ocupa todo el ancho de la pantalla */
-  background-color: white; /* Fondo blanco */
-  color: #003366; /* Texto color #003366 */
+  width: 250px; /* Ajusta el ancho de la barra lateral */
+  background-color: white;
+  color: #003366;
   display: flex;
   flex-direction: column;
-  height: 100vh; /* Ocupa toda la altura de la pantalla */
-  padding-top: 20px;
-  position: fixed;
+  height: 100vh;
+  position: fixed; /* Barra lateral fija */
   top: 0;
   left: 0;
   z-index: 1000;
+  overflow-y: auto; /* Permite el desplazamiento si el contenido es grande */
+  padding-top: 20px;
 }
 
 .sidebar-header {
@@ -21,10 +38,11 @@
   margin-bottom: 20px;
 }
 
-/* Estilo de la lista del menú */
+/* Estilo para los ítems del menú */
 .menu-list {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .menu-item {
@@ -46,61 +64,59 @@
   font-size: 14px;
 }
 
+/* Submenú */
 .submenu {
   list-style: none;
   padding: 0;
-  margin-top: 5px; /* Añadido margen superior para separar un poco los submenús */
+  margin-top: 5px;
 }
 
 .submenu li {
   padding-left: 30px;
-  gap: 10px; /* Añadido padding superior para separar los elementos dentro del submenú */
+  gap: 10px;
   font-size: 16px;
-  transition: all 0.3s ease; /* Efecto de transición al hacer hover */
+  transition: all 0.3s ease;
 }
 
 .submenu li:hover {
-  background-color: #f0f0f0; /* Cambio de color de fondo cuando el mouse pasa por encima */
+  background-color: #f0f0f0;
 }
 
 .submenu li a {
   color: #003366;
   text-decoration: none;
-  font-size: 16px; /* Asegura un tamaño de texto adecuado */
+  font-size: 16px;
 }
 
 .submenu li a:hover {
   text-decoration: underline;
 }
 
-/* Estilo para el menú inferior */
-.bottom-menu {
-  margin-top: auto;
-  padding-top: 20px;
+/* Contenido principal */
+.main-content {
+  margin-left: 25px; 
+  padding: 20px;
+  overflow-y: auto; /* Permite que el contenido principal se desplace */
+  height: 10vh; /* Asegura que el contenido ocupe toda la altura de la pantalla */
 }
 
-/* Estilo responsivo para dispositivos menores a 1024px */
+/* Asegura que el contenido sea visible y tenga scroll si es necesario */
 @media (max-width: 1024px) {
-  .sidebar {
-    display: flex;
-  }
-
   :host {
     display: block;
   }
-}
-
-@media (min-width: 1025px) {
-  :host {
-    display: none;
+  .wrapper {
+    flex-direction: column; /* En dispositivos más pequeños, cambia el diseño */
   }
-}
 
-/* Estilo para el fondo de la página */
-body {
-  background-color: white;
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  color: #003366;
+  .sidebar {
+    position: relative; /* Barra lateral se vuelve relativa en pantallas más pequeñas */
+    width: 100%;
+    height: auto; /* La barra lateral se ajusta al contenido */
+    z-index: 1000;
+  }
+
+  .main-content {
+    margin-left: 0; /* El contenido ocupa todo el ancho */
+  }
 }
