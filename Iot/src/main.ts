@@ -3,6 +3,7 @@ import { provideRouter, Routes } from '@angular/router';
 import { AppComponent } from './app/app.component';
 import { provideHttpClient } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { AboutUsComponent } from './app/components/about-us/about-us.component';
 import { HomeComponent } from './app/components/home/home.component';
 import { PruebaComponent } from './app/components/prueba/prueba.component';
 import { LoginComponent } from './app/components/login/login.component';
@@ -40,6 +41,7 @@ import { FoundComponent } from './app/components/found/found.component';
 const routes: Routes = [
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
   { path: 'Home', component: HomeComponent },
+  {path: 'about-us', component: AboutUsComponent},
   { path: 'prueba', component: PruebaComponent },
   { path: 'login', component: LoginComponent },
   { path: 'more', component: MoreComponent },

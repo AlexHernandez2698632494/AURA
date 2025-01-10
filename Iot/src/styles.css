@@ -1,7 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @font-face {
   font-family: 'simati';
-  src: url('/assets/fonts/arialnarroww.ttf') format('truetype'),
+  src: url('/assets/fonts/arialnarrow.ttf') format('truetype'),
   /* url('assets/fonts/ariblk.ttf') format('truetype'), */
   url('assets/fonts/trollhunters.ttf') format('truetype');
   font-weight: normal;

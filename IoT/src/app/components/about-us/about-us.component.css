@@ -1,0 +1,165 @@
+.center {
+    display: flex;
+    justify-content: center;
+    /* Centra horizontalmente */
+    min-height: 100vh;
+}
+
+.main-container {
+    width: 80%;
+    max-width: 85%;
+    padding: 20px;
+    /* Ajusta este valor según el tamaño de tu sidebar */
+    width: calc(100% - 120px);
+    /* Asegura que el contenedor ocupe el espacio restante */
+    box-sizing: border-box;
+}
+
+
+
+.sub-header {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 10px;
+    padding: 20px;
+  }
+
+.sub-header h1{
+    font-size: xx-large;
+    font-weight: bold;
+}
+
+hr{
+    width: 100%;
+    border: 1px solid #003366;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: auto auto; 
+    margin-right: 2%;
+}
+
+.grid1  {
+    width: 100%;
+    height: auto; 
+}
+.grid {
+    width: 100%;
+    padding: 10px;
+    font-size: 30px;
+    text-align: center;
+}
+
+.grid1 img{
+    margin-top: 10%;
+    margin-bottom: 10%;
+    width: 100%;
+    align-items: center;
+    object-fit: cover;
+}
+
+.grid2{
+    width: 100%;
+    height: auto; 
+    text-align: justify;
+    font-size: clamp(1.2rem, 1.5vw, 2.2rem);
+    font-style: normal;
+}
+
+.grid2 h4{
+    text-align: center;
+    font-weight: bold;
+}
+
+.grid2 p{
+    text-align: justify;
+    font-weight: 500;
+}
+
+.grid3, .grid4 {
+    grid-column: span 2;
+    width: 100%; 
+    height: auto; 
+    padding: 10px;
+    font-size: 30px;
+    text-align: center;
+}
+
+.grid3{
+    font-size: clamp(1.2rem, 1.5vw, 2.2rem);
+    text-align: left;
+}
+.grid3 p{
+    font-weight: 500;
+}
+
+.grid4{
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 10px;
+    align-items: center;
+    justify-items: center;
+}
+
+.grid4 h3{
+    position: absolute; 
+    top: 0; 
+    padding: 10px;
+    border-radius: 8px;
+    z-index: 1; 
+    text-align: left;
+    width: 100%;
+}
+
+.grid4 img{
+    margin-top: 100px;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+@media (max-width: 1024px) {
+    .center {
+        display: flex;
+        justify-content: center;
+        padding: 0 0 35px 0;
+    }
+    
+    .main-container {
+        width: 95%;
+        max-width: 95%;
+        box-sizing: border-box;
+    }
+
+    .grid-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        gap: 20px; /* Espaciado entre las filas */
+    }
+
+    .grid1,
+    .grid2 {
+        grid-column: 1 / -1; /* Asegura que ocupen toda la fila */
+    }
+
+    .grid {
+        width: 100%; /* Asegura que cada grid ocupe todo el ancho disponible */
+    }
+
+    .grid4 {
+        display: grid;
+        grid-template-columns: 1fr; /* Las imágenes también en una sola columna */
+    }
+
+
+}
+

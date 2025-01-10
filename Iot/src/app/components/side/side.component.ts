@@ -15,13 +15,6 @@ export class SideComponent implements OnInit {
   isCollapsed = true; // Inicialmente está colapsada (solo íconos)
   currentRoute: string = ''; // Ruta activa
 
-  // Menú predeterminado para cuando el sessionStorage esté vacío
-  defaultMenuItems = [
-    { icon: 'home', label: 'Home', route: '/', submenu: [], isSubmenuOpen: false, authorities: [] },
-    { icon: 'info', label: 'Prueba', route: '/prueba', submenu: [], isSubmenuOpen: false, authorities: [] },
-    { icon: 'login', label: 'Login', route: '/login', submenu: [], isSubmenuOpen: false, authorities: [] }
-  ];
-
   // Menú original con las autoridades asociadas a cada elemento
   menuItemsTop = [
     { icon: 'home', label: 'Home', route: '/', submenu: [], isSubmenuOpen: false, authorities: [] },
@@ -133,7 +126,7 @@ export class SideComponent implements OnInit {
       // Si no hay token ni authorities, mostrar solo Home, Info y Login en la sección inferior
       this.menuItemsTop = [
         { icon: 'home', label: 'Home', route: '/', submenu: [], isSubmenuOpen: false, authorities: [] },
-        { icon: 'help', label: 'Prueba', route: '/prueba', submenu: [], isSubmenuOpen: false, authorities: [] },
+        { icon: 'help', label: 'About us', route: '/about-us', submenu: [], isSubmenuOpen: false, authorities: [] },
       ];
       this.menuItemsBottom = [
         { icon: 'login', label: 'Login', route: '/login', submenu: [], isSubmenuOpen: false, authorities: [] },
