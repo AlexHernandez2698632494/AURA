@@ -10,7 +10,7 @@
       </div>
       <!-- Botón toggle -->
       <div class="toggle">
-        <input id="checkbox2" type="checkbox" (change)="toggleSidebar()" />
+        <input id="checkbox2" type="checkbox" [checked]="!isCollapsed" (change)="toggleSidebar()" />
         <label class="toggle2" for="checkbox2">
           <div id="bar4" class="bars"></div>
           <div id="bar5" class="bars"></div>
@@ -21,7 +21,6 @@
   </div>
 
   <ul class="menu">
-    <!-- Sección superior -->
     <li *ngFor="let item of menuItemsTop" class="menu-item" [class.open]="item.isSubmenuOpen">
       <div (click)="item.submenu.length === 0 ? navigateTo(item.route) : toggleSubmenu(item)">
         <i class="material-icons">{{ item.icon }}</i>
@@ -32,7 +31,7 @@
       </div>
       <!-- Submenú -->
       <ul class="submenu" *ngIf="item.isSubmenuOpen">
-        <li *ngFor="let subItem of item.submenu" class="submenu-item">
+        <li [routerLink]="subItem.route" *ngFor="let subItem of item.submenu" class="submenu-item">
           <a [routerLink]="subItem.route">{{ subItem.label }}</a>
         </li>
       </ul>

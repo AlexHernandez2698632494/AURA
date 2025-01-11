@@ -146,6 +146,18 @@ export class SideComponent implements OnInit {
     }
   }
 
+  isParentActive(item: any): boolean {
+    if (!item.submenu || item.submenu.length === 0) {
+      return false;
+    }
+    return item.submenu.some((subItem: any) => this.isActive(subItem.route));
+  }
+
+  isSubmenuActive(item: any): boolean {
+  return item.submenu.some((subItem: any) => this.isActive(subItem.route));
+}
+
+
   filterMenuItems(): void {
     if (this.authorities.length === 0) {
       this.menuItemsTop = [
@@ -194,8 +206,8 @@ export class SideComponent implements OnInit {
     }
   }
 
-  isActive(route: string): boolean {
-    return this.currentRoute === route;
+  isActive(route: string | undefined): boolean {
+    return route ? this.currentRoute === route : false;
   }
 
   private getBaseUrl(): string {
