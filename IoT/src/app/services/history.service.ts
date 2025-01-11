@@ -60,28 +60,41 @@ export class HistoryService {
    */
   deleteHistory(historyId: string): Observable<any> {
     const headers = this.getAuthHeaders();
+    console.log(`Eliminando historial con ID: ${historyId}`);
     return this.http.delete(`${this.getApiUrl()}/history/${historyId}`, { headers }).pipe(
+      catchError(err => {
+        console.error('Error al eliminar historial', err);
+        return throwError(err);
+      })
+    );
+  }
+  
+
+  /**
+   * Elimina lógicamente todas las entradas de historial con un nivel específico.
+   */
+  deleteStateByLevel(level: string): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.delete(`${this.getApiUrl()}/history/delete/${level}`, { headers }).pipe(
       catchError(err => throwError(err))
     );
   }
 
-  /**
-   * Restaura una entrada de historial eliminada (estadoEliminacion = 0).
+ /**
+   * Elimina permanentemente una entrada de historial.
    */
-  restoreHistory(historyId: string): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.patch(`${this.getApiUrl()}/history/restore/${historyId}`, {}, { headers }).pipe(
-      catchError(err => throwError(err))
-    );
-  }
+ cleanSlateByLevel(level: string): Observable<any> {
+  const headers = this.getAuthHeaders();
+  return this.http.delete(`${this.getApiUrl()}/history/${level}/CleanSlate`, { headers }).pipe(
+    catchError(err => throwError(err))
+  );
+}
 
-  /**
-   * Limpia los registros del mes anterior y devuelve el historial actualizado.
-   */
-  cleanSlate(): Observable<any[]> {
-    const headers = this.getAuthHeaders();
-    return this.http.get<any[]>(`${this.getApiUrl()}/history/CleanSlate`, { headers }).pipe(
-      catchError(err => throwError(err))
-    );
-  }
+permanentDeleteHistory(historyId: string): Observable<any> {
+  const headers = this.getAuthHeaders();
+  return this.http.patch(`${this.getApiUrl()}/history/${historyId}/permanent`, {}, { headers }).pipe(
+    catchError(err => throwError(err))
+  );
+}
+
 }

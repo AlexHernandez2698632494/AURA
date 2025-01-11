@@ -86,6 +86,7 @@ export const createUser = async (req, res) => {
       username: usuarioHistory,  // Aquí usamos el usuario autenticado
       datetime: currentDateTime,
       action: "create_user", // Acción realizada
+      nivel:0
     });
     await historyEntry.save();
 
@@ -154,6 +155,7 @@ export const updateUser = async (req, res) => {
       username: usuarioHistory, // Registrar el username del usuario autenticado
       datetime: currentDateTime,
       action: "update_user", // Acción realizada
+      nivel:0
     });
     await historyEntry.save();
 
@@ -184,6 +186,7 @@ export const deleteUser = async (req, res) => {
       datetime: currentDateTime,
       action: "delete_user", // Acción realizada
       description: `El usuario ${usuarioHistory} desactivó al usuario ${user.usuario}`, // Descripción detallada
+      nivel:0
     });
     await historyEntry.save();
 
@@ -214,6 +217,7 @@ export const restoreUser = async (req, res) => {
       datetime: currentDateTime,
       action: "restore_user", // Acción realizada
       description: `El usuario ${usuarioHistory} restauró al usuario ${user.usuario}`, // Descripción detallada
+      nivel:0
     });
     await historyEntry.save();
 
@@ -255,6 +259,7 @@ export const loginUser = async (req, res) => {
       username: user.usuario,
       datetime: currentDateTime,
       action: "login", // Acción realizada
+      nivel:0
     });
     await historyEntry.save();
 
@@ -354,6 +359,7 @@ export const logoutUser = async (req, res) => {
       username,
       datetime: currentDateTime,
       action: "logout", // Acción realizada
+      nivel:0
     });
     await historyEntry.save();
 

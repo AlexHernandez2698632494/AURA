@@ -29,6 +29,29 @@
     color: #333;
     margin: 0;
   }
+
+  .type{
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .btn-CleanSlate {
+      border: 1px solid #f44336;
+    color: #f44336;
+    border-radius: 50%;
+    background-color: white;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-CleanSlate:hover {
+    background-color: #f44336;
+    color: white;
+  }
   
   .sub-header {
     background-color: #fff;

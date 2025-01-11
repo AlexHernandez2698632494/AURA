@@ -1,69 +1,99 @@
 <div>
-    <app-nav></app-nav> <!-- Barra lateral -->
-    <router-outlet></router-outlet> <!-- Renderiza vistas dinámicas -->
+  <app-nav></app-nav> <!-- Barra lateral -->
+  <router-outlet></router-outlet> <!-- Renderiza vistas dinámicas -->
 </div>
 <div class="center">
-    <div class="main-container">
-        <div class="header">
-            <h2>Historial Completo</h2>
-        </div>
-        <div class="sub-header">
-            <h3>Registros del Historial</h3>
-            <hr />
-            <div class="table-controls">
-                <div class="left">
-                    <label for="records">Mostrar</label>
-                    <select id="records" [(ngModel)]="recordsToShow">
-                        <option *ngFor="let option of [5, 10, 15, 20]" [value]="option">{{ option }}</option>
-                    </select>
-                    <span>registros</span>
-                </div>
-                <div class="right">
-                    <mat-form-field class="search-input">
-                        <mat-label class="search-label">buscar</mat-label>
-                        <input matInput type="text" [(ngModel)]="searchTerm">
-                    </mat-form-field>
-                </div>
-            </div>
-            <div class="table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Usuario</th>
-                            <th>Fecha y Hora</th>
-                            <th>Evento</th>
-                            <th>Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let history of filteredSessions()">
-                            <td>{{ history.username }}</td>
-                            <td>{{ history.datetime }}</td>
-                            <td>{{ history.action }}</td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="footer">
-                <div class="left">
-                    Mostrando registros del {{ (currentPage - 1) * recordsToShow + 1 }}
-                    al {{ Math.min(currentPage * recordsToShow, sessions.length) }}
-                    de un total de {{ sessions.length }} registros
-                </div>
-                <div class="right pagination">
-                    <button mat-fab extended (click)="previousPage()" [disabled]="currentPage === 1">
-                        <mat-icon>arrow_back</mat-icon>
-                        Anterior
-                    </button>
-                    <span>{{ currentPage }}</span>
-                    <button mat-fab extended (click)="nextPage()" [disabled]="currentPage === totalPages()">
-                        <mat-icon>arrow_forward</mat-icon>
-                        Siguiente
-                    </button>
-                </div>
-            </div>
-        </div>
+  <div class="main-container">
+    <div class="header">
+      <h2>Historial Completo</h2>
     </div>
+    <div class="type">
+      <!-- Radiobuttons para filtrar por nivel -->
+      <label>
+        <input type="radio" [(ngModel)]="selectedLevel" [value]="0" (ngModelChange)="onLevelChange()" /> Usuarios
+      </label>
+      <label>
+        <input type="radio" [(ngModel)]="selectedLevel" [value]="1" (ngModelChange)="onLevelChange()" /> Alertas
+      </label>
+      <label>
+        <input type="radio" [(ngModel)]="selectedLevel" [value]="2" (ngModelChange)="onLevelChange()" /> Suscripciones
+      </label>
+      <label>
+        <input type="radio" [(ngModel)]="selectedLevel" [value]="3" (ngModelChange)="onLevelChange()" /> Servicios
+      </label>
+      <label>
+        <input type="radio" [(ngModel)]="selectedLevel" [value]="4" (ngModelChange)="onLevelChange()" /> Sensores
+      </label>
+    </div>
+
+    <!-- Mostrar el sub-header solo cuando se haya seleccionado un nivel -->
+    <div *ngIf="selectedLevel !== null" class="sub-header">
+      <h3>Registros del Historial</h3>
+      <hr />
+      <div class="table-controls">
+        <div class="left">
+          <label for="records">Mostrar</label>
+          <select id="records" [(ngModel)]="recordsToShow">
+            <option *ngFor="let option of [5, 10, 15, 20]" [value]="option">{{ option }}</option>
+          </select>
+          <span>registros</span>
+        </div>
+        <div class="cleanSlate">
+          <button mat-icon-button title="Limpiar historial" class="btn-CleanSlate" (click)="onCleanSlate()">
+            <mat-icon>clear</mat-icon>
+          </button>
+        </div>
+        <div class="right">
+          <mat-form-field class="search-input">
+            <mat-label class="search-label">buscar</mat-label>
+            <input matInput type="text" [(ngModel)]="searchTerm" />
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="table">
+        <table>
+          <thead>
+            <tr>
+              <th>Usuario</th>
+              <th>Fecha y Hora</th>
+              <th>Evento</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let history of filteredSessions()">
+              <td>{{ history.username }}</td>
+              <td>{{ history.datetime }}</td>
+              <td>{{ history.action }}</td>
+              <td>
+                <!-- Botón de eliminar en la columna de acción -->
+                <button mat-icon-button title="Eliminar" class="btn-delete" (click)="onDeleteHistory(history._id)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="footer">
+        <div class="left">
+          Mostrando registros del {{ (currentPage - 1) * recordsToShow + 1 }}
+          al {{ Math.min(currentPage * recordsToShow, sessions.length) }}
+          de un total de {{ sessions.length }} registros
+        </div>
+        <div class="right pagination">
+          <button mat-fab extended (click)="previousPage()" [disabled]="currentPage === 1">
+            <mat-icon>arrow_back</mat-icon>
+            Anterior
+          </button>
+          <span>{{ currentPage }}</span>
+          <button mat-fab extended (click)="nextPage()" [disabled]="currentPage === totalPages()">
+            <mat-icon>arrow_forward</mat-icon>
+            Siguiente
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
