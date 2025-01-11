@@ -5,6 +5,7 @@ const HistorySchema = new mongoose.Schema({
   action: { type: String, required: true },
   datetime: { type: String, required: true },
   estadoEliminacion: { type: Number, default: 0 }, // 0: Activo, 1: Eliminado lógicamente
+  nivel:{type: Number, min:0, max:5}
 });
 
 export const History = mongoose.model('History', HistorySchema);

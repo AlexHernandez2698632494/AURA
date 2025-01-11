@@ -39,63 +39,66 @@ export const deleteHistory = async (req, res) => {
   }
 };
 
-// Restaurar una entrada de historial
-export const restoreHistory = async (req, res) => {
+// Actualizar el estado de eliminación de todos los elementos con un nivel específico
+export const deleteStateByLevel = async (req, res) => {
   try {
-    const historyEntry = await History.findByIdAndUpdate(
-      req.params.id,
-      { estadoEliminacion: 0 },
-      { new: true }
-    );
+    const { nivel } = req.params;  // Obtener el nivel desde los parámetros de la ruta
 
-    if (!historyEntry) {
-      return res.status(404).json({ message: "Entrada de historial no encontrada" });
+    // Verificar que el nivel sea proporcionado
+    if (!nivel) {
+      return res.status(400).json({ message: "El nivel es requerido" });
     }
 
-    res.status(200).json({
-      message: "Entrada de historial restaurada exitosamente",
-      history: historyEntry,
-    });
+    // Actualizar las entradas con el nivel especificado y establecer estadoEliminacion a 1
+    const result = await History.updateMany(
+      { nivel: nivel }, // Filtrar por nivel
+      { $set: { estadoEliminacion: 1 } } // Establecer estadoEliminacion a 1
+    );
+
+    if (result.nModified === 0) {
+      return res.status(404).json({ message: "No se encontraron registros con ese nivel" });
+    }
+
+    res.status(200).json({ message: `Se actualizaron ${result.nModified} entradas de historial` });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-export const getDelete = async (req, res) => {
+// Eliminar permanentemente una entrada de historial
+export const permanentDeleteHistory = async (req, res) => {
   try {
-    const now = moment();
-    const currentMonth = now.month(); // Mes actual (0-11)
-    const currentYear = now.year(); // Año actual
+    const historyEntry = await History.findByIdAndDelete(req.params.id); // Eliminar el historial por ID
 
-    // Calcular el rango de fechas del mes anterior
-    const startOfPreviousMonth = moment()
-      .year(currentMonth === 0 ? currentYear - 1 : currentYear)
-      .month(currentMonth === 0 ? 11 : currentMonth - 1)
-      .startOf("month")
-      .toDate();
+    if (!historyEntry) {
+      return res.status(404).json({ message: "Entrada de historial no encontrada" });
+    }
 
-    const endOfPreviousMonth = moment()
-      .year(currentMonth === 0 ? currentYear - 1 : currentYear)
-      .month(currentMonth === 0 ? 11 : currentMonth - 1)
-      .endOf("month")
-      .toDate();
-
-    // Eliminar los registros del mes anterior
-    await History.deleteMany({
-      datetime: {
-        $gte: startOfPreviousMonth,
-        $lte: endOfPreviousMonth,
-      },
-    });
-
-    // Obtener todos los registros actuales
-    const historyRecords = await History.find();
-
-    res.status(200).json({
-      message: "Registros del mes anterior eliminados exitosamente",
-      data: historyRecords,
-    });
+    res.status(200).json({ message: "Entrada de historial eliminada permanentemente" });
   } catch (error) {
-    res.status(500).json({ message: "Error al procesar la solicitud", error: error.message });
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Eliminar permanentemente todas las entradas de historial con un nivel específico
+export const cleanSlateByLevel = async (req, res) => {
+  try {
+    const { nivel } = req.params; // Obtener el nivel desde los parámetros de la ruta
+
+    // Verificar que el nivel sea proporcionado
+    if (!nivel) {
+      return res.status(400).json({ message: "El nivel es requerido" });
+    }
+
+    // Eliminar permanentemente las entradas con el nivel especificado
+    const result = await History.deleteMany({ nivel: nivel });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: "No se encontraron registros con ese nivel para eliminar" });
+    }
+
+    res.status(200).json({ message: `Se eliminaron permanentemente ${result.deletedCount} entradas de historial` });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
