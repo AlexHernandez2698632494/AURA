@@ -1,13 +1,13 @@
 <div>
-  <app-nav></app-nav> <!-- Barra lateral -->
-  <router-outlet></router-outlet> <!-- Renderiza vistas dinámicas -->
+  <app-nav></app-nav> 
+  <router-outlet></router-outlet>
 </div>
 <div class="center">
   <div class="main-container">
     <div class="header">
-      <button mat-icon-button class="back-button" (click)="onBackClick()">
-        <mat-icon>arrow_back</mat-icon> <!-- Icono de regresar -->
-      </button>
+      <!-- <button mat-icon-button class="back-button" (click)="onBackClick()">
+        <mat-icon>arrow_back</mat-icon> 
+      </button> -->
       <h1 class="title">Registro de nuevo administrador</h1>
     </div>
   
@@ -17,7 +17,6 @@
       <p class="form-description">Información general del administrador</p>
       <p class="form-instruction">Ingrese la información que se solicita</p>
   
-      <!-- Formulario -->
       <form [formGroup]="adminForm" (ngSubmit)="registerAdmin()">
         <div class="row">
           <div class="input-field">
@@ -44,19 +43,16 @@
           </mat-form-field>
         </div>
   
-        <!-- Campo de Autoridades -->
         <div class="input-field">
           <mat-form-field appearance="fill">
             <mat-label>Autoridades</mat-label>
   
-            <!-- mat-select para elegir múltiples autoridades -->
             <mat-select formControlName="authorities" multiple (selectionChange)="onAuthoritySelection($event)">
               <mat-option *ngFor="let authority of availableAuthorities" [value]="authority.name">
                 {{ authority.name }}
               </mat-option>
             </mat-select>
   
-            <!-- Lista de autoridades seleccionadas con chips -->
             <mat-chip-set>
               <mat-chip *ngFor="let authority of selectedAuthorities" [removable]="true"
                 (removed)="removeAuthority(authority)">

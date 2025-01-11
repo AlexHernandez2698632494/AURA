@@ -175,11 +175,39 @@
   transition: background-color 0.3s;
 }
 
-.menu-item.active > div,
-.submenu-item.active > a {
-  background-color: #0056b3; /* Cambia según tu diseño */
+/* Cambiar el fondo y color del ícono cuando el menú esté activo */
+.menu-item.active {
+  background-color: #003366; /* Fondo de color */
+}
+
+.menu-item.active .material-icons {
+  color: white; /* Cambiar color del ícono */
+}
+
+.submenu-item.active {
+  background-color: #003366;
+}
+
+.submenu-item.active a {
   color: white;
 }
+
+/* Cambiar el color del ícono activo */
+.active-icon {
+  color: white;
+}
+
+.separator hr {
+  border: 0;
+  border-top: 1px solid #003366;
+}
+
+/* Opcional: Cambiar el color de texto si lo deseas */
+.menu-item.active span,
+.submenu-item.active span {
+  color: white;
+}
+
 
 .menu-item.open > div {
   font-weight: bold;

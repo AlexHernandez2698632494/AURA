@@ -17,7 +17,7 @@ export class SideComponent implements OnInit {
 
   // Menú original con las autoridades asociadas a cada elemento
   menuItemsTop = [
-    { icon: 'home', label: 'Home', route: '/', submenu: [], isSubmenuOpen: false, authorities: [] },
+    { icon: 'home', label: 'Home', route: '/Home', submenu: [], isSubmenuOpen: false, authorities: [] },
     {
       icon: 'add',
       label: 'Registrar',
@@ -125,7 +125,7 @@ export class SideComponent implements OnInit {
     if (!storedToken || (this.authorities.length === 0 && !storedToken)) {
       // Si no hay token ni authorities, mostrar solo Home, Info y Login en la sección inferior
       this.menuItemsTop = [
-        { icon: 'home', label: 'Home', route: '/', submenu: [], isSubmenuOpen: false, authorities: [] },
+        { icon: 'home', label: 'Home', route: '/Home', submenu: [], isSubmenuOpen: false, authorities: [] },
         { icon: 'help', label: 'About us', route: '/about-us', submenu: [], isSubmenuOpen: false, authorities: [] },
       ];
       this.menuItemsBottom = [
@@ -207,9 +207,13 @@ export class SideComponent implements OnInit {
   }
 
   isActive(route: string | undefined): boolean {
-    return route ? this.currentRoute === route : false;
+    if (!route) return false; // Si no hay ruta, no está activa
+    
+    // Verificar si la ruta empieza con la ruta del menú principal o submenú
+    return this.router.url.startsWith(route);
   }
-
+  
+  
   private getBaseUrl(): string {
     const host = window.location.hostname;
 
@@ -253,10 +257,15 @@ export class SideComponent implements OnInit {
 
   navigateTo(route: string | undefined): void {
     if (route) {
-      this.router.navigate([route]);
+      // Navegar a la ruta
+      this.router.navigate([route]).then(() => {
+        // Actualizar la ruta activa de inmediato después de navegar
+        this.currentRoute = this.router.url;
+      });
     } else {
       console.error('Route is undefined');
     }
   }
+  
 
 }
