@@ -1,0 +1,22 @@
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class ApiConfigService {
+  private apiUrlLocal = 'http://localhost:3000';
+  private apiUrlNetwork = 'http://192.168.1.82:3000';
+  private apiUrlnetWork2 ='http://192.168.1.14:3000';
+
+  /**
+   * Determina la URL base dependiendo del entorno.
+   */
+  getApiUrl(): string {
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return this.apiUrlLocal;
+    }if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return this.apiUrlnetWork2;
+    }
+    return this.apiUrlNetwork;
+  }
+}

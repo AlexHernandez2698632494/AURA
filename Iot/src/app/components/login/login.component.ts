@@ -6,6 +6,7 @@ import { HttpClientModule } from '@angular/common/http'; // Para solicitudes HTT
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common'; // Importar CommonModule para *ngIf
+import { ApiConfigService } from '../../services/ApiConfig/api-config.service';
 
 @Component({
   selector: 'app-login',
@@ -22,16 +23,11 @@ export class LoginComponent {
   password: string = '';
   errorMessage: string = '';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private apiConfig: ApiConfigService) {}
 
   // Método para obtener la URL correcta dependiendo del entorno
-  private getApiUrl(): string {
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return 'http://localhost:3000';  // Si está en el dispositivo local, usar localhost
-    }else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return 'http://192.168.1.82:3000';  // Si está en el dispositivo local, usar localhost
-    }
-    return 'http://192.168.1.14:3000'; // Si está en otro dispositivo, usar la IP
+  private getApiUrl():string{
+    return this.apiConfig.getApiUrl();
   }
 
   // Método para manejar el inicio de sesión

@@ -2,22 +2,16 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { ApiConfigService } from './ApiConfig/api-config.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AdminService {
-  private apiUrl2 = 'http://localhost:3000';  // URL para desarrollo en localhost
-  private apiUrl = 'http://192.168.1.82:3000'; // URL para acceder desde otro dispositivo
+  constructor(private http: HttpClient, private apiConfig: ApiConfigService) {}
 
-  constructor(private http: HttpClient) {}
-
-  // Método para verificar si la aplicación está en el dispositivo local
   private getApiUrl(): string {
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return this.apiUrl2;  // Si está en el dispositivo local, usar localhost
-    }
-    return this.apiUrl;  // Si está en otro dispositivo, usar la IP
+    return this.apiConfig.getApiUrl();  // Usa el servicio para obtener la URL
   }
 
   private getAuthHeaders(): HttpHeaders {

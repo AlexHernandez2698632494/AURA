@@ -2,24 +2,18 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { ApiConfigService } from './ApiConfig/api-config.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HistoryService {
-  private apiUrlLocal = 'http://localhost:3000'; // URL para desarrollo en localhost
-  private apiUrlNetwork = 'http://192.168.1.82:3000'; // URL para acceder desde otro dispositivo
-
-  constructor(private http: HttpClient) {}
-
+  constructor(private http: HttpClient, private apiConfig: ApiConfigService) {}
   /**
    * Determina la URL base dependiendo del entorno.
    */
   private getApiUrl(): string {
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return this.apiUrlLocal;
-    }
-    return this.apiUrlNetwork;
+    return this.apiConfig.getApiUrl();  // Usa el servicio para obtener la URL
   }
 
   /**
