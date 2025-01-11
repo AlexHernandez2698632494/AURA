@@ -1,5 +1,5 @@
 <div>
-  <app-side></app-side>
+  <app-nav></app-nav>
   <router-outlet></router-outlet>
 </div>
 <div class="center">
@@ -25,30 +25,30 @@
           </mat-form-field>
         </div>
       </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Autoridades</th>
-            <th>Usuario</th>
-            <th>Nombre</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let user of filteredUsers()">
-            <td>
-              <!-- Recorremos las autoridades del usuario -->
-              <span *ngFor="let authority of user.authorities; let last = last">
-                {{ authority.name }}
-                <span *ngIf="!last">, </span>
-              </span>
-            </td>
-            <td>{{ user.usuario }}</td>
-            <td>{{ user.nombre }}</td>
-          </tr>
-        </tbody>
-      </table>
-
+      <div class="table">
+        <table>
+          <thead>
+            <tr>
+              <th>Autoridades</th>
+              <th>Usuario</th>
+              <th>Nombre</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of filteredUsers()">
+              <td>
+                <!-- Recorremos las autoridades del usuario -->
+                <span *ngFor="let authority of user.authorities; let last = last">
+                  {{ authority.name }}
+                  <span *ngIf="!last">, </span>
+                </span>
+              </td>
+              <td>{{ user.usuario }}</td>
+              <td>{{ user.nombre }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <div class="footer">
         <div class="left">
           Mostrando registros del {{ (currentPage - 1) * recordsToShow + 1 }}

@@ -114,17 +114,17 @@ hr {
 }
 
 .table tbody {
-  overflow-x: auto; /* Scroll lateral dentro del cuerpo de la tabla */
+  overflow-x: auto; 
 }
 
 .table-container thead {
-  display: table; /* Mantiene el encabezado en formato de tabla */
-  width: 100%; /* Asegura que el ancho coincida con el cuerpo */
+  display: table; 
+  width: 100%; 
 }
 
 .table-container tbody tr {
-  display: table; /* Cada fila sigue siendo una tabla dentro del cuerpo */
-  width: 100%; /* Asegura el ancho completo */
+  display: table; 
+  width: 100%;
 }
 
 table tr:nth-child(even) {

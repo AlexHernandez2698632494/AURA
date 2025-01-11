@@ -25,7 +25,7 @@ export class BottomTabComponent implements OnInit {
     if (!storedToken || (this.authorities.length === 0 && !storedToken)) {
       this.menuItems = [
         { icon: 'home', label: 'Home', route: '/' },
-        { icon: 'help', label: 'Help', route: '/help' },
+        { icon: 'help', label: 'Help', route: '/about-us' },
         { icon: 'login', label: 'Login', route: '/login' },
       ];
     } else if (storedToken && this.authorities.length === 0) {

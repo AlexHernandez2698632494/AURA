@@ -1,7 +1,7 @@
 <div>
     <app-nav></app-nav> <!-- Barra lateral -->
     <router-outlet></router-outlet> <!-- Renderiza vistas dinámicas -->
-  </div>
+</div>
 <div class="center">
     <div class="main-container">
         <div class="header">
@@ -21,7 +21,7 @@
             <form [formGroup]="AlertForm">
                 <h3 class="form-row">Informacion general</h3>
                 <div class="row">
-                    <div class="input-field" >
+                    <div class="input-field">
                         <mat-form-field appearance="fill">
                             <mat-label>Nombre</mat-label>
                             <input matInput id="nombre" formControlName="nombre" type="text"
@@ -30,33 +30,48 @@
                         </mat-form-field>
                     </div>
                     <div class="input-field">
-                        <mat-form-field appearance="fill">
+                        <mat-form-field appearance="fill" class="color-field">
                             <mat-label>Color</mat-label>
-                            <input matInput id="color" formControlName="color" type="text"
-                                placeholder="Ingrese color" />
+                            <div class="color-container">
+                                <input matInput formControlName="color" class="inputColor" placeholder="#FFFFFF" />
+                                <ngx-colors
+                                    class="ngx-colors"
+                                    ngx-colors-trigger
+                                    [ngModelOptions]="{ standalone: true }"
+                                    [ngModel]="AlertForm.get('color')?.value"
+                                    (ngModelChange)="onColorChange($event)"
+                                    acceptLabel="Select"
+                                    cancelLabel="Cancel"
+                                >
+                                </ngx-colors>
+                            </div>
                         </mat-form-field>
                     </div>
+
                 </div>
                 <h3 class="form-row">Valores</h3>
                 <div class="row">
                     <div class="input-field">
                         <mat-form-field appearance="fill">
                             <mat-label>Rango Inicial</mat-label>
-                            <input matInput id="rango-inicial" formControlName="rangoInicial" type="number" placeholder="1" min="1"/>
+                            <input matInput id="rango-inicial" formControlName="rangoInicial" type="number"
+                                placeholder="1" min="1" />
                             <mat-icon matSuffix>123</mat-icon>
                         </mat-form-field>
                     </div>
                     <div class="input-field">
                         <mat-form-field appearance="fill">
                             <mat-label>Rango final</mat-label>
-                            <input matInput id="rango-final" formControlName="rangoFinal" type="number" placeholder="1" />
+                            <input matInput id="rango-final" formControlName="rangoFinal" type="number"
+                                placeholder="1" />
                             <mat-icon matSuffix>123</mat-icon>
                         </mat-form-field>
                     </div>
                     <div class="input-field">
                         <mat-form-field appearance="fill">
                             <mat-label>Nivel</mat-label>
-                            <input matInput id="nivel" formControlName="nivel" type="number" placeholder="1" min="1" max="5"/>
+                            <input matInput id="nivel" formControlName="nivel" type="number" placeholder="1" min="1"
+                                max="5" />
                             <mat-icon matSuffix>123</mat-icon>
                         </mat-form-field>
                     </div>
@@ -66,7 +81,8 @@
                     <div class="input-field">
                         <mat-form-field appearance="fill">
                             <mat-label>Variable</mat-label>
-                            <input matInput id="variable" formControlName="variable" type="text" placeholder="Variable" />
+                            <input matInput id="variable" formControlName="variable" type="text"
+                                placeholder="Variable" />
                             <mat-icon matSuffix>description</mat-icon>
                         </mat-form-field>
                     </div>

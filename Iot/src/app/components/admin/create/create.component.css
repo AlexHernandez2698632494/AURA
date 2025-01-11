@@ -8,9 +8,7 @@
   width: 80%;
   max-width: 85%;
   padding: 20px;
-  /* Ajusta este valor según el tamaño de tu sidebar */
   width: calc(100% - 120px);
-  /* Asegura que el contenedor ocupe el espacio restante */
   box-sizing: border-box;
 }
 

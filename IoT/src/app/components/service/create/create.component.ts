@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { SideComponent } from '../../side/side.component';
+import { NavComponent } from '../../nav/nav.component';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AdminService } from '../../../services/admin.service';
@@ -25,7 +25,7 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
     ReactiveFormsModule,
     CommonModule,
     RouterOutlet,
-    SideComponent,
+    NavComponent,
     MatButtonModule
   ],
   templateUrl: './create.component.html',

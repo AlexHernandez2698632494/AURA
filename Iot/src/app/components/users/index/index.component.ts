@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet, Router } from '@angular/router';
-import { SideComponent } from '../../side/side.component';
+import { NavComponent } from '../../nav/nav.component';
 import { CommonModule } from '@angular/common';
 import { AdminService } from '../../../services/admin.service';
 import { FormsModule } from '@angular/forms';
@@ -17,7 +17,7 @@ import Swal from 'sweetalert2';
   standalone: true,
   imports: [
     RouterOutlet,
-    SideComponent,
+    NavComponent,
     FormsModule,
     CommonModule,
     MatTableModule,

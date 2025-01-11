@@ -4,7 +4,7 @@
   <!-- Campo para el nombre del usuario -->
   <mat-form-field appearance="fill">
     <mat-label>Nombre</mat-label>
-    <input matInput/>
+    <input matInput />
   </mat-form-field>
 
   <!-- Campo para el correo del usuario -->
@@ -24,44 +24,34 @@
   </mat-form-field>
 
   <!-- Campo para el nombre de usuario -->
-  <mat-form-field appearance="fill">
+  <mat-form-field appearance="fill" class="color-field">
     <mat-label>Color</mat-label>
-    <input matInput [value]="color"/>
-        <ngx-colors
-  ngx-colors-trigger
-  [(ngModel)]="color"
-  acceptLabel="Select"
-  cancelLabel="Cancel"
->
-</ngx-colors>
+    <div class="color-container">
+      <input matInput [value]="color" />
+      <ngx-colors ngx-colors-trigger [(ngModel)]="color" acceptLabel="Select" cancelLabel="Cancel">
+      </ngx-colors>
+    </div>
   </mat-form-field>
 
   <!-- Selector de autoridades -->
   <mat-form-field appearance="fill">
     <mat-label>Nivel</mat-label>
     <mat-select multiple>
-      <mat-option >
+      <mat-option>
         1
       </mat-option>
     </mat-select>
   </mat-form-field>
-</mat-dialog-content>
 
-<mat-form-field appearance="fill">
+  <mat-form-field appearance="fill">
     <mat-label>Estado</mat-label>
     <input matInput />
   </mat-form-field>
+</mat-dialog-content>
 
 <mat-dialog-actions>
   <button mat-button (click)="onCancel()">Cancelar</button>
-  <button
-    mat-raised-button
-    color="primary"
-    class="register-button"
-    type="submit"
-    (click)="onSave()"
-  >
+  <button mat-raised-button color="primary" class="register-button" type="submit" (click)="onSave()">
     Guardar
   </button>
 </mat-dialog-actions>
-

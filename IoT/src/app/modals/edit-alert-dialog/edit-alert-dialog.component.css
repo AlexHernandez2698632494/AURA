@@ -32,6 +32,26 @@ mat-dialog-content {
   mat-dialog-actions button {
     min-width: 100px;  /* Da un tamaño adecuado a los botones */
   }
+
+  .color-field {
+    width: 100%;
+  }
+  
+  .color-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; 
+  }
+  
+  .inputColor {
+    flex: 1; 
+    min-width: 100px;
+  }
+  
+  .ngx-colors {
+    flex-shrink: 0;
+    cursor: pointer; 
+  }
   
   /* Estilo específico para el botón "Guardar" */
   .register-button {

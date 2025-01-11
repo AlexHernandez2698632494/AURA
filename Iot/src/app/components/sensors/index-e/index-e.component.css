@@ -1,20 +1,19 @@
 .center{
-    display: flex;
-    justify-content: center;  /* Centra horizontalmente */
-    min-height: 100vh; 
-  }
+  display: flex;
+  justify-content: center;  /* Centra horizontalmente */
+  min-height: 100vh; 
+}
 
-  .main-container {
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    max-width: 1100px;
-    padding: 20px;
-    margin-left:10%;
-    width: calc(100% - 120px);
-    box-sizing: border-box;
+.main-container {
+  width: 80%;
+  max-width: 85%;
+  padding: 20px; /* Ajusta este valor según el tamaño de tu sidebar */
+  width: calc(100% - 120px); /* Asegura que el contenedor ocupe el espacio restante */
+  box-sizing: border-box;
   }
   
+  
+  /* Contenedor 1 - Control de Administradores */
   .header {
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -33,7 +32,9 @@
     margin: 0;
   }
   
+  /* Contenedor 2 - Administradores Registrados */
   .sub-header {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -48,11 +49,11 @@
     color: #333;
   }
   
-  hr {
+  .sub-header hr {
     width: 100%;
-    border: 1px solid #00bcd4;
+    border: 1px solid #003366;
     margin-top: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
   }
   
   .table-controls {
@@ -104,8 +105,8 @@
   }
   
   table td {
-    text-align: left;
     padding: 12px;
+    text-align: left;
     border: 1px solid #ddd;
   }
   
@@ -115,14 +116,19 @@
     font-weight: bold;
   }
   
+  /* Target the second <td> element */
   table tr:nth-child(even) {
     background-color: #f1f1f1;
   }
   
+  
+  
+  /* Efecto hover: cambia el color de fondo de la fila a gris cuando el ratón está encima */
   table tr:hover {
     background-color: #cfcfcf;
+    /* Gris claro */
   }
-  
+
   .btn-view {
     background-color: white;
     color: #0044ff;
@@ -164,6 +170,11 @@
     color: white;
   }
   
+  .btn-edit i,
+  .btn-restore i {
+    font-size: 16px;
+  }
+  
   .footer {
     display: flex;
     justify-content: space-between;
@@ -183,10 +194,11 @@
   .footer .right {
     display: flex;
     align-items: center;
+    /* Los controles de paginación estarán alineados en fila */
   }
   
   .footer .pagination button {
-     background-color: #00bcd4;
+    background-color: #00bcd4;
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -196,8 +208,8 @@
     margin: 0 8px;
   }
   
-   .footer .pagination button:disabled {
-    background-color: #ccc;
+  .footer .pagination button:disabled {
+    background-color: #ddd;
     cursor: not-allowed;
   }
   
@@ -211,43 +223,71 @@
     background-color: #0097a7;
   }
   
-  @media (max-width: 629px) {
-    .main-container {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      margin-left: 100px;
-      width: calc(100% - 120px);
-      box-sizing: border-box;
-    }
-  
-    .table-controls {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-  
-    .table-controls select,
-    .table-controls input {
-      width: 100%;
-      font-size: 12px;
-      margin-bottom: 10px;
-    }
-  
-    .footer {
-      flex-direction: column;
-      align-items: flex-start;
-      font-size: 12px;
-    }
-  
-    .footer .pagination button {
-      padding: 6px 10px;
-      font-size: 14px; 
-    }
-  
-    .btn-edit,
-    .btn-delete {
-      padding: 4px 8px;
-    }
+  /* Móviles grandes (480px a 767px) */
+
+@media (max-width: 1024px) {
+  .center {
+    display: flex;
+    justify-content: center;
+    padding: 0 0 35px 0;
   }
-  
+  .main-container {
+    padding: 0 10px;
+    width: 95%;
+    max-width: 95%;
+    box-sizing: border-box;
+  }
+
+  .title {
+    flex: 1;
+    text-align: center;
+    font-size: 19px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+  }
+  .table-controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .table-controls select{
+    width: 100%;
+    font-size: 12px;
+  }
+  .search-input{
+    width: 100%;
+  }
+
+  .btn-edit,
+  .btn-delete {
+    padding: 4px 8px;
+  }
+  th, td {
+    font-size: 14px;  
+  }
+
+  .footer {
+    flex-direction: column; 
+    align-items: center;
+    font-size: 12px;
+    gap: 10px;
+  }
+
+  .footer .pagination {
+    display: flex;
+    justify-content: center; 
+    width: 100%;
+  }
+
+  .footer .pagination button {
+    padding: 4px 8px; 
+    font-size: 12px;
+    margin: 0 4px;
+  }
+
+  .footer .pagination span {
+    font-size: 12px;
+  }
+
+}

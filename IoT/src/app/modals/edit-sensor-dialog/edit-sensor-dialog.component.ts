@@ -50,7 +50,7 @@ export class EditSensorDialogComponent {
       location: [data.location, Validators.required],
       type: [data.type, Validators.required],
     });
-
+  
     this.selectedSensorType = data.type; // Asignar el valor del tipo de sensor recibido
   }
 
