@@ -10,7 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDividerModule } from '@angular/material/divider';
 import Swal from 'sweetalert2';
-import { HistoryService } from '../../../services/history.service';
+import { HistoryService } from '../../../services/history/history.service';
 import { NavComponent } from '../../nav/nav.component';
 
 @Component({

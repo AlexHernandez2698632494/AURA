@@ -3,7 +3,6 @@ import { RouterOutlet, Router } from '@angular/router';
 import { NavComponent } from '../../nav/nav.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AdminService } from '../../../services/admin.service';
 import Swal from 'sweetalert2';  // Importar SweetAlert2
 import { EditAlertDialogComponent } from '../../../modals/edit-alert-dialog/edit-alert-dialog.component';
 import { MatDialog } from '@angular/material/dialog';

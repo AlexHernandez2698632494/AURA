@@ -3,7 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { NavComponent } from '../../nav/nav.component';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { AdminService } from '../../../services/admin.service';
+import { AdminService } from '../../../services/admin/admin.service';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
 import { MatInputModule } from '@angular/material/input';

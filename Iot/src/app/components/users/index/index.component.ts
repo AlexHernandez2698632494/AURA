@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RouterOutlet, Router } from '@angular/router';
 import { NavComponent } from '../../nav/nav.component';
 import { CommonModule } from '@angular/common';
-import { AdminService } from '../../../services/admin.service';
+import { AdminService } from '../../../services/admin/admin.service';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';

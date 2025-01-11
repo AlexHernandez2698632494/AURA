@@ -4,7 +4,7 @@ import { NavComponent } from '../nav/nav.component';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
-import { AdminService } from '../../services/admin.service';
+import { AdminService } from '../../services/admin/admin.service';
 
 @Component({
   selector: 'app-change-password',
