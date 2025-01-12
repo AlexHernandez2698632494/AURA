@@ -36,24 +36,17 @@
   </ul>
 </li>
 
-<!-- Menu Items Bottom -->
+
+    <div class="separator">
+      <hr />
+    </div>
+
+   <!-- Menu Items Bottom -->
 <li *ngFor="let item of menuItemsBottom" class="menu-item" [class.active]="isActive(item.route)" (click)="logout()">
   <a href="javascript:void(0)">
     <i class="material-icons" [ngClass]="{'active-icon': isActive(item.route)}">{{ item.icon }}</i>
     <span *ngIf="!isCollapsed">{{ item.label }}</span>
   </a>
 </li>
-
-    <div class="separator">
-      <hr />
-    </div>
-
-    <!-- Bottom Menu (e.g., Logout) -->
-    <li *ngFor="let item of menuItemsBottom" class="menu-item" [class.active]="isActive(item.route)" (click)="logout()">
-      <a href="javascript:void(0)">
-        <i class="material-icons" [ngClass]="{'active-icon': isActive(item.route)}">{{ item.icon }}</i>
-        <span *ngIf="!isCollapsed">{{ item.label }}</span>
-      </a>
-    </li>
   </ul>
 </div>
