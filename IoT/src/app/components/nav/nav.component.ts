@@ -3,6 +3,7 @@ import { SideComponent } from '../side/side.component';
 import { BottomTabComponent } from '../bottom-tab/bottom-tab.component';
 import { CommonModule } from '@angular/common';
 
+
 @Component({
   selector: 'app-nav',
   standalone: true,

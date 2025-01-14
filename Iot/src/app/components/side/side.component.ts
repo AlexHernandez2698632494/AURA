@@ -1,8 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, HostListener, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { routes } from '../../app.routes';
+
+interface SideNavToggle {
+  screenWidth: number;
+  collapsed: boolean;
+}
 
 @Component({
   selector: 'app-side',
@@ -12,8 +18,10 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./side.component.css'],
 })
 export class SideComponent implements OnInit {
-  isCollapsed = true; // Inicialmente está colapsada (solo íconos)
-  currentRoute: string = ''; // Ruta activa
+  @Output() onToggleSideNav: EventEmitter<SideNavToggle> = new EventEmitter
+  isCollapsed = true;
+  screenWidth = 0;
+  currentRoute: string = '';
 
   // Menú original con las autoridades asociadas a cada elemento
   menuItemsTop = [
@@ -21,17 +29,19 @@ export class SideComponent implements OnInit {
     {
       icon: 'add',
       label: 'Registrar',
+      route: '',
       isSubmenuOpen: false,
       submenu: [
         { label: 'Registrar Administrador', route: '/admin/create', authorities: ['create_users', 'super_administrador', 'administrador'] },
         { label: 'Control Administrador', route: '/admin/index', authorities: ['list_users', 'super_administrador', 'administrador'] },
-        { label: 'Administradores Eliminados', route: '/admin/indexE', authorities: ['restore_user', 'super_administrador', 'administrador'] },
+        { label: 'Administradores Eliminados', route: '/admin/restore/index', authorities: ['restore_user', 'super_administrador', 'administrador'] },
       ],
       authorities: ['create_users', 'list_users', 'restore_user', 'super_administrador', 'administrador']
     },
     {
       icon: 'notifications',
       label: 'Alertas',
+      route: '',
       isSubmenuOpen: false,
       submenu: [
         { label: 'Registrar Alertas', route: '/alert/create', authorities: ['create_alert', 'super_administrador', 'administrador'] },
@@ -43,6 +53,7 @@ export class SideComponent implements OnInit {
     {
       icon: 'subscriptions',
       label: 'Suscripciones',
+      route: '',
       isSubmenuOpen: false,
       submenu: [
         { label: 'Registrar Suscripciones', route: '/suscription/create', authorities: ['create_suscription', 'super_administrador', 'administrador'] },
@@ -54,6 +65,7 @@ export class SideComponent implements OnInit {
     {
       icon: 'apps',
       label: 'Servicios',
+      route: '',
       isSubmenuOpen: false,
       submenu: [
         { label: 'Registrar Servicio', route: '/services/create', authorities: ['create_iot_service', 'super_administrador', 'administrador'] },
@@ -65,6 +77,7 @@ export class SideComponent implements OnInit {
     {
       icon: 'sensors',
       label: 'Sensores',
+      route: '',
       isSubmenuOpen: false,
       submenu: [
         { label: 'Registrar Sensor', route: '/sensors/create', authorities: ['create_sensors', 'super_administrador', 'administrador'] },
@@ -76,6 +89,7 @@ export class SideComponent implements OnInit {
     {
       icon: 'history',
       label: 'Ver Historial',
+      route: '',
       isSubmenuOpen: false,
       submenu: [
         { label: 'Control Sesiones', route: '/sessions/index', authorities: ['super_administrador'] },
@@ -86,6 +100,7 @@ export class SideComponent implements OnInit {
     {
       icon: 'people',
       label: 'Control Usuarios',
+      route: '',
       isSubmenuOpen: false,
       submenu: [
         { label: 'Control Usuarios', route: '/users/index', authorities: ['super_administrador'] },
@@ -108,10 +123,22 @@ export class SideComponent implements OnInit {
 
   authorities: string[] = [];
 
+  @HostListener('window:resize', ['$event'])
+onResize(event:any) {
+  this.screenWidth = window.innerWidth;
+  if(this.screenWidth <= 1024) {
+    this.isCollapsed = true;
+  }
+}
+  
+
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private http: HttpClient) { }
 
   ngOnInit(): void {
-    // Detectar ruta activa
+
+    this.screenWidth = window.innerWidth;
+    this.onToggleSideNav.emit({collapsed: this.isCollapsed, screenWidth: this.screenWidth});
+
     this.router.events.subscribe(() => {
       this.currentRoute = this.router.url;
     });
@@ -146,16 +173,6 @@ export class SideComponent implements OnInit {
     }
   }
 
-  isParentActive(item: any): boolean {
-    if (!item.submenu || item.submenu.length === 0) {
-      return false;
-    }
-    return item.submenu.some((subItem: any) => this.isActive(subItem.route));
-  }
-
-  isSubmenuActive(item: any): boolean {
-  return item.submenu.some((subItem: any) => this.isActive(subItem.route));
-}
 
 
   filterMenuItems(): void {
@@ -186,8 +203,9 @@ export class SideComponent implements OnInit {
     }
   }
 
-  toggleSidebar() {
+  toggleSidebar(): void {
     this.isCollapsed = !this.isCollapsed;
+    this.onToggleSideNav.emit({collapsed: this.isCollapsed, screenWidth: this.screenWidth});
   }
 
   toggleSubmenu(item: any) {
@@ -206,13 +224,16 @@ export class SideComponent implements OnInit {
     }
   }
 
-  isActive(route: string | undefined): boolean {
-    if (!route) return false; // Si no hay ruta, no está activa
-    
-    // Verificar si la ruta empieza con la ruta del menú principal o submenú
-    return this.router.url.startsWith(route);
+  isActive(route: string): boolean {
+    if (!route) {
+      return false;
+    }
+    return this.router.url.startsWith(route); // Permite marcar como activo si la ruta actual es un subcamino del ítem.
   }
   
+  isSubmenuActive(submenu: any[]): boolean {
+    return submenu.some(subItem => this.router.url.startsWith(subItem.route));
+  }
   
   private getBaseUrl(): string {
     const host = window.location.hostname;
@@ -257,9 +278,7 @@ export class SideComponent implements OnInit {
 
   navigateTo(route: string | undefined): void {
     if (route) {
-      // Navegar a la ruta
-      this.router.navigate([route]).then(() => {
-        // Actualizar la ruta activa de inmediato después de navegar
+      this.router.navigate([route || 'defaultRoute']).then(() => {
         this.currentRoute = this.router.url;
       });
     } else {
@@ -267,5 +286,10 @@ export class SideComponent implements OnInit {
     }
   }
   
+
+  closeSidenav(): void {
+    this.isCollapsed = true;
+    this.onToggleSideNav.emit({collapsed: this.isCollapsed, screenWidth: this.screenWidth});
+  }
 
 }

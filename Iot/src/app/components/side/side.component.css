@@ -6,7 +6,7 @@
   top: 0;
   left: 0;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  transition: width 0.3s;
+  transition: width 0.3s ease;
   z-index: 1000;
 }
 
@@ -128,30 +128,51 @@
   padding: 0;
   margin: 0;
   background-color: white;
+  height: calc(100% - 3.65rem);
 }
 
 .menu-item {
   display: block;
   padding: 10px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.4s ease;
   position: relative;
 }
 
 .menu-item:hover {
-  background-color: #e0e0e0;
+  background-color: #003366;
+.material-icons {
+    transition: background-color 0.4s ease;
+    color: #e0e0e0;
+  }
+  span{
+    color: #e0e0e0;
+  }
+}
+
+.submenu-item:hover {
+  transition: background-color 0.4s ease;
+  background-color: #003366;
+  border: 1px solid #e0e0e0;
+  a {
+    color: #e0e0e0;
+    transition: background-color 0.4s ease;
+  }
 }
 
 .menu-item .material-icons {
+  text-align: center;
   margin-left: 5%;
   color: #003366;
   font-size: clamp(1.7rem, 2vw, 2.3rem);
+  transition: background-color 0.4s ease;
 }
 
 .menu-item span {
   margin-left: 10px;
   color: #003366;
   font-size: 16px;
+  transition: background-color 0.4s ease;
 }
 
 .submenu {
@@ -172,20 +193,22 @@
   font-size: 14px;
   color: #003366;
   display: block;
-  transition: background-color 0.3s;
+  transition: background-color 0.4s ease;
 }
 
-/* Cambiar el fondo y color del ícono cuando el menú esté activo */
+
 .menu-item.active {
-  background-color: #003366; /* Fondo de color */
+  background-color: #003366; 
+  border: 1px solid #e0e0e0;
 }
 
 .menu-item.active .material-icons {
-  color: white; /* Cambiar color del ícono */
+  color: white;
 }
 
 .submenu-item.active {
   background-color: #003366;
+  border: 1px solid #e0e0e0;
 }
 
 .submenu-item.active a {
@@ -214,18 +237,14 @@
 }
 
 
-.submenu-item:hover {
-  background-color: #e0e0e0;
-}
+
 
 .submenu-item a {
   text-decoration: none;
   color: #003366;
 }
 
-.submenu-item a:hover {
-  color: #0066cc;
-}
+
 
 .menu-item.open .submenu {
   display: block;
@@ -268,6 +287,7 @@
   position: relative;
   z-index: 1;
 }
+
 
 @media (min-width: 1920px) {
   .sidebar.collapsed {

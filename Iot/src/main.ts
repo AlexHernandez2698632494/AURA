@@ -62,7 +62,7 @@ const routes: Routes = [
     data: { authorities: ['list_users', 'super_administrador', 'administrador'] },
   },
   {
-    path: 'admin/indexE',
+    path: 'admin/restore/index',
     component: IndexEAdminComponent,
     canActivate: [AuthGuard],
     data: { authorities: ['restore_user', 'super_administrador', 'administrador'] },
