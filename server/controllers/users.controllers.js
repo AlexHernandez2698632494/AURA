@@ -120,7 +120,6 @@ export const createUser = async (req, res) => {
   }
 };
 
-
 // Actualizar un usuario
 export const updateUser = async (req, res) => {
   const { authorities, removeAuthorityId, nombre, usuario, correo, usuarioHistory } = req.body;
@@ -196,7 +195,6 @@ export const deleteUser = async (req, res) => {
   }
 };
 
-
 // Restaurar un usuario (cambia estadoEliminacion a 0)
 export const restoreUser = async (req, res) => {
   const { usuarioHistory } = req.body; // El usuario que realiza la acción
@@ -226,7 +224,6 @@ export const restoreUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 // Login de usuario
 export const loginUser = async (req, res) => {
@@ -366,5 +363,90 @@ export const logoutUser = async (req, res) => {
     res.status(200).json({ message: "Cierre de sesión registrado exitosamente" });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+export const checkIfUsersExist = async (req, res) => {
+  try {
+    const userCount = await User.countDocuments();
+    if (userCount === 0) {
+      return res.status(200).json({ usersExist: false });
+    }
+    res.status(200).json({ usersExist: true });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const registerFirstAdmin = async (req, res) => {
+  const { nombre, correo, usuario, usuarioHistory, autoridadId } = req.body;
+
+  try {
+    // Verificar si ya existe algún usuario en la base de datos
+    const existingUser = await User.countDocuments();
+    if (existingUser > 0) {
+      return res.status(400).json({ message: "Ya existe un usuario en el sistema" });
+    }
+
+    // Verificar si la autoridad de superadmin existe
+    const superAdminAuthority = await Authority.findById(autoridadId);
+    if (!superAdminAuthority) {
+      return res.status(400).json({ message: "La autoridad proporcionada no existe" });
+    }
+
+    const randomPassword = crypto.randomBytes(8).toString("hex");
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(randomPassword, salt);
+
+    // Crear el usuario con la autoridad de superadmin
+    const user = new User({
+      nombre,
+      correo,
+      usuario,
+      contrasena: hashedPassword,
+      authorities: [superAdminAuthority._id], // Asignamos la autoridad de superadmin
+      estadoEliminacion: 0, // Aseguramos que el usuario no esté eliminado
+    });
+
+    const newUser = await user.save();
+
+    // Registrar la acción de creación del primer superadmin en el historial
+    const currentDateTime = moment().format("DD/MM/YYYY HH:mm:ss");
+    const historyEntry = new History({
+      username: usuario,  // El usuario que está creando al superadmin
+      datetime: currentDateTime,
+      action: "register_first_admin", // Acción de registrar el primer superadmin
+      nivel: 0,
+      description: `Se ha registrado el primer superadmin con el nombre de usuario ${usuario}`, // Descripción
+    });
+    await historyEntry.save();
+
+    // Enviar correo de notificación al nuevo superadmin
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: correo,
+      subject: "Registro de superadmin exitoso",
+      text: `Hola ${nombre},\n\nTu cuenta de superadmin ha sido creada exitosamente.\nUsuario: ${usuario}\nContraseña: ${randomPassword}\n\nPor favor, cambia tu contraseña después de iniciar sesión.\nSaludos, El equipo.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    // Responder con el nuevo usuario creado
+    const userWithAuthorities = await User.findById(newUser._id).populate("authorities");
+
+    res.status(201).json({
+      message: "Primer superadmin registrado exitosamente",
+      user: userWithAuthorities,
+    });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };

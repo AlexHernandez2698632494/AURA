@@ -11,7 +11,9 @@ import {
   restoreUser,
   getAuthorities,
   restorePassword,
-  logoutUser
+  logoutUser,
+  checkIfUsersExist,
+  registerFirstAdmin
 } from "../controllers/users.controllers.js";
 import { verifyToken } from "../Middleware/auth.js";
 
@@ -29,4 +31,6 @@ router.post("/login", loginUser); // Ruta pública para login
 router.post('/change-password',verifyToken, changePassword);
 router.post("/restore-password", restorePassword);
 router.post("/logout", logoutUser)
+router.get("/users/exist",checkIfUsersExist)
+router.post("/register-superadmin", registerFirstAdmin)
 export default router;

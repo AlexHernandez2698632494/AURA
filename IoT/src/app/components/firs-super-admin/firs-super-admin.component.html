@@ -1,0 +1,79 @@
+<div class="app-container">
+    <app-nav></app-nav>
+    <router-outlet></router-outlet>
+  </div>
+  
+  <div class="background">
+    <div class="login-container">
+      <div class="login-box">
+        <h1>Registrar Primer Superadmin</h1>
+        <form (submit)="registerFirstAdmin(); $event.preventDefault()"> <!-- Conectar con método registerFirstAdmin -->
+          <!-- Nombre -->
+          <div class="input-group">
+            <label for="nombre">
+              <i class="fa fa-user"></i>
+            </label>
+            <input
+              type="text"
+              id="nombre"
+              placeholder="Nombre"
+              [(ngModel)]="nombre"
+              name="nombre"
+            />
+          </div>
+  
+          <!-- Correo -->
+          <div class="input-group">
+            <label for="correo">
+              <i class="fa fa-envelope"></i>
+            </label>
+            <input
+              type="email"
+              id="correo"
+              placeholder="Correo"
+              [(ngModel)]="correo"
+              name="correo"
+            />
+          </div>
+  
+          <!-- Usuario -->
+          <div class="input-group">
+            <label for="usuario">
+              <i class="fa fa-user"></i>
+            </label>
+            <input
+              type="text"
+              id="usuario"
+              placeholder="Usuario"
+              [(ngModel)]="usuario"
+              name="usuario"
+            />
+          </div>
+  
+          <!-- Autoridad (Solo mostrar el primero) -->
+          <div class="input-group">
+            <label for="autoridadId">
+              <i class="fa fa-key"></i>
+            </label>
+            <select id="autoridadId" [(ngModel)]="autoridadId" name="autoridadId" required>
+              <!-- Opción por defecto que dice "Seleccione la autoridad" -->
+              <option value="" disabled selected>Seleccione la autoridad</option>
+          
+              <!-- Mostrar solo la primera autoridad -->
+              <option *ngIf="availableAuthorities.length > 0" [value]="availableAuthorities[0]._id">
+                {{ availableAuthorities[0].name }}
+              </option>
+            </select>
+          </div>
+          
+  
+          <!-- Mensaje de error -->
+          <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+  
+          <!-- Botón de envío -->
+          <button type="submit" class="login-button">Registrar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  

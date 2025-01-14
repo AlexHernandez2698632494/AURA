@@ -37,6 +37,7 @@ import { MoreComponent } from './app/components/more/more.component';
 import { AuthGuard } from './app/auth/auth.guard';
 import { ForbiddenComponent } from './app/components/forbidden/forbidden.component';
 import { FoundComponent } from './app/components/found/found.component';
+import { FirsSuperAdminComponent } from './app/components/firs-super-admin/firs-super-admin.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
@@ -44,6 +45,7 @@ const routes: Routes = [
   {path: 'about-us', component: AboutUsComponent},
   { path: 'prueba', component: PruebaComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'register-superadmin', component:FirsSuperAdminComponent},
   { path: 'more', component: MoreComponent },
   { path: 'recuperarView', component: ForgotComponent },
   // rutas de Admin:

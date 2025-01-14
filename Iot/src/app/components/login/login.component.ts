@@ -29,7 +29,20 @@ export class LoginComponent {
   private getApiUrl():string{
     return this.apiConfig.getApiUrl();
   }
-
+  ngOnInit() {
+    this.http.get(`${this.getApiUrl()}/users/exist`).subscribe(
+      (response: any) => {
+        if (!response.usersExist) {
+          // Redirigir a la vista de registro del superadministrador
+          this.router.navigate(['/register-superadmin']);
+        }
+      },
+      (error) => {
+        console.error('Error verificando existencia de usuarios:', error);
+      }
+    );
+  }
+  
   // Método para manejar el inicio de sesión
 // Método para manejar el inicio de sesión
 login() {

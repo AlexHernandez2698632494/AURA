@@ -31,6 +31,14 @@ export class AdminService {
     );
   }
 
+    // Método para registrar el primer admin (superadmin)
+    registerFirstAdmin(adminData: any): Observable<any> {
+      const headers = this.getAuthHeaders();
+      return this.http.post(`${this.getApiUrl()}/register-superadmin`, adminData, { headers }).pipe(
+        catchError(err => throwError(err))  // Manejo de errores
+      );
+    }
+    
   getUsers(): Observable<any[]> {
     const headers = this.getAuthHeaders();
     return this.http.get<any[]>(`${this.getApiUrl()}/users`, { headers }).pipe(
