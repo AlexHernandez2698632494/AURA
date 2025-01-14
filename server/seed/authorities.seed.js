@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { connectDB } from "../config/db.js";
-import { Authority } from "../models/authorities.models.js"; // Cambiar a Authority en lugar de Role
+import { Authority } from "../models/authorities.models.js";
 
 dotenv.config();
 
@@ -40,20 +40,24 @@ const authorities = [
   { name: "delete_user" },
   { name: "delete_iot_service" },
 
-    // Restaurar (RESTORE)
-    { name: "restore_alert" },
-    { name: "restore_sensors" },
-    { name: "restore_suscription" },
-    { name: "restore_user" },
-    { name: "restore_iot_service" },
-  
+  // Restaurar (RESTORE)
+  { name: "restore_alert" },
+  { name: "restore_sensors" },
+  { name: "restore_suscription" },
+  { name: "restore_user" },
+  { name: "restore_iot_service" },
+
+  // DEV
+  {
+    _id: new mongoose.Types.ObjectId("64eabbf1e213f99865d6c2d4"), 
+    name: "dev",
+  },
 ];
 
-const seedDatabase = async () => {
+const seedAuthorities = async () => {
   try {
-    console.log("Seeding data...");
+    console.log("Seeding authorities...");
 
-    // Inserta authorities solo si no existen
     for (const authority of authorities) {
       const exists = await Authority.findOne({ name: authority.name });
       if (!exists) {
@@ -64,12 +68,12 @@ const seedDatabase = async () => {
       }
     }
 
-    console.log("Seeding completed.");
-    await mongoose.connection.close();
+    console.log("Authorities seeding completed.");
+   // await mongoose.connection.close();
   } catch (error) {
-    console.error("Error while seeding data:", error);
+    console.error("Error while seeding authorities:", error);
     process.exit(1);
   }
 };
 
-seedDatabase();
+export default seedAuthorities;

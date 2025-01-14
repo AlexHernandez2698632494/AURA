@@ -47,7 +47,7 @@ export class ChangePasswordComponent {
     }
 
     // Validación de longitud mínima
-    if (this.newPassword.length < 8) {
+    if (this.newPassword.length < 5) {
       Swal.fire({
         icon: 'error',
         title: 'Error',
