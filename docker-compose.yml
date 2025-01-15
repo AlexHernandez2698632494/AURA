@@ -29,7 +29,7 @@ services:
       context: ./IoT
     container_name: frontend_IoT
     ports:
-      - "80:80"  # Exponer el puerto 80
+      - "4201:4201"  # Exponer el puerto 80
     depends_on:
       - server
 

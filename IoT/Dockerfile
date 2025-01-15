@@ -17,7 +17,7 @@ COPY ./ /app
 RUN npm install
 
 # Expone el puerto donde el frontend estará corriendo
-EXPOSE 80
+EXPOSE 4201
 
 # Comando para ejecutar Angular (ng serve) cuando se inicie el contenedor
-CMD ["ng", "serve", "--host", "0.0.0.0", "--port", "80"]
+CMD ["ng", "serve", "--host", "0.0.0.0", "--port", "4201"]
