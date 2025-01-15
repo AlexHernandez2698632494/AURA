@@ -23,6 +23,16 @@ services:
     depends_on:
       - mongodb  # El servidor depende de MongoDB para levantarse
 
+ # Servicio del frontend (Angular)
+  frontend:
+    build:
+      context: ./IoT
+    container_name: frontend_IoT
+    ports:
+      - "80:80"  # Exponer el puerto 80
+    depends_on:
+      - server
+
 volumes:
   mongodb_data:
   mongodb_config:
