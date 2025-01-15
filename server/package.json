@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "nodemon index.js",
     "start": "node index.js",
-    "seed": "node seed.js",
-    "postinstall": "node seed.js"
+    "seed": "node seed.js"
   },
   "keywords": [],
   "author": "",
