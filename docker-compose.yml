@@ -12,6 +12,17 @@ services:
       - mongodb_data:/data/db
       - mongodb_config:/data/configdb
 
+  server:
+    build:
+      context: ./server  # Construir la imagen desde la carpeta 'server'
+    container_name: server
+    ports:
+      - "3000:3000"  # Puerto para tu servidor Node.js
+    env_file:
+      - ./server/.env  # Cargar las variables de entorno desde el archivo .env dentro de 'server'
+    depends_on:
+      - mongodb  # El servidor depende de MongoDB para levantarse
+
 volumes:
   mongodb_data:
   mongodb_config:
