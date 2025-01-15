@@ -11,28 +11,130 @@ services:
     volumes:
       - mongodb_data:/data/db
       - mongodb_config:/data/configdb
+    networks:
+      - default
 
   server:
     build:
-      context: ./server  # Construir la imagen desde la carpeta 'server'
+      context: ./server 
     container_name: server
     ports:
-      - "3000:3000"  # Puerto para tu servidor Node.js
+      - "3000:3000"
     env_file:
-      - ./server/.env  # Cargar las variables de entorno desde el archivo .env dentro de 'server'
+      - ./server/.env 
     depends_on:
-      - mongodb  # El servidor depende de MongoDB para levantarse
+      - mongodb  
+    networks:
+      - default
 
- # Servicio del frontend (Angular)
   frontend:
     build:
       context: ./IoT
     container_name: frontend_IoT
     ports:
-      - "4201:4201"  # Exponer el puerto 80
+      - "4201:4201" 
     depends_on:
       - server
+    networks:
+      - default
+
+  orion:
+    image: fiware/orion
+    container_name: fiware-orion
+    hostname: orion
+    expose:
+      - "1026"
+    ports: 
+      - "1026:1026"
+    command: -dbURI mongodb://aii:aii@mongodb:27017/iotagentul?authSource=admin
+    depends_on: 
+      - mongodb
+    networks: 
+      - default
+
+  iot-agent:
+    image: fiware/iotagent-json:latest
+    container_name: fiware-iotagent
+    hostname: iot-agent
+    ports:
+      - "4041:4041"
+      - "7896:7896"
+    environment:
+      - IOTA_CB_HOST=orion
+      - IOTA_CB_PORT=1026
+      - IOTA_NORTH_PORT=4041
+      - IOTA_SOUTH_PORT=7896
+      - IOTA_REGISTRY_TYPE=mongodb
+      - IOTA_LOG_LEVEL=DEBUG
+      - IOTA_TIMESTAMP=true
+      - IOTA_CB_NGSI_VERSION=v2
+      - IOTA_AUTOCAST=true
+      - IOTA_MONGO_HOST=mongodb
+      - IOTA_MONGO_PORT=27017
+      - IOTA_MONGO_DB=iotagentul
+      - IOTA_MONGO_USER=aii
+      - IOTA_MONGO_PASS=aii
+    depends_on:
+      - orion
+      - mongodb
+    networks: 
+      - default
+
+  mqtt-broker:
+    image: eclipse-mosquitto
+    container_name: mqttbroker
+    hostname: mqttbroker
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    networks: 
+      - default
+  
+  crate-db:
+    image: crate
+    container_name: crate-db
+    hostname: crate-db
+    ports:
+      - "4200:4200"
+      - "4300:4300"
+      - "5432:5432"
+    expose:
+      - "4200"
+    volumes:
+      - crate-db:/data
+    environment:
+      - CRATE-HEAP-SIZE=4G
+    networks: 
+      - default
+    
+    
+  quantumleap:
+    image: orchestracities/quantumleap
+    hostname: quantumleap
+    container_name: quantumleap
+    ports:
+      - "8668:8668"
+    expose:
+      - "8668"
+    depends_on:
+      - orion
+      - crate-db
+    environment:
+      - QL_DATABASE_HOST=crate-db
+      - QL_DATABASE_PORT=4200
+      - QL_DATABASE_NAME=crate
+      - QL_DEFAULT_LIMIT=10000
+      - QL_LOGLEVEL=DEBUG
+    networks:
+      - default
 
 volumes:
   mongodb_data:
   mongodb_config:
+  crate-db:
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 10.0.0.0/24
