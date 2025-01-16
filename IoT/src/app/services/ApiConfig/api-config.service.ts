@@ -14,9 +14,10 @@ export class ApiConfigService {
   getApiUrl(): string {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
       return this.apiUrlLocal;
-    }if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    }if (window.location.hostname === '192.168.1.14' ) {
       return this.apiUrlnetWork2;
-    }
+    }else{
     return this.apiUrlNetwork;
+    }
   }
 }
