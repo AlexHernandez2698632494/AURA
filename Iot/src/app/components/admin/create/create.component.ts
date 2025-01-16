@@ -52,9 +52,27 @@ export class CreateAdminComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Obtener todas las autoridades desde la base de datos
     this.adminService.getAuthorities().subscribe(
       (authorities) => {
-        this.availableAuthorities = authorities; // Actualizar disponibles
+        // Obtener el array de autoridades del usuario desde sessionStorage
+        const authoritiesFromSession = sessionStorage.getItem('authorities');
+        const authoritiesArray = authoritiesFromSession ? JSON.parse(authoritiesFromSession) : [];
+  
+        // Filtrar las autoridades disponibles según las reglas de sessionStorage
+        if (authoritiesArray.includes('super_administrador') || authoritiesArray.includes('dev')) {
+          // Si tiene autoridad de super_administrador o dev, mostrar todas las autoridades
+          this.availableAuthorities = authorities;
+        } else if (authoritiesArray.includes('administrador')) {
+          // Si tiene autoridad de administrador, mostrar desde la tercera autoridad en adelante (índice 2)
+          this.availableAuthorities = authorities.slice(2); // Desde la tercera en adelante
+        } else if (authoritiesArray.includes('create_users')) {
+          // Si tiene autoridad de create_user, mostrar desde la cuarta autoridad en adelante (índice 3)
+          this.availableAuthorities = authorities.slice(3); // Desde la cuarta en adelante
+        } else {
+          // Si no tiene ninguna de las autoridades específicas, mostrar todas las autoridades
+          this.availableAuthorities = authorities;
+        }
       },
       (error) => {
         console.error('Error al obtener autoridades', error);
@@ -62,6 +80,7 @@ export class CreateAdminComponent implements OnInit {
       }
     );
   }
+    
 
   onAuthoritySelection(event: any): void {
     const value = event.value;

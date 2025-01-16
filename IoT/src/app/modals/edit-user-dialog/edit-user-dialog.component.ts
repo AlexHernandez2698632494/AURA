@@ -64,9 +64,34 @@ export class EditUserDialogComponent {
       correo: [this.data.correo, [Validators.required, Validators.email]],
       authorities: [this.selectedAuthorities],
     });
+
+    // Filtrar las autoridades disponibles según la sesión
+    this.filterAuthorities();
   }
 
- onSave() {
+  // Filtrar las autoridades disponibles según lo que está en sessionStorage
+  filterAuthorities(): void {
+    const authoritiesFromSession = sessionStorage.getItem('authorities');
+    const authoritiesArray = authoritiesFromSession ? JSON.parse(authoritiesFromSession) : [];
+
+    this.authorities$.subscribe((authorities) => {
+      if (authoritiesArray.includes('super_administrador') || authoritiesArray.includes('dev')) {
+        // Si tiene autoridad de super_administrador o dev, mostrar todas las autoridades
+        this.authorities$ = new Observable(observer => observer.next(authorities));
+      } else if (authoritiesArray.includes('administrador')) {
+        // Si tiene autoridad de administrador, mostrar desde la tercera autoridad en adelante (índice 2)
+        this.authorities$ = new Observable(observer => observer.next(authorities.slice(2))); // Desde la tercera en adelante
+      } else if (authoritiesArray.includes('create_user')) {
+        // Si tiene autoridad de create_user, mostrar desde la cuarta autoridad en adelante (índice 3)
+        this.authorities$ = new Observable(observer => observer.next(authorities.slice(3))); // Desde la cuarta en adelante
+      } else {
+        // Si no tiene ninguna de las autoridades específicas, mostrar todas las autoridades
+        this.authorities$ = new Observable(observer => observer.next(authorities));
+      }
+    });
+  }
+
+  onSave() {
     const updatedUserData: any = {};
     if (this.data.usuario !== this.initialUsuario) {
       updatedUserData.usuario = this.data.usuario;

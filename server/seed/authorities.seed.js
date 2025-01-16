@@ -10,8 +10,13 @@ await connectDB();
 const authorities = [
   // Administradores
   { name: "super_administrador" },
+  // DEV
+  {
+    _id: new mongoose.Types.ObjectId("64eabbf1e213f99865d6c2d4"), 
+    name: "dev",
+  },
   { name: "administrador" },
-
+  
   // Listar (READ)
   { name: "list_alert" },
   { name: "list_sensors" },
@@ -46,12 +51,6 @@ const authorities = [
   { name: "restore_suscription" },
   { name: "restore_user" },
   { name: "restore_iot_service" },
-
-  // DEV
-  {
-    _id: new mongoose.Types.ObjectId("64eabbf1e213f99865d6c2d4"), 
-    name: "dev",
-  },
 ];
 
 const seedAuthorities = async () => {
