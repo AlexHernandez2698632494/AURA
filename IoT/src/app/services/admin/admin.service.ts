@@ -48,10 +48,18 @@ export class AdminService {
 
   updateUser(userId: string, userData: any): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.put(`${this.getApiUrl()}/user/${userId}`, userData, { headers }).pipe(
+    const usuarioHistory = sessionStorage.getItem('username'); // Obtener el username del sessionStorage
+    
+    const body = {
+      ...userData,
+      usuarioHistory: usuarioHistory,  // Agregar el usuario que realiza la acción
+    };
+  
+    return this.http.put(`${this.getApiUrl()}/user/${userId}`, body, { headers }).pipe(
       catchError(err => throwError(err))
     );
   }
+  
 
   getDeleteUsers(): Observable<any[]> {
     const headers = this.getAuthHeaders();

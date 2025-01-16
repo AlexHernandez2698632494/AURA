@@ -122,42 +122,48 @@ export const createUser = async (req, res) => {
 
 // Actualizar un usuario
 export const updateUser = async (req, res) => {
-  const { authorities, removeAuthorityId, nombre, usuario, correo, usuarioHistory } = req.body;
-
+  const { authorities, removeAuthorityId, nombre, usuario, correo } = req.body;
+  const usuarioHistory = req.body.usuarioHistory; // Usuario que realiza la acción (enviado desde el frontend)
+  
   try {
+    // Buscar el usuario
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
+    // Verificar y actualizar las autoridades si se pasan en la solicitud
     if (authorities && Array.isArray(authorities)) {
       const validAuthorities = await Authority.find({ "_id": { $in: authorities } });
       if (validAuthorities.length !== authorities.length) {
         return res.status(400).json({ message: "Una o más autoridades no son válidas" });
       }
+      // Actualizar las autoridades del usuario
       user.authorities = validAuthorities.map(auth => auth._id);
     }
 
+    // Verificar y eliminar la autoridad si se pasa en la solicitud
     if (removeAuthorityId) {
       user.authorities = user.authorities.filter(auth => auth.toString() !== removeAuthorityId);
     }
 
+    // Actualizar otros campos (nombre, usuario, correo)
     if (nombre) user.nombre = nombre;
     if (usuario) user.usuario = usuario;
     if (correo) user.correo = correo;
 
+    // Guardar el usuario actualizado
     await user.save();
 
-    // Obtener el usuario autenticado
-
-    // Registrar la acción de actualización en el historial
-    const currentDateTime = moment().format("DD/MM/YYYY HH:mm:ss");
-    const historyEntry = new History({
-      username: usuarioHistory, // Registrar el username del usuario autenticado
-      datetime: currentDateTime,
-      action: "update_user", // Acción realizada
-      nivel:0
+    // Registrar el historial
+    const newHistory = new History({
+      username: usuarioHistory,  // Quien hace la acción
+      action: 'update_user',
+      datetime: new Date().toISOString(),
+      nivel: 0,  // Nivel de importancia (puedes ajustarlo según la lógica de tu aplicación)
     });
-    await historyEntry.save();
 
+    await newHistory.save();
+
+    // Regresar el usuario actualizado con las autoridades
     const updatedUser = await User.findById(req.params.id).populate("authorities");
 
     res.json({ message: "Usuario actualizado exitosamente", user: updatedUser });
