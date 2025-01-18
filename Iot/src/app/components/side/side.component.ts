@@ -5,11 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { routes } from '../../app.routes';
 
-interface SideNavToggle {
-  screenWidth: number;
-  collapsed: boolean;
-}
-
 @Component({
   selector: 'app-side',
   standalone: true,
@@ -18,8 +13,7 @@ interface SideNavToggle {
   styleUrls: ['./side.component.css'],
 })
 export class SideComponent implements OnInit {
-  @Input() isLargeScreen: boolean = true;
-  onToggleSideNav: EventEmitter<SideNavToggle> = new EventEmitter
+  @Output() sideNavToggle: EventEmitter<boolean> = new EventEmitter();
   isCollapsed = true;
   screenWidth = 0;
   currentRoute: string = '';
@@ -138,7 +132,6 @@ onResize(event:any) {
   ngOnInit(): void {
 
     this.screenWidth = window.innerWidth;
-    this.onToggleSideNav.emit({collapsed: this.isCollapsed, screenWidth: this.screenWidth});
 
     this.router.events.subscribe(() => {
       this.currentRoute = this.router.url;
@@ -206,7 +199,7 @@ onResize(event:any) {
 
   toggleSidebar(): void {
     this.isCollapsed = !this.isCollapsed;
-    this.onToggleSideNav.emit({collapsed: this.isCollapsed, screenWidth: this.screenWidth});
+    this.sideNavToggle.emit(this.isCollapsed)
   }
 
   toggleSubmenu(item: any) {
@@ -290,7 +283,6 @@ onResize(event:any) {
 
   closeSidenav(): void {
     this.isCollapsed = true;
-    this.onToggleSideNav.emit({collapsed: this.isCollapsed, screenWidth: this.screenWidth});
   }
 
 }

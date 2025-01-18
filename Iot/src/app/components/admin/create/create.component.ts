@@ -1,7 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { NavComponent } from '../../nav/nav.component';
-import { Router } from '@angular/router';
+import { Component, OnInit, HostListener, Output, EventEmitter } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AdminService } from '../../../services/admin/admin.service';
 import { CommonModule } from '@angular/common';
@@ -13,6 +11,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatChipsModule } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { SideComponent } from '../../side/side.component';
+import { BottomTabComponent } from '../../bottom-tab/bottom-tab.component';
 
 @Component({
   selector: 'app-create-admin',
@@ -25,19 +25,27 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
     MatSelectModule,
     ReactiveFormsModule,
     CommonModule,
-    RouterOutlet,
-    NavComponent,
-    MatButtonModule
+    SideComponent,
+    BottomTabComponent,
+    MatButtonModule,
+    RouterOutlet
   ],
   templateUrl: './create.component.html',
   styleUrls: ['./create.component.css']
 })
 export class CreateAdminComponent implements OnInit {
-  isLargeScreen = true;
+  isLargeScreen: boolean = window.innerWidth > 1024;
+    @Output() bodySizeChange = new EventEmitter<boolean>();
+    @HostListener('window:resize', ['$event'])
+    onResize(event: Event): void {
+      this.isLargeScreen = window.innerWidth > 1024;
+    }
 
-  onBodySizeChange(isLarge: boolean) {
-    this.isLargeScreen = isLarge;
-  }
+    isSidebarCollapsed = true
+    onSideNavToggle(collapsed: boolean) {
+      this.isSidebarCollapsed = collapsed;
+    }
+
   adminForm: FormGroup;
   availableAuthorities: any[] = [];  // Lista de autoridades disponibles
   selectedAuthorities: any[] = [];   // Autoridades seleccionadas
