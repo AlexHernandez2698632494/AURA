@@ -9,4 +9,4 @@ const UserSchema = new mongoose.Schema({
   estadoEliminacion: { type: Number, default: 0, enum: [0, 1] }  // Agregado estadoEliminacion
 });
 
-export const User = mongoose.model("User_dev", UserSchema);
+export const UserDev = mongoose.model("User_dev", UserSchema);

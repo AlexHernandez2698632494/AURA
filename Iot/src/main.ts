@@ -59,7 +59,7 @@ const routes: Routes = [
     path: 'admin/index',
     component: IndexAdminComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['list_users', 'super_administrador', 'administrador'] },
+    data: { authorities: ['list_users', 'super_administrador', 'administrador','dev'] },
   },
   {
     path: 'admin/restore/index',
