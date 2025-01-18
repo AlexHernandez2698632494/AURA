@@ -2,6 +2,27 @@
   display: flex;
   justify-content: center;
   min-height: 100vh;
+  transition: margin 0.3s;
+}
+
+.sidebar-expanded {
+  display: block; 
+}
+
+.sidebar-collapsed {
+  display: none;
+}
+
+.center {
+  transition: margin-left 0.3s;
+}
+
+.center.sidebar-expanded {
+  margin-left: 14%;
+}
+
+.center.sidebar-collapsed {
+  margin-left: 0;
 }
 
 .main-container {

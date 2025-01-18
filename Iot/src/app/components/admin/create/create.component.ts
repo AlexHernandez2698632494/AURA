@@ -33,6 +33,11 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
   styleUrls: ['./create.component.css']
 })
 export class CreateAdminComponent implements OnInit {
+  isLargeScreen = true;
+
+  onBodySizeChange(isLarge: boolean) {
+    this.isLargeScreen = isLarge;
+  }
   adminForm: FormGroup;
   availableAuthorities: any[] = [];  // Lista de autoridades disponibles
   selectedAuthorities: any[] = [];   // Autoridades seleccionadas

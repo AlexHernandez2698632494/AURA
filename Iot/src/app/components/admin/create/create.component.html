@@ -1,8 +1,8 @@
 <div>
-  <app-nav></app-nav> 
+  <app-nav (bodySizeChange)="onBodySizeChange($event)"></app-nav> 
   <router-outlet></router-outlet>
 </div>
-<div class="center">
+<div class="center" [ngClass]="{'sidebar-expanded': isLargeScreen, 'sidebar-collapsed': !isLargeScreen}">
   <div class="main-container">
     <div class="header">
       <!-- <button mat-icon-button class="back-button" (click)="onBackClick()">

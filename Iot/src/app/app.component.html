@@ -1,1 +1,4 @@
-<router-outlet></router-outlet>
+<div [ngClass]="{'sidebar-expanded': isLargeScreen, 'sidebar-collapsed': !isLargeScreen}">
+    <router-outlet></router-outlet>
+  </div>
+

@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, HostListener, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, HostListener, EventEmitter, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -18,7 +18,8 @@ interface SideNavToggle {
   styleUrls: ['./side.component.css'],
 })
 export class SideComponent implements OnInit {
-  @Output() onToggleSideNav: EventEmitter<SideNavToggle> = new EventEmitter
+  @Input() isLargeScreen: boolean = true;
+  onToggleSideNav: EventEmitter<SideNavToggle> = new EventEmitter
   isCollapsed = true;
   screenWidth = 0;
   currentRoute: string = '';
