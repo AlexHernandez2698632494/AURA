@@ -42,10 +42,10 @@ import { FirsSuperAdminComponent } from './app/components/firs-super-admin/firs-
 const routes: Routes = [
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
   { path: 'Home', component: HomeComponent },
-  {path: 'about-us', component: AboutUsComponent},
+  { path: 'about-us', component: AboutUsComponent },
   { path: 'prueba', component: PruebaComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'register-superadmin', component:FirsSuperAdminComponent},
+  { path: 'register-superadmin', component: FirsSuperAdminComponent },
   { path: 'more', component: MoreComponent },
   { path: 'recuperarView', component: ForgotComponent },
   // rutas de Admin:
@@ -53,125 +53,125 @@ const routes: Routes = [
     path: 'admin/create',
     component: CreateAdminComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['create_users', 'super_administrador', 'administrador'] },
+    data: { authorities: ['create_users', 'super_administrador', 'administrador', 'dev'] },
   },
   {
     path: 'admin/index',
     component: IndexAdminComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['list_users', 'super_administrador', 'administrador','dev'] },
+    data: { authorities: ['list_users', 'super_administrador', 'administrador', 'dev'] },
   },
   {
     path: 'admin/restore/index',
     component: IndexEAdminComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['restore_user', 'super_administrador', 'administrador'] },
+    data: { authorities: ['restore_user', 'super_administrador', 'administrador', 'dev'] },
   },
   // rutas de Alertas:
   {
     path: 'alert/create',
     component: CreateAlertComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['create_alert', 'super_administrador', 'administrador'] },
+    data: { authorities: ['create_alert', 'super_administrador', 'administrador', 'dev'] },
   },
   {
     path: 'alert/index',
     component: IndexAlertComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['list_alert', 'super_administrador', 'administrador'] },
+    data: { authorities: ['list_alert', 'super_administrador', 'administrador', 'dev'] },
   },
   {
     path: 'alert/indexE',
     component: IndexEAlertComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['restore_alert', 'super_administrador', 'administrador'] },
+    data: { authorities: ['restore_alert', 'super_administrador', 'administrador', 'dev'] },
   },
   // rutas de Suscripciones:
   {
     path: 'suscription/create',
     component: CreateSuscriptionComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['create_suscription', 'super_administrador', 'administrador'] },
+    data: { authorities: ['create_suscription', 'super_administrador', 'administrador', 'dev'] },
   },
   {
     path: 'suscription/index',
     component: IndexSuscriptionComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['list_suscriptions', 'super_administrador', 'administrador'] },
+    data: { authorities: ['list_suscriptions', 'super_administrador', 'administrador', 'dev'] },
   },
   {
     path: 'suscription/indexE',
     component: IndexESuscriptionComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['restore_suscription', 'super_administrador', 'administrador'] },
+    data: { authorities: ['restore_suscription', 'super_administrador', 'administrador', 'dev'] },
   },
   // rutas de Servicios:
   {
     path: 'services/create',
     component: CreateServiceComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['create_iot_service', 'super_administrador', 'administrador'] },
+    data: { authorities: ['create_iot_service', 'super_administrador', 'administrador', 'dev'] },
   },
   {
     path: 'services/index',
     component: IndexServiceComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['list_iot_service', 'super_administrador', 'administrador'] },
+    data: { authorities: ['list_iot_service', 'super_administrador', 'administrador', 'dev'] },
   },
   {
     path: 'services/indexE',
     component: IndexEServiceComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['restore_iot_service', 'super_administrador', 'administrador'] },
+    data: { authorities: ['restore_iot_service', 'super_administrador', 'administrador', 'dev'] },
   },
   // rutas de Sensores:
   {
     path: 'sensors/create',
     component: CreateSensorsComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['create_sensors', 'super_administrador', 'administrador'] },
+    data: { authorities: ['create_sensors', 'super_administrador', 'administrador', 'dev'] },
   },
   {
     path: 'sensors/index',
     component: IndexSensorsComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['list_sensors', 'super_administrador', 'administrador'] },
+    data: { authorities: ['list_sensors', 'super_administrador', 'administrador', 'dev'] },
   },
   {
     path: 'sensors/indexE',
     component: IndexESensorsComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['restore_sensors', 'super_administrador', 'administrador'] },
+    data: { authorities: ['restore_sensors', 'super_administrador', 'administrador', 'dev'] },
   },
   // rutas de Sesiones:
   {
     path: 'sessions/index',
     component: IndexSessionComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['super_administrador'] },
+    data: { authorities: ['super_administrador', 'dev'] },
   },
   {
     path: 'sessions/indexE',
     component: IndexESessionComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['super_administrador'] },
+    data: { authorities: ['super_administrador', 'dev'] },
   },
   // rutas de Usuarios:
   {
     path: 'users/index',
     component: IndexUsersComponent,
     canActivate: [AuthGuard],
-    data: { authorities: ['super_administrador'] },
+    data: { authorities: ['super_administrador', 'dev'] },
   },
   {
     path: 'users/cambiarContra',
     component: ChangePasswordComponent,
   },
- // Ruta para 403 Forbidden
- { path: '403', component: ForbiddenComponent },
+  // Ruta para 403 Forbidden
+  { path: '403', component: ForbiddenComponent },
 
- // Ruta comodín para 404 Not Found
- { path: '**', component: FoundComponent },];
+  // Ruta comodín para 404 Not Found
+  { path: '**', component: FoundComponent },];
 
 bootstrapApplication(AppComponent, {
   providers: [
