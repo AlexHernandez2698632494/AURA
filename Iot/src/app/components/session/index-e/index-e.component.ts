@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, Output, EventEmitter } from '@angular/core';
 import { RouterOutlet, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -11,7 +11,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDividerModule } from '@angular/material/divider';
 import Swal from 'sweetalert2';
 import { HistoryService } from '../../../services/history/history.service';
-import { NavComponent } from '../../nav/nav.component';
+import { SideComponent } from '../../side/side.component';
+import { BottomTabComponent } from '../../bottom-tab/bottom-tab.component';
 
 @Component({
   selector: 'app-index-session',
@@ -20,7 +21,8 @@ import { NavComponent } from '../../nav/nav.component';
     CommonModule,
     FormsModule,
     RouterOutlet,
-    NavComponent,
+    SideComponent,
+    BottomTabComponent,
     MatTableModule,
     MatFormFieldModule,
     MatInputModule,
@@ -33,6 +35,17 @@ import { NavComponent } from '../../nav/nav.component';
   styleUrls: ['./index-e.component.css'],
 })
 export class IndexESessionComponent implements OnInit {
+  isLargeScreen: boolean = window.innerWidth > 1024;
+  @Output() bodySizeChange = new EventEmitter<boolean>();
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
+    this.isLargeScreen = window.innerWidth > 1024;
+  }
+
+  isSidebarCollapsed = true
+  onSideNavToggle(collapsed: boolean) {
+    this.isSidebarCollapsed = collapsed;
+  }
   sessions: any[] = [];
   searchTerm: string = '';
   recordsToShow: number = 5;

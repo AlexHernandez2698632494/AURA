@@ -2,6 +2,12 @@
     display: flex;
     justify-content: center;  /* Centra horizontalmente */
     min-height: 100vh; 
+    transition: margin-left 0.3s ease;
+  }
+  
+  .shifted {
+    margin-left: 14%; 
+    transition: margin-left 0.3s ease; 
   }
    
    .main-container {

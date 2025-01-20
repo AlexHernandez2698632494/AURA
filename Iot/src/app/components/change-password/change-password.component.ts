@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, HostListener, Output, EventEmitter } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
-import { NavComponent } from '../nav/nav.component';
+import { SideComponent } from '../side/side.component';
+import { BottomTabComponent } from '../bottom-tab/bottom-tab.component';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
@@ -9,11 +10,26 @@ import { AdminService } from '../../services/admin/admin.service';
 @Component({
   selector: 'app-change-password',
   standalone: true,
-  imports: [RouterOutlet, NavComponent , FormsModule, CommonModule],
+  imports: [RouterOutlet,
+     SideComponent,
+      BottomTabComponent, 
+      FormsModule, 
+      CommonModule],
   templateUrl: './change-password.component.html',
   styleUrls: ['./change-password.component.css']
 })
 export class ChangePasswordComponent {
+  isLargeScreen: boolean = window.innerWidth > 1024;
+  @Output() bodySizeChange = new EventEmitter<boolean>();
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
+    this.isLargeScreen = window.innerWidth > 1024;
+  }
+
+  isSidebarCollapsed = true
+  onSideNavToggle(collapsed: boolean) {
+    this.isSidebarCollapsed = collapsed;
+  }
   currentPassword: string = '';
   newPassword: string = '';
   confirmNewPassword: string = '';

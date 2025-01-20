@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, Output, EventEmitter } from '@angular/core';
 import { RouterOutlet, Router } from '@angular/router';
-import { NavComponent } from '../../nav/nav.component';
-import { CommonModule } from '@angular/common';
+import { SideComponent } from '../../side/side.component';
+import { BottomTabComponent } from '../../bottom-tab/bottom-tab.component';import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';  // Importar SweetAlert2
 import { EditAlertDialogComponent } from '../../../modals/edit-alert-dialog/edit-alert-dialog.component';
@@ -18,7 +18,8 @@ import { MatDividerModule } from '@angular/material/divider';
   selector: 'app-index-alert',
   imports: [
     RouterOutlet,
-    NavComponent,
+    SideComponent,
+    BottomTabComponent,
     FormsModule,
     CommonModule,
     MatTableModule,
@@ -31,6 +32,17 @@ import { MatDividerModule } from '@angular/material/divider';
   styleUrl: './index.component.css'
 })
 export class IndexAlertComponent {
+  isLargeScreen: boolean = window.innerWidth > 1024;
+  @Output() bodySizeChange = new EventEmitter<boolean>();
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
+    this.isLargeScreen = window.innerWidth > 1024;
+  }
+
+  isSidebarCollapsed = true
+  onSideNavToggle(collapsed: boolean) {
+    this.isSidebarCollapsed = collapsed;
+  }
   constructor(private dialog: MatDialog) { }
   editAlert() {
     const dialogRef = this.dialog.open(EditAlertDialogComponent, {

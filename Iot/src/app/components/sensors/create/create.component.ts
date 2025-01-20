@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, Output, EventEmitter } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { NavComponent } from '../../nav/nav.component';
+import { SideComponent } from '../../side/side.component';
+import { BottomTabComponent } from '../../bottom-tab/bottom-tab.component';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AdminService } from '../../../services/admin/admin.service';
@@ -30,13 +31,25 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
     ReactiveFormsModule,
     CommonModule,
     RouterOutlet,
-    NavComponent,
+    SideComponent,
+    BottomTabComponent,
     MatButtonModule
   ],
   templateUrl: './create.component.html',
   styleUrls: ['./create.component.css']
 })
 export class CreateSensorsComponent implements OnInit {
+  isLargeScreen: boolean = window.innerWidth > 1024;
+  @Output() bodySizeChange = new EventEmitter<boolean>();
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
+    this.isLargeScreen = window.innerWidth > 1024;
+  }
+
+  isSidebarCollapsed = true
+  onSideNavToggle(collapsed: boolean) {
+    this.isSidebarCollapsed = collapsed;
+  }
   sensorForm: FormGroup;
   availableAuthorities: any[] = [];
   selectedAuthorities: any[] = [];

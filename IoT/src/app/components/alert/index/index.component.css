@@ -1,19 +1,24 @@
 .center {
   display: flex;
   justify-content: center;
-  /* Centra horizontalmente */
-  min-height: 100vh;
+  min-height: 100vh; 
+  transition: margin-left 0.3s ease;
 }
+
+.shifted {
+  margin-left: 14%; 
+  transition: margin-left 0.3s ease; 
+}
+
 
 .main-container {
   width: 80%;
   max-width: 85%;
-  padding: 20px; /* Ajusta este valor según el tamaño de tu sidebar */
-  width: calc(100% - 120px); /* Asegura que el contenedor ocupe el espacio restante */
+  padding: 20px;
+  width: calc(100% - 120px);
   box-sizing: border-box;
 }
 
-/* Contenedor 1 - Título "Control de usuarios" */
 .header {
   border: 1px solid #ddd;
   border-radius: 8px;

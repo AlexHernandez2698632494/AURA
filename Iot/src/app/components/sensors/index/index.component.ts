@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, Output, EventEmitter } from '@angular/core';
 import { RouterOutlet,Router } from '@angular/router';
-import { NavComponent } from '../../nav/nav.component';
+import { SideComponent } from '../../side/side.component';
+import { BottomTabComponent } from '../../bottom-tab/bottom-tab.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../../services/admin/admin.service';
@@ -23,7 +24,8 @@ import { MatDividerModule } from '@angular/material/divider';
     CommonModule,
     FormsModule,
     RouterOutlet,
-    NavComponent,
+    SideComponent,
+    BottomTabComponent,
     MatTableModule,
     MatFormFieldModule,
     MatInputModule,
@@ -36,6 +38,17 @@ import { MatDividerModule } from '@angular/material/divider';
   styleUrl: './index.component.css'
 })
 export class IndexSensorsComponent {
+  isLargeScreen: boolean = window.innerWidth > 1024;
+  @Output() bodySizeChange = new EventEmitter<boolean>();
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
+    this.isLargeScreen = window.innerWidth > 1024;
+  }
+
+  isSidebarCollapsed = true
+  onSideNavToggle(collapsed: boolean) {
+    this.isSidebarCollapsed = collapsed;
+  }
   users: any[] = [];
   searchTerm: string = '';
   recordsToShow: number = 5;

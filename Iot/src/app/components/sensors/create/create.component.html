@@ -1,9 +1,11 @@
-<div>
-  <app-nav></app-nav>
-  <router-outlet></router-outlet>
+<div *ngIf="isLargeScreen">
+  <app-side (sideNavToggle)="onSideNavToggle($event)"></app-side>
+</div>
+<div *ngIf="!isLargeScreen">
+  <app-bottom-tab></app-bottom-tab>
 </div>
 
-<div class="center">
+<div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
   <div class="main-container">
     <div class="header">
       <button mat-icon-button class="back-button" (click)="onBackClick()">

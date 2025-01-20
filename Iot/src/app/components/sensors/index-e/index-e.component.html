@@ -1,8 +1,11 @@
-<div>
-  <app-nav></app-nav> <!-- Barra lateral -->
-  <router-outlet></router-outlet> <!-- Renderiza vistas dinámicas -->
+<div *ngIf="isLargeScreen">
+  <app-side (sideNavToggle)="onSideNavToggle($event)"></app-side>
 </div>
-<div class="center">
+<div *ngIf="!isLargeScreen">
+  <app-bottom-tab></app-bottom-tab>
+</div>
+
+<div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
   <div class="main-container">
     <div class="header">
       <h2>Control de Sensores Eliminados</h2>

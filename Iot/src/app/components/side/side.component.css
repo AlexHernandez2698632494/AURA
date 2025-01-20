@@ -137,6 +137,8 @@
   cursor: pointer;
   transition: background-color 0.4s ease;
   position: relative;
+  overflow: hidden;
+  z-index: 1;
 }
 
 .menu-item:hover {
@@ -148,6 +150,19 @@
   span{
     color: #e0e0e0;
   }
+}
+
+.menu-item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: #003366;
+  z-index: -1;
+  transform: translateX(-100%);
+  transition: transform 250ms;
+}
+.menu-item:hover::after {
+  transform: translateX(0);
 }
 
 .submenu-item:hover {
@@ -194,8 +209,23 @@
   color: #003366;
   display: block;
   transition: background-color 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
 }
 
+.submenu-item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: #003366;
+  z-index: -1;
+  transform: translatey(-100%);
+  transition: transform 250ms;
+}
+.submenu-item:hover::after {
+  transform: translatey(0);
+}
 
 .menu-item.active {
   background-color: #003366; 

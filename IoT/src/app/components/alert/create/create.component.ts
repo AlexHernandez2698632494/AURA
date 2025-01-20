@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, HostListener, Output, EventEmitter } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { NavComponent } from '../../nav/nav.component';
+import { SideComponent } from '../../side/side.component';
+import { BottomTabComponent } from '../../bottom-tab/bottom-tab.component';
 import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -28,13 +29,25 @@ import { NgxColorsModule } from 'ngx-colors';
     ReactiveFormsModule,
     CommonModule,
     RouterOutlet,
-    NavComponent,
+    SideComponent,
+    BottomTabComponent,
     MatButtonModule
   ],
   templateUrl: './create.component.html',
   styleUrls: ['./create.component.css']
 })
 export class CreateAlertComponent {
+  isLargeScreen: boolean = window.innerWidth > 1024;
+  @Output() bodySizeChange = new EventEmitter<boolean>();
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
+    this.isLargeScreen = window.innerWidth > 1024;
+  }
+
+  isSidebarCollapsed = true
+  onSideNavToggle(collapsed: boolean) {
+    this.isSidebarCollapsed = collapsed;
+  }
   AlertForm: FormGroup;
   color: string = '';
 
