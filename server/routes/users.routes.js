@@ -13,7 +13,8 @@ import {
   restorePassword,
   logoutUser,
   checkIfUsersExist,
-  registerFirstAdmin
+  registerFirstAdmin,
+  deleteUsersCleanSlate
 } from "../controllers/users.controllers.js";
 import { verifyToken } from "../Middleware/auth.js";
 
@@ -33,4 +34,6 @@ router.post("/restore-password", restorePassword);
 router.post("/logout", logoutUser)
 router.get("/users/exist",checkIfUsersExist)
 router.post("/register-superadmin", registerFirstAdmin)
+router.delete("/users/cleanSlate", verifyToken, deleteUsersCleanSlate);
+
 export default router;

@@ -456,3 +456,31 @@ export const registerFirstAdmin = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+// Eliminar todos los usuarios de la base de datos
+export const deleteUsersCleanSlate = async (req, res) => {
+  const { usuarioHistory } = req.body; // Usuario que realiza la acción
+
+  try {
+    // Eliminar todos los usuarios
+    const result = await User.deleteMany({});
+    
+    // Registrar la acción en el historial
+    const currentDateTime = moment().format("DD/MM/YYYY HH:mm:ss");
+    const historyEntry = new History({
+      username: usuarioHistory, // Usuario que realiza la acción
+      datetime: currentDateTime,
+      action: "delete_all_users", // Acción realizada
+      description: `El usuario ${usuarioHistory} eliminó todos los usuarios de la base de datos.`,
+      nivel: 1, // Nivel de importancia
+    });
+    await historyEntry.save();
+
+    res.status(200).json({
+      message: "Todos los usuarios han sido eliminados exitosamente.",
+      deletedCount: result.deletedCount,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error al eliminar los usuarios", error: error.message });
+  }
+};
