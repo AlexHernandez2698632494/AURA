@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common'; // Importar CommonModule para *ngIf
 import { ApiConfigService } from '../../services/ApiConfig/api-config.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -113,10 +114,20 @@ handleSuccessfulLogin(response: any) {
       console.log('Authorities recibidos:', authorities);
       sessionStorage.setItem('authorities', JSON.stringify(authorities)); // Guarda los roles en sessionStorage
 
+      // Mostrar el SweetAlert si el usuario tiene el rol 'dev'
+      if (authorities.includes('dev')) {
+        Swal.fire({
+          title: 'Bienvenido al modo Programador',
+          text: 'Has iniciado sesión como desarrollador.',
+          icon: 'success',
+          confirmButtonText: 'Entendido',
+        });
+      }
+
       let routeToNavigate = '/'; // Ruta predeterminada si no hay roles específicos
       const routes: { [key: string]: string } = {
         'super_administrador': '/admin/index',
-        'dev':'/admin/index',
+        'dev': '/admin/index',
         'administrador': '/admin/index',
         'list_alert': '/alert/index',
         'list_sensors': '/sensors/index',
@@ -157,6 +168,5 @@ handleSuccessfulLogin(response: any) {
     console.warn('No se recibieron datos del usuario en la respuesta');
   }
 }
-
 
 }
