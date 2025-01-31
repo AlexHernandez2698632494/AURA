@@ -90,6 +90,10 @@ export class AdminService {
     );
   }
 
+  getUsername(): string {
+    return sessionStorage.getItem('username') || '';
+  }
+
   changePassword(data: { contrasenaActual: string; nuevaContrasena: string }): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.post(`${this.getApiUrl()}/change-password`, data, { headers }).pipe(

@@ -123,6 +123,23 @@
   height: 40px;
 }
 
+.username{
+  margin-left: 10px;
+  display: inline-block;
+  color:#003366;
+  font-size: clamp(0.6rem, 1.1vw, 1.9rem);
+  align-items: center;
+  cursor: default;
+}
+
+.userInfo .material-icons{
+  text-align: center;
+  margin-left: 15%;
+  color: #003366;
+  font-size: clamp(1.7rem, 2vw, 2.3rem);
+  transition: background-color 0.4s ease;
+}
+
 .menu {
   list-style: none;
   padding: 0;
@@ -245,7 +262,6 @@
   color: white;
 }
 
-/* Cambiar el color del ícono activo */
 .active-icon {
   color: white;
 }
@@ -253,36 +269,27 @@
 .separator hr {
   border: 0;
   border-top: 1px solid #003366;
+  margin-top: 15px;
 }
 
-/* Opcional: Cambiar el color de texto si lo deseas */
 .menu-item.active span,
 .submenu-item.active span {
   color: white;
 }
 
-
 .menu-item.open > div {
   font-weight: bold;
 }
-
-
-
 
 .submenu-item a {
   text-decoration: none;
   color: #003366;
 }
 
-
-
 .menu-item.open .submenu {
   display: block;
 }
 
-.separator {
-  margin-top: 20px;
-}
 
 .separator hr {
   border: 0;

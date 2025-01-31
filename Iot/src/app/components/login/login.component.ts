@@ -103,9 +103,9 @@ handleSuccessfulLogin(response: any) {
   sessionStorage.setItem('token', response.token); // Guarda el token en sessionStorage
 
   if (response.user) {
-    const username = response.user.usuario || ''; // Extrae el nombre de usuario, si existe
-    console.log(username);
-    sessionStorage.setItem('username', username); // Guarda el nombre del usuario
+    const nombre = response.user.nombre || ''; // Extrae el nombre de usuario, si existe
+    console.log(nombre);
+    sessionStorage.setItem('username', nombre); // Guarda el nombre del usuario
 
     if (response.user.authorities) {
       const authorities = Array.isArray(response.user.authorities)

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { AdminService } from '../../services/admin/admin.service';
 import { routes } from '../../app.routes';
 
 @Component({
@@ -14,6 +15,7 @@ import { routes } from '../../app.routes';
 })
 export class SideComponent implements OnInit {
   @Output() sideNavToggle: EventEmitter<boolean> = new EventEmitter();
+  username: string = '';
   isCollapsed = true;
   screenWidth = 0;
   currentRoute: string = '';
@@ -127,10 +129,10 @@ onResize(event:any) {
 }
   
 
-  constructor(private router: Router, private activatedRoute: ActivatedRoute, private http: HttpClient) { }
+  constructor(private router: Router, private activatedRoute: ActivatedRoute, private http: HttpClient, private adminService: AdminService) { }
 
   ngOnInit(): void {
-
+    this.username = this.adminService.getUsername();
     this.screenWidth = window.innerWidth;
 
     this.router.events.subscribe(() => {
