@@ -14,7 +14,8 @@ import {
   logoutUser,
   checkIfUsersExist,
   registerFirstAdmin,
-  deleteUsersCleanSlate
+  deleteUsersCleanSlate,
+  getUserByUsername
 } from "../controllers/users.controllers.js";
 import { verifyToken } from "../Middleware/auth.js";
 
@@ -23,7 +24,8 @@ const router = express.Router();
 router.get("/users",verifyToken, getUsers); // Protege la ruta
 router.get("/users/delete",verifyToken,getDeleteUsers)
 router.get('/authorities', getAuthorities);
-router.get("/user/:id",verifyToken,  getUserById); // Protege la ruta
+//router.get("/user/:id",verifyToken,  getUserById); // Protege la ruta
+router.get("/user/:usuario", verifyToken, getUserByUsername);
 router.post("/user", createUser); // Ruta pública
 router.put("/user/:id", verifyToken, updateUser); // Protege la ruta
 router.patch("/user/:id", verifyToken, deleteUser); // Protege la ruta

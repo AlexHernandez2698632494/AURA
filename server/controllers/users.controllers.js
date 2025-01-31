@@ -51,6 +51,21 @@ export const getUserById = async (req, res) => {
   }
 };
 
+export const getUserByUsername = async (req, res) => {
+  try {
+    const user = await User.findOne({
+      usuario: req.params.usuario,  // Cambiar _id por 'usuario'
+      estadoEliminacion: 0, // Filtrar por estadoEliminacion
+    }).populate("authorities"); // Poblar authorities
+
+    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 // Crear un nuevo usuario
 export const createUser = async (req, res) => {
   const { nombre, correo, usuario, authorities, estadoEliminacion, usuarioHistory } = req.body;
