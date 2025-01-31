@@ -60,20 +60,21 @@ services:
       - "4041:4041"
       - "7896:7896"
     environment:
-      - IOTA_CB_HOST=orion
-      - IOTA_CB_PORT=1026
-      - IOTA_NORTH_PORT=4041
-      - IOTA_SOUTH_PORT=7896
-      - IOTA_REGISTRY_TYPE=mongodb
-      - IOTA_LOG_LEVEL=DEBUG
-      - IOTA_TIMESTAMP=true
-      - IOTA_CB_NGSI_VERSION=v2
-      - IOTA_AUTOCAST=true
-      - IOTA_MONGO_HOST=mongodb
-      - IOTA_MONGO_PORT=27017
-      - IOTA_MONGO_DB=iotagentul
-      - IOTA_MONGO_USER=aii
-      - IOTA_MONGO_PASS=aii
+      - "IOTA_CB_HOST=orion"
+      - "IOTA_CB_PORT=1026"
+      - "IOTA_NORTH_PORT=4041"
+      - "IOTA_SOUTH_PORT=7896"
+      - "IOTA_REGISTRY_TYPE=mongodb"
+      - "IOTA_LOG_LEVEL=DEBUG"
+      - "IOTA_TIMESTAMP=true"
+      - "IOTA_CB_NGSI_VERSION=v2"
+      - "IOTA_AUTOCAST=true"
+      - "IOTA_MONGO_HOST=mongodb"
+      - "IOTA_MONGO_PORT=27017"
+      - "IOTA_MONGO_DB=iotagentul"
+      - "IOTA_MONGO_USER=aii"
+      - "IOTA_MONGO_PASSWORD=aii"
+      - "IOTA_MONGO_AUTH_SOURCE=admin"
     depends_on:
       - orion
       - mongodb
