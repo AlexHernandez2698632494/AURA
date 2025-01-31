@@ -19,14 +19,23 @@
       </div>
     </div>
   </div>
+  <div class="userInfo">
+    <div class="separator">
+      <hr />
+    </div>
+
+    <!--informacion del usuairo  -->
+   
+    <div class="separator">
+      <hr />
+    </div>
+  </div>
 
   <ul class="menu">
     <!-- Menu Items -->
-    <li *ngFor="let item of menuItemsTop"
-    class="menu-item"
-    [class.open]="item.isSubmenuOpen"
-    [ngClass]="{'active': isActive(item.route) || isSubmenuActive(item.submenu)}"
-    (click)="item.submenu.length === 0 ? navigateTo(item.route) : toggleSubmenu(item)">
+    <li *ngFor="let item of menuItemsTop" class="menu-item" [class.open]="item.isSubmenuOpen"
+      [ngClass]="{'active': isActive(item.route) || isSubmenuActive(item.submenu)}"
+      (click)="item.submenu.length === 0 ? navigateTo(item.route) : toggleSubmenu(item)">
       <div>
         <i class="material-icons">{{ item.icon }}</i>
         <span *ngIf="!isCollapsed">{{ item.label }}</span>
