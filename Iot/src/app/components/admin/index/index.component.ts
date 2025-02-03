@@ -15,6 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDividerModule } from '@angular/material/divider';
+import { DevService } from '../../../services/dev/dev.service';
 
 @Component({
   selector: 'app-index-admin',
@@ -37,18 +38,19 @@ import { MatDividerModule } from '@angular/material/divider';
   styleUrls: ['./index.component.css'],
 })
 export class IndexAdminComponent implements OnInit {
-    isLargeScreen: boolean = window.innerWidth > 1024;
-      @Output() bodySizeChange = new EventEmitter<boolean>();
-      @HostListener('window:resize', ['$event'])
-      onResize(event: Event): void {
-        this.isLargeScreen = window.innerWidth > 1024;
-      }
-  
-      isSidebarCollapsed = true
-      onSideNavToggle(collapsed: boolean) {
-        this.isSidebarCollapsed = collapsed;
-      }
+  isLargeScreen: boolean = window.innerWidth > 1024;
+  isDev: boolean = false; 
+  @Output() bodySizeChange = new EventEmitter<boolean>();
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
+    this.isLargeScreen = window.innerWidth > 1024;
+  }
 
+  isSidebarCollapsed = true
+  onSideNavToggle(collapsed: boolean) {
+    this.isSidebarCollapsed = collapsed;
+  }
+  userType: string = 'admin';
   users: any[] = [];
   searchTerm: string = '';
   recordsToShow: number = 5;
@@ -58,13 +60,28 @@ export class IndexAdminComponent implements OnInit {
 
   constructor(
     private adminService: AdminService,
+    private devService:DevService,
     private router: Router,
     private dialog: MatDialog // Inyectar MatDialog
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.loadPermissions(); // Cargar permisos al iniciar
-    this.loadUsers();
+    this.loadData();
+
+    // Verificar si el valor en sessionStorage es 'dev'
+    const authorities = sessionStorage.getItem('authorities');
+    if (authorities && JSON.parse(authorities).includes('dev')) {
+      this.isDev = true;
+    }
+  }
+
+  loadData() {
+    if (this.userType === 'dev') {
+      this.loadProgrammers();  // Cargar usuarios desde adminService.
+    } else {
+      this.loadUsers();  // Cargar programadores desde devService.
+    }
   }
 
   // Cargar los permisos del usuario desde sessionStorage
@@ -85,8 +102,7 @@ export class IndexAdminComponent implements OnInit {
 
   // Carga los usuarios desde el servicio
   loadUsers() {
-    const token = sessionStorage.getItem('token'); // Recuperamos el token desde sessionStorage
-
+    const token = sessionStorage.getItem('token');
     if (!token) {
       Swal.fire({
         icon: 'error',
@@ -95,7 +111,7 @@ export class IndexAdminComponent implements OnInit {
       }).then(() => {
         this.router.navigate(['/login']);
       });
-      return; // No continuar si no hay token
+      return;
     }
 
     this.adminService.getUsers().subscribe({
@@ -109,12 +125,44 @@ export class IndexAdminComponent implements OnInit {
     });
   }
 
+  // Cargar programadores (dev)
+  loadProgrammers() {
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+      Swal.fire({
+        icon: 'error',
+        title: 'No se encuentra el token',
+        text: 'Por favor, inicie sesión nuevamente.',
+      }).then(() => {
+        this.router.navigate(['/login']);
+      });
+      return;
+    }
+
+    this.devService.getDevUsers().subscribe({
+      next: (data) => {
+        this.users = data;
+        console.log('Programadores cargados:', this.users);
+      },
+      error: (err) => {
+        console.error('Error al cargar los programadores:', err);
+      },
+    });
+  }
+
+  // Función para manejar el cambio de selección del tipo de usuario
+  onUserTypeChange(type: string) {
+    this.userType = type;
+    this.loadData();  // Recargar los datos según la selección del radio button.
+  }
+
   filteredUsers() {
     const filtered = this.users.filter(
       (user) =>
         user.nombre.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        user.apellido.toLowerCase().includes(this.searchTerm.toLowerCase())||
         user.usuario.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        user.correo.toLowerCase().includes(this.searchTerm.toLowerCase())
+        user.correo.correo.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
     const start = (this.currentPage - 1) * this.recordsToShow;
     const end = start + this.recordsToShow;

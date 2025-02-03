@@ -18,6 +18,7 @@ import { CommonModule } from '@angular/common'; // Importar CommonModule para *n
 })
 export class FirsSuperAdminComponent implements OnInit {
   nombre: string = '';
+  apellido:string = ''
   correo: string = '';
   usuario: string = '';
   usuarioHistory: string = ''; // Un campo para capturar el usuario que lo está registrando
@@ -54,13 +55,14 @@ export class FirsSuperAdminComponent implements OnInit {
   }
 
   registerFirstAdmin() {
-    if (!this.nombre || !this.correo || !this.usuario || !this.autoridadId) {
+    if (!this.nombre || !this.apellido || !this.correo || !this.usuario || !this.autoridadId) {
       this.errorMessage = 'Por favor, complete todos los campos.';
       return;
     }
 
     const newAdmin = {
       nombre: this.nombre,
+      apellido:this.apellido,
       correo: this.correo,
       usuario: this.usuario,
       usuarioHistory: this.usuarioHistory,

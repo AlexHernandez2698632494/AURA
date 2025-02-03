@@ -10,6 +10,32 @@
     <div class="header">
       <h2>Control de Administradores</h2>
     </div>
+    <div class="type" *ngIf="isDev">
+      <!-- Radio button para seleccionar "Usuario" -->
+      <label>
+        <input 
+          type="radio" 
+          name="userType" 
+          value="admin" 
+          [(ngModel)]="userType" 
+          (change)="onUserTypeChange('admin')"
+          [checked]="userType === 'admin'">
+        Usuario
+      </label>
+      
+      <!-- Radio button para seleccionar "Programador" -->
+      <label>
+        <input 
+          type="radio" 
+          name="userType" 
+          value="dev" 
+          [(ngModel)]="userType" 
+          (change)="onUserTypeChange('dev')"
+          [checked]="userType === 'dev'">
+        Programador
+      </label>
+    </div>
+    
     <div class="sub-header">
       <h3>Administradores registrados</h3>
       <hr />
@@ -33,6 +59,7 @@
           <thead>
             <tr>
               <th>Nombre</th>
+              <th>Apellido</th>
               <th>Correo</th>
               <th *ngIf="hasAnyPermission(['edit_user', 'delete_user', 'super_administrador', 'administrador','dev'])">
                 Acción
@@ -42,7 +69,8 @@
           <tbody>
             <tr *ngFor="let user of filteredUsers()">
               <td>{{ user.nombre }}</td>
-              <td>{{ user.correo }}</td>
+              <td>{{ user.apellido}}</td>
+              <td>{{ user.correo.correo }}</td>
               <td *ngIf="hasAnyPermission(['edit_user', 'delete_user', 'super_administrador', 'administrador','dev'])">
                 <!-- Botón Actualizar -->
                 <button

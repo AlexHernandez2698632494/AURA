@@ -58,6 +58,7 @@ export class CreateAdminComponent implements OnInit {
   ) {
     this.adminForm = this.fb.group({
       nombre: ['', [Validators.required]],
+      apellido: ['', [Validators.required]],
       usuario: ['', [Validators.required]],
       correo: ['', [Validators.required, Validators.email]],
       authorities: [[], [Validators.required]] // Cambiar roles a authorities
@@ -119,6 +120,7 @@ export class CreateAdminComponent implements OnInit {
 
       const adminPayload = {
         nombre: adminData.nombre,
+        apellido:adminData.apellido,
         usuario: adminData.usuario,
         correo: adminData.correo,
         authorities: authoritiesWithIds, // Cambiar roles a authorities

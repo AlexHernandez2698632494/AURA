@@ -1,6 +1,7 @@
 import { User } from "../models/users.models.js";
 import { Authority } from "../models/authorities.models.js"; // Importar el modelo Authority
 import { History } from "../models/history.models.js";
+import {Email} from "../models/emails.models.js"
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
@@ -10,7 +11,7 @@ import moment from "moment";
 // Obtener todos los usuarios activos
 export const getUsers = async (req, res) => {
   try {
-    const users = await User.find({ estadoEliminacion: 0 }).populate("authorities"); // Poblar authorities
+    const users = await User.find({ estadoEliminacion: 0 }).populate("authorities").populate("correo"); // Poblar authorities
     res.json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -56,7 +57,7 @@ export const getUserByUsername = async (req, res) => {
     const user = await User.findOne({
       usuario: req.params.usuario,  // Cambiar _id por 'usuario'
       estadoEliminacion: 0, // Filtrar por estadoEliminacion
-    }).populate("authorities"); // Poblar authorities
+    }).populate("authorities").populate("correo"); // Poblar authorities
 
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
     res.json(user);
@@ -68,7 +69,7 @@ export const getUserByUsername = async (req, res) => {
 
 // Crear un nuevo usuario
 export const createUser = async (req, res) => {
-  const { nombre, correo, usuario, authorities, estadoEliminacion, usuarioHistory } = req.body;
+  const { nombre, apellido, correo, usuario, authorities, estadoEliminacion, usuarioHistory } = req.body;
 
   try {
     // Verificar si las autoridades proporcionadas existen
@@ -79,18 +80,28 @@ export const createUser = async (req, res) => {
       return res.status(400).json({ message: "Algunas autoridades no son válidas" });
     }
 
+    // Verificar si el correo ya está registrado en la colección Email
+    let email = await Email.findOne({ correo });
+    if (!email) {
+      // Si el correo no existe, lo creamos y lo guardamos en la colección Email
+      email = new Email({ correo });
+      await email.save();
+    }
+
+    // Generar una contraseña aleatoria
     const randomPassword = crypto.randomBytes(8).toString("hex");
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(randomPassword, salt);
 
-    // Crear el usuario
+    // Crear el usuario con la referencia al correo de la colección Email
     const user = new User({
       nombre,
-      correo,
+      apellido,
+      correo: email._id,  // Guardar el ObjectId de Email en lugar del correo directo
       usuario,
       contrasena: hashedPassword,
       authorities: validAuthorities.map((auth) => auth._id),
-      estadoEliminacion: estadoEliminacion || 0, // Asignar estadoEliminacion (por defecto 0 si no se pasa)
+      estadoEliminacion: estadoEliminacion || 0,  // Establecer estadoEliminacion si no se pasa
     });
 
     const newUser = await user.save();
@@ -98,14 +109,14 @@ export const createUser = async (req, res) => {
     // Registrar la acción en el historial
     const currentDateTime = moment().format("DD/MM/YYYY HH:mm:ss");
     const historyEntry = new History({
-      username: usuarioHistory,  // Aquí usamos el usuario autenticado
+      username: usuarioHistory,  // El usuario que está creando el nuevo usuario
       datetime: currentDateTime,
-      action: "create_user", // Acción realizada
-      nivel:0
+      action: "create_user",  // Acción realizada
+      nivel: 0,
     });
     await historyEntry.save();
 
-    // Enviar correo de notificación
+    // Enviar correo de notificación al nuevo usuario
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -118,18 +129,19 @@ export const createUser = async (req, res) => {
       from: process.env.EMAIL_USER,
       to: correo,
       subject: "Registro exitoso",
-      text: `Hola ${nombre},\n\nTu cuenta ha sido creada exitosamente.\nUsuario: ${usuario}\nContraseña: ${randomPassword}\n\nPor favor, cambia tu contraseña después de iniciar sesión.\nSaludos, El equipo.`,
+      text: `Hola ${nombre} ${apellido},\n\nTu cuenta ha sido creada exitosamente.\nUsuario: ${usuario}\nContraseña: ${randomPassword}\n\nPor favor, cambia tu contraseña después de iniciar sesión.\nSaludos, El equipo.`,
     };
 
     await transporter.sendMail(mailOptions);
 
-    // Responder con los detalles del usuario creado
+    // Responder con el nuevo usuario creado
     const userWithAuthorities = await User.findById(newUser._id).populate("authorities");
 
     res.status(201).json({
       message: "Usuario creado exitosamente",
       user: userWithAuthorities,
     });
+
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -163,7 +175,19 @@ export const updateUser = async (req, res) => {
     // Actualizar otros campos (nombre, usuario, correo)
     if (nombre) user.nombre = nombre;
     if (usuario) user.usuario = usuario;
-    if (correo) user.correo = correo;
+
+    // Verificar si el correo se ha modificado
+    if (correo) {
+      // Eliminar el correo anterior
+      await Email.findByIdAndDelete(user.correo);
+
+      // Crear un nuevo correo
+      const newEmail = new Email({ correo: correo });
+      await newEmail.save();
+
+      // Actualizar el usuario con el nuevo correo
+      user.correo = newEmail._id;
+    }
 
     // Guardar el usuario actualizado
     await user.save();
@@ -247,19 +271,41 @@ export const restoreUser = async (req, res) => {
 };
 
 // Login de usuario
+import mongoose from 'mongoose';
+
 export const loginUser = async (req, res) => {
   const { identifier, contrasena } = req.body;
 
   try {
-    const user = await User.findOne({
-      $or: [{ correo: identifier }, { usuario: identifier }],
-    }).populate("authorities", "name");
+    // Intentamos buscar el correo a partir del string 'identifier'
+    let user;
+    if (mongoose.Types.ObjectId.isValid(identifier)) {
+      // Si el identifier es un ObjectId (probablemente el correo en la colección de Email)
+      user = await User.findOne({
+        $or: [{ correo: mongoose.Types.ObjectId(identifier) }, { usuario: identifier }],
+      }).populate("authorities", "name");
+    } else {
+      // Si no es un ObjectId, significa que estamos usando un correo en texto plano
+      const email = await Email.findOne({ correo: identifier });
+      if (email) {
+        user = await User.findOne({
+          $or: [{ correo: email._id }, { usuario: identifier }],
+        }).populate("authorities", "name");
+      } else {
+        // Si no encontramos el correo, buscamos solo por el usuario
+        user = await User.findOne({
+          $or: [{ usuario: identifier }],
+        }).populate("authorities", "name");
+      }
+    }
 
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
+    // Verificamos la contraseña
     const isMatch = await bcrypt.compare(contrasena, user.contrasena);
     if (!isMatch) return res.status(401).json({ message: "Contraseña incorrecta" });
 
+    // Generar token de JWT
     const token = jwt.sign(
       {
         id: user._id,
@@ -277,10 +323,11 @@ export const loginUser = async (req, res) => {
       username: user.usuario,
       datetime: currentDateTime,
       action: "login", // Acción realizada
-      nivel:0
+      nivel: 0,
     });
     await historyEntry.save();
 
+    // Responder con el token y datos del usuario
     res.status(200).json({
       message: "Inicio de sesión exitoso",
       token,
@@ -296,6 +343,7 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // Cambiar contraseña
 export const changePassword = async (req, res) => {
@@ -399,8 +447,9 @@ export const checkIfUsersExist = async (req, res) => {
   }
 };
 
+// Registrar el primer usuario administrador
 export const registerFirstAdmin = async (req, res) => {
-  const { nombre, correo, usuario, usuarioHistory, autoridadId } = req.body;
+  const { nombre, apellido, correo, usuarioHistory, autoridadId } = req.body;
 
   try {
     // Verificar si ya existe algún usuario en la base de datos
@@ -415,6 +464,14 @@ export const registerFirstAdmin = async (req, res) => {
       return res.status(400).json({ message: "La autoridad proporcionada no existe" });
     }
 
+    // Verificar si el correo ya existe en la colección de Email
+    let email = await Email.findOne({ correo });
+    if (!email) {
+      // Si el correo no existe, creamos un nuevo documento en la colección de Email
+      email = new Email({ correo });
+      await email.save();
+    }
+
     const randomPassword = crypto.randomBytes(8).toString("hex");
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(randomPassword, salt);
@@ -422,8 +479,9 @@ export const registerFirstAdmin = async (req, res) => {
     // Crear el usuario con la autoridad de superadmin
     const user = new User({
       nombre,
-      correo,
-      usuario,
+      apellido,  // Aseguramos que el apellido se registre correctamente
+      correo: email._id, // Asignamos el ObjectId de correo desde la colección Email
+      usuario: req.body.usuario,
       contrasena: hashedPassword,
       authorities: [superAdminAuthority._id], // Asignamos la autoridad de superadmin
       estadoEliminacion: 0, // Aseguramos que el usuario no esté eliminado
@@ -434,11 +492,11 @@ export const registerFirstAdmin = async (req, res) => {
     // Registrar la acción de creación del primer superadmin en el historial
     const currentDateTime = moment().format("DD/MM/YYYY HH:mm:ss");
     const historyEntry = new History({
-      username: usuario,  // El usuario que está creando al superadmin
+      username: req.body.usuario,  // El usuario que está creando al superadmin
       datetime: currentDateTime,
       action: "register_first_admin", // Acción de registrar el primer superadmin
       nivel: 0,
-      description: `Se ha registrado el primer superadmin con el nombre de usuario ${usuario}`, // Descripción
+      description: `Se ha registrado el primer superadmin con el nombre de usuario ${req.body.usuario}`, // Descripción
     });
     await historyEntry.save();
 
@@ -455,7 +513,7 @@ export const registerFirstAdmin = async (req, res) => {
       from: process.env.EMAIL_USER,
       to: correo,
       subject: "Registro de superadmin exitoso",
-      text: `Hola ${nombre},\n\nTu cuenta de superadmin ha sido creada exitosamente.\nUsuario: ${usuario}\nContraseña: ${randomPassword}\n\nPor favor, cambia tu contraseña después de iniciar sesión.\nSaludos, El equipo.`,
+      text: `Hola ${nombre} ${apellido},\n\nTu cuenta de superadmin ha sido creada exitosamente.\nUsuario: ${req.body.usuario}\nContraseña: ${randomPassword}\n\nPor favor, cambia tu contraseña después de iniciar sesión.\nSaludos, El equipo.`,
     };
 
     await transporter.sendMail(mailOptions);
@@ -464,13 +522,14 @@ export const registerFirstAdmin = async (req, res) => {
     const userWithAuthorities = await User.findById(newUser._id).populate("authorities");
 
     res.status(201).json({
-      message: "Primer superadmin registrado exitosamente",
+      message: "Primer usuario administrador registrado exitosamente",
       user: userWithAuthorities,
     });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
+
 
 // Eliminar todos los usuarios de la base de datos
 export const deleteUsersCleanSlate = async (req, res) => {
