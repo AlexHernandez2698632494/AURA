@@ -32,6 +32,10 @@ export class SideComponent implements OnInit {
         { label: 'Registrar Administrador', route: '/admin/create', authorities: ['create_users', 'super_administrador', 'administrador','dev'] },
         { label: 'Control Administrador', route: '/admin/index', authorities: ['list_users', 'super_administrador', 'administrador','dev'] },
         { label: 'Administradores Eliminados', route: '/admin/restore/index', authorities: ['restore_user', 'super_administrador', 'administrador','dev'] },
+        { label: 'Registrar usuario Independiente', route: '/admin/create', authorities: ['create_users', 'super_administrador', 'administrador','dev'] },
+        { label: 'Control usuario Independiente', route: '/admin/index', authorities: ['list_users', 'super_administrador', 'administrador','dev'] },
+        { label: 'Administradores Eliminados', route: '/admin/restore/index', authorities: ['restore_user', 'super_administrador', 'administrador','dev'] },
+
       ],
       authorities: ['create_users', 'list_users', 'restore_user', 'super_administrador', 'administrador','dev']
     },
