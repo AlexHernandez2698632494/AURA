@@ -310,7 +310,8 @@ export const loginUser = async (req, res) => {
       {
         id: user._id,
         nombre: user.nombre,
-        correo: user.correo,
+        apellido: user.apellido,
+        correo: user.correo.correo,
         usuario: user.usuario,
       },
       process.env.JWT_SECRET,
@@ -334,7 +335,8 @@ export const loginUser = async (req, res) => {
       user: {
         id: user._id,
         nombre: user.nombre,
-        correo: user.correo,
+        apellido: user.apellido,
+        correo: user.correo.correo,
         usuario: user.usuario,
         authorities: user.authorities.map((auth) => auth.name),
       },

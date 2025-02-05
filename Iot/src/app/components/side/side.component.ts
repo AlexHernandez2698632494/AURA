@@ -24,7 +24,7 @@ export class SideComponent implements OnInit {
   menuItemsTop = [
     { icon: 'home', label: 'Home', route: '/Home', submenu: [], isSubmenuOpen: false, authorities: [] },
     {
-      icon: 'add',
+      icon: 'admin_panel_settings',
       label: 'Registrar',
       route: '',
       isSubmenuOpen: false,

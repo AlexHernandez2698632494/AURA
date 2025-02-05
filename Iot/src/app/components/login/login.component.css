@@ -64,6 +64,10 @@
     font-size: 14px;
     color: white;
   }
+
+  .input-group input::placeholder {
+      color: #fff;
+  }
   
   .login-button {
     width: 100%;

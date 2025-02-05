@@ -7,8 +7,11 @@
   left: 0;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   transition: width 0.3s ease;
+  overflow-y:scroll;
+  scrollbar-width:none;
   z-index: 1000;
 }
+
 
 .sidebar.collapsed {
   width: 5%;

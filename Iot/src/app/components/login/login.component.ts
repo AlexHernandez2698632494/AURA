@@ -81,7 +81,7 @@ login() {
 
 // Método para intentar el login en la segunda ruta (fallback)
 loginFallback(loginData: any) {
-  this.http.post('http://localhost:3000/dev/login', loginData).subscribe(
+  this.http.post('http://10.0.12.104:3000/dev/login', loginData).subscribe(
     (response: any) => {
       if (response.token) {
         this.handleSuccessfulLogin(response);
@@ -104,8 +104,10 @@ handleSuccessfulLogin(response: any) {
 
   if (response.user) {
     const nombre = response.user.nombre || ''; // Extrae el nombre de usuario, si existe
-    console.log(nombre);
-    sessionStorage.setItem('username', nombre); // Guarda el nombre del usuario
+    const apellido = response.user.apellido || '';
+    let fullname = `${nombre}  ${apellido}`; 
+    console.log("usuario", fullname);
+    sessionStorage.setItem('username', fullname); // Guarda el nombre del usuario
 
     if (response.user.authorities) {
       const authorities = Array.isArray(response.user.authorities)

@@ -65,6 +65,11 @@
     color: white;
   }
 
+  .input-group input::placeholder {
+    color: white;
+  }
+
+
   .input-group select {
     flex: 1;
     background: transparent;
