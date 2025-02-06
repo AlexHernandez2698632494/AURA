@@ -11,6 +11,8 @@ import serviceRoute from "./routes/service.routes.js";
 import devicesRoute from "./routes/device.routes.js";
 import SubscriptionRoutes from "./routes/subscription.routes.js";
 import envioHttpRoutes from "./routes/envioHttp.routes.js";
+import authorityKeyRoutes from "./routes/authoritiesKey.routes.js"
+import userPaymentRoutes from "./routes/userPayment.routes.js"
 
 const app = express();
 
@@ -23,6 +25,8 @@ app.use(userRoutes);
 app.use(statusRoutes);
 app.use(historiesRoutes);
 app.use(devRoutes);
+app.use(authorityKeyRoutes);
+app.use(userPaymentRoutes)
 app.use("/api/services", serviceRoute);
 app.use("api/devices", devicesRoute);
 app.use("api/suscripcition", SubscriptionRoutes);

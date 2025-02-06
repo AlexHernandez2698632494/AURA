@@ -9,50 +9,50 @@ await connectDB();
 
 const authorities = [
   // Administradores
-  { name: "super_administrador" },
+  { name: "super_administrador", type: "super_administrador" },
   // DEV
   {
-    _id: new mongoose.Types.ObjectId("64eabbf1e213f99865d6c2d4"), 
+    _id: new mongoose.Types.ObjectId("64eabbf1e213f99865d6c2d4"),
     name: "dev",
+    type: "dev",
   },
-  { name: "administrador" },
+  { name: "administrador", type: "administrador" },
   
   // Listar (READ)
-  { name: "list_alert" },
-  { name: "list_sensors" },
-  { name: "list_suscriptions" },
-  { name: "list_users" },
-  { name: "list_iot_service" },
+  { name: "list_alert", type: "list_alert" },
+  { name: "list_sensors", type: "list_sensors" },
+  { name: "list_suscriptions", type: "list_suscriptions" },
+  { name: "list_users", type: "list_users" },
+  { name: "list_iot_service", type: "list_iot_service" },
 
   // Crear (CREATE)
-  { name: "create_alert" },
-  { name: "create_sensors" },
-  { name: "create_suscription" },
-  { name: "create_users" },
-  { name: "create_iot_service" },
+  { name: "create_alert", type: "create_alert" },
+  { name: "create_sensors", type: "create_sensors" },
+  { name: "create_suscription", type: "create_suscription" },
+  { name: "create_users", type: "create_users" },
+  { name: "create_iot_service", type: "create_iot_service" },
 
   // Editar (UPDATE)
-  { name: "edit_alert" },
-  { name: "edit_sensors" },
-  { name: "edit_suscription" },
-  { name: "edit_user" },
-  { name: "edit_iot_service" },
+  { name: "edit_alert", type: "edit_alert" },
+  { name: "edit_sensors", type: "edit_sensors" },
+  { name: "edit_suscription", type: "edit_suscription" },
+  { name: "edit_user", type: "edit_user" },
+  { name: "edit_iot_service", type: "edit_iot_service" },
 
   // Eliminar (DELETE)
-  { name: "delete_alert" },
-  { name: "delete_sensors" },
-  { name: "delete_suscription" },
-  { name: "delete_user" },
-  { name: "delete_iot_service" },
+  { name: "delete_alert", type: "delete_alert" },
+  { name: "delete_sensors", type: "delete_sensors" },
+  { name: "delete_suscription", type: "delete_suscription" },
+  { name: "delete_user", type: "delete_user" },
+  { name: "delete_iot_service", type: "delete_iot_service" },
 
   // Restaurar (RESTORE)
-  { name: "restore_alert" },
-  { name: "restore_sensors" },
-  { name: "restore_suscription" },
-  { name: "restore_user" },
-  { name: "restore_iot_service" },
+  { name: "restore_alert", type: "restore_alert" },
+  { name: "restore_sensors", type: "restore_sensors" },
+  { name: "restore_suscription", type: "restore_suscription" },
+  { name: "restore_user", type: "restore_user" },
+  { name: "restore_iot_service", type: "restore_iot_service" },
 ];
-
 const seedAuthorities = async () => {
   try {
     console.log("Seeding authorities...");
