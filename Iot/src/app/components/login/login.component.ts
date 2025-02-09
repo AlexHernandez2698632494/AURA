@@ -81,7 +81,7 @@ login() {
 
 // Método para intentar el login en la segunda ruta (fallback)
 loginFallback(loginData: any) {
-  this.http.post('http://10.0.12.104:3000/dev/login', loginData).subscribe(
+  this.http.post(`${this.getApiUrl()}/dev/login`, loginData).subscribe(
     (response: any) => {
       if (response.token) {
         this.handleSuccessfulLogin(response);
