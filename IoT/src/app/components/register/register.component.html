@@ -1,0 +1,51 @@
+<div class="app-container">
+    <app-nav></app-nav>
+    <router-outlet></router-outlet>
+</div>
+<div class="background">
+    <div class="register-container">
+        <div class="register-box">
+            <h1>Registrarse</h1>
+            <form (submit)="register(); $event.preventDefault()">
+                <div class="input-group">
+                    <label for="name">
+                      <mat-icon>person</mat-icon> <!-- Icono Material -->
+                    </label>
+                    <input type="text" id="name" placeholder="Ingresar su nombre" [(ngModel)]="name"
+                      name="name" />
+                </div>
+                <div class="input-group">
+                    <label for="lastName">
+                      <mat-icon>person</mat-icon> <!-- Icono Material -->
+                    </label>
+                    <input type="text" id="lastName" placeholder="Ingresar su apellido" [(ngModel)]="lastname" name="lastname" />
+                </div>
+                <div class="input-group">
+                    <label for="email">
+                        <mat-icon>email</mat-icon> <!-- Icono Material -->
+                    </label>
+                    <input type="email" id="email" placeholder="Ingresar su correo " [(ngModel)]="email"
+                      name="email" />
+                </div>
+                <div class="input-group">
+                    <label for="username">
+                      <mat-icon>person</mat-icon> <!-- Icono Material -->
+                    </label>
+                    <input type="text" id="username" placeholder="Ingresar nombre de usuario " [(ngModel)]="usernameOrEmail"
+                      name="usernameOrEmail" />
+                </div>
+                <div class="input-group">
+                    <label for="key">
+                        <mat-icon>lock</mat-icon> <!-- Icono Material -->
+                    </label>
+                    <input type="text" id="registrationKey" placeholder="Ingresar la Clave de acceso" [(ngModel)]="registrationKey" name="registrationKey" />
+                </div>
+                <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+                <button type="submit" class="register-button">Registrarme </button>
+            </form>
+            <div class="login-link">
+                <button (click)="redirectToLogin()" class="login-button">Iniciar Sesión</button>
+              </div>
+        </div>
+    </div>
+</div>

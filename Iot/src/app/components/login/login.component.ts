@@ -97,6 +97,10 @@ loginFallback(loginData: any) {
   );
 }
 
+redirectToRegister() {
+  this.router.navigate(['/registrate']);
+}
+
 // Método para manejar el inicio de sesión exitoso
 handleSuccessfulLogin(response: any) {
   console.log('Token recibido:', response.token);

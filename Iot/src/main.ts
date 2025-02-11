@@ -7,6 +7,7 @@ import { AboutUsComponent } from './app/components/about-us/about-us.component';
 import { HomeComponent } from './app/components/home/home.component';
 import { PruebaComponent } from './app/components/prueba/prueba.component';
 import { LoginComponent } from './app/components/login/login.component';
+import { RegisterComponent } from './app/components/register/register.component';
 import { ForgotComponent } from './app/components/forgot/forgot.component';
 // admin
 import { CreateAdminComponent } from './app/components/admin/create/create.component';
@@ -45,6 +46,7 @@ const routes: Routes = [
   { path: 'about-us', component: AboutUsComponent },
   { path: 'prueba', component: PruebaComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'registrate', component: RegisterComponent},
   { path: 'register-superadmin', component: FirsSuperAdminComponent },
   { path: 'more', component: MoreComponent },
   { path: 'recuperarView', component: ForgotComponent },
