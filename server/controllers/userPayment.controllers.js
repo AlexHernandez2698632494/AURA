@@ -1,6 +1,7 @@
 import crypto from 'crypto'; // Para generar una contraseña aleatoria
 import nodemailer from 'nodemailer'; // Para enviar correos
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { UserPayment } from "../models/userPayment.models.js";  // Cambio: Renombrado a PaymentUser
 import { Email } from "../models/emails.models.js";
 import { RegistrationKey } from "../models/registrationKey.models.js";
@@ -303,3 +304,141 @@ export const restorePaymentUser = async (req, res) => {
   }
 };
 
+export const loginPaymentUser = async (req, res) => {
+  try {
+    const { identifier, contrasena } = req.body;
+
+    if (!identifier || !contrasena) {
+      return res.status(400).json({ message: 'Faltan campos obligatorios' });
+    }
+
+    // Buscar usuario por correo o nombre de usuario (identifier)
+    let user;
+    if (identifier.includes('@')) {
+      // Si el identifier contiene un '@', se trata de un correo
+      user = await UserPayment.findOne({ correo: identifier })
+        .populate('correo')         // Poblamos la referencia al correo
+        .populate('registrationKey') // Poblamos la referencia al registrationKey
+        .populate({
+          path: 'registrationKey', // Populamos 'registrationKey'
+          populate: {
+            path: 'authorities',   // Populamos 'authorities' dentro de registrationKey
+          },
+        });
+    } else {
+      // Si no contiene '@', se trata de un nombre de usuario
+      user = await UserPayment.findOne({ usuario: identifier })
+        .populate('correo')         // Poblamos la referencia al correo
+        .populate('registrationKey') // Poblamos la referencia al registrationKey
+        .populate({
+          path: 'registrationKey', // Populamos 'registrationKey'
+          populate: {
+            path: 'authorities',   // Populamos 'authorities' dentro de registrationKey
+          },
+        });
+    }
+
+    // Si no existe el usuario
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    // Verificar que la contraseña proporcionada coincida
+    const isMatch = await bcrypt.compare(contrasena, user.contrasena);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Contraseña incorrecta' });
+    }
+
+    // Generar un token JWT
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: '1h', // El token expirará en 1 hora
+    });
+
+    // Si hay autoridades, devolver solo dos valores: name y type
+    let authorities = [];
+    if (user.registrationKey?.authorities) {
+      // Obtenemos las autoridades y solo devolvemos 'name' y 'type'
+      authorities = user.registrationKey.authorities.map(auth => {
+        return [auth.name, auth.type]; // Crearemos un array de dos elementos
+      }).flat(); // Aplanamos el array para que no haya sub-arrays
+    }
+
+    // Preparar la respuesta con todos los datos del usuario, incluyendo los datos relacionados
+    return res.status(200).json({
+      message: 'Inicio de sesión exitoso',
+      token,
+      user: {
+        id: user._id,
+        nombre: user.nombre,
+        apellido: user.apellido,
+        usuario: user.usuario,
+        correo: user.correo ? user.correo.correo : null, // Detalles completos del correo
+        contrasena: user.contrasena, // Aunque se devuelve la contraseña cifrada (no recomendado)
+        registrationKey: user.registrationKey ? user.registrationKey.key : null, // La clave de registro
+        authorities, // Ahora las autoridades son un array con 'name' y 'type' en el orden que mencionas
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Error en el servidor', error: error.message });
+  }
+};
+
+
+export const resetPasswordPaymentUser = async (req, res) => {
+    try {
+      const { usuario } = req.body; // Solo recibimos el 'usuario'
+  
+      // Verificar que el usuario haya proporcionado un nombre de usuario
+      if (!usuario) {
+        return res.status(400).json({ message: 'Debe proporcionar un nombre de usuario' });
+      }
+  
+      // Buscar el usuario por nombre de usuario
+      const user = await UserPayment.findOne({ usuario }).populate('correo');
+  
+      // Si no se encuentra el usuario
+      if (!user) {
+        return res.status(404).json({ message: 'Usuario no encontrado' });
+      }
+  
+      // Generar una nueva contraseña aleatoria
+      const newPassword = crypto.randomBytes(8).toString('hex');
+      
+      // Cifrar la nueva contraseña
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(newPassword, salt);
+  
+      // Actualizar la contraseña en la base de datos
+      user.contrasena = hashedPassword;
+      await user.save();
+  
+      // Obtener el correo del usuario
+      const emailDoc = await Email.findById(user.correo);
+  
+      // Enviar correo con la nueva contraseña
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
+  
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: emailDoc.correo,
+        subject: 'Restablecimiento de contraseña',
+        text: `Hola ${user.nombre},\n\nTu contraseña ha sido restablecida exitosamente.\n\nNueva Contraseña: ${newPassword}\n\nPor favor, inicia sesión con tu nueva contraseña.\nSaludos, El equipo.`,
+      };
+  
+      await transporter.sendMail(mailOptions);
+  
+      // Responder con éxito
+      return res.status(200).json({ message: 'Contraseña restablecida y enviada por correo' });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Error en el servidor', error: error.message });
+    }
+  };
+  

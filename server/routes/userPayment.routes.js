@@ -4,6 +4,8 @@ import {
   deletePaymentUser,
   getPaymentUserById,
   getPaymentUsers,
+  loginPaymentUser,
+  resetPasswordPaymentUser,
   restorePaymentUser,
   updatePaymentUser,
 } from "../controllers/userPayment.controllers.js";
@@ -11,6 +13,11 @@ import { verifyToken } from "../Middleware/auth.js";
 
 const router = express.Router();
 
+// Ruta para iniciar sesión de usuario
+router.post("/payment/user/login", loginPaymentUser);  // Iniciar sesión
+
+// Ruta para restablecer la contraseña
+router.post("/payment/user/reset-password", resetPasswordPaymentUser);  // Restablecer contraseña
 // Ruta protegida para crear un usuario premium de pago (requiere autenticación)
 router.post("/premium/user", createFirstUserPayment); // Crear usuario premium de pago (requiere token)
 
