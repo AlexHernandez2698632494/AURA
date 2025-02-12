@@ -57,16 +57,16 @@ login() {
     contrasena: this.password,
   };
 
-  // Usamos la URL correcta dependiendo del entorno
+  // Intentar login en la primera ruta
   this.http.post(`${this.getApiUrl()}/login`, loginData).subscribe(
     (response: any) => {
       if (response.token) {
         this.handleSuccessfulLogin(response);
       } else {
         console.error('No se recibió un token en la respuesta de la primera API');
-        this.errorMessage = 'Error al procesar el inicio de sesión.';
+        this.errorMessage = '';  // Limpiamos el mensaje de error antes de probar la siguiente ruta
         // Intentar login en la segunda ruta
-        this.loginFallback(loginData);
+        this.loginFallback(loginData, 2);  // Paso a la segunda ruta
       }
     },
     (error) => {
@@ -74,28 +74,43 @@ login() {
       this.errorMessage =
         error.error?.message || 'Error al iniciar sesión. Intentando con la segunda ruta...';
       // Intentar login en la segunda ruta
-      this.loginFallback(loginData);
+      this.loginFallback(loginData, 2);  // Paso a la segunda ruta
     }
   );
 }
 
-// Método para intentar el login en la segunda ruta (fallback)
-loginFallback(loginData: any) {
-  this.http.post(`${this.getApiUrl()}/dev/login`, loginData).subscribe(
+// Método para intentar el login en las rutas fallback
+loginFallback(loginData: any, routeAttempt: number) {
+  let route = '';
+  
+  if (routeAttempt === 2) {
+    route = '/dev/login';  // Segunda ruta
+  } else if (routeAttempt === 3) {
+    route = '/payment/user/login';  // Tercera ruta
+  }
+
+  this.http.post(`${this.getApiUrl()}${route}`, loginData).subscribe(
     (response: any) => {
       if (response.token) {
         this.handleSuccessfulLogin(response);
       } else {
-        console.error('No se recibió un token en la respuesta de la segunda API');
-        this.errorMessage = 'Error al procesar el inicio de sesión en la segunda ruta.';
+        console.error(`No se recibió un token en la respuesta de la ruta ${route}`);
+        if (routeAttempt < 3) {
+          this.errorMessage = `Error al procesar el inicio de sesión en la ruta ${route}.`;
+        }
       }
     },
     (error) => {
-      console.error('Error en el login de la segunda API:', error);
-      this.errorMessage = error.error?.message || 'Error al iniciar sesión en ambas rutas.';
+      console.error(`Error en el login de la ruta ${route}:`, error);
+      if (routeAttempt < 3) {
+        this.loginFallback(loginData, routeAttempt + 1);  // Intentar con la siguiente ruta
+      } else {
+        this.errorMessage = 'Error al iniciar sesión en las tres rutas. Por favor, intente más tarde.';
+      }
     }
   );
 }
+
 
 redirectToRegister() {
   this.router.navigate(['/registrate']);
@@ -155,6 +170,7 @@ handleSuccessfulLogin(response: any) {
         'delete_suscription': '/suscription/index',
         'delete_user': '/admin/index',
         'delete_iot_service': '/services/index',
+        'super_usuario':'/subscriptions'
       };
 
       // Determinar la ruta a la que redirigir según las autoridades
