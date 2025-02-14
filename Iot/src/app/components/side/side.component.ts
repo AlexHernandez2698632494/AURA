@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { ApiConfigService } from '../../services/ApiConfig/api-config.service';
 import { AdminService } from '../../services/admin/admin.service';
 import { routes } from '../../app.routes';
 
@@ -29,15 +30,15 @@ export class SideComponent implements OnInit {
       route: '',
       isSubmenuOpen: false,
       submenu: [
-        { label: 'Registrar Administrador', route: '/admin/create', authorities: ['create_users', 'super_administrador', 'administrador','dev'] },
-        { label: 'Control Administrador', route: '/admin/index', authorities: ['list_users', 'super_administrador', 'administrador','dev'] },
-        { label: 'Administradores Eliminados', route: '/admin/restore/index', authorities: ['restore_user', 'super_administrador', 'administrador','dev'] },
-        { label: 'Registrar usuario Independiente', route: '/admin/create', authorities: ['create_users', 'super_administrador', 'administrador','dev'] },
-        { label: 'Control usuario Independiente', route: '/admin/index', authorities: ['list_users', 'super_administrador', 'administrador','dev'] },
-        { label: 'Administradores Eliminados', route: '/admin/restore/index', authorities: ['restore_user', 'super_administrador', 'administrador','dev'] },
+        { label: 'Registrar Administrador', route: '/admin/create', authorities: ['create_users', 'super_administrador', 'administrador', 'dev'] },
+        { label: 'Control Administrador', route: '/admin/index', authorities: ['list_users', 'super_administrador', 'administrador', 'dev'] },
+        { label: 'Administradores Eliminados', route: '/admin/restore/index', authorities: ['restore_user', 'super_administrador', 'administrador', 'dev'] },
+        { label: 'Registrar usuario Independiente', route: '/admin/create', authorities: ['create_users', 'super_administrador', 'administrador', 'dev'] },
+        { label: 'Control usuario Independiente', route: '/admin/index', authorities: ['list_users', 'super_administrador', 'administrador', 'dev'] },
+        { label: 'Administradores Eliminados', route: '/admin/restore/index', authorities: ['restore_user', 'super_administrador', 'administrador', 'dev'] },
 
       ],
-      authorities: ['create_users', 'list_users', 'restore_user', 'super_administrador', 'administrador','dev']
+      authorities: ['create_users', 'list_users', 'restore_user', 'super_administrador', 'administrador', 'dev']
     },
     {
       icon: 'notifications',
@@ -45,11 +46,11 @@ export class SideComponent implements OnInit {
       route: '',
       isSubmenuOpen: false,
       submenu: [
-        { label: 'Registrar Alertas', route: '/alert/create', authorities: ['create_alert', 'super_administrador', 'administrador','dev'] },
-        { label: 'Control de Alertas', route: '/alert/index', authorities: ['list_alert', 'super_administrador', 'administrador','dev'] },
-        { label: 'Alertas Eliminadas', route: '/alert/indexE', authorities: ['restore_alert', 'super_administrador', 'administrador','dev'] },
+        { label: 'Registrar Alertas', route: '/alert/create', authorities: ['create_alert', 'super_administrador', 'administrador', 'dev'] },
+        { label: 'Control de Alertas', route: '/alert/index', authorities: ['list_alert', 'super_administrador', 'administrador', 'dev'] },
+        { label: 'Alertas Eliminadas', route: '/alert/indexE', authorities: ['restore_alert', 'super_administrador', 'administrador', 'dev'] },
       ],
-      authorities: ['create_alert', 'list_alert', 'restore_alert', 'super_administrador', 'administrador','dev']
+      authorities: ['create_alert', 'list_alert', 'restore_alert', 'super_administrador', 'administrador', 'dev']
     },
     {
       icon: 'subscriptions',
@@ -57,11 +58,11 @@ export class SideComponent implements OnInit {
       route: '',
       isSubmenuOpen: false,
       submenu: [
-        { label: 'Registrar Suscripciones', route: '/suscription/create', authorities: ['create_suscription', 'super_administrador', 'administrador','dev'] },
-        { label: 'Control de Suscripciones', route: '/suscription/index', authorities: ['list_suscriptions', 'super_administrador', 'administrador','dev'] },
-        { label: 'Suscripciones Eliminadas', route: '/suscription/indexE', authorities: ['restore_suscription', 'super_administrador', 'administrador','dev'] },
+        { label: 'Registrar Suscripciones', route: '/suscription/create', authorities: ['create_suscription', 'super_administrador', 'administrador', 'dev'] },
+        { label: 'Control de Suscripciones', route: '/suscription/index', authorities: ['list_suscriptions', 'super_administrador', 'administrador', 'dev'] },
+        { label: 'Suscripciones Eliminadas', route: '/suscription/indexE', authorities: ['restore_suscription', 'super_administrador', 'administrador', 'dev'] },
       ],
-      authorities: ['create_suscription', 'list_suscriptions', 'restore_suscription', 'super_administrador', 'administrador','dev']
+      authorities: ['create_suscription', 'list_suscriptions', 'restore_suscription', 'super_administrador', 'administrador', 'dev']
     },
     {
       icon: 'apps',
@@ -69,11 +70,11 @@ export class SideComponent implements OnInit {
       route: '',
       isSubmenuOpen: false,
       submenu: [
-        { label: 'Registrar Servicio', route: '/services/create', authorities: ['create_iot_service', 'super_administrador', 'administrador','dev'] },
-        { label: 'Control de Servicios', route: '/services/index', authorities: ['list_iot_service', 'super_administrador', 'administrador','dev'] },
-        { label: 'Servicios Eliminados', route: '/services/indexE', authorities: ['restore_iot_service', 'super_administrador', 'administrador','dev'] },
+        { label: 'Registrar Servicio', route: '/services/create', authorities: ['create_iot_service', 'super_administrador', 'administrador', 'dev'] },
+        { label: 'Control de Servicios', route: '/services/index', authorities: ['list_iot_service', 'super_administrador', 'administrador', 'dev'] },
+        { label: 'Servicios Eliminados', route: '/services/indexE', authorities: ['restore_iot_service', 'super_administrador', 'administrador', 'dev'] },
       ],
-      authorities: ['create_iot_service', 'list_iot_service', 'restore_iot_service', 'super_administrador', 'administrador','dev']
+      authorities: ['create_iot_service', 'list_iot_service', 'restore_iot_service', 'super_administrador', 'administrador', 'dev']
     },
     {
       icon: 'sensors',
@@ -81,11 +82,11 @@ export class SideComponent implements OnInit {
       route: '',
       isSubmenuOpen: false,
       submenu: [
-        { label: 'Registrar Sensor', route: '/sensors/create', authorities: ['create_sensors', 'super_administrador', 'administrador','dev'] },
-        { label: 'Control Sensores', route: '/sensors/index', authorities: ['list_sensors', 'super_administrador', 'administrador','dev'] },
-        { label: 'Sensores Eliminados', route: '/sensors/indexE', authorities: ['restore_sensors', 'super_administrador', 'administrador','dev'] },
+        { label: 'Registrar Sensor', route: '/sensors/create', authorities: ['create_sensors', 'super_administrador', 'administrador', 'dev'] },
+        { label: 'Control Sensores', route: '/sensors/index', authorities: ['list_sensors', 'super_administrador', 'administrador', 'dev'] },
+        { label: 'Sensores Eliminados', route: '/sensors/indexE', authorities: ['restore_sensors', 'super_administrador', 'administrador', 'dev'] },
       ],
-      authorities: ['create_sensors', 'list_sensors', 'restore_sensors', 'super_administrador', 'administrador','dev']
+      authorities: ['create_sensors', 'list_sensors', 'restore_sensors', 'super_administrador', 'administrador', 'dev']
     },
     {
       icon: 'history',
@@ -93,8 +94,8 @@ export class SideComponent implements OnInit {
       route: '',
       isSubmenuOpen: false,
       submenu: [
-        { label: 'Control Sesiones', route: '/sessions/index', authorities: ['super_administrador','dev'] },
-        { label: 'Sesiones Eliminadas', route: '/sessions/indexE', authorities: ['super_administrador','dev'] },
+        { label: 'Control Sesiones', route: '/sessions/index', authorities: ['super_administrador', 'dev'] },
+        { label: 'Sesiones Eliminadas', route: '/sessions/indexE', authorities: ['super_administrador', 'dev'] },
       ],
       authorities: ['super_administrador']
     },
@@ -104,9 +105,9 @@ export class SideComponent implements OnInit {
       route: '',
       isSubmenuOpen: false,
       submenu: [
-        { label: 'Control Usuarios', route: '/users/index', authorities: ['super_administrador','dev'] },
+        { label: 'Control Usuarios', route: '/users/index', authorities: ['super_administrador', 'dev'] },
       ],
-      authorities: ['super_administrador','dev']
+      authorities: ['super_administrador', 'dev']
     },
     {
       icon: 'lock',
@@ -125,15 +126,15 @@ export class SideComponent implements OnInit {
   authorities: string[] = [];
 
   @HostListener('window:resize', ['$event'])
-onResize(event:any) {
-  this.screenWidth = window.innerWidth;
-  if(this.screenWidth <= 1024) {
-    this.isCollapsed = true;
+  onResize(event: any) {
+    this.screenWidth = window.innerWidth;
+    if (this.screenWidth <= 1024) {
+      this.isCollapsed = true;
+    }
   }
-}
-  
 
-  constructor(private router: Router, private activatedRoute: ActivatedRoute, private http: HttpClient, private adminService: AdminService) { }
+
+  constructor(private router: Router, private activatedRoute: ActivatedRoute, private http: HttpClient, private adminService: AdminService, private apiConfig: ApiConfigService) { }
 
   ngOnInit(): void {
     this.username = this.adminService.getUsername();
@@ -230,24 +231,13 @@ onResize(event:any) {
     }
     return this.router.url.startsWith(route); // Permite marcar como activo si la ruta actual es un subcamino del ítem.
   }
-  
+
   isSubmenuActive(submenu: any[]): boolean {
     return submenu.some(subItem => this.router.url.startsWith(subItem.route));
   }
-  
-  private getBaseUrl(): string {
-    const host = window.location.hostname;
 
-    if (host === 'localhost') {
-      return 'http://localhost:3000';
-    } else if (host === '192.168.1.82') {
-      return 'http://192.168.1.82:3000';
-    } else if (host === '192.168.1.14') {
-      return 'http://192.168.1.14:3000';
-    } else {
-      // Opción predeterminada
-      return 'http://localhost:3000';
-    }
+  private getApiUrl():string{
+    return this.apiConfig.getApiUrl();
   }
 
   // Método para cerrar sesión
@@ -260,7 +250,7 @@ onResize(event:any) {
       return;
     }
 
-    const baseUrl = this.getBaseUrl(); // Llama al método dentro de la clase
+    const baseUrl = this.getApiUrl(); // Llama al método dentro de la clase
     const logoutEndpoint = `${baseUrl}/logout`;
 
     // Realiza la solicitud al endpoint correcto
@@ -285,7 +275,7 @@ onResize(event:any) {
       console.error('Route is undefined');
     }
   }
-  
+
 
   closeSidenav(): void {
     this.isCollapsed = true;

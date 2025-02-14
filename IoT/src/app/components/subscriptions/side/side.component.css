@@ -1,0 +1,337 @@
+.sidebar {
+    width: 14%;
+    height: 100vh;
+    background-color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: width 0.3s ease;
+    overflow-y:scroll;
+    scrollbar-width:none;
+    z-index: 1000;
+  }
+  
+  
+  .sidebar.collapsed {
+    width: 5%;
+  }
+  
+  .sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    /* width: 100%; */
+    background-color: white;
+  }
+  
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .images {
+    width: 90%;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .images img:first-child {
+    width: 35%;
+  }
+  
+  .images img:last-child {
+    width: 60%;
+  
+  }
+  
+  
+  
+  .toggle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+  }
+  
+  #checkbox2 {
+    display: none;
+  }
+  
+  .toggle2 {
+    margin-left: 2%;
+    width: 100%;
+    position: relative;
+    width: 35px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    transition-duration: .5s;
+  }
+  
+  .bars {
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(90deg, #003366, #5ab1f7);
+    border-radius: 6px;
+  }
+  
+  #bar5 {
+    transition-duration: .8s;
+  }
+  
+  #bar4,
+  #bar6 {
+    width: 80%;
+  }
+  
+  #checkbox2:checked+.toggle2 .bars {
+    position: absolute;
+    transition-duration: .5s;
+  }
+  
+  #checkbox2:checked+.toggle2 #bar5 {
+    transform: scaleX(0);
+    transition-duration: .5s;
+  }
+  
+  #checkbox2:checked+.toggle2 #bar4 {
+    width: 100%;
+    transform: rotate(45deg);
+    transition-duration: .5s;
+  }
+  
+  #checkbox2:checked+.toggle2 #bar6 {
+    width: 100%;
+    transform: rotate(-45deg);
+    transition-duration: .5s;
+  }
+  
+  #checkbox2:checked+.toggle2 {
+    transition-duration: .5s;
+    transform: rotate(180deg);
+  }
+  
+  .sidebar:not(.collapsed) .toggle2 {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .username{
+    margin-left: 10px;
+    display: inline-block;
+    color:#003366;
+    font-size: clamp(0.6rem, 1.1vw, 1.9rem);
+    align-items: center;
+    cursor: default;
+  }
+  
+  .userInfo .material-icons{
+    text-align: center;
+    margin-left: 15%;
+    color: #003366;
+    font-size: clamp(1.7rem, 2vw, 2.3rem);
+    transition: background-color 0.4s ease;
+  }
+  
+  .menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background-color: white;
+    height: calc(100% - 3.65rem);
+  }
+  
+  .menu-item {
+    display: block;
+    padding: 7px;
+    cursor: pointer;
+    transition: background-color 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
+  
+  .menu-item:hover {
+    background-color: #003366;
+  .material-icons {
+      transition: background-color 0.4s ease;
+      color: #e0e0e0;
+    }
+    span{
+      color: #e0e0e0;
+    }
+  }
+  
+  .menu-item::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: #003366;
+    z-index: -1;
+    transform: translateX(-100%);
+    transition: transform 250ms;
+  }
+  .menu-item:hover::after {
+    transform: translateX(0);
+  }
+  
+  .submenu-item:hover {
+    transition: background-color 0.4s ease;
+    background-color: #003366;
+    border: 1px solid #e0e0e0;
+    a {
+      color: #e0e0e0;
+      transition: background-color 0.4s ease;
+    }
+  }
+  
+  .menu-item .material-icons {
+    text-align: center;
+    margin-left: 5%;
+    color: #003366;
+    font-size: clamp(1.7rem, 2vw, 2.3rem);
+    transition: background-color 0.4s ease;
+  }
+  
+  .menu-item span {
+    margin-left: 10px;
+    color: #003366;
+    font-size: 16px;
+    transition: background-color 0.4s ease;
+  }
+  
+  .submenu {
+    list-style: none;
+    padding-left: 20px;
+    background-color: white;
+    margin: 0;
+    padding: 0;
+    border-left: 3px solid #003366;
+    display: none;
+    width: 100%;
+    margin-top: 5px;
+    position: relative;
+  }
+  
+  .submenu-item {
+    padding: 10px;
+    font-size: 14px;
+    color: #003366;
+    display: block;
+    transition: background-color 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
+  
+  .submenu-item::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: #003366;
+    z-index: -1;
+    transform: translatey(-100%);
+    transition: transform 250ms;
+  }
+  .submenu-item:hover::after {
+    transform: translatey(0);
+  }
+  
+  .menu-item.active {
+    background-color: #003366; 
+    border: 1px solid #e0e0e0;
+  }
+  
+  .menu-item.active .material-icons {
+    color: white;
+  }
+  
+  .submenu-item.active {
+    background-color: #003366;
+    border: 1px solid #e0e0e0;
+  }
+  
+  .submenu-item.active a {
+    color: white;
+  }
+  
+  .active-icon {
+    color: white;
+  }
+  
+  .separator hr {
+    border: 0;
+    border-top: 1px solid #003366;
+    margin-top: 15px;
+  }
+  
+  .menu-item.active span,
+  .submenu-item.active span {
+    color: white;
+  }
+  
+  .menu-item.open > div {
+    font-weight: bold;
+  }
+  
+  .submenu-item a {
+    text-decoration: none;
+    color: #003366;
+  }
+  
+  .menu-item.open .submenu {
+    display: block;
+  }
+  
+  
+  .separator hr {
+    border: 0;
+    border-top: 1px solid #003366;
+  }
+  
+  .sidebar.collapsed .submenu {
+    display: none;
+  }
+  
+  .sidebar.collapsed .submenu-item {
+    display: none;
+  }
+  
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .images {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .toggle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+  
+  
+  @media (min-width: 1920px) {
+    .sidebar.collapsed {
+      width: 3%;
+    }
+  }
+  

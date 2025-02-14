@@ -44,6 +44,10 @@ export class PaymentUserService {
   );
 }
 
+getUsername(): string {
+  return sessionStorage.getItem('username') || '';
+}
+
   // Obtener todos los usuarios premium de pago
   getPaymentUsers(): Observable<any[]> {
     const url = `${this.getApiUrl()}/premium/users`;
