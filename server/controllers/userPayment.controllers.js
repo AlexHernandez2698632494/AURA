@@ -141,6 +141,7 @@ export const getPaymentUsers = async (req, res) => {
       const authoritiesDoc = await Authority.findById(registrationKeyDoc.authorities);
 
       return {
+        userID:user._id,
         nombre: user.nombre,
         apellido: user.apellido,
         usuario: user.usuario,
@@ -179,6 +180,7 @@ export const getPaymentUserById = async (req, res) => {
 
     // Devolver la respuesta con los datos del usuario
     const transformedData = {
+      userID:user._id,
       nombre: user.nombre,
       apellido: user.apellido,
       usuario: user.usuario,
@@ -441,4 +443,55 @@ export const resetPasswordPaymentUser = async (req, res) => {
       return res.status(500).json({ message: 'Error en el servidor', error: error.message });
     }
   };
+
+// Controlador para obtener información basada en el nombre de usuario
+export const getUserPaymentInfo = async (req, res) => {
+ try {
+      const { username } = req.params;
   
+      // Buscar el usuario en UserPayment
+      const user = await UserPayment.findOne({ usuario: username }).populate('registrationKey').populate('correo');
+      
+      if (!user) {
+        return res.status(404).json({ message: 'Usuario no encontrado' });
+      }
+  
+      const registrationKey = user.registrationKey;
+  
+      // Obtener la información de la RegistrationKey
+      const regKeyDetails = await RegistrationKey.findById(registrationKey._id);
+  
+      if (!regKeyDetails) {
+        return res.status(404).json({ message: 'RegistrationKey no encontrado' });
+      }
+  
+      // Descifrar la clave (key) usando la función decrypt
+      const decryptedKey = decrypt(regKeyDetails.key);
+  
+      // Contar cuántos usuarios tienen este registrationKey
+      const userCount = await UserPayment.countDocuments({ registrationKey: registrationKey._id });
+  
+      // Obtener la información de todos los usuarios que tienen la misma registrationKey
+      const usersWithSameKey = await UserPayment.find({ registrationKey: registrationKey._id })
+        .select('nombre apellido correo')  // Solo seleccionamos los campos necesarios
+        .populate('correo', 'email');  // Asumimos que "correo" es un documento con un campo "email"
+  
+      // Preparar la respuesta
+      const response = {
+        registrationKey: registrationKey._id,
+        key: decryptedKey,  // La clave ahora está descifrada
+        expiresAt: regKeyDetails.expiresAt,
+        planType: regKeyDetails.planType,
+        duration: regKeyDetails.duration,
+        isExpired: regKeyDetails.isExpired,
+        userCount,
+        users: usersWithSameKey,  // Incluimos la información de todos los usuarios
+      };
+  
+      return res.status(200).json(response);
+  
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Error en el servidor' });
+    }
+  };

@@ -39,6 +39,8 @@ import { AuthGuard } from './app/auth/auth.guard';
 import { ForbiddenComponent } from './app/components/forbidden/forbidden.component';
 import { FoundComponent } from './app/components/found/found.component';
 import { FirsSuperAdminComponent } from './app/components/firs-super-admin/firs-super-admin.component';
+import { SubscriptionsComponent } from './app/components/subscriptions/subscriptions.component';
+import { SubscriptionsDetailsComponent } from './app/components/subscriptions/details/details.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
@@ -164,6 +166,19 @@ const routes: Routes = [
     component: IndexUsersComponent,
     canActivate: [AuthGuard],
     data: { authorities: ['super_administrador', 'dev'] },
+  },
+  // rutas de Subscriptions o Usuarios con permisos de licencia :
+  {
+    path: 'subscriptions',
+    component: SubscriptionsComponent,
+    canActivate: [AuthGuard],
+    data: { authorities: ['super_usuario'] },
+  },
+  {
+    path: 'subscriptions/detail',
+    component: SubscriptionsDetailsComponent,
+    canActivate: [AuthGuard],
+    data: { authorities: ['super_usuario'] },
   },
   {
     path: 'users/cambiarContra',

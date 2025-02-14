@@ -125,8 +125,10 @@ handleSuccessfulLogin(response: any) {
     const nombre = response.user.nombre || ''; // Extrae el nombre de usuario, si existe
     const apellido = response.user.apellido || '';
     let fullname = `${nombre}  ${apellido}`; 
-    console.log("usuario", fullname);
+    const username = response.user.usuario
+    console.log("usuario", username);
     sessionStorage.setItem('username', fullname); // Guarda el nombre del usuario
+    sessionStorage.setItem('usuario', username)
 
     if (response.user.authorities) {
       const authorities = Array.isArray(response.user.authorities)

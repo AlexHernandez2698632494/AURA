@@ -32,6 +32,17 @@ export class PaymentUserService {
     );
   }
      
+ // Obtener información de las suscripciones de un usuario
+ getUserSubscriptions(username: string): Observable<any> {
+  return this.http.get(`${this.getApiUrl()}/premium/user/info/${username}`, {
+    headers: this.getAuthHeaders()
+  }).pipe(
+    catchError(err => {
+      console.error('Error en la API:', err);
+      return throwError(err);
+    })
+  );
+}
 
   // Obtener todos los usuarios premium de pago
   getPaymentUsers(): Observable<any[]> {

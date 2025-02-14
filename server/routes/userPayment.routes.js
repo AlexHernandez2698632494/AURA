@@ -4,6 +4,7 @@ import {
   deletePaymentUser,
   getPaymentUserById,
   getPaymentUsers,
+  getUserPaymentInfo,
   loginPaymentUser,
   resetPasswordPaymentUser,
   restorePaymentUser,
@@ -22,10 +23,10 @@ router.post("/payment/user/reset-password", resetPasswordPaymentUser);  // Resta
 router.post("/premium/user", createFirstUserPayment); // Crear usuario premium de pago (requiere token)
 
 // Ruta protegida para obtener todos los usuarios premium de pago (requiere autenticación)
-router.get("/premium/users", verifyToken, getPaymentUsers); // Obtener todos los usuarios premium de pago
+router.get("/premium/users", getPaymentUsers); // Obtener todos los usuarios premium de pago
 
 // Ruta para obtener un usuario premium de pago por ID (requiere autenticación)
-router.get("/premium/user/:id", verifyToken, getPaymentUserById); // Obtener un usuario premium de pago por ID
+router.get("/premium/user/:id", getPaymentUserById); // Obtener un usuario premium de pago por ID
 
 // Ruta para actualizar un usuario premium de pago por ID (requiere autenticación)
 router.put("/premium/user/:id", verifyToken, updatePaymentUser); // Actualizar usuario premium de pago
@@ -36,4 +37,5 @@ router.patch("/premium/user/:id/delete", verifyToken, deletePaymentUser); // Eli
 // Ruta para restaurar un usuario premium de pago (cambiar estadoEliminacion a 0)
 router.patch("/premium/user/:id/restore", verifyToken, restorePaymentUser); // Restaurar usuario premium de pago (cambiar estadoEliminacion a 0)
 
+router.get("/premium/user/info/:username", getUserPaymentInfo);
 export default router;

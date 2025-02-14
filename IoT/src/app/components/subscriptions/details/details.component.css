@@ -1,0 +1,118 @@
+/* Estilos generales */
+.subscription-card {
+  background: transparent;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  width: 340px;
+}
+
+  /* Tarjeta superior */
+  .subscription-card-header {
+    background: linear-gradient(135deg, #007b8f, #1cb5e0);
+    padding: 20px;
+    color: white;
+    border-radius: 15px;
+  }
+  
+  .subscription-logo {
+    background: transparent;
+    color: #007b8f;
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 14px;
+    width: 60px;
+  }
+  
+  .subscription-type {
+    font-size: 12px;
+    text-transform: uppercase;
+    opacity: 0.8;
+    margin: 5px 0;
+  }
+  
+  .subscription-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 5px 0;
+  }
+  
+  .subscription-inf {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+  }
+  
+  .info-item {
+    text-align: left;
+  }
+  
+  .info-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+  
+  .info-value {
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+.details-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  background-color: #f4f4f4;
+}
+
+.subscription-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+/* Contenedor de detalles */
+
+
+.subscription-info, .users-overview {
+  flex: 1;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
+}
+
+.subscription-info {
+  max-width: 350px;
+} 
+
+/* Usuarios */
+.user-card {
+  background-color: #e8ecf5;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #4c66af;
+}
+
+.user-status {
+  font-size: 0.9em;
+  color: #4c66af;
+  font-weight: bold;
+}
+
+@media (min-width: 1024px){
+  .details-content {
+    display: flex;
+     gap: 20px;
+     justify-content: space-between; 
+   }
+}
