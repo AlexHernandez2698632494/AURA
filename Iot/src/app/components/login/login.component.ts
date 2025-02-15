@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-login',
   standalone: true, // Componente standalone
-  imports: [RouterOutlet,  NavComponent, FormsModule, HttpClientModule, CommonModule], // Agregar CommonModule
+  imports: [RouterOutlet, NavComponent, FormsModule, HttpClientModule, CommonModule], // Agregar CommonModule
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'], // styleUrls en plural
 })
@@ -27,9 +27,10 @@ export class LoginComponent {
   constructor(private http: HttpClient, private router: Router, private apiConfig: ApiConfigService) {}
 
   // Método para obtener la URL correcta dependiendo del entorno
-  private getApiUrl():string{
+  private getApiUrl(): string {
     return this.apiConfig.getApiUrl();
   }
+
   ngOnInit() {
     this.http.get(`${this.getApiUrl()}/users/exist`).subscribe(
       (response: any) => {
@@ -43,102 +44,106 @@ export class LoginComponent {
       }
     );
   }
-  
+
   // Método para manejar el inicio de sesión
-// Método para manejar el inicio de sesión
-login() {
-  if (!this.usernameOrEmail || !this.password) {
-    this.errorMessage = 'Por favor, complete todos los campos.';
-    return;
-  }
+  login() {
+    if (!this.usernameOrEmail || !this.password) {
+      this.errorMessage = 'Por favor, complete todos los campos.';
+      return;
+    }
 
-  const loginData = {
-    identifier: this.usernameOrEmail,
-    contrasena: this.password,
-  };
+    const loginData = {
+      identifier: this.usernameOrEmail,
+      contrasena: this.password,
+    };
 
-  // Intentar login en la primera ruta
-  this.http.post(`${this.getApiUrl()}/login`, loginData).subscribe(
-    (response: any) => {
-      if (response.token) {
-        this.handleSuccessfulLogin(response);
-      } else {
-        console.error('No se recibió un token en la respuesta de la primera API');
-        this.errorMessage = '';  // Limpiamos el mensaje de error antes de probar la siguiente ruta
+    // Intentar login en la primera ruta
+    this.http.post(`${this.getApiUrl()}/login`, loginData).subscribe(
+      (response: any) => {
+        if (response.token) {
+          this.handleSuccessfulLogin(response, '/login');  // Se maneja la respuesta como antes
+        } else {
+          console.error('No se recibió un token en la respuesta de la primera API');
+          this.errorMessage = '';  // Limpiamos el mensaje de error antes de probar la siguiente ruta
+          // Intentar login en la segunda ruta
+          this.loginFallback(loginData, 2);  // Paso a la segunda ruta
+        }
+      },
+      (error) => {
+        console.error('Error en el login de la primera API:', error);
+        this.errorMessage =
+          error.error?.message || 'Error al iniciar sesión. Intentando con la segunda ruta...';
         // Intentar login en la segunda ruta
         this.loginFallback(loginData, 2);  // Paso a la segunda ruta
       }
-    },
-    (error) => {
-      console.error('Error en el login de la primera API:', error);
-      this.errorMessage =
-        error.error?.message || 'Error al iniciar sesión. Intentando con la segunda ruta...';
-      // Intentar login en la segunda ruta
-      this.loginFallback(loginData, 2);  // Paso a la segunda ruta
-    }
-  );
-}
-
-// Método para intentar el login en las rutas fallback
-loginFallback(loginData: any, routeAttempt: number) {
-  let route = '';
-  
-  if (routeAttempt === 2) {
-    route = '/dev/login';  // Segunda ruta
-  } else if (routeAttempt === 3) {
-    route = '/payment/user/login';  // Tercera ruta
+    );
   }
 
-  this.http.post(`${this.getApiUrl()}${route}`, loginData).subscribe(
-    (response: any) => {
-      if (response.token) {
-        this.handleSuccessfulLogin(response);
-      } else {
-        console.error(`No se recibió un token en la respuesta de la ruta ${route}`);
+  // Método para intentar el login en las rutas fallback
+  loginFallback(loginData: any, routeAttempt: number) {
+    let route = '';
+    
+    if (routeAttempt === 2) {
+      route = '/dev/login';  // Segunda ruta
+    } else if (routeAttempt === 3) {
+      route = '/payment/user/login';  // Tercera ruta: esta es la que tiene la nueva estructura
+    }
+
+    this.http.post(`${this.getApiUrl()}${route}`, loginData).subscribe(
+      (response: any) => {
+        if (response.token) {
+          this.handleSuccessfulLogin(response, route);  // Pasamos la ruta como argumento
+        } else {
+          console.error(`No se recibió un token en la respuesta de la ruta ${route}`);
+          if (routeAttempt < 3) {
+            this.errorMessage = `Error al procesar el inicio de sesión en la ruta ${route}.`;
+          }
+        }
+      },
+      (error) => {
+        console.error(`Error en el login de la ruta ${route}:`, error);
         if (routeAttempt < 3) {
-          this.errorMessage = `Error al procesar el inicio de sesión en la ruta ${route}.`;
+          this.loginFallback(loginData, routeAttempt + 1);  // Intentar con la siguiente ruta
+        } else {
+          this.errorMessage = 'Error al iniciar sesión en las tres rutas. Por favor, intente más tarde.';
         }
       }
-    },
-    (error) => {
-      console.error(`Error en el login de la ruta ${route}:`, error);
-      if (routeAttempt < 3) {
-        this.loginFallback(loginData, routeAttempt + 1);  // Intentar con la siguiente ruta
-      } else {
-        this.errorMessage = 'Error al iniciar sesión en las tres rutas. Por favor, intente más tarde.';
+    );
+  }
+
+  redirectToRegister() {
+    this.router.navigate(['/registrate']);
+  }
+
+  // Método para manejar el inicio de sesión exitoso
+  handleSuccessfulLogin(response: any, route: string) {
+    console.log('Token recibido:', response.token);
+    sessionStorage.setItem('token', response.token); // Guarda el token en sessionStorage
+
+    if (response.user) {
+      const nombre = response.user.nombre || ''; // Extrae el nombre de usuario, si existe
+      const apellido = response.user.apellido || '';
+      let fullname = `${nombre}  ${apellido}`; 
+      const username = response.user.usuario;
+      console.log("usuario", username);
+      sessionStorage.setItem('username', fullname); // Guarda el nombre del usuario
+      sessionStorage.setItem('usuario', username);
+
+      let authorities: any[] = [];
+
+      if (route === '/payment/user/login' && response.user.authorities) {
+        // Si la ruta es '/payment/user/login', aplanamos el array de arrays a un solo array
+        authorities = response.user.authorities[0];  // Tomamos el primer array de la respuesta (el único array)
+      } else if (response.user.authorities) {
+        // Para las otras rutas, procesamos directamente 'authorities' del usuario
+        authorities = response.user.authorities;  // Suponiendo que 'authorities' es un array directo
       }
-    }
-  );
-}
 
-
-redirectToRegister() {
-  this.router.navigate(['/registrate']);
-}
-
-// Método para manejar el inicio de sesión exitoso
-handleSuccessfulLogin(response: any) {
-  console.log('Token recibido:', response.token);
-  sessionStorage.setItem('token', response.token); // Guarda el token en sessionStorage
-
-  if (response.user) {
-    const nombre = response.user.nombre || ''; // Extrae el nombre de usuario, si existe
-    const apellido = response.user.apellido || '';
-    let fullname = `${nombre}  ${apellido}`; 
-    const username = response.user.usuario
-    console.log("usuario", username);
-    sessionStorage.setItem('username', fullname); // Guarda el nombre del usuario
-    sessionStorage.setItem('usuario', username)
-
-    if (response.user.authorities) {
-      const authorities = Array.isArray(response.user.authorities)
-        ? response.user.authorities
-        : [response.user.authorities]; // Asegúrate de que sea un array
       console.log('Authorities recibidos:', authorities);
       sessionStorage.setItem('authorities', JSON.stringify(authorities)); // Guarda los roles en sessionStorage
 
       // Mostrar el SweetAlert si el usuario tiene el rol 'dev'
-      if (authorities.includes('dev')) {
+      if (authorities.some((auth: any) => auth.includes('dev'))) {
         Swal.fire({
           title: 'Bienvenido al modo Programador',
           text: 'Has iniciado sesión como desarrollador.',
@@ -172,7 +177,7 @@ handleSuccessfulLogin(response: any) {
         'delete_suscription': '/suscription/index',
         'delete_user': '/admin/index',
         'delete_iot_service': '/services/index',
-        'super_usuario':'/subscriptions'
+        'super_usuario': '/overview'
       };
 
       // Determinar la ruta a la que redirigir según las autoridades
@@ -186,11 +191,7 @@ handleSuccessfulLogin(response: any) {
       // Redirigir al usuario a la ruta determinada
       this.router.navigate([routeToNavigate]);
     } else {
-      console.warn('No se recibieron authorities en la respuesta del usuario');
+      console.warn('No se recibieron datos del usuario en la respuesta');
     }
-  } else {
-    console.warn('No se recibieron datos del usuario en la respuesta');
   }
-}
-
 }

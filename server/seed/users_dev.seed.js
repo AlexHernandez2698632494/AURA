@@ -12,7 +12,7 @@ const users = [
     nombre: "Dev",
     correo: "dev@simati.com",
     usuario: "dev",
-    contrasena: "2a$10$7NmAQ9WhsExMfolw.TiOCeUkpi10yj3mtdLqjmhGKQzjmTCt9YB6u", // la contraseña es deviiie
+    contrasena: "$2a$10$3wo22si1mZHoXUhCckcuFegooXPx5cA9ajyV6qOill7/X/NkQe2/.", // la contraseña es deviiie
     authorities: ["64eabbf1e213f99865d6c2d4"],
   },
 ];
