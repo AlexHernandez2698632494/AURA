@@ -41,15 +41,19 @@ export const createFirstUserPayment = async (req, res) => {
       emailDoc = await Email.create({ correo });
     }
 
-    // Buscar la llave de registro
-    const registrationKeyDoc = await RegistrationKey.findOne({ correo: emailDoc._id });
-    if (!registrationKeyDoc) {
-      return res.status(400).json({ message: "Clave de registro no válida" });
+    // Buscar todas las claves de registro asociadas al correo
+    const registrationKeysDocs = await RegistrationKey.find({ correo: emailDoc._id });
+    if (!registrationKeysDocs || registrationKeysDocs.length === 0) {
+      return res.status(400).json({ message: "No se encontraron claves de registro para este correo" });
     }
 
-    // Descifrar la clave almacenada y compararla con la ingresada
-    const decryptedKey = decrypt(registrationKeyDoc.key);
-    if (registrationKey !== decryptedKey) {
+    // Verificar si la clave de registro ingresada (sin cifrar) está en el arreglo de claves de registro
+    const validKeyDoc = registrationKeysDocs.find(regKeyDoc => {
+      const decryptedKey = decrypt(regKeyDoc.key); // Desencriptar la clave almacenada
+      return decryptedKey === registrationKey;    // Comparar la clave descifrada con la clave enviada
+    });
+
+    if (!validKeyDoc) {
       return res.status(400).json({ message: "Clave de registro incorrecta" });
     }
 
@@ -58,14 +62,14 @@ export const createFirstUserPayment = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const encryptedPassword = await bcrypt.hash(rawPassword, salt); // Aquí usamos rawPassword en lugar de randomPassword
 
-    // Crear usuario
+    // Crear usuario con las claves de registro (pueden ser múltiples)
     const newUser = new UserPayment({
       nombre,
       apellido,
       usuario,
       correo: emailDoc._id,
       contrasena: encryptedPassword,
-      registrationKey: registrationKeyDoc._id,
+      registrationKey: registrationKeysDocs.map(keyDoc => keyDoc._id), // Guardamos todas las claves asociadas
     });
 
     // Registrar en historial
@@ -80,8 +84,8 @@ export const createFirstUserPayment = async (req, res) => {
     await newUser.save();
     await historyEntry.save();
 
-    // Obtener la autoridad de la registrationKey
-    const authoritiesDoc = await Authority.findById(registrationKeyDoc.authorities);
+    // Obtener las autoridades asociadas a las claves de registro
+    const authoritiesDocs = await Authority.find({ _id: { $in: registrationKeysDocs.map(keyDoc => keyDoc.authorities) } });
 
     // Enviar correo de notificación al nuevo usuario
     const transporter = nodemailer.createTransport({
@@ -101,7 +105,7 @@ export const createFirstUserPayment = async (req, res) => {
 
     await transporter.sendMail(mailOptions);
 
-    // Responder con los datos del usuario y su autoridad
+    // Responder con los datos del usuario y sus autoridades
     return res.status(201).json({
       message: "Usuario creado exitosamente",
       user: {
@@ -111,8 +115,8 @@ export const createFirstUserPayment = async (req, res) => {
         correo: emailDoc.correo,
         usuario: newUser.usuario,
         contrasena: encryptedPassword, // Contraseña sin cifrar para que el usuario la vea
-        registrationKey: decryptedKey, // La clave de registro descifrada
-        authoritiesType: authoritiesDoc ? authoritiesDoc.type : null, // Tipo de autoridad
+        registrationKey: registrationKeysDocs.map(keyDoc => decrypt(keyDoc.key)), // Claves de registro descifradas
+        authoritiesType: authoritiesDocs.map(authority => authority.type), // Tipos de autoridad
       },
     });
   } catch (error) {
@@ -319,23 +323,23 @@ export const loginPaymentUser = async (req, res) => {
     if (identifier.includes('@')) {
       // Si el identifier contiene un '@', se trata de un correo
       user = await UserPayment.findOne({ correo: identifier })
-        .populate('correo')         // Poblamos la referencia al correo
-        .populate('registrationKey') // Poblamos la referencia al registrationKey
+        .populate('correo')  // Poblamos la referencia al correo
+        .populate('registrationKey')  // Poblamos la referencia al registrationKey
         .populate({
-          path: 'registrationKey', // Populamos 'registrationKey'
+          path: 'registrationKey',  // Populamos 'registrationKey'
           populate: {
-            path: 'authorities',   // Populamos 'authorities' dentro de registrationKey
+            path: 'authorities',  // Populamos 'authorities' dentro de registrationKey
           },
         });
     } else {
       // Si no contiene '@', se trata de un nombre de usuario
       user = await UserPayment.findOne({ usuario: identifier })
-        .populate('correo')         // Poblamos la referencia al correo
-        .populate('registrationKey') // Poblamos la referencia al registrationKey
+        .populate('correo')  // Poblamos la referencia al correo
+        .populate('registrationKey')  // Poblamos la referencia al registrationKey
         .populate({
-          path: 'registrationKey', // Populamos 'registrationKey'
+          path: 'registrationKey',  // Populamos 'registrationKey'
           populate: {
-            path: 'authorities',   // Populamos 'authorities' dentro de registrationKey
+            path: 'authorities',  // Populamos 'authorities' dentro de registrationKey
           },
         });
     }
@@ -353,16 +357,19 @@ export const loginPaymentUser = async (req, res) => {
 
     // Generar un token JWT
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: '1h', // El token expirará en 1 hora
+      expiresIn: '1h',  // El token expirará en 1 hora
     });
 
     // Si hay autoridades, devolver solo dos valores: name y type
     let authorities = [];
-    if (user.registrationKey?.authorities) {
-      // Obtenemos las autoridades y solo devolvemos 'name' y 'type'
-      authorities = user.registrationKey.authorities.map(auth => {
-        return [auth.name, auth.type]; // Crearemos un array de dos elementos
-      }).flat(); // Aplanamos el array para que no haya sub-arrays
+    if (user.registrationKey) {
+      // Iteramos sobre el arreglo de registrationKey
+      user.registrationKey.forEach(regKey => {
+        if (regKey.authorities) {
+          // Obtenemos las autoridades y solo devolvemos 'name' y 'type'
+          authorities.push(...regKey.authorities.map(auth => [auth.name, auth.type]));
+        }
+      });
     }
 
     // Preparar la respuesta con todos los datos del usuario, incluyendo los datos relacionados
@@ -374,10 +381,10 @@ export const loginPaymentUser = async (req, res) => {
         nombre: user.nombre,
         apellido: user.apellido,
         usuario: user.usuario,
-        correo: user.correo ? user.correo.correo : null, // Detalles completos del correo
-        contrasena: user.contrasena, // Aunque se devuelve la contraseña cifrada (no recomendado)
-        registrationKey: user.registrationKey ? user.registrationKey.key : null, // La clave de registro
-        authorities, // Ahora las autoridades son un array con 'name' y 'type' en el orden que mencionas
+        correo: user.correo ? user.correo.correo : null,  // Detalles completos del correo
+        contrasena: user.contrasena,  // Aunque se devuelve la contraseña cifrada (no recomendado)
+        registrationKey: user.registrationKey ? user.registrationKey.map(regKey => regKey.key) : [], // Ahora devolvemos las claves de registro (pueden ser varias)
+        authorities,  // Ahora las autoridades son un array con 'name' y 'type' en el orden que mencionas
       },
     });
   } catch (error) {
@@ -446,52 +453,69 @@ export const resetPasswordPaymentUser = async (req, res) => {
 
 // Controlador para obtener información basada en el nombre de usuario
 export const getUserPaymentInfo = async (req, res) => {
- try {
-      const { username } = req.params;
-  
-      // Buscar el usuario en UserPayment
-      const user = await UserPayment.findOne({ usuario: username }).populate('registrationKey').populate('correo');
-      
-      if (!user) {
-        return res.status(404).json({ message: 'Usuario no encontrado' });
-      }
-  
-      const registrationKey = user.registrationKey;
-  
-      // Obtener la información de la RegistrationKey
-      const regKeyDetails = await RegistrationKey.findById(registrationKey._id);
-  
-      if (!regKeyDetails) {
-        return res.status(404).json({ message: 'RegistrationKey no encontrado' });
-      }
-  
-      // Descifrar la clave (key) usando la función decrypt
-      const decryptedKey = decrypt(regKeyDetails.key);
-  
-      // Contar cuántos usuarios tienen este registrationKey
-      const userCount = await UserPayment.countDocuments({ registrationKey: registrationKey._id });
-  
-      // Obtener la información de todos los usuarios que tienen la misma registrationKey
-      const usersWithSameKey = await UserPayment.find({ registrationKey: registrationKey._id })
-        .select('nombre apellido correo')  // Solo seleccionamos los campos necesarios
-        .populate('correo', 'email');  // Asumimos que "correo" es un documento con un campo "email"
-  
-      // Preparar la respuesta
-      const response = {
-        registrationKey: registrationKey._id,
-        key: decryptedKey,  // La clave ahora está descifrada
-        expiresAt: regKeyDetails.expiresAt,
-        planType: regKeyDetails.planType,
-        duration: regKeyDetails.duration,
-        isExpired: regKeyDetails.isExpired,
-        userCount,
-        users: usersWithSameKey,  // Incluimos la información de todos los usuarios
-      };
-  
-      return res.status(200).json(response);
-  
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: 'Error en el servidor' });
+  try {
+    const { username } = req.params;
+
+    // Buscar el usuario en UserPayment
+    const user = await UserPayment.findOne({ usuario: username })
+      .populate('registrationKey')  // Usamos populate para traer las referencias de registrationKey
+      .populate('correo');  // Si necesitas información del correo
+
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
     }
-  };
+
+    // Obtener todos los registrationKeys del usuario
+    const registrationKeys = user.registrationKey;
+
+    if (!registrationKeys || registrationKeys.length === 0) {
+      return res.status(404).json({ message: 'No se encontraron RegistrationKeys para este usuario' });
+    }
+
+    // Preparar una lista para almacenar la información de todas las registrationKeys
+    const registrationKeyDetails = await Promise.all(
+      registrationKeys.map(async (regKey) => {
+        // Obtener el detalle de cada RegistrationKey
+        const regKeyDetail = await RegistrationKey.findById(regKey._id);
+        if (!regKeyDetail) {
+          return null;  // Si no se encuentra la registrationKey, ignoramos este caso
+        }
+
+        // Descifrar la clave (key) usando la función decrypt
+        const decryptedKey = decrypt(regKeyDetail.key);
+
+        // Contar cuántos usuarios tienen este registrationKey
+        const userCount = await UserPayment.countDocuments({ registrationKey: regKey._id });
+
+        // Obtener la información de todos los usuarios que tienen la misma registrationKey
+        const usersWithSameKey = await UserPayment.find({ registrationKey: regKey._id })
+          .select('nombre apellido correo')  // Solo seleccionamos los campos necesarios
+          .populate('correo', 'email');  // Asumimos que "correo" es un documento con un campo "email"
+
+        return {
+          registrationKey: regKey._id,
+          key: decryptedKey,  // La clave ahora está descifrada
+          expiresAt: regKeyDetail.expiresAt,
+          planType: regKeyDetail.planType,
+          duration: regKeyDetail.duration,
+          isExpired: regKeyDetail.isExpired,
+          userCount,
+          users: usersWithSameKey,  // Incluimos la información de todos los usuarios
+        };
+      })
+    );
+
+    // Filtrar cualquier valor null de los resultados (por si alguna registrationKey no fue encontrada)
+    const filteredRegistrationKeys = registrationKeyDetails.filter(detail => detail !== null);
+
+    // Preparar la respuesta
+    const response = {
+      registrationKeys: filteredRegistrationKeys,  // Enviamos el arreglo con los detalles de las registrationKeys
+    };
+
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Error en el servidor' });
+  }
+};

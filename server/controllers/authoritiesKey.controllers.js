@@ -40,7 +40,13 @@ function generateActivationKey() {
 export const createAuthorityKey = async (req, res) => {
   try {
     const { type, email, planType, duration, usuarioHistory } = req.body;
-    
+
+    // Si el plan es free, duration debe ser 1 por defecto.
+    let effectiveDuration = duration;
+    if (planType === 'free') {
+      effectiveDuration = 1; // Para el plan free, la duración siempre es 1
+    }
+
     const authority = new Authority({ name: "super_usuario", type });
     await authority.save();
 
@@ -53,7 +59,7 @@ export const createAuthorityKey = async (req, res) => {
     const registrationKey = new RegistrationKey({
       key: encryptedKey,
       planType,
-      duration,
+      duration: effectiveDuration,  // Aquí se usa la duración "efectiva"
       correo: emailDoc._id,
       authorities: [authority._id],
     });
@@ -61,20 +67,23 @@ export const createAuthorityKey = async (req, res) => {
     const currentDate = new Date();
     switch (planType) {
       case 'free':
-          currentDate.setDate(currentDate.getDate() + 30);
-          registrationKey.expiresAt = currentDate;
-          break;
+        currentDate.setDate(currentDate.getDate() + 30); // Para el plan free, la duración es de 30 días
+        registrationKey.expiresAt = currentDate;
+        break;
       case 'month':
-          currentDate.setMonth(currentDate.getMonth() + duration);
-          registrationKey.expiresAt = currentDate;
-          break;
+        currentDate.setMonth(currentDate.getMonth() + effectiveDuration); // Se usa el duration
+        registrationKey.expiresAt = currentDate;
+        break;
       case 'year':
-          currentDate.setFullYear(currentDate.getFullYear() + duration);
-          registrationKey.expiresAt = currentDate;
-          break;
+        currentDate.setFullYear(currentDate.getFullYear() + effectiveDuration); // Se usa el duration
+        registrationKey.expiresAt = currentDate;
+        break;
+      case 'unlimited':
+        registrationKey.expiresAt = null; // El plan ilimitado no tiene fecha de expiración
+        break;
       default:
-          registrationKey.expiresAt = null;
-          break;
+        registrationKey.expiresAt = null;
+        break;
     }
 
     await registrationKey.save();
@@ -93,8 +102,10 @@ export const createAuthorityKey = async (req, res) => {
     });
 
     const planMessage =
-      planType === "free" ?
+      planType === "free" ? 
       "¡Felicidades! Has seleccionado el plan Free. Disfruta de los beneficios limitados y, si deseas más, puedes actualizar a un plan superior más tarde." :
+      planType === "unlimited" ?
+      "¡Gracias por elegir el plan Ilimitado! Disfruta de acceso sin restricciones y todas las funciones avanzadas de SIMATI." :
       "¡Gracias por elegir el plan Ilimitado! Disfruta de acceso sin restricciones y todas las funciones avanzadas de SIMATI.";
 
     const mailOptions = {

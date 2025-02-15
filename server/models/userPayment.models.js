@@ -6,7 +6,7 @@ const UserSchema = new mongoose.Schema({
   correo: { type: mongoose.Schema.Types.ObjectId, ref: "Email", required: true },
   usuario: { type: String, required: true, unique: true },
   contrasena: { type: String, required: true },
-  registrationKey: { type: mongoose.Schema.Types.ObjectId, ref: "RegistrationKey", required: true },
+  registrationKey: [{ type: mongoose.Schema.Types.ObjectId, ref: "RegistrationKey", required: true }],
   estadoEliminacion: { type: Number, default: 0, enum: [0, 1] }  // Agregado estadoEliminacion
 });
 
