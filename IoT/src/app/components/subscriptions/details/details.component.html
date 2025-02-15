@@ -1,42 +1,52 @@
-<div class="details-container">
-  <!-- 🔹 Card de suscripción -->
-  <div class="subscription-card">
-    <div class="subscription-card-header">
-      <div class="subscription-logo"><img src="" alt=""></div>
-      <p class="subscription-type">SUSCRIPCIÓN A SIMATI</p>
-      <p class="subscription-title">{{ subscription?.title }}</p>
+<div *ngIf="isLargeScreen">
+  <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
+</div>
+<div *ngIf="!isLargeScreen">
+  <app-bottom-tab></app-bottom-tab>
+</div>
 
-      <div class="subscription-inf">
-        <div class="info-item">
-          <p class="info-label">TIPO</p>
-          <p class="info-value">{{ subscription?.type }}</p>
-        </div>
-        <div class="info-item">
-          <p class="info-label">FECHA DE EXPIRACIÓN</p>
-          <p class="info-value">{{ subscription?.expiration }}</p>
+<div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
+  <router-outlet></router-outlet>
+  <div class="details-container">
+    <!-- 🔹 Card de suscripción -->
+    <div class="subscription-card">
+      <div class="subscription-card-header">
+        <div class="subscription-logo"><img src="" alt=""></div>
+        <p class="subscription-type">SUSCRIPCIÓN A SIMATI</p>
+        <p class="subscription-title">{{ subscription?.title }}</p>
+
+        <div class="subscription-inf">
+          <div class="info-item">
+            <p class="info-label">TIPO</p>
+            <p class="info-value">{{ subscription?.type }}</p>
+          </div>
+          <div class="info-item">
+            <p class="info-label">FECHA DE EXPIRACIÓN</p>
+            <p class="info-value">{{ subscription?.expiration }}</p>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- 🔹 Contenedor con dos columnas (General Info + Users Overview) -->
-  <div class="details-content">
-    <!-- 🔹 General Information -->
-    <div class="subscription-info">
-      <h3>General information</h3>
-      <p><strong>Subscription:</strong> {{ subscription?.title }}</p>
-      <p><strong>Type:</strong> {{ subscription?.type }}</p>
-      <p><strong>Expiration date:</strong> {{ subscription?.expiration }}</p>
-      <p><strong>Activation key:</strong> {{ subscription?.key }}</p>
-      <p><strong>Credentials created:</strong> {{ subscription?.users.length }} of {{ subscription?.userCount }}</p>
-    </div>
+    <!-- 🔹 Contenedor con dos columnas (General Info + Users Overview) -->
+    <div class="details-content">
+      <!-- 🔹 General Information -->
+      <div class="subscription-info">
+        <h3>General information</h3>
+        <p><strong>Subscription:</strong> {{ subscription?.title }}</p>
+        <p><strong>Type:</strong> {{ subscription?.type }}</p>
+        <p><strong>Expiration date:</strong> {{ subscription?.expiration }}</p>
+        <p><strong>Activation key:</strong> {{ subscription?.key }}</p>
+        <p><strong>Credentials created:</strong> {{ subscription?.users.length }} of {{ subscription?.userCount }}</p>
+      </div>
 
-    <!-- 🔹 Users Overview -->
-    <div class="users-overview">
-      <h3>Users overview</h3>
-      <div *ngFor="let user of subscription?.users" class="user-card">
-        <p><strong>{{ user.nombre }} {{ user.apellido }}</strong></p>
-        <p class="user-status">✅ Activated</p>
+      <!-- 🔹 Users Overview -->
+      <div class="users-overview">
+        <h3>Users overview</h3>
+        <div *ngFor="let user of subscription?.users" class="user-card">
+          <p><strong>{{ user.nombre }} {{ user.apellido }}</strong></p>
+          <p class="user-status">✅ Activated</p>
+        </div>
       </div>
     </div>
   </div>

@@ -1,14 +1,30 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PaymentUserService } from '../../../services/paymentUser/payment-user.service';
+import { PremiumSideComponent } from '../side/side.component';
+import { BottomTabComponent } from '../../bottom-tab/bottom-tab.component';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-details',
-  imports: [CommonModule],
+  imports: [CommonModule, PremiumSideComponent, BottomTabComponent, RouterOutlet],
   templateUrl: './details.component.html',
   styleUrl: './details.component.css'
 })
 export class SubscriptionsDetailsComponent {
+
+  isLargeScreen: boolean = window.innerWidth > 1024;
+      @Output() bodySizeChange = new EventEmitter<boolean>();
+      @HostListener('window:resize', ['$event'])
+      onResize(event: Event): void {
+        this.isLargeScreen = window.innerWidth > 1024;
+      }
+  
+      isSidebarCollapsed = true
+      onSideNavToggle(collapsed: boolean) {
+        this.isSidebarCollapsed = collapsed;
+      }
+
   subscription: any = null;
   username: string = '';
   
