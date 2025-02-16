@@ -22,12 +22,12 @@ export class PremiumSideComponent implements OnInit{
   currentRoute: string = '';
 
   menuItemsTop = [
-    { icon: 'home', label: 'Home', route: '/Home'},
-    { icon: 'grid_on', label: 'Overview', route: '/overview'},
-    { icon: 'group', label: 'Usuarios', route: '/premium/users'},
-    { icon: 'certificated', label: 'Suscripción', route: '/subscription'},
-    { icon: 'hub', label: 'IoT', route: '/iot'},
-    { icon: 'lock', label: 'Cambiar Contraseña', route: '/users/cambiarContra'},
+    { icon: 'home', label: 'Home', route: '/Home'}, 
+    { icon: 'space_dashboard', label: 'Overview', route: '/overview'}, 
+    {icon:'switch_account', label:'Usuarios',route:'/premium/users'}, 
+    { icon: 'subscriptions', label: 'Suscripción', route: '/subscriptions'}, 
+    { icon: 'hub', label: 'IoT', route: '/iot'}, 
+    { icon: 'lock', label: 'Cambiar Contraseña', route: '/users/cambiarContra'}
   ];
 
   menuItemsBottom = [

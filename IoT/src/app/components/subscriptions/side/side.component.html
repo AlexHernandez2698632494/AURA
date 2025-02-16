@@ -1,64 +1,57 @@
 <!-- Sidebar -->
 <div [class.collapsed]="isCollapsed" class="sidebar">
-    <div class="sidebar-header">
-      <div class="header-content">
-        <div class="images" *ngIf="!isCollapsed">
-          <img
-            src="https://github.com/AlexHernandez2698632494/pictures/blob/main/SIMATI/Logo%20IIIE-02%20-%20copia.png?raw=true"
-            alt="Image 1" />
-          <img src="https://github.com/AlexHernandez2698632494/pictures/blob/main/SIMATI/SIMATI%20UDB%202.0.png?raw=true"
-            alt="Image 2" />
-        </div>
-        <div class="toggle">
-          <input id="checkbox2" type="checkbox" [checked]="!isCollapsed" (change)="toggleSidebar()" />
-          <label class="toggle2" for="checkbox2">
-            <div id="bar4" class="bars"></div>
-            <div id="bar5" class="bars"></div>
-            <div id="bar6" class="bars"></div>
-          </label>
-        </div>
+  <div class="sidebar-header">
+    <div class="header-content">
+      <div class="images" *ngIf="!isCollapsed">
+        <img
+          src="https://github.com/AlexHernandez2698632494/pictures/blob/main/SIMATI/Logo%20IIIE-02%20-%20copia.png?raw=true"
+          alt="Image 1" />
+        <img src="https://github.com/AlexHernandez2698632494/pictures/blob/main/SIMATI/SIMATI%20UDB%202.0.png?raw=true"
+          alt="Image 2" />
+      </div>
+      <div class="toggle">
+        <input id="checkbox2" type="checkbox" [checked]="!isCollapsed" (change)="toggleSidebar()" />
+        <label class="toggle2" for="checkbox2">
+          <div id="bar4" class="bars"></div>
+          <div id="bar5" class="bars"></div>
+          <div id="bar6" class="bars"></div>
+        </label>
       </div>
     </div>
-    <div class="userInfo" *ngIf="username">
-      <div class="separator" *ngIf="username">
-        <hr />
-      </div>
-      <i class="material-icons">person</i>
-      <p *ngIf="!isCollapsed" class="username">{{ username }}</p>
-      <div class="separator" *ngIf="username">
-        <hr />
-      </div>
+  </div>
+  <div class="userInfo" *ngIf="username">
+    <div class="separator" *ngIf="username">
+      <hr />
     </div>
-  
-    <ul class="menu">
-      <!-- Menu Items -->
-      <li *ngFor="let item of menuItemsTop" class="menu-item" 
-        [ngClass]="{'active': isActive(item.route)}">
-        <div>
-          <i class="material-icons">{{ item.icon }}</i>
-          <span *ngIf="!isCollapsed">{{ item.label }}</span>
-        </div>
-  
-        <!-- Submenu -->
-        <!-- <ul class="submenu" *ngIf="item.isSubmenuOpen">
-          <li *ngFor="let subItem of item.submenu" class="submenu-item" [ngClass]="{'active': isActive(subItem.route)}"
-            [routerLink]="subItem.route">
-            <a [routerLink]="subItem.route">{{ subItem.label }}</a>
-          </li>
-        </ul>
-      </li> -->
-  
-      <!-- <div class="separator">
-        <hr /> 
-      </div>-->
-  
-      <!-- Menu Items Bottom -->
-      <li *ngFor="let item of menuItemsBottom" class="menu-item" (click)="logout()"
-        [ngClass]="{'active': isActive(item.route)}">
-        <a href="javascript:void(0)">
-          <i class="material-icons">{{ item.icon }}</i>
-          <span *ngIf="!isCollapsed">{{ item.label }}</span>
-        </a>
-      </li>
-    </ul>
-  </div>    
+    <i class="material-icons">person</i>
+    <p *ngIf="!isCollapsed" class="username">{{ username }}</p>
+    <div class="separator" *ngIf="username">
+      <hr />
+    </div>
+  </div>
+
+  <ul class="menu">
+    <!-- Menu Items -->
+    <li *ngFor="let item of menuItemsTop" class="menu-item"
+      [ngClass]="{'active': isActive(item.route)}"
+      (click)="navigateTo(item.route)">
+      <div>
+        <i class="material-icons">{{ item.icon }}</i>
+        <span *ngIf="!isCollapsed">{{ item.label }}</span>
+      </div>
+    </li>
+
+    <div class="separator">
+      <hr />
+    </div>
+
+    <!-- Menu Items Bottom -->
+    <li *ngFor="let item of menuItemsBottom" class="menu-item" (click)="logout()"
+      [ngClass]="{'active': isActive(item.route)}">
+      <a href="javascript:void(0)">
+        <i class="material-icons">{{ item.icon }}</i>
+        <span *ngIf="!isCollapsed">{{ item.label }}</span>
+      </a>
+    </li>
+  </ul>
+</div>
