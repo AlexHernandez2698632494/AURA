@@ -41,6 +41,7 @@ import { FoundComponent } from './app/components/found/found.component';
 import { FirsSuperAdminComponent } from './app/components/firs-super-admin/firs-super-admin.component';
 import { SubscriptionsComponent } from './app/components/subscriptions/subscriptions.component';
 import { SubscriptionsDetailsComponent } from './app/components/subscriptions/details/details.component';
+import { OverviewComponent } from './app/components/paymentUsers/overview/overview.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
@@ -168,6 +169,12 @@ const routes: Routes = [
     data: { authorities: ['super_administrador', 'dev'] },
   },
   // rutas de Subscriptions o Usuarios con permisos de licencia :
+  {
+    path:'overview',
+    component:OverviewComponent,
+    canActivate:[AuthGuard],
+    data: { authorities: ['super_usuario'] },
+  },
   {
     path: 'subscriptions',
     component: SubscriptionsComponent,
