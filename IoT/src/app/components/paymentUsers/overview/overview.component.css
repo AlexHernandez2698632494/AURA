@@ -1,0 +1,107 @@
+/* Contenedor Principal */
+.overview-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+
+  .center {
+    margin-left: 5%;
+    justify-content: center;
+    min-height: 100vh;
+    transition: margin-left 0.3s ease;  
+  }
+  
+  .shifted {
+    margin-left: 14%; 
+    transition: margin-left 0.3s ease; 
+  }
+
+  /* Tarjetas */
+  .card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  /* Encabezado de la tarjeta */
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .card-header img {
+    width: 40px;
+    height: 40px;
+  }
+  
+  /* Subtítulo */
+  .sub-title {
+    font-size: 14px;
+    color: #555;
+  }
+  
+  /* Listado de suscripciones */
+  .subscriptions-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .subscriptions-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  /* Estado de los ítems */
+  .status.warning {
+    color: orange;
+  }
+  
+  .status.success {
+    color: green;
+  }
+  
+  .status.error {
+    color: red;
+    font-weight: bold;
+  }
+  
+  /* Botón */
+  .btn {
+    background: #007bff;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+  }
+  
+  /* Contenedor de issues */
+  .issue-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  /* Enlaces */
+  .link {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  
+  /* Tarjeta de historial */
+  .history-card {
+    width: 50%;
+    text-align: left;
+  }
+  
