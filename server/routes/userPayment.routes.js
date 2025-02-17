@@ -5,6 +5,7 @@ import {
   getPaymentUserById,
   getPaymentUsers,
   getUserPaymentInfo,
+  getUserPaymentInfoById,
   loginPaymentUser,
   resetPasswordPaymentUser,
   restorePaymentUser,
@@ -38,4 +39,5 @@ router.patch("/premium/user/:id/delete", verifyToken, deletePaymentUser); // Eli
 router.patch("/premium/user/:id/restore", verifyToken, restorePaymentUser); // Restaurar usuario premium de pago (cambiar estadoEliminacion a 0)
 
 router.get("/premium/user/info/:username", getUserPaymentInfo);
+router.get("/premium/users/info/:id", getUserPaymentInfoById)
 export default router;

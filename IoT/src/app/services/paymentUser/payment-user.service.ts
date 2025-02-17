@@ -44,6 +44,17 @@ export class PaymentUserService {
   );
 }
 
+getUsersSubscriptions(id: string): Observable<any> {
+  return this.http.get(`${this.getApiUrl()}/premium/users/info/${id}`, {
+    headers: this.getAuthHeaders()
+  }).pipe(
+    catchError(err => {
+      console.error('Error en la API:', err);
+      return throwError(err);
+    })
+  );
+}
+
 getUsername(): string {
   return sessionStorage.getItem('username') || '';
 }

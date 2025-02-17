@@ -1,0 +1,53 @@
+<div *ngIf="isLargeScreen">
+    <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
+</div>
+<div *ngIf="!isLargeScreen">
+    <app-bottom-tab></app-bottom-tab>
+</div>
+
+<div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
+    <div class="subscriptions-container">
+        <h2>Suscripciones</h2>
+        <p class="subtitle">
+            Aquí encontrarás todas tus suscripciones ordenadas de forma práctica.
+            Gestiona cada una de ellas fácilmente desde esta página.
+        </p>
+
+        <div class="subscriptions-list">
+            <div *ngFor="let sub of subscriptions" class="subscription-card">
+                <!-- Tarjeta superior -->
+                <div class="subscription-card-header">
+                    <div class="subscription-logo"><img src="" alt=""></div>
+                    <p class="subscription-type">SUSCRIPCIÓN A SIMATI</p>
+                    <p class="subscription-title">{{ sub.title }}</p>
+
+                    <div class="subscription-info">
+                        <div class="info-item">
+                            <p class="info-label">TIPO</p>
+                            <p class="info-value">{{ sub.type }}</p>
+                        </div>
+                        <div class="info-item">
+                            <p class="info-label">FECHA DE EXPIRACIÓN</p>
+                            <p class="info-value">{{ sub.expiration }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contenido inferior -->
+                <h3>{{ sub.title }}</h3>
+                <p class="status" [ngClass]="sub.statusClass">{{ sub.status }}</p>
+
+                <p class="devices-title">USUARIOS CREADOS</p>
+                <p class="devices">
+                    <strong>{{ sub.users.used }}</strong> de <strong>{{ sub.users.total }}</strong>
+                </p>
+
+                <!-- Botón de redirección -->
+                <button class="subscription-button" (click)="saveRegistrationKey(sub.registrationKey)">
+                    Suscripción abierta
+                </button>
+                                
+            </div>
+        </div>
+    </div>
+</div>

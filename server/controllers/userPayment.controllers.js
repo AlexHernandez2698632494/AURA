@@ -519,3 +519,42 @@ export const getUserPaymentInfo = async (req, res) => {
     return res.status(500).json({ message: 'Error en el servidor' });
   }
 };
+
+export const getUserPaymentInfoById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Buscar la registrationKey y popular el campo correo
+    const registrationKey = await RegistrationKey.findById(id).populate("correo");
+    if (!registrationKey) {
+      return res.status(404).json({ message: "Registration key not found" });
+    }
+
+    // Buscar usuarios asociados a esta registrationKey
+    const users = await UserPayment.find({ registrationKey: id })
+      .select("_id nombre apellido correo")
+      .populate("correo", "_id");
+      const decryptedKey = decrypt(registrationKey.key);
+    // Construir la respuesta con el formato solicitado
+    const response = {
+      registrationKey: registrationKey._id,
+      key: decryptedKey,
+      expiresAt: registrationKey.expiresAt,
+      planType: registrationKey.planType,
+      duration: registrationKey.duration,
+      isExpired: registrationKey.isExpired,
+      userCount: users.length,
+      users: users.map(user => ({
+        _id: user._id,
+        nombre: user.nombre,
+        apellido: user.apellido,
+        correo: user.correo
+      }))
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.error("Error fetching registration key:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

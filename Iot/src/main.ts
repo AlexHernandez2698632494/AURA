@@ -39,8 +39,8 @@ import { AuthGuard } from './app/auth/auth.guard';
 import { ForbiddenComponent } from './app/components/forbidden/forbidden.component';
 import { FoundComponent } from './app/components/found/found.component';
 import { FirsSuperAdminComponent } from './app/components/firs-super-admin/firs-super-admin.component';
-import { SubscriptionsComponent } from './app/components/subscriptions/subscriptions.component';
-import { SubscriptionsDetailsComponent } from './app/components/subscriptions/details/details.component';
+import { SubscriptionsComponent } from './app/components/paymentUsers/subscriptions/subscriptions.component';
+import { SubscriptionsDetailsComponent } from './app/components/paymentUsers/details/details.component';
 import { OverviewComponent } from './app/components/paymentUsers/overview/overview.component';
 
 const routes: Routes = [
