@@ -4,23 +4,51 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class ApiConfigService {
-  private apiUrlLocal = 'http://localhost:3000';
-  private apiUrlNetwork = 'http://192.168.1.82:3000';
-  private apiUrlnetWork2 = 'http://10.0.12.85:3000';
-  private apiUrlnetWork3 = 'http://172.16.99.86:3000';
+  private apiUrls = [
+    'http://localhost:3000',
+    'http://192.168.1.82:3000',
+    'http://10.0.12.66:3000',
+    'http://172.16.99.86:3000',
+    'http://192.168.1.25:3000',
+    'http://10.0.12.86:3000',
+    'http://172.16.100.200:3000',
+  ];
+
+  private selectedApiUrl: string | null = null;
+
+  constructor() {
+    this.checkApiUrls();
+  }
 
   /**
-   * Determina la URL base dependiendo del entorno.
+   * Intenta conectar con cada API hasta encontrar una disponible.
+   */
+  private async checkApiUrls() {
+    for (const url of this.apiUrls) {
+      try {
+        // Intenta hacer una petición GET a un endpoint conocido
+        const response = await fetch(`${url}/ping`, { method: 'GET' });
+
+        if (response.ok) {
+          this.selectedApiUrl = url;
+          console.log(`API encontrada en: ${url}`);
+          break;
+        }
+      } catch (error) {
+        console.warn(`No se pudo conectar a: ${url}`);
+      }
+    }
+
+    if (!this.selectedApiUrl) {
+      console.error('No se encontró una API disponible');
+      this.selectedApiUrl = this.apiUrls[0]; // Usa localhost como fallback
+    }
+  }
+
+  /**
+   * Devuelve la URL de la API seleccionada.
    */
   getApiUrl(): string {
-    if (window.location.hostname === 'localhost' || window.location.hostname === '192.168.1.82' || window.location.hostname === '172.16.100.200') {
-      return this.apiUrlNetwork;}
-      if(window.location.hostname === '172.16.99.0'){
-        return this.apiUrlnetWork3}
-       if (window.location.hostname === '10.0.12.85') {
-      return this.apiUrlnetWork2;
-    } else {
-      return this.apiUrlLocal;
-    }
+    return this.selectedApiUrl ?? this.apiUrls[0];
   }
 }
