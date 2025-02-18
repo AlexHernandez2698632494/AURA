@@ -72,7 +72,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        attribution: '&copy; <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSpOxpG4Hy_wDmvTHwle-asB2c1SvEsJv84g&s" alt="IIIE" Width="30px"> <a href="https://www.openstreetmap.org/copyright">IIIE</a> <hr>Instituto de Investigación e Innovación en Electronica'
+        attribution: '&copy; <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSpOxpG4Hy_wDmvTHwle-asB2c1SvEsJv84g&s" alt="IIIE" Width="30px"> <a href="" style="font-size:30px;">IIIE</a> <hr>Instituto de Investigación e Innovación en Electronica'
       }).addTo(this.map);
   
       // Forzar actualización del tamaño del mapa después de la inicialización
