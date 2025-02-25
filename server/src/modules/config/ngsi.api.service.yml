@@ -1,0 +1,145 @@
+mappings:
+"[Temperatura Aire]":
+  alias:
+    - airTemp
+  unit: "°C"
+"[Humedad del Aire]":
+  alias:
+    - airHumy
+  unit: "%"
+"[Humedad del Suelo]":
+  alias:
+    - soiHumy
+  unit: "%"
+"[Temperatura del suelo]":
+  alias:
+    - soiTemp
+  unit: "°C"
+"[Velocidad del Viento]":
+  alias:
+    - velWind
+  unit: "m/s"
+"[Dirección del Viento]":
+  alias:
+    - dirWind
+  unit: "°"
+"[Nivel de Agua]":
+  alias:
+    - Water_level
+  unit: "m"
+"[Co2 en el Aire]":
+  alias:
+    - co2Air
+  unit: "ppm"
+"[Cantidad de lluvia]":
+  alias:
+    - qtyRain
+  unit: "mm"
+"[Presión atmosférica]":
+  alias:
+    - preAtm
+  unit: "hPa"
+"[Iluminación]":
+  alias:
+    - illumination
+  unit: "Lux"
+"[Acelerometro Y]":
+  alias:
+    - aceGeoY
+  unit: "m/s\u00B2"
+"[Acelerometro X]":
+  alias:
+    - aceGeoX
+  unit: "m/s\u00B2"
+"[Acelerometro Z]":
+  alias:
+    - aceGeoZ
+  unit: "m/s\u00B2"
+"[Particulado PM 1.0]":
+  alias:
+    - airPm01
+  unit: "ppl"
+"[Particulado PM 2.5]":
+  alias:
+    - airPm25
+  unit: "ppl"
+"[Particulado PM 10.0]":
+  alias:
+    - airPm10
+  unit: "ppl"
+"[Nivel del Rio]":
+  alias:
+    - HG
+  unit: "m"
+"[Precipitación Acumulada]":
+  alias:
+    - PC
+  unit: "mm"
+"[Voltaje de Bateria]":
+  alias:
+    - BA
+  unit: "V"
+"[Caudal Instantáneo]":
+  alias:
+    - QI
+  unit: "m\u00B3/s"
+"[Dir. del Viento (Prom)]":
+  alias:
+    - DA
+  unit: "°"
+"[Luz Solar]":
+  alias:
+    - HR
+  unit: "Hrs"
+"[Punto de Rocio]":
+  alias:
+    - DP
+  unit: "°C"
+"[Vel. del Viento (Prom)]":
+  alias:
+    - SA
+  unit: "Nudos"
+"[Vel. del Viento (Inst)]":
+  alias:
+    - SI
+  unit: "Nudos"
+"[Radiacion Solar]":
+  alias:
+    - SR
+  unit: "Wh/m\u00B2"
+"[Precipitacion Instantanea]":
+  alias:
+    - PP
+  unit: "mm"
+"[Temperatura del aire]":
+  alias:
+    - AT
+  unit: "°C"
+"[Presion Barometrica]":
+  alias:
+    - BP
+  unit: "milibares"
+"[Humedad Relativa]":
+  alias:
+    - RH
+  unit: "%"
+"[Dir. del Viento (Inst)]":
+  alias:
+    - DI
+  unit: "°"
+"[Rafaga]":
+  alias:
+    - RA
+  unit: "Nudos"
+"[Humedad de Hoja]":
+  alias:
+    - LW
+  unit: "%"
+"[Radiacion Solar Instantanea]":
+  alias:
+    - RI
+  unit: "Wh/m\u00B2"
+"[Marea]":
+  alias:
+    - MA
+  unit: "cm"
