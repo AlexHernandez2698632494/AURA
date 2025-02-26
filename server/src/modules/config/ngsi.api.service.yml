@@ -145,5 +145,5 @@ mappings:
     unit: "cm"
   "[prueba]":
     alias:
-      - PB
+      - MA
     unit: ""
