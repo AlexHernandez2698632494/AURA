@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { ApiConfigService } from '../../services/ApiConfig/api-config.service';
 
 @Component({
   selector: 'app-bottom-tab',
@@ -15,7 +16,7 @@ export class BottomTabComponent implements OnInit {
   authorities: string[] = [];
   menuItems: any[] = [];
 
-  constructor(public router: Router, private http: HttpClient) { }
+  constructor(public router: Router, private http: HttpClient, private apiConfig: ApiConfigService) { }
 
   ngOnInit(): void {
     const storedAuthorities = JSON.parse(sessionStorage.getItem('authorities') || '[]');
@@ -42,20 +43,8 @@ export class BottomTabComponent implements OnInit {
       ];
     }
   }
-
-  private getBaseUrl(): string {
-    const host = window.location.hostname;
-
-    if (host === 'localhost') {
-      return 'http://localhost:3000';
-    } else if (host === '192.168.1.82') {
-      return 'http://192.168.1.82:3000';
-    } else if (host === '192.168.1.14') {
-      return 'http://192.168.1.14:3000';
-    } else {
-      // Opción predeterminada
-      return 'http://localhost:3000';
-    }
+  private getApiUrl(): string {
+    return this.apiConfig.getApiUrl();
   }
 
   // Método para cerrar sesión
@@ -68,8 +57,8 @@ export class BottomTabComponent implements OnInit {
       return;
     }
 
-    const baseUrl = this.getBaseUrl(); // Llama al método dentro de la clase
-    const logoutEndpoint = `${baseUrl}/logout`;
+    const baseUrl = this.getApiUrl(); // Llama al método dentro de la clase
+    const logoutEndpoint = `${baseUrl}/oauth2/logout`;
 
     // Realiza la solicitud al endpoint correcto
     this.http.post(logoutEndpoint, { username }).subscribe({

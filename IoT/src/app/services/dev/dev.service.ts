@@ -26,14 +26,14 @@ export class DevService {
 
   registerAdminDev(adminData: any): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.post(`${this.getApiUrl()}/dev/user`, adminData, { headers }).pipe(
+    return this.http.post(`${this.getApiUrl()}/oauth2/dev/user`, adminData, { headers }).pipe(
       catchError(err => throwError(err))
     );
   }
 
   getDevUsers(): Observable<any[]> {
     const headers = this.getAuthHeaders();
-    return this.http.get<any[]>(`${this.getApiUrl()}/dev/users`, { headers }).pipe(
+    return this.http.get<any[]>(`${this.getApiUrl()}/oauth2/dev/users`, { headers }).pipe(
       catchError(err => throwError(err))
     );
   }
@@ -47,7 +47,7 @@ export class DevService {
       usuarioHistory: usuarioHistory,  // Agregar el usuario que realiza la acción
     };
   
-    return this.http.put(`${this.getApiUrl()}/dev/user/${userId}`, body, { headers }).pipe(
+    return this.http.put(`${this.getApiUrl()}/oauth2/dev/user/${userId}`, body, { headers }).pipe(
       catchError(err => throwError(err))
     );
   }
@@ -55,7 +55,7 @@ export class DevService {
 
   getDevDeleteUsers(): Observable<any[]> {
     const headers = this.getAuthHeaders();
-    return this.http.get<any[]>(`${this.getApiUrl()}/dev/users/delete`, { headers }).pipe(
+    return this.http.get<any[]>(`${this.getApiUrl()}/oauth2/dev/users/delete`, { headers }).pipe(
       catchError(err => throwError(err))
     );
   }
@@ -63,21 +63,21 @@ export class DevService {
   deleteDevUser(userId: string, usuarioHistory: string): Observable<any> {
     const headers = this.getAuthHeaders();
     const body = { usuarioHistory }; // Agregar el usuario que realiza la acción
-    return this.http.patch(`${this.getApiUrl()}/dev/user/${userId}`, body, { headers }).pipe(
+    return this.http.patch(`${this.getApiUrl()}/oauth2/dev/user/${userId}`, body, { headers }).pipe(
       catchError(err => throwError(err))
     );
   }
   restoreDevUser(userId: string, usuarioHistory: string): Observable<any> {
     const headers = this.getAuthHeaders();
     const body = { usuarioHistory };  // Agregar el usuarioHistory al cuerpo de la solicitud
-    return this.http.patch(`${this.getApiUrl()}/dev/user/restore/${userId}`, body, { headers }).pipe(
+    return this.http.patch(`${this.getApiUrl()}/oauth2/dev/user/restore/${userId}`, body, { headers }).pipe(
       catchError(err => throwError(err))
     );
   }
   
   getAuthorities(): Observable<any[]> {
     const headers = this.getAuthHeaders();
-    return this.http.get<any[]>(`${this.getApiUrl()}/authorities`, { headers }).pipe(
+    return this.http.get<any[]>(`${this.getApiUrl()}/oauth2/authorities`, { headers }).pipe(
       catchError(err => throwError(err))
     );
   }

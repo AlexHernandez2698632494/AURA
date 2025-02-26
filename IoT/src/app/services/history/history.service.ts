@@ -34,7 +34,7 @@ export class HistoryService {
    */
   getHistory(): Observable<any[]> {
     const headers = this.getAuthHeaders();
-    return this.http.get<any[]>(`${this.getApiUrl()}/history`, { headers }).pipe(
+    return this.http.get<any[]>(`${this.getApiUrl()}/oauth2/history`, { headers }).pipe(
       catchError(err => throwError(err))
     );
   }
@@ -44,7 +44,7 @@ export class HistoryService {
    */
   getDeletedHistory(): Observable<any[]> {
     const headers = this.getAuthHeaders();
-    return this.http.get<any[]>(`${this.getApiUrl()}/history/delete`, { headers }).pipe(
+    return this.http.get<any[]>(`${this.getApiUrl()}/oauth2/history/delete`, { headers }).pipe(
       catchError(err => throwError(err))
     );
   }
@@ -55,7 +55,7 @@ export class HistoryService {
   deleteHistory(historyId: string): Observable<any> {
     const headers = this.getAuthHeaders();
     console.log(`Eliminando historial con ID: ${historyId}`);
-    return this.http.delete(`${this.getApiUrl()}/history/${historyId}`, { headers }).pipe(
+    return this.http.delete(`${this.getApiUrl()}/oauth2/history/${historyId}`, { headers }).pipe(
       catchError(err => {
         console.error('Error al eliminar historial', err);
         return throwError(err);
@@ -69,7 +69,7 @@ export class HistoryService {
    */
   deleteStateByLevel(level: string): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.delete(`${this.getApiUrl()}/history/delete/${level}`, { headers }).pipe(
+    return this.http.delete(`${this.getApiUrl()}/oauth2/history/delete/${level}`, { headers }).pipe(
       catchError(err => throwError(err))
     );
   }
@@ -79,14 +79,14 @@ export class HistoryService {
    */
  cleanSlateByLevel(level: string): Observable<any> {
   const headers = this.getAuthHeaders();
-  return this.http.delete(`${this.getApiUrl()}/history/${level}/CleanSlate`, { headers }).pipe(
+  return this.http.delete(`${this.getApiUrl()}/oauth2/history/${level}/CleanSlate`, { headers }).pipe(
     catchError(err => throwError(err))
   );
 }
 
 permanentDeleteHistory(historyId: string): Observable<any> {
   const headers = this.getAuthHeaders();
-  return this.http.patch(`${this.getApiUrl()}/history/${historyId}/permanent`, {}, { headers }).pipe(
+  return this.http.patch(`${this.getApiUrl()}/oauth2/history/${historyId}/permanent`, {}, { headers }).pipe(
     catchError(err => throwError(err))
   );
 }

@@ -32,7 +32,7 @@ export class LoginComponent {
   }
 
   ngOnInit() {
-    this.http.get(`${this.getApiUrl()}/users/exist`).subscribe(
+    this.http.get(`${this.getApiUrl()}/oauth2/users/exist`).subscribe(
       (response: any) => {
         if (!response.usersExist) {
           // Redirigir a la vista de registro del superadministrador
@@ -58,7 +58,7 @@ export class LoginComponent {
     };
 
     // Intentar login en la primera ruta
-    this.http.post(`${this.getApiUrl()}/login`, loginData).subscribe(
+    this.http.post(`${this.getApiUrl()}/oauth2/login`, loginData).subscribe(
       (response: any) => {
         if (response.token) {
           this.handleSuccessfulLogin(response, '/login');  // Se maneja la respuesta como antes
@@ -84,9 +84,9 @@ export class LoginComponent {
     let route = '';
     
     if (routeAttempt === 2) {
-      route = '/dev/login';  // Segunda ruta
+      route = '/oauth2/dev/login';  // Segunda ruta
     } else if (routeAttempt === 3) {
-      route = '/payment/user/login';  // Tercera ruta: esta es la que tiene la nueva estructura
+      route = '/oauth2/payment/user/login';  // Tercera ruta: esta es la que tiene la nueva estructura
     }
 
     this.http.post(`${this.getApiUrl()}${route}`, loginData).subscribe(
@@ -131,7 +131,7 @@ export class LoginComponent {
 
       let authorities: any[] = [];
 
-      if (route === '/payment/user/login' && response.user.authorities) {
+      if (route === '/oauth2/payment/user/login' && response.user.authorities) {
         // Si la ruta es '/payment/user/login', aplanamos el array de arrays a un solo array
         authorities = response.user.authorities[0];  // Tomamos el primer array de la respuesta (el único array)
       } else if (response.user.authorities) {

@@ -251,7 +251,7 @@ export class SideComponent implements OnInit {
     }
 
     const baseUrl = this.getApiUrl(); // Llama al método dentro de la clase
-    const logoutEndpoint = `${baseUrl}/logout`;
+    const logoutEndpoint = `${baseUrl}/oauth2/logout`;
 
     // Realiza la solicitud al endpoint correcto
     this.http.post(logoutEndpoint, { username }).subscribe({

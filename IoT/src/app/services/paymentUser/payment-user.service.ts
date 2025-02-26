@@ -27,14 +27,14 @@ export class PaymentUserService {
 
   // Crear un usuario premium de pago
   register(paymentUserData: any): Observable<any> {
-    return this.http.post(`${this.getApiUrl()}/premium/user`, paymentUserData).pipe(
+    return this.http.post(`${this.getApiUrl()}/oauth2/premium/user`, paymentUserData).pipe(
       catchError(err => throwError(err))
     );
   }
      
  // Obtener información de las suscripciones de un usuario
  getUserSubscriptions(username: string): Observable<any> {
-  return this.http.get(`${this.getApiUrl()}/premium/user/info/${username}`, {
+  return this.http.get(`${this.getApiUrl()}/oauth2/premium/user/info/${username}`, {
     headers: this.getAuthHeaders()
   }).pipe(
     catchError(err => {
@@ -45,7 +45,7 @@ export class PaymentUserService {
 }
 
 getUsersSubscriptions(id: string): Observable<any> {
-  return this.http.get(`${this.getApiUrl()}/premium/users/info/${id}`, {
+  return this.http.get(`${this.getApiUrl()}/oauth2/premium/users/info/${id}`, {
     headers: this.getAuthHeaders()
   }).pipe(
     catchError(err => {
@@ -61,7 +61,7 @@ getUsername(): string {
 
   // Obtener todos los usuarios premium de pago
   getPaymentUsers(): Observable<any[]> {
-    const url = `${this.getApiUrl()}/premium/users`;
+    const url = `${this.getApiUrl()}/oauth2/premium/users`;
     const headers = this.getAuthHeaders();
     return this.http.get<any[]>(url, { headers }).pipe(
       catchError(this.handleError)
@@ -70,7 +70,7 @@ getUsername(): string {
 
   // Obtener un usuario premium de pago por ID
   getPaymentUserById(id: string): Observable<any> {
-    const url = `${this.getApiUrl()}/premium/user/${id}`;
+    const url = `${this.getApiUrl()}/oauth2/premium/user/${id}`;
     const headers = this.getAuthHeaders();
     return this.http.get<any>(url, { headers }).pipe(
       catchError(this.handleError)
@@ -79,7 +79,7 @@ getUsername(): string {
 
   // Actualizar un usuario premium de pago
   updatePaymentUser(id: string, user: any): Observable<any> {
-    const url = `${this.getApiUrl()}/premium/user/${id}`;
+    const url = `${this.getApiUrl()}/oauth2/premium/user/${id}`;
     const headers = this.getAuthHeaders();
     return this.http.put<any>(url, user, { headers }).pipe(
       catchError(this.handleError)
@@ -88,7 +88,7 @@ getUsername(): string {
 
   // Eliminar un usuario premium de pago (soft delete)
   deletePaymentUser(id: string): Observable<any> {
-    const url = `${this.getApiUrl()}/premium/user/${id}/delete`;
+    const url = `${this.getApiUrl()}/oauth2/premium/user/${id}/delete`;
     const headers = this.getAuthHeaders();
     return this.http.patch<any>(url, null, { headers }).pipe(
       catchError(this.handleError)
@@ -97,7 +97,7 @@ getUsername(): string {
 
   // Restaurar un usuario premium de pago
   restorePaymentUser(id: string): Observable<any> {
-    const url = `${this.getApiUrl()}/premium/user/${id}/restore`;
+    const url = `${this.getApiUrl()}/oauth2/premium/user/${id}/restore`;
     const headers = this.getAuthHeaders();
     return this.http.patch<any>(url, null, { headers }).pipe(
       catchError(this.handleError)
