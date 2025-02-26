@@ -10,8 +10,8 @@ import {
   resetPasswordPaymentUser,
   restorePaymentUser,
   updatePaymentUser,
-} from "../controllers/userPayment.controllers.js";
-import { verifyToken } from "../Middleware/auth.js"; 
+} from "../controllers/userPayment.controller.js";
+import { verifyToken } from "../../../middleware/auth.js";
 
 const router = express.Router();
 

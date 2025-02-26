@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { connectDB } from "../config/db.js";
-import { Authority } from "../models/authorities.models.js";
+import { Authority } from "../modules/auth/models/authorities.models.js";
 
 dotenv.config();
 

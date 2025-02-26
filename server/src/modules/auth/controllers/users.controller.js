@@ -1,7 +1,7 @@
-import { User } from "../models/users.models.js";
-import { Authority } from "../models/authorities.models.js"; // Importar el modelo Authority
-import { History } from "../models/history.models.js";
-import {Email} from "../models/emails.models.js"
+import {User} from '../models/users.models.js';
+import {Authority} from '../models/authorities.models.js';
+import {History} from '../models/history.models.js';
+import {Email} from '../models/emails.models.js';
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import crypto from "crypto";

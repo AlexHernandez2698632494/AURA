@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {createAuthorityKey } from "../controllers/authoritiesKey.controllers.js";
+import {createAuthorityKey } from "../controllers/authoritiesKey.controller.js";
 
 
 const router= Router();

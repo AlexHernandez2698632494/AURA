@@ -6,8 +6,8 @@ import {
   deleteStateByLevel,
   permanentDeleteHistory,
   cleanSlateByLevel,
-} from "../controllers/history.controllers.js";
-import { verifyToken } from "../Middleware/auth.js";
+} from "../controllers/history.controller.js";
+import { verifyToken } from "../../../middleware/auth.js";
 
 const router = express.Router();
 
