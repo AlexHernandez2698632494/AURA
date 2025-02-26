@@ -96,7 +96,7 @@ export class PremiumSideComponent implements OnInit{
       }
   
       const baseUrl = this.getApiUrl(); 
-      const logoutEndpoint = `${baseUrl}/logout`;
+      const logoutEndpoint = `${baseUrl}/oauth2/logout`;
 
       this.http.post(logoutEndpoint, { username }).subscribe({
         next: () => {
