@@ -5,24 +5,36 @@ import yaml from "js-yaml";
 const MAPPING_YML_URL = "https://raw.githubusercontent.com/AlexHernandez2698632494/IoT/refs/heads/master/server/src/modules/config/ngsi.api.service.yml";
 
 export const createAlert = async (req, res) => {
-  try {
-      // Verificar que los campos necesarios están presentes en el cuerpo de la solicitud
-      const { variable, displayName, initialRange, finalRange, color, level } = req.body;
-      
-      if (!variable || !displayName || !initialRange || !finalRange || !color || !level) {
-          return res.status(400).json({
-              message: 'Faltan campos obligatorios: variable, displayName, initialRange, finalRange, color, level.'
-          });
-      }
+    const { variable, displayName, initialRange, finalRange, color, level } = req.body;
 
-      // Crear y guardar la nueva alerta
-      const alert = new Alert(req.body);
-      await alert.save();
+    try {
+        // 1. Usar la variable de entorno para obtener la URL
+        const mappingsUrl = process.env.MAPPINGS_URL;
 
-      res.status(201).json(alert);
-  } catch (error) {
-      res.status(400).json({ message: error.message });
-  }
+        // 2. Validar que el valor de 'variable' esté en el endpoint /v1/ngsi/alerts/mappings
+        const response = await axios.get(mappingsUrl);
+        const validVariables = response.data; // Suponiendo que la respuesta es un array de valores
+
+        if (!validVariables.includes(variable)) {
+            return res.status(400).json({ message: 'El valor de "variable" no es válido.' });
+        }
+
+        // 3. Si la variable es válida, crear la alerta
+        const alert = new Alert({
+            variable,
+            displayName,
+            initialRange,
+            finalRange,
+            color,
+            level
+        });
+
+        await alert.save();
+        res.status(201).json(alert);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Hubo un error al crear la alerta.' });
+    }
 };
 
 export const getAlerts = async (req, res) => {
@@ -58,16 +70,40 @@ export const getAlerts = async (req, res) => {
 
 export const updateAlert = async (req, res) => {
     const { id } = req.params;
+    const { variable, displayName, initialRange, finalRange, color, level } = req.body;
+
     try {
-        const alert = await Alert.findByIdAndUpdate(id, req.body , {new: true});
-        if(!alert){
-            return res.status(404).json({message: "Alert not found"});
+        // 1. Usar la variable de entorno para obtener la URL
+        const mappingsUrl = process.env.MAPPINGS_URL;
+
+        // 2. Validar que el valor de 'variable' esté en el endpoint /v1/ngsi/alerts/mappings
+        const response = await axios.get(mappingsUrl);
+        const validVariables = response.data; // Suponiendo que la respuesta es un array de valores
+
+        if (!validVariables.includes(variable)) {
+            return res.status(400).json({ message: 'El valor de "variable" no es válido.' });
         }
-        res.json(alert);
+
+        // 3. Si la variable es válida, actualizar la alerta
+        const alert = await Alert.findByIdAndUpdate(id, {
+            variable,
+            displayName,
+            initialRange,
+            finalRange,
+            color,
+            level
+        }, { new: true });
+
+        if (!alert) {
+            return res.status(404).json({ message: 'Alerta no encontrada' });
+        }
+
+        res.status(200).json(alert);
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        console.error(error);
+        res.status(500).json({ message: 'Hubo un error al actualizar la alerta.' });
     }
-}
+};
 
 export const deleteAlert = async (req, res) => {
     const { id } = req.params;
