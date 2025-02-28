@@ -41,8 +41,6 @@ export const getAlerts = async (req, res) => {
   const { page = 0, size = 10 } = req.query;
   try {
     const alerts = await Alert.find({ estadoEliminacion: 0 })
-      .skip(page * size)
-      .limit(Number(size));
     const totalElements = await Alert.countDocuments({ estadoEliminacion: 0 });
 
     res.json({
@@ -143,30 +141,6 @@ export const restoreAlert = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 }
-
-const gerSensorMapping = async () => {
-  try {
-    const response = await axios.get(MAPPING_YML_URL);
-    const ymlData = yaml.load(response.data); // Carga el archivo YAML
-    const mappings = ymlData.mappings;
-
-    // Transformar el formato para hacer más fácil el acceso
-    const sensorMapping = {};
-    for (const [label, data] of Object.entries(mappings)) {
-        // Eliminar los corchetes de las claves
-        const cleanLabel = label.replace(/[\[\]]/g, '').trim();
-        
-        data.alias.forEach(alias => {
-            sensorMapping[alias] = cleanLabel;
-        });
-    }
-
-    return sensorMapping;
-} catch (error) {
-    console.error("Error obteniendo el archivo YML:", error);
-    return {}; // Retorna un objeto vacío en caso de error
-}
-};
 
 export const getMapping = async (req, res) => {
   try {
