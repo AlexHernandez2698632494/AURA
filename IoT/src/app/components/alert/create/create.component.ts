@@ -28,7 +28,6 @@ import { NgxColorsModule } from 'ngx-colors';
     MatSelectModule,
     ReactiveFormsModule,
     CommonModule,
-    RouterOutlet,
     SideComponent,
     BottomTabComponent,
     MatButtonModule

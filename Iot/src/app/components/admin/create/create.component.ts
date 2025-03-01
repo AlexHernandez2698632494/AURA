@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener, Output, EventEmitter } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AdminService } from '../../../services/admin/admin.service';
 import { CommonModule } from '@angular/common';
@@ -27,8 +27,7 @@ import { BottomTabComponent } from '../../bottom-tab/bottom-tab.component';
     CommonModule,
     SideComponent,
     BottomTabComponent,
-    MatButtonModule,
-    RouterOutlet
+    MatButtonModule
   ],
   templateUrl: './create.component.html',
   styleUrls: ['./create.component.css']
