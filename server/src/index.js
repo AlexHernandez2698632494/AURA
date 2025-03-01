@@ -1,5 +1,4 @@
 import express from "express";
-import { connectDB } from "./config/db.js";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -20,7 +19,6 @@ app.use(authModule);
 app.use(orionRoutes);
 app.use(fiwareModule);
 
-connectDB();
 const PORT = process.env.PORT ;
 app.listen(PORT);
 console.log("Server is running on port " + PORT);

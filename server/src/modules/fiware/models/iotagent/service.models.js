@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-
+import { connectFiwareDB } from '../../../../config/db.js';
 
 const serviceSchema = new mongoose.Schema({
     apikey: {
@@ -25,4 +25,4 @@ const serviceSchema = new mongoose.Schema({
 }
 // ,{collection: 'group'}
 );
-    export default mongoose.model('Service', serviceSchema);
+    export default connectFiwareDB.model('Service', serviceSchema);

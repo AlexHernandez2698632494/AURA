@@ -1,9 +1,13 @@
 import mongoose from "mongoose";
+import { connectDB, connectFiwareDB } from "../../../config/db.js";
 
 export const checkConnection = async (req, res) => {
   try {
-    // Verifica el estado de la conexión de MongoDB
-    const state = mongoose.connection.readyState;
+    // Verifica el estado de la conexión de la base de datos de autenticación
+    const stateDB = connectDB.readyState;
+    // Verifica el estado de la conexión de la base de datos de Fiware
+    const stateFiwareDB = connectFiwareDB.readyState;
+
     // Estados posibles: 0 = desconectado, 1 = conectado, 2 = conectando, 3 = desconectando
     const status = {
       0: "Disconnected",
@@ -12,17 +16,21 @@ export const checkConnection = async (req, res) => {
       3: "Disconnecting",
     };
 
-    // Realiza un ping a la base de datos
-    await mongoose.connection.db.command({ ping: 1 });
+    // Realiza un ping a ambas bases de datos
+    await connectDB.db.command({ ping: 1 });
+    await connectFiwareDB.db.command({ ping: 1 });
 
+    // Responder con el estado de ambas bases de datos
     res.json({
-      status: status[state],
-      message: "MongoDB connection is healthy",
+      authDBStatus: status[stateDB],
+      fiwareDBStatus: status[stateFiwareDB],
+      message: "Both MongoDB connections are healthy",
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "MongoDB connection error", error: error.message });
+    res.status(500).json({
+      message: "MongoDB connection error",
+      error: error.message,
+    });
   }
 };
 

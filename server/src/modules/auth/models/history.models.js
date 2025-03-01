@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { connectDB } from '../../../config/db.js';
 
 const HistorySchema = new mongoose.Schema({
   username: { type: String, required: true },
@@ -8,4 +9,4 @@ const HistorySchema = new mongoose.Schema({
   nivel:{type: Number, min:0, max:5}
 });
 
-export const History = mongoose.model('History', HistorySchema);
+export const History = connectDB.model('History', HistorySchema);

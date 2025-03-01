@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { connectDB } from "../../../config/db.js";
 
 const UserSchema = new mongoose.Schema({
     nombre: { type: String, required: true },
@@ -10,4 +11,4 @@ const UserSchema = new mongoose.Schema({
     estadoEliminacion: { type: Number, default: 0, enum: [0, 1] }  // Agregado estadoEliminacion
     });
 
-export const User = mongoose.model("User", UserSchema);
+export const User = connectDB.model("User", UserSchema);

@@ -1,4 +1,5 @@
 import mongoose from "mongoose"
+import { connectDB } from "../../../config/db.js"
 
 const authoritiesSchema = new mongoose.Schema({
     name: { type: String, required: true},
@@ -6,4 +7,4 @@ const authoritiesSchema = new mongoose.Schema({
     estadoEliminacion: { type: Number, default: 0, enum: [0, 1] }  // Agregado estadoEliminacion
 })
 
-export const Authority = mongoose.model("authority",authoritiesSchema)
+export const Authority = connectDB.model("authority",authoritiesSchema)

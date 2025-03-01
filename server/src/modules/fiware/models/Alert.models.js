@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { connectDB } from "../../../config/db.js";
 
 const alertSchema = new mongoose.Schema({
     variable: {
@@ -32,6 +33,6 @@ const alertSchema = new mongoose.Schema({
     estadoEliminacion: {type:Number, default:0},
 }, { timestamps: true });
 
-const Alert = mongoose.model("Alert", alertSchema);
+const Alert = connectDB.model("Alert", alertSchema);
 
 export default Alert;

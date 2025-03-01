@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { connectDB } from "../../../config/db.js";
 
 // Esquema para la llave de registro
 const registrationKeySchema = new mongoose.Schema({
@@ -56,4 +57,4 @@ registrationKeySchema.pre("save", function (next) {
 });
 
 // Modelo
-export const RegistrationKey = mongoose.model("RegistrationKey", registrationKeySchema);
+export const RegistrationKey = connectDB.model("RegistrationKey", registrationKeySchema);

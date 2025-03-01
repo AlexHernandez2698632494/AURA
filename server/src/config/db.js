@@ -4,19 +4,21 @@ import dotenv from "dotenv";
 // Cargar las variables de entorno
 dotenv.config();
 
-export const connectDB = async () => {
-    try {
-        // Intentar conectar a la base de datos
-        await mongoose.connect(process.env.MONGO_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
-        
-        // Verificar que la conexión se haya realizado correctamente
-        console.log(`MongoDB Conectado: ${mongoose.connection.host}`);
-    } catch (error) {
-        // Manejar cualquier error de conexión
-        console.error(`Error al conectar a MongoDB: ${error.message}`);
-    }
-}
+export const connectDB = mongoose.createConnection(process.env.MONGO_URI);
+export const connectFiwareDB = mongoose.createConnection(process.env.MONGO_URI_IOT_DEVICE);
 
+// Conectar a la base de datos de autenticación
+connectDB.once("open", () => {
+  console.log("📌 Conectado a la base de datos de autenticacion");
+  console.log(`MongoDB Conectado: ${connectDB.host}`);  // Verificar la conexión de DB de autenticación
+});
+
+// Conectar a la base de datos de Fiware
+connectFiwareDB.once("open", () => {
+  console.log("🌍 Conectado a la base de datos de Fiware");
+  console.log(`Fiware DB Conectada: ${connectFiwareDB.host}`);  // Verificar la conexión de Fiware DB
+});
+
+// Manejo de errores
+connectDB.on("error", (err) => console.error("❌ Error en Usuarios DB:", err));
+connectFiwareDB.on("error", (err) => console.error("❌ Error en Fiware DB:", err));
