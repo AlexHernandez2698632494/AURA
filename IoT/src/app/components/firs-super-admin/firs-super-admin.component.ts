@@ -38,7 +38,7 @@ export class FirsSuperAdminComponent implements OnInit {
 
   // Método para obtener las autoridades del backend
   private getAuthorities(): void {
-    this.http.get<any[]>(`${this.getApiUrl()}/authorities`).subscribe(
+    this.http.get<any[]>(`${this.getApiUrl()}/oauth2/authorities`).subscribe(
       (response) => {
         this.availableAuthorities = response;
       },
@@ -69,7 +69,7 @@ export class FirsSuperAdminComponent implements OnInit {
       autoridadId: this.autoridadId,
     };
 
-    this.http.post(`${this.getApiUrl()}/register-superadmin`, newAdmin).subscribe(
+    this.http.post(`${this.getApiUrl()}/oauth2/register-superadmin`, newAdmin).subscribe(
       (response: any) => {
         // Mostrar un mensaje de éxito con SweetAlert2
         Swal.fire({
