@@ -1,3 +1,11 @@
+sensors:
+  #Esta propiedad hara referencia a JSON/MQTT y JSON/HTTP, para servicios agregar 'service' y para dispositivos 'devices'
+  url_json: https://localhost:4041/iot/
+  #Unicamente para dispositivos lorawan, ya que en este flujo no se crean servicios
+  url_lorawan: https://localhost:4041/iot/devices
+  url_orion: https://localhost:1026/v2/entities
+  #Para enviar la informacion acerca del sensor y poder replicar el dsipositivo en orion
+  
 mappings:
   "[Temperatura Aire]":
     alias:
