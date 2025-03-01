@@ -23,7 +23,7 @@ const router = express.Router();
 router.get("/users", verifyToken, getUsers);
 router.get("/users", verifyToken, getUsers); // Protege la ruta
 router.get("/users/delete", verifyToken, getDeleteUsers);
-router.get("/authorities", verifyToken, getAuthorities);
+router.get("/authorities", getAuthorities);
 //router.get("/user/:id",verifyToken,  getUserById); // Protege la ruta
 router.get("/user/:usuario", verifyToken, getUserById);
 router.post("/user", createUser); // Ruta pública
