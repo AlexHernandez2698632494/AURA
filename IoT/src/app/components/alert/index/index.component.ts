@@ -20,7 +20,6 @@ import { AlertService } from '../../../services/alert/alert.service'; // Importa
   selector: 'app-index-alert',
   standalone: true,
   imports: [
-    RouterOutlet,
     SideComponent,
     BottomTabComponent,
     FormsModule,
