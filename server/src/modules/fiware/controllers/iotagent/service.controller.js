@@ -1,65 +1,39 @@
-import axios from 'axios';
-import mongoose from 'mongoose';
 import Service from '../../models/iotagent/service.models.js';
+import dotenv from 'dotenv';
 
-const MAPPING_YML_URL = "https://raw.githubusercontent.com/AlexHernandez2698632494/IoT/refs/heads/master/server/src/modules/config/ngsi.api.service.yml";
+dotenv.config(); // Cargar variables de entorno
 
-//funcion para obtener la url del iotangente desde el yml
-const getIotAgentURL = async () => {
-    try {
-        const response = await fetch(MAPPING_YML_URL);
-        if (!response.ok) throw new Error("Error al obtener el archivo YML");
-        const text = await response.text();
-        const match = text.match(/url_json: \s*["']?(.*?)["']?/);
-        return match ? match[1] : null;
-    } catch (error) {
-        console.error("Error obteniendo el archivo YML:", error);
-        return {};
-    }
-};
-
+// Función para manejar la creación de servicios
 export const createService = async (req, res) => {
-    let mongoConnection = null;
     try {
-        const IOT_AGENT_URL = await getIotAgentURL();
-        if (!IOT_AGENT_URL) {
-            return res.status(500).json({ message: "Error al obtener la URL del IoT Agent" });
-        };
-        const { apikey, cbroker, entity_type, resource } = req.body;
-        const service = req.headers['fiware-service'] || 'default';
-        const subservice = req.headers['fiware-servicepath'] || '/';
-        if (!service || !subservice) {
-            return res.status(400).json({ message: "Debe enviar los headers 'fiware-service' y 'fiware-servicepath'" });
+        // Extraer los valores de los encabezados
+        const { 'fiware-service': service, 'fiware-servicepath': subservice } = req.headers;
+
+        // Extraer el cuerpo de la solicitud
+        const { services } = req.body;
+
+        // Validar que los datos necesarios estén presentes
+        if (!service || !subservice || !services || services.length === 0) {
+            return res.status(400).json({ message: 'Missing required data' });
         }
 
-        //datos al envias al IoT Agent
-        const requestData = { services: [{ apikey, cbroker, resource, entity_type }] };
-
-        //envio de datos al IoT Agent
-        const response = await axios.post(`${IOT_AGENT_URL}services`, requestData, {
-            headers: {
-                'Fiware-Service': service,
-                'Fiware-ServicePath': subservice
-            }
+        // Crear un nuevo objeto de servicio a partir de los datos
+        const serviceData = new Service({
+            apikey: services[0].apikey,
+            cbroker: services[0].cbroker,
+            entity_type: services[0].entity_type,
+            resource: services[0].resource,
+            service: service,
+            subservice: subservice,
         });
 
-        //abrir conexion a mongo
-        mongoConnection = await mongoose.connect(process.env.MONGO_URI_IoT_Device, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
+        // Guardar el servicio en la base de datos
+        await serviceData.save();
 
-        //guardar en mongo
-        const newService = new Service({ apikey, cbroker, entity_type, resource, service, subservice });
-        await newService.save();
-        return res.status(201).json({ message: 'servicio creado correctamente', data: response.data });
+        // Responder con éxito
+        res.status(201).json({ message: 'Service created successfully', data: serviceData });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error creating service', error: error.message });
     }
-    catch (error) {
-        console.error("Error al crear el servicio:", error);
-        res.status(500).json({ error: "Error al crear el servicio", details: error.message });
-    }
-    finally {
-        if (mongoConnection) await mongoose.connection.close();
-        console.log("Conexion a mongo cerrada");
-    }
-}
+};

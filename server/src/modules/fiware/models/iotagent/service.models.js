@@ -25,4 +25,4 @@ const serviceSchema = new mongoose.Schema({
 }
 // ,{collection: 'group'}
 );
-    export default connectFiwareDB.model('Service', serviceSchema);
+    export default connectFiwareDB.model('Group', serviceSchema);
