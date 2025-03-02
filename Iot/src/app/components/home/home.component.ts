@@ -1,7 +1,6 @@
 import { Component, AfterViewInit, OnDestroy } from '@angular/core';
 import { FiwareService } from '../../services/fiware/fiware.service';  // Asegúrate de tener la ruta correcta
 import { RouterOutlet } from '@angular/router';
-import { SideComponent } from '../side/side.component';
 import { NavComponent } from '../nav/nav.component';
 import * as L from 'leaflet';
 import { CommonModule } from '@angular/common';
@@ -9,7 +8,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, SideComponent, NavComponent,CommonModule],
+  imports: [RouterOutlet, NavComponent,CommonModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
@@ -23,6 +22,10 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   constructor(private fiwareService: FiwareService) {}
 
   ngAfterViewInit(): void {
+    // Agregar los elementos al sessionStorage al cargar la página
+    sessionStorage.setItem('fiware-service', 'sv');
+    sessionStorage.setItem('fiware-servicepath', '/#');
+
     this.initializeIcons();  // Inicializamos los iconos
     this.loadSubServices();  // Cargamos los subservicios
     this.initializeMap();  // Inicializamos el mapa

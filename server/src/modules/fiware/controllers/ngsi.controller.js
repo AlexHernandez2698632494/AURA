@@ -39,63 +39,73 @@ const getAlerts = async () => {
 };
 
 export const getEntitiesWithAlerts = async (req, res) => {
-    try {
-        const headers = {
-            'Fiware-Service': req.headers['fiware-service'] || 'default',
-            'Fiware-ServicePath': req.headers['fiware-servicepath'] || '/'
-        };
+  try {
+      // Verificar si los headers necesarios están presentes
+      if (!req.headers['fiware-service']) {
+          return res.status(400).json({
+              message: 'Faltan los headers requeridos: Fiware-Service.'
+          });
+      }else if (!req.headers['fiware-servicepath']) {
+          return res.status(400).json({ message: 'Faltan los headers requeridos: Fiware-ServicePath.' });
+      }
 
-        const params = {
-            type: req.query.type || undefined,
-            limit: req.query.limit || 100
-        };
+      const headers = {
+          'Fiware-Service': req.headers['fiware-service'] || 'sv',
+          'Fiware-ServicePath': req.headers['fiware-servicepath'] || '/'
+      };
 
-        const sensorMapping = await getSensorMapping();
-        const entities = await getEntities(headers, params);
-        const alerts = await getAlerts();
+      const params = {
+          type: req.query.type || undefined,
+          limit: req.query.limit || 100
+      };
 
-        const combinedData = entities.map(entity => {
-            const variables = entity.sensors?.value ? 
-                Object.entries(entity.sensors.value).map(([key, value]) => {
-                    const mappedData = sensorMapping[key] || { label: key, unit: '' };
-                    const alert = alerts.find(alert => alert.variable === mappedData.label && value >= alert.initialRange && value <= alert.finalRange);
-                    return {
-                        name: mappedData.label,
-                        value: `${value} ${mappedData.unit}`, // Combine value with its unit
-                        alert: alert ? {
-                            name: alert.displayName,
-                            color: alert.color,
-                            level: alert.level
-                        } : undefined
-                    };
-                }) : [];
+      const sensorMapping = await getSensorMapping();
+      const entities = await getEntities(headers, params);
+      const alerts = await getAlerts();
 
-            // Determine the highest level and corresponding color
-            const highestAlert = variables.reduce((max, variable) => {
-                if (variable.alert && (!max || variable.alert.level > max.level)) {
-                    return variable.alert;
-                }
-                return max;
-            }, null);
+      const combinedData = entities.map(entity => {
+          const variables = entity.sensors?.value ? 
+              Object.entries(entity.sensors.value).map(([key, value]) => {
+                  const mappedData = sensorMapping[key] || { label: key, unit: '' };
+                  const alert = alerts.find(alert => alert.variable === mappedData.label && value >= alert.initialRange && value <= alert.finalRange);
+                  return {
+                      name: mappedData.label,
+                      value: `${value} ${mappedData.unit}`, // Combine value with its unit
+                      alert: alert ? {
+                          name: alert.displayName,
+                          color: alert.color,
+                          level: alert.level
+                      } : undefined
+                  };
+              }) : [];
 
-            return {
-                id: entity.id,
-                type: entity.type,
-                location: entity.location,
-                externalUri: entity.externalUri,
-                color: highestAlert ? highestAlert.color : undefined,
-                level: highestAlert ? highestAlert.level : undefined,
-                variables,
-                timeInstant: entity.timeInstant
-            };
-        });
+          // Determinar el nivel más alto y el color correspondiente
+          const highestAlert = variables.reduce((max, variable) => {
+              if (variable.alert && (!max || variable.alert.level > max.level)) {
+                  return variable.alert;
+              }
+              return max;
+          }, null);
 
-        res.json(combinedData);
-    } catch (error) {
-        console.error("Error obteniendo datos combinados:", error);
-        res.status(500).json({ message: 'Error al obtener datos combinados.' });
-    }
+          return {
+              id: entity.id,
+              type: entity.type,
+              location: entity.location,
+              externalUri: entity.externalUri,
+              color: highestAlert ? highestAlert.color : undefined,
+              level: highestAlert ? highestAlert.level : undefined,
+              variables,
+              timeInstant: entity.timeInstant
+          };
+      });
+
+      res.json(combinedData);
+  } catch (error) {
+      console.error("Error obteniendo datos combinados:", error);
+      res.status(500).json({ message: 'Error al obtener datos combinados.' });
+  }
 };
+
 
 export const getSubService = async (req, res) => {
     try {
