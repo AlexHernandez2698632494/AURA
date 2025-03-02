@@ -1,5 +1,5 @@
 import { Component, AfterViewInit, OnDestroy } from '@angular/core';
-import { FiwareService } from '../../services/fiware/fiware.service';  // Asegúrate de tener la ruta correcta
+import { FiwareService } from '../../services/fiware/fiware.service';
 import { RouterOutlet } from '@angular/router';
 import { NavComponent } from '../nav/nav.component';
 import * as L from 'leaflet';
@@ -8,42 +8,38 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavComponent,CommonModule],
+  imports: [RouterOutlet, NavComponent, CommonModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements AfterViewInit, OnDestroy {
   title = 'Home';
-  subservices: any[] = [];  // Aquí guardamos los subservicios de la API
-  private map: L.Map | undefined;  // Mapa de Leaflet
-  private currentLocation: [number, number] = [13.7942, -88.8965]; // Ubicación predeterminada (lat, lng)
-  private currentZoom: number = 7;  // Zoom predeterminado
+  subservices: any[] = [];
+  private map: L.Map | undefined;
+  private currentLocation: [number, number] = [13.7942, -88.8965]; 
+  private currentZoom: number = 7;
 
   constructor(private fiwareService: FiwareService) {}
 
   ngAfterViewInit(): void {
-    // Agregar los elementos al sessionStorage al cargar la página
     sessionStorage.setItem('fiware-service', 'sv');
     sessionStorage.setItem('fiware-servicepath', '/#');
 
-    this.initializeIcons();  // Inicializamos los iconos
-    this.loadSubServices();  // Cargamos los subservicios
-    this.initializeMap();  // Inicializamos el mapa
+    this.initializeIcons();
+    this.loadSubServices();
+    this.initializeMap();
+    this.loadEntitiesWithAlerts();  // <-- Agrego la función aquí para obtener los datos
 
-    // Aseguramos que el tamaño del mapa se ajuste al cambiar el tamaño de la ventana
     window.addEventListener('resize', () => {
-      if (this.map) {  // Chequeo de seguridad para asegurarse de que 'this.map' no sea undefined
+      if (this.map) {
         this.map.invalidateSize();
       }
     });
   }
 
-  // Cargar los subservicios desde el servicio
   loadSubServices(): void {
-    // Recuperamos el valor de 'fiware-service' desde sessionStorage
     const fiwareService = sessionStorage.getItem('fiware-service');
   
-    // Verificamos si existe el valor en sessionStorage
     if (fiwareService) {
       this.fiwareService.getSubServices(fiwareService).subscribe(
         (data) => {
@@ -58,8 +54,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       console.error('fiware-service no encontrado en sessionStorage');
     }
   }
-  
-  // Inicializar los iconos de los marcadores
+
   private initializeIcons(): void {
     const iconRetinaUrl = 'assets/images/marker-icon-2x.png';
     const iconUrl = 'assets/images/marker-icon.png';
@@ -76,54 +71,88 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  // Inicializar el mapa de Leaflet
   private initializeMap(): void {
     if (!this.map) {
-      this.map = L.map('map', {
-        zoomControl: false, // Desactivamos el control de zoom
-      }).setView(this.currentLocation, this.currentZoom); // Inicializamos el mapa con el tipo correcto de coordenadas
+      this.map = L.map('map', { zoomControl: false })
+        .setView(this.currentLocation, this.currentZoom);
 
-      // Cargamos las capas del mapa
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; OpenStreetMap contributors'
       }).addTo(this.map);
 
-      // Forzamos la actualización del tamaño del mapa
       setTimeout(() => {
-        if (this.map) {  // Chequeo de seguridad aquí también
+        if (this.map) {
           this.map.invalidateSize();
         }
       }, 0);
     }
   }
 
-  // Cuando el usuario cambia de ubicación en el selector
   onLocationChange(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
     const selectedSubservice = selectElement.value;
   
-    // Buscamos el subservicio en el array de subservicios
     const subservice = this.subservices.find(service => service.subservice === selectedSubservice);
     
-    // Verificamos si el subservicio existe y tiene latitud y longitud válidas
     if (subservice && subservice.latitude != null && subservice.longitude != null) {
       const newLocation: [number, number] = [subservice.latitude, subservice.longitude];
-      const newZoom = 17;  // Puedes ajustar el zoom aquí
+      const newZoom = 17;
   
-      // Actualizamos la vista del mapa y agregamos un marcador
       if (this.map) {
-        this.map.setView(newLocation, newZoom);  // Aseguramos que se pase correctamente el LatLng
+        this.map.setView(newLocation, newZoom);
         L.marker(newLocation).addTo(this.map).openPopup();
       }
     } else {
-      // En caso de que no se haya encontrado o no haya latitud/longitud, muestra un mensaje de error
       console.error('Coordenadas no válidas para el subservicio:', selectedSubservice);
     }
   }
+
+  private loadEntitiesWithAlerts(): void {
+    const fiwareService = sessionStorage.getItem('fiware-service') || '';
+    const fiwareServicePath = sessionStorage.getItem('fiware-servicepath') || '';
   
+    this.fiwareService.getEntitiesWithAlerts(fiwareService, fiwareServicePath)
+      .subscribe((entities) => {
+        entities.forEach((entity: any) => {
+          if (entity.location && entity.location.value && entity.color) {
+            const [latitude, longitude] = entity.location.value.coordinates;
+            this.addColoredMarker(latitude, longitude, entity.color, entity.displayName, entity.variables);
+          }
+        });
+      }, (error) => console.error('Error al obtener entidades:', error));
+  }
+  
+  private addColoredMarker(lat: number, lng: number, color: string, name: string, variables: any[]): void {
+    if (!this.map) return;
+  
+    // Construir el contenido del popup con las variables
+    let popupContent = `<b>${name}</b><br>`;
+    if (variables && variables.length) {
+      popupContent += '<ul>';
+      variables.forEach(variable => {
+        popupContent += `<li>${variable.name}: ${variable.value}`;
+        if (variable.alert) {
+          popupContent += ` - <span style="color:${variable.alert.color}">(${variable.alert.name})</span>`;
+        }
+        popupContent += '</li>';
+      });
+      popupContent += '</ul>';
+    }
+  
+    const customIcon = L.divIcon({
+      className: 'custom-marker',
+      html: `<div style="width: 20px; height: 20px; background-color: ${color}; border-radius: 50%;"></div>`,
+      iconSize: [20, 20],
+    });
+  
+    L.marker([lat, lng], { icon: customIcon })
+      .addTo(this.map)
+      .bindPopup(popupContent);
+  }
+  
+
   ngOnDestroy(): void {
-    // Limpiar los event listeners
     window.removeEventListener('resize', () => {
       if (this.map) {
         this.map.invalidateSize();
