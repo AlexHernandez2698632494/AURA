@@ -18,6 +18,9 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   private map: L.Map | undefined;
   private currentLocation: [number, number] = [13.7942, -88.8965]; 
   private currentZoom: number = 7;
+  selectedEntity: any = null;
+  modalVisible: boolean = false;
+  modalPosition: { top: string; left: string } = { top: '0px', left: '0px' };
 
   constructor(private fiwareService: FiwareService) {}
 
@@ -28,7 +31,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     this.initializeIcons();
     this.loadSubServices();
     this.initializeMap();
-    this.loadEntitiesWithAlerts();  // <-- Agrego la función aquí para obtener los datos
+    this.loadEntitiesWithAlerts();
 
     window.addEventListener('resize', () => {
       if (this.map) {
@@ -117,17 +120,16 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
         entities.forEach((entity: any) => {
           if (entity.location && entity.location.value && entity.color) {
             const [latitude, longitude] = entity.location.value.coordinates;
-            this.addColoredMarker(latitude, longitude, entity.color, entity.displayName, entity.variables);
+            this.addColoredMarker(latitude, longitude, entity.color, entity.displayName, entity.type, entity.variables);
           }
         });
       }, (error) => console.error('Error al obtener entidades:', error));
   }
   
-  private addColoredMarker(lat: number, lng: number, color: string, name: string, variables: any[]): void {
+  private addColoredMarker(lat: number, lng: number, color: string, name: string, type: string, variables: any[]): void {
     if (!this.map) return;
   
-    // Construir el contenido del popup con las variables
-    let popupContent = `<b>${name}</b><br>`;
+    let popupContent = `<b>${type}</b><br>`;
     if (variables && variables.length) {
       popupContent += '<ul>';
       variables.forEach(variable => {
@@ -150,7 +152,6 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       .addTo(this.map)
       .bindPopup(popupContent);
   }
-  
 
   ngOnDestroy(): void {
     window.removeEventListener('resize', () => {
@@ -160,3 +161,4 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     });
   }
 }
+  
