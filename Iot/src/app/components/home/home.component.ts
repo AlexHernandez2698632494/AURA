@@ -40,17 +40,25 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
   // Cargar los subservicios desde el servicio
   loadSubServices(): void {
-    this.fiwareService.getSubServices().subscribe(
-      (data) => {
-        this.subservices = data;
-        console.log('Subservicios cargados:', this.subservices);
-      },
-      (error) => {
-        console.error('Error al cargar los subservicios:', error);
-      }
-    );
+    // Recuperamos el valor de 'fiware-service' desde sessionStorage
+    const fiwareService = sessionStorage.getItem('fiware-service');
+  
+    // Verificamos si existe el valor en sessionStorage
+    if (fiwareService) {
+      this.fiwareService.getSubServices(fiwareService).subscribe(
+        (data) => {
+          this.subservices = data;
+          console.log('Subservicios cargados:', this.subservices);
+        },
+        (error) => {
+          console.error('Error al cargar los subservicios:', error);
+        }
+      );
+    } else {
+      console.error('fiware-service no encontrado en sessionStorage');
+    }
   }
-
+  
   // Inicializar los iconos de los marcadores
   private initializeIcons(): void {
     const iconRetinaUrl = 'assets/images/marker-icon-2x.png';

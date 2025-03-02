@@ -4,7 +4,7 @@
   <div class="main-content">
     <!-- Selector de ubicación -->
     <select id="location" class="map-selector" (change)="onLocationChange($event)">
-      <option value="/#" selected>/#</option>  <!-- Ubicación predeterminada -->
+      <option value="/#" selected>/#</option>
       <option *ngFor="let subservice of subservices" [value]="subservice.subservice">
         {{ subservice.subservice }}
       </option>
