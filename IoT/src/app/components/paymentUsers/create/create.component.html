@@ -1,0 +1,69 @@
+<div *ngIf="isLargeScreen">
+    <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
+  </div>
+  <div *ngIf="!isLargeScreen">
+    <app-bottom-tab></app-bottom-tab>
+  </div>
+  
+  <div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
+    <div class="main-container">
+      <div class="header">
+        <h1 class="title">Registro de nuevo autoridad de paga</h1>
+      </div>
+  
+      <div class="form-container">
+        <h2 class="form-title">Registro de autoridad</h2>
+        <hr class="separator" />
+        <p class="form-description">Información general del usuario</p>
+        <p class="form-instruction">Ingrese la información que se solicita</p>
+  
+        <form [formGroup]="premiumForm">
+          <div class="row">
+            <div class="input-field">
+              <mat-form-field appearance="fill">
+                <mat-label>Nombre</mat-label>
+                <input matInput id="name" formControlName="name" type="text" placeholder="Ingrese nombre" />
+                <mat-icon matSuffix>type</mat-icon>
+                <!-- Mensaje de error para 'name' -->
+                <mat-error *ngIf="premiumForm.get('name')?.hasError('required')">Este campo es obligatorio</mat-error>
+              </mat-form-field>
+            </div>
+            <div class="input-field">
+              <mat-form-field appearance="fill">
+                <mat-label>Correo</mat-label>
+                <input matInput id="correo" formControlName="correo" type="text" placeholder="Ingrese correo" />
+                <mat-icon matSuffix>email</mat-icon>
+                <!-- Mensajes de error para 'correo' -->
+                <mat-error *ngIf="premiumForm.get('correo')?.hasError('required')">Este campo es obligatorio</mat-error>
+                <mat-error *ngIf="premiumForm.get('correo')?.hasError('email')">Correo no válido</mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field">
+              <mat-form-field appearance="fill">
+                <mat-label>Tipo de Plan</mat-label>
+                <mat-select formControlName="planType" (selectionChange)="onPlanTypeChange($event)">
+                  <mat-option value="gratis">Gratis</mat-option>
+                  <mat-option value="mes">Mes</mat-option>
+                  <mat-option value="año">Año</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="input-field">
+              <mat-form-field appearance="fill">
+                <mat-label>Duración del plan</mat-label>
+                <mat-select formControlName="duration" [disabled]="isDurationDisabled">
+                  <mat-option *ngFor="let duration of durationOptions" [value]="duration">{{ duration }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+          <button mat-raised-button color="primary" class="register-button" type="button" [disabled]="premiumForm.invalid" (click)="onSubmit()">
+            Registrar Autoridades
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  

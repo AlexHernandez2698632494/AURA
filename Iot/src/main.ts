@@ -42,6 +42,7 @@ import { FirsSuperAdminComponent } from './app/components/firs-super-admin/firs-
 import { SubscriptionsComponent } from './app/components/paymentUsers/subscriptions/subscriptions.component';
 import { SubscriptionsDetailsComponent } from './app/components/paymentUsers/details/details.component';
 import { OverviewComponent } from './app/components/paymentUsers/overview/overview.component';
+import { CreatePaymetUserComponent } from './app/components/paymentUsers/create/create.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
@@ -187,6 +188,13 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     data: { authorities: ['super_usuario'] },
   },
+  {
+    path: 'premium/user/create',
+    component: CreatePaymetUserComponent,
+    canActivate: [AuthGuard],
+    data: { authorities: ['super_administrador', 'dev'] },
+  },
+
   {
     path: 'users/cambiarContra',
     component: ChangePasswordComponent,

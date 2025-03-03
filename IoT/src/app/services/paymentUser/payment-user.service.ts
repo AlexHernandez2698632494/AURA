@@ -104,6 +104,14 @@ getUsername(): string {
     );
   }
 
+  createAuthorityKey(authorityData: any): Observable<any> {
+    return this.http.post(`${this.getApiUrl()}/oauth2/authoritiesKey`, authorityData, {
+      headers: this.getAuthHeaders()
+    }).pipe(
+      catchError(err => throwError(err))
+    );
+  }  
+
   // Manejar errores de HTTP
   private handleError(error: any): Observable<never> {
     console.error('Ocurrió un error:', error);
