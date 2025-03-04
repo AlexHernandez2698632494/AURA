@@ -25,20 +25,25 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   constructor(private fiwareService: FiwareService) {}
 
   ngAfterViewInit(): void {
-    sessionStorage.setItem('fiware-service', 'sv');
-    sessionStorage.setItem('fiware-servicepath', '/#');
-
+    // Verificamos si las claves ya existen en sessionStorage
+    if (!sessionStorage.getItem('fiware-service') && !sessionStorage.getItem('fiware-servicepath')) {
+      // Si no existen, las creamos con los valores correspondientes
+      sessionStorage.setItem('fiware-service', 'sv');
+      sessionStorage.setItem('fiware-servicepath', '/#');
+    }
+  
     this.initializeIcons();
     this.loadSubServices();
     this.initializeMap();
     this.loadEntitiesWithAlerts();
-
+  
     window.addEventListener('resize', () => {
       if (this.map) {
         this.map.invalidateSize();
       }
     });
   }
+  
 
   loadSubServices(): void {
     const fiwareService = sessionStorage.getItem('fiware-service');
@@ -79,11 +84,11 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       this.map = L.map('map', { zoomControl: false })
         .setView(this.currentLocation, this.currentZoom);
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; OpenStreetMap contributors'
-      }).addTo(this.map);
-
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '&copy; <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSpOxpG4Hy_wDmvTHwle-asB2c1SvEsJv84g&s" alt="IIIE" Width="30px"> <a href="" style="font-size:30px;">IIIE</a> <hr>Instituto de Investigación e Innovación en Electronica'
+        }).addTo(this.map);
+        
       setTimeout(() => {
         if (this.map) {
           this.map.invalidateSize();
