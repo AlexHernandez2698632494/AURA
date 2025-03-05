@@ -16,10 +16,13 @@
       <p class="sub-title">Number of subscriptions <strong>{{ subscriptionsCount }}</strong></p>
       <ul class="subscriptions-list">
         <li *ngFor="let subscription of subscriptionsList">
-          {{ subscription }}
-          <span class="status success">✅</span>
+          {{ subscription.name }}
+          <span class="status" [ngClass]="subscription.isExpired ? 'expired' : 'success'">
+            {{ subscription.isExpired ? '❌' : '✅' }}
+          </span>
         </li>
       </ul>
+      
       <a href="/subscriptions" class="link">All subscriptions</a>
     </div>
 

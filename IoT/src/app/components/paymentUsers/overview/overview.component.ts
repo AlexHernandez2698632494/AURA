@@ -18,7 +18,7 @@ export class OverviewComponent implements OnInit {
   isSidebarCollapsed = true;
   
   subscriptionsCount: number = 0;
-  subscriptionsList: string[] = [];
+  subscriptionsList: { name: string; isExpired: boolean }[] = []; // Definir correctamente el array
   usersCount: number = 0;
 
   constructor(private paymentUserService: PaymentUserService) {}
@@ -37,17 +37,20 @@ export class OverviewComponent implements OnInit {
   }
 
   private loadUserSubscriptions(): void {
-    const username = sessionStorage.getItem('usuario'); // Se obtiene el username correcto
+    const username = sessionStorage.getItem('usuario');
     if (!username) {
       console.error('No username found in sessionStorage');
       return;
     }
-
+  
     this.paymentUserService.getUserSubscriptions(username).subscribe(
       (response) => {
-        if (response.registrationKeys) {
+        if (response.registrationKeys && Array.isArray(response.registrationKeys)) {
           this.subscriptionsCount = response.registrationKeys.length;
-          this.subscriptionsList = response.registrationKeys.map(() => 'Gestión de dispositivos IoT');
+          this.subscriptionsList = response.registrationKeys.map((sub: any) => ({
+            name: 'Gestión de dispositivos IoT', // Mantiene el mismo nombre para todas
+            isExpired: sub.isExpired // Valor real desde la API
+          }));
         }
         if (response.registrationKeys.length > 0) {
           this.usersCount = response.registrationKeys[0].userCount || 0;
@@ -58,4 +61,4 @@ export class OverviewComponent implements OnInit {
       }
     );
   }
-}
+    }
