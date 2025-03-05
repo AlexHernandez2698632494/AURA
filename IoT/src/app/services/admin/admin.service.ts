@@ -96,7 +96,7 @@ export class AdminService {
 
   changePassword(data: { contrasenaActual: string; nuevaContrasena: string }): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.post(`${this.getApiUrl()}/change-password`, data, { headers }).pipe(
+    return this.http.post(`${this.getApiUrl()}/oauth2/change-password`, data, { headers }).pipe(
       catchError(err => throwError(err))
     );
   }
