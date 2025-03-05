@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterOutlet, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { NavComponent } from '../nav/nav.component';
 import { FormsModule } from '@angular/forms'; 
 import { HttpClientModule } from '@angular/common/http'; 
@@ -11,7 +11,7 @@ import { PaymentUserService } from '../../services/paymentUser/payment-user.serv
 @Component({
   selector: 'app-register',
   standalone: true, 
-  imports: [RouterOutlet, NavComponent, FormsModule, HttpClientModule, CommonModule, MatIconModule],
+  imports: [NavComponent, FormsModule, HttpClientModule, CommonModule, MatIconModule],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })

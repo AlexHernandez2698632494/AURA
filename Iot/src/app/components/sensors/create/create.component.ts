@@ -1,5 +1,4 @@
 import { Component, OnInit, HostListener, Output, EventEmitter } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
 import { SideComponent } from '../../side/side.component';
 import { BottomTabComponent } from '../../bottom-tab/bottom-tab.component';
 import { Router } from '@angular/router';
@@ -30,7 +29,6 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
     MatCheckboxModule,
     ReactiveFormsModule,
     CommonModule,
-    RouterOutlet,
     SideComponent,
     BottomTabComponent,
     MatButtonModule

@@ -3,11 +3,11 @@ import { CommonModule } from '@angular/common';
 import { PaymentUserService } from '../../../services/paymentUser/payment-user.service';
 import { PremiumSideComponent } from '../side/side.component';
 import { BottomTabComponent } from '../../bottom-tab/bottom-tab.component';
-import { Router, RouterOutlet,RouterModule } from '@angular/router'; 
+import { Router, RouterModule } from '@angular/router'; 
 @Component({
   selector: 'app-subscriptions',
   standalone: true,
-  imports: [CommonModule, PremiumSideComponent, BottomTabComponent, RouterOutlet,RouterModule],
+  imports: [CommonModule, PremiumSideComponent, BottomTabComponent, RouterModule],
   templateUrl: './subscriptions.component.html',
   styleUrls: ['./subscriptions.component.css']
 })

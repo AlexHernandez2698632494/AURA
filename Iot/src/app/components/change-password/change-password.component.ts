@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener, Output, EventEmitter } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router } from '@angular/router';
 import { SideComponent } from '../side/side.component';
 import { BottomTabComponent } from '../bottom-tab/bottom-tab.component';
 import { FormsModule } from '@angular/forms';
@@ -10,7 +10,7 @@ import { AdminService } from '../../services/admin/admin.service';
 @Component({
   selector: 'app-change-password',
   standalone: true,
-  imports: [RouterOutlet,
+  imports: [
      SideComponent,
       BottomTabComponent, 
       FormsModule, 

@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
 import { NavComponent } from '../nav/nav.component';
 import { FormsModule } from '@angular/forms'; // Para manejar ngModel
 import { HttpClientModule } from '@angular/common/http'; // Para solicitudes HTTP
@@ -12,7 +11,7 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-login',
   standalone: true, // Componente standalone
-  imports: [RouterOutlet, NavComponent, FormsModule, HttpClientModule, CommonModule], // Agregar CommonModule
+  imports: [ NavComponent, FormsModule, HttpClientModule, CommonModule], // Agregar CommonModule
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'], // styleUrls en plural
 })

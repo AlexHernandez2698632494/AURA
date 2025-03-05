@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener, Output, EventEmitter } from '@angular/core';
-import { RouterOutlet, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -20,7 +20,6 @@ import { BottomTabComponent } from '../../bottom-tab/bottom-tab.component';
   imports: [
     CommonModule,
     FormsModule,
-    RouterOutlet,
     SideComponent,
     BottomTabComponent,
     MatTableModule,

@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import Swal from 'sweetalert2'; // Importar SweetAlert2
 import { ApiConfigService } from '../../services/ApiConfig/api-config.service';
-import { RouterOutlet } from '@angular/router';
 import { NavComponent } from '../nav/nav.component';
 import { FormsModule } from '@angular/forms'; // Para manejar ngModel
 import { HttpClientModule } from '@angular/common/http'; // Para solicitudes HTTP
@@ -12,7 +11,7 @@ import { CommonModule } from '@angular/common'; // Importar CommonModule para *n
 @Component({
   selector: 'app-register-first-admin',
   standalone: true, // Componente standalone
-  imports: [RouterOutlet, NavComponent, FormsModule, HttpClientModule, CommonModule], // Agregar CommonModule
+  imports: [ NavComponent, FormsModule, HttpClientModule, CommonModule], // Agregar CommonModule
   templateUrl: './firs-super-admin.component.html',
   styleUrls: ['./firs-super-admin.component.css'],
 })

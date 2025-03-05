@@ -213,6 +213,7 @@ export class SideComponent implements OnInit {
     if (item.submenu) {
       if (this.isCollapsed) {
         this.isCollapsed = false;
+        this.sideNavToggle.emit(this.isCollapsed);
       }
 
       this.menuItemsTop.forEach(menuItem => {

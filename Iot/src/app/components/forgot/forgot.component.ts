@@ -1,5 +1,4 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
 import { NavComponent } from '../nav/nav.component';
 import { AdminService } from '../../services/admin/admin.service';
 import { Router } from '@angular/router';
@@ -7,7 +6,7 @@ import { FormsModule } from '@angular/forms';  // Importar FormsModule
 
 @Component({
   selector: 'app-forgot',
-  imports: [RouterOutlet, NavComponent,FormsModule],
+  imports: [ NavComponent,FormsModule],
   templateUrl: './forgot.component.html',
   styleUrls: ['./forgot.component.css']
 })

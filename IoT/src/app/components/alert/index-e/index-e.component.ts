@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener, Output, EventEmitter } from '@angular/core';
-import { RouterOutlet, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { SideComponent } from '../../side/side.component';
 import { BottomTabComponent } from '../../bottom-tab/bottom-tab.component';
 import { CommonModule } from '@angular/common';
@@ -14,7 +14,7 @@ import Swal from 'sweetalert2';  // Importar SweetAlert2
 
 @Component({
   selector: 'app-index-e',
-  imports: [RouterOutlet,
+  imports: [
     SideComponent,
     BottomTabComponent,
     FormsModule,
