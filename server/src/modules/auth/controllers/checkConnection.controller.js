@@ -16,19 +16,40 @@ export const checkConnection = async (req, res) => {
       3: "Disconnecting",
     };
 
-    // Realiza un ping a ambas bases de datos
-    await connectDB.db.command({ ping: 1 });
-    await connectFiwareDB.db.command({ ping: 1 });
+    let authDBStatus = status[stateDB];
+    let fiwareDBStatus = status[stateFiwareDB];
 
-    // Responder con el estado de ambas bases de datos
+    let activeConnections = [];
+    let message = "No MongoDB connections are active";
+
+    try {
+      await connectDB.db.command({ ping: 1 });
+      activeConnections.push("Authentication DB");
+    } catch (error) {
+      authDBStatus = "Disconnected";
+    }
+
+    try {
+      await connectFiwareDB.db.command({ ping: 1 });
+      activeConnections.push("Fiware DB");
+    } catch (error) {
+      fiwareDBStatus = "Disconnected";
+    }
+
+    if (activeConnections.length === 2) {
+      message = "Both MongoDB connections are healthy";
+    } else if (activeConnections.length === 1) {
+      message = `Only ${activeConnections[0]} is active`;
+    }
+
     res.json({
-      authDBStatus: status[stateDB],
-      fiwareDBStatus: status[stateFiwareDB],
-      message: "Both MongoDB connections are healthy",
+      authDBStatus,
+      fiwareDBStatus,
+      message,
     });
   } catch (error) {
     res.status(500).json({
-      message: "MongoDB connection error",
+      message: "Error checking MongoDB connections",
       error: error.message,
     });
   }
