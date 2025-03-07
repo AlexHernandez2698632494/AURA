@@ -21,7 +21,7 @@
 .header {
   border: 1px solid #ddd;
   border-radius: 8px;
-  background-color: #fff;
+  background-color: var(--background-color);
   border-radius: 8px;
   padding: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -32,12 +32,12 @@
 .header h2 {
   font-size: 22px;
   font-weight: bold;
-  color: #333;
+  color: var(--text-color);
   margin: 0;
 }
 
 .sub-header {
-  background-color: #fff;
+  background-color: var(--background-color);
   border: 1px solid #ddd;
   border-radius: 8px;
   text-align: center;
@@ -48,12 +48,12 @@
 .sub-header h3 {
   font-size: 18px;
   font-weight: 500;
-  color: #333;
+  color: var(--text-color);
 }
 
 hr {
   width: 100%;
-  border: 1px solid #003366;
+  border: 1px solid var(--hr-border-color);
   margin-top: 10px;
   margin-bottom: 20px;
 }

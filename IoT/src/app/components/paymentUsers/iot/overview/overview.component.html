@@ -1,0 +1,37 @@
+<div *ngIf="isLargeScreen">
+    <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
+  </div>
+  <div *ngIf="!isLargeScreen">
+    <app-bottom-tab></app-bottom-tab>
+  </div>
+  <div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
+    <div class="overview-container">
+        <div class="card">
+            <img src="" alt="Alertas">
+            <h3>Alertas</h3>
+            <p class="sub-title">Número de alertas <strong></strong></p>
+            <a href="#" class="btn">Ver todas las alertas</a>
+        </div>
+        <div class="card">
+            <img src="" alt="servicios">
+            <h3>Servicios</h3>
+            <p class="sub-title">Número de servicios <strong></strong></p>
+            <a href="#" class="btn">Ver todos los servicios</a>
+        </div>
+    </div>
+    <div class="overview-container">
+        <div class="card">
+            <img src="" alt="suscripciones">
+            <h3>Suscripciones</h3>
+            <p class="sub-title">Número de suscripciones<strong></strong></p>
+            <a href="#" class="btn">Ver todas las suscripciones</a>
+        </div>
+        <div class="card">
+            <img src="" alt="servicios">
+            <h3>Dispositivos IoT</h3>
+            <p class="sub-title">Número de dispositivos IoT<strong></strong></p>
+            <a href="#" class="btn">Ver todos los dispositivos IoT</a>
+        </div>
+        
+    </div>
+</div>

@@ -43,6 +43,8 @@ import { SubscriptionsComponent } from './app/components/paymentUsers/subscripti
 import { SubscriptionsDetailsComponent } from './app/components/paymentUsers/details/details.component';
 import { OverviewComponent } from './app/components/paymentUsers/overview/overview.component';
 import { CreatePaymetUserComponent } from './app/components/paymentUsers/create/create.component';
+import { OverviewIoTComponent } from './app/components/paymentUsers/iot/overview/overview.component';
+import { PremiumUsersComponent } from './app/components/paymentUsers/users/users.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
@@ -193,6 +195,19 @@ const routes: Routes = [
     component: CreatePaymetUserComponent,
     canActivate: [AuthGuard],
     data: { authorities: ['super_administrador', 'dev'] },
+  },
+
+  {
+    path: 'premium/iot/overview',
+    component: OverviewIoTComponent,
+    canActivate: [AuthGuard],
+    data: { authorities: ['super_usuario'] },
+  },
+  {
+    path: 'premium/users',
+    component: PremiumUsersComponent,
+    canActivate: [AuthGuard],
+    data: { authorities: ['super_usuario'] },
   },
 
   {

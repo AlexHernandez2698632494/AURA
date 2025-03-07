@@ -2,7 +2,7 @@ import { Component, OnInit, HostListener, Output, EventEmitter } from '@angular/
 import { PaymentUserService } from '../../../services/paymentUser/payment-user.service';
 import { PremiumSideComponent } from '../side/side.component';
 import { BottomTabComponent } from '../../bottom-tab/bottom-tab.component';
-import { RouterOutlet, Router } from '@angular/router';
+import {  Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -28,7 +28,6 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
     PremiumSideComponent,
     BottomTabComponent,
     MatButtonModule,
-    RouterOutlet
   ],
   templateUrl: './create.component.html',
   styleUrls: ['./create.component.css']

@@ -26,7 +26,7 @@ export class PremiumSideComponent implements OnInit{
     { icon: 'space_dashboard', label: 'Overview', route: '/overview'}, 
     {icon:'switch_account', label:'Usuarios',route:'/premium/users'}, 
     { icon: 'subscriptions', label: 'Suscripción', route: '/subscriptions'}, 
-    { icon: 'hub', label: 'IoT', route: '/iot'}, 
+    { icon: 'hub', label: 'IoT', route: '/premium/iot/overview'}, 
     { icon: 'lock', label: 'Cambiar Contraseña', route: '/users/cambiarContra'}
   ];
 

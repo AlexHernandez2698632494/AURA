@@ -3,12 +3,11 @@ import { CommonModule } from '@angular/common';
 import { PaymentUserService } from '../../../services/paymentUser/payment-user.service';
 import { PremiumSideComponent } from '../side/side.component';
 import { BottomTabComponent } from '../../bottom-tab/bottom-tab.component';
-import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-overview',
   standalone: true,
-  imports: [CommonModule, PremiumSideComponent, BottomTabComponent, RouterOutlet],
+  imports: [CommonModule, PremiumSideComponent, BottomTabComponent],
   templateUrl: './overview.component.html',
   styleUrl: './overview.component.css'
 })
