@@ -1,107 +1,110 @@
 /* Contenedor Principal */
 .overview-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-  }
+  width: 100%;
+  display: grid;
+  grid-template-columns: 25% 25%;
+  grid-template-rows: 50% 50%;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 5px 70px;
+}
 
-  .center {
-    margin-left: 5%;
-    justify-content: center;
-    min-height: 97vh;
-    transition: margin-left 0.3s ease;  
-  }
-  
-  .shifted {
-    margin-left: 14%; 
-    transition: margin-left 0.3s ease; 
-  }
+.center {
+  margin-left: 5%;
+  justify-content: center;
+  min-height: 97vh;
+  transition: margin-left 0.3s ease;
+}
 
-  /* Tarjetas */
-  .card {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  /* Encabezado de la tarjeta */
-  .card-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .card-header img {
-    width: 40px;
-    height: 40px;
-  }
-  
-  /* Subtítulo */
-  .sub-title {
-    font-size: 14px;
-    color: #555;
-  }
-  
-  /* Listado de suscripciones */
-  .subscriptions-list {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .subscriptions-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  /* Estado de los ítems */
-  .status.warning {
-    color: orange;
-  }
-  
-  .status.success {
-    color: green;
-  }
-  
-  .status.error {
-    color: red;
-    font-weight: bold;
-  }
-  
-  /* Botón */
-  .btn {
-    background: #003366;
-    color: #fff;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    text-align: center;
-  }
-  
-  /* Contenedor de issues */
-  .issue-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  /* Enlaces */
-  .link {
-    color: #003366;
-    text-decoration: none;
-    font-size: 14px;
-  }
-  
-  /* Tarjeta de historial */
-  .history-card {
-    width: 50%;
-    text-align: left;
-  }
-  
+.shifted {
+  margin-left: 14%;
+  transition: margin-left 0.3s ease;
+}
+
+/* Tarjetas */
+.card {
+  background: #fff;
+  margin: 5%;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Encabezado de la tarjeta */
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-header img {
+  width: 40px;
+  height: 40px;
+}
+
+/* Subtítulo */
+.sub-title {
+  font-size: 14px;
+  color: #555;
+}
+
+/* Listado de suscripciones */
+.subscriptions-list {
+  list-style: none;
+  padding: 0;
+}
+
+.subscriptions-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Estado de los ítems */
+.status.warning {
+  color: orange;
+}
+
+.status.success {
+  color: green;
+}
+
+.status.error {
+  color: red;
+  font-weight: bold;
+}
+
+/* Botón */
+.btn {
+  background: #003366;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* Contenedor de issues */
+.issue-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Enlaces */
+.link {
+  color: #003366;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+/* Tarjeta de historial */
+.history-card {
+  width: 50%;
+  text-align: left;
+}
