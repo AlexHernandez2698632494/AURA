@@ -1,39 +1,49 @@
-import Service from '../../models/iotagent/service.models.js';
-import dotenv from 'dotenv';
+import axios from "axios";
+import yaml from "js-yaml";
+import feth from "node-fetch"
 
-dotenv.config(); // Cargar variables de entorno
+const CONFIG_URL = "https://raw.githubusercontent.com/AlexHernandez2698632494/IoT/refs/heads/master/server/src/modules/config/ngsi.api.service.yml";
 
-// Función para manejar la creación de servicios
-export const createService = async (req, res) => {
+// Función para obtener la URL del servicio de la configuración
+async function getConfig() {
+    const response = await fetch(CONFIG_URL);
+    const text = await response.text();
+    const config = yaml.load(text);
+    return config.sensors.url_json;
+}
+
+  export const registerService = async(req, res) => {
     try {
-        // Extraer los valores de los encabezados
-        const { 'fiware-service': service, 'fiware-servicepath': subservice } = req.headers;
+        const { 'fiware-service': fiware_service, 'fiware-servicepath': fiware_servicepath } = req.headers;
+        const body = req.body;
 
-        // Extraer el cuerpo de la solicitud
-        const { services } = req.body;
-
-        // Validar que los datos necesarios estén presentes
-        if (!service || !subservice || !services || services.length === 0) {
-            return res.status(400).json({ message: 'Missing required data' });
+        // Verificar que los headers requeridos estén presentes
+        if (!fiware_service || !fiware_servicepath) {
+            return res.status(400).json({ error: 'Headers fiware-service y fiware-servicepath son requeridos' });
         }
 
-        // Crear un nuevo objeto de servicio a partir de los datos
-        const serviceData = new Service({
-            apikey: services[0].apikey,
-            cbroker: services[0].cbroker,
-            entity_type: services[0].entity_type,
-            resource: services[0].resource,
-            service: service,
-            subservice: subservice,
+        // Obtener la URL desde la configuración (debería ser HTTP en este caso)
+        const url_json = await getConfig();
+
+        // Cambiar la URL de HTTPS a HTTP, si la API en localhost está usando HTTP
+        const apiUrl = url_json.replace("https://", "http://");
+
+        // Hacer la solicitud POST al servidor de servicios
+        const response = await axios.post(`${apiUrl}services`, body, {
+            headers: {
+                'Content-Type': 'application/json',
+                'fiware-service': fiware_service,
+                'fiware-servicepath': fiware_servicepath
+            }
         });
 
-        // Guardar el servicio en la base de datos
-        await serviceData.save();
-
-        // Responder con éxito
-        res.status(201).json({ message: 'Service created successfully', data: serviceData });
+        // Responder con el resultado
+        res.status(response.status).json(response.data);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error creating service', error: error.message });
+        console.error('Error al crear el servicio:', error.message);
+        res.status(error.response?.status || 500).json({
+            error: 'Error al comunicarse con el Agente IoT',
+            details: error.response?.data || error.message
+        });
     }
-};
+}    

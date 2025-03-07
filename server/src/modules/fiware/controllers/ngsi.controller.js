@@ -109,7 +109,7 @@ export const getEntitiesWithAlerts = async (req, res) => {
 
 export const getSubService = async (req, res) => {
     try {
-      const service = req.headers['fiware-service'] || 'sv';
+      const service = req.headers['fiware-service'];
   
       if (!service) {
         return res.status(400).json({ error: "El header fiware-service es requerido" });
