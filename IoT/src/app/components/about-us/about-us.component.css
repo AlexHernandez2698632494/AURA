@@ -15,10 +15,8 @@
     box-sizing: border-box;
 }
 
-
-
 .sub-header {
-    background-color: #fff;
+    background-color: var(--background-color);
     border: 1px solid #ddd;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     border-radius: 8px;
@@ -34,7 +32,7 @@
 
 hr{
     width: 100%;
-    border: 1px solid #003366;
+    border: 1px solid var(--hr-border-color);
     margin-top: 10px;
     margin-bottom: 20px;
 }
