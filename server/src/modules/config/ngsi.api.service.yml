@@ -5,6 +5,7 @@ sensors:
   url_lorawan: https://localhost:4041/iot/devices
   url_orion: https://localhost:1026/v2/entities
   #Para enviar la informacion acerca del sensor y poder replicar el dsipositivo en orion
+  url_mqtt: https://localhost:7896/iot/json
   
 mappings:
   "[Temperatura Aire]":
