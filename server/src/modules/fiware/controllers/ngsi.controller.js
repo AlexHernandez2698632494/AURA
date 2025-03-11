@@ -3,8 +3,17 @@ import yaml from 'js-yaml';
 import Alert from "../models/Alert.models.js";
 import Device from "../models/iotagent/devices.models.js";
 
-const ORION_BASE_URL = "https://orion.sima.udb.edu.sv/v2/";
 const MAPPING_YML_URL = "https://raw.githubusercontent.com/AlexHernandez2698632494/IoT/refs/heads/master/server/src/modules/config/ngsi.api.service.yml";
+const getConf = await getConfig()
+const ORION_BASE_URL = getConf.url_orion
+// const ORION_BASE_URL = "https://localhost:1026/v2/";
+
+async function getConfig() {
+    const response = await fetch(MAPPING_YML_URL);
+    const text = await response.text();
+    const config = yaml.load(text);
+    return config.sensors;
+}
 
 const getSensorMapping = async () => {
     try {
@@ -195,3 +204,37 @@ export const getSubService = async (req, res) => {
 //     });
 //   }
 // };
+
+export const sendDataToAgent = async (req, res) => {
+  try {
+    // Extrayendo los parámetros, headers y body de la solicitud
+    const { k, i } = req.query; // Parámetros k e i
+    const { fiware_service, fiware_servicepath } = req.headers; // Headers fiware-service y fiware-servicepath
+    const body = req.body; // Body de la solicitud
+
+    // URL del agente (puerto 7896)
+    const url_json = getConf.url_mqtt;
+    const apiUrl = url_json.replace("https://", "http://"); // Aseguramos que use http
+
+    // Enviamos la solicitud al agente en el puerto 7896
+    const response = await axios.post(`${apiUrl}`, body, {
+      headers: {
+        'fiware-service': fiware_service,
+        'fiware-servicepath': fiware_servicepath,
+      },
+      params: {
+        k, // Parámetro k
+        i, // Parámetro i
+      },
+    });
+
+    // Devolvemos la respuesta del agente
+    return res.status(200).json({
+      message: 'Datos enviados al agente correctamente',
+      response: response.data,
+    });
+  } catch (error) {
+    console.error('Error al enviar datos al agente:', error);
+    return res.status(500).json({ message: 'Error interno del servidor' });
+  }
+};
