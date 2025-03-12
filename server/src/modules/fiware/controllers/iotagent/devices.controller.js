@@ -89,7 +89,7 @@ export const deleteDevice = async(req, res) => {
         if (!fiware_service || !fiware_servicepath) {
             return res.status(400).json({ error: 'Headers fiware-service y fiware-servicepath son requeridos' });
         }
-console.log(deviceId)
+
         // Verificar que el ID del dispositivo esté presente
         if (!deviceId) {
             return res.status(400).json({ error: 'ID del dispositivo es requerido' });
