@@ -4,16 +4,23 @@ import Alert from "../models/Alert.models.js";
 import Device from "../models/iotagent/devices.models.js";
 
 const MAPPING_YML_URL = "https://raw.githubusercontent.com/AlexHernandez2698632494/IoT/refs/heads/master/server/src/modules/config/ngsi.api.service.yml";
-const getConf = await getConfig()
-const ORION_BASE_URL = getConf.url_orion
-// const ORION_BASE_URL = "https://localhost:1026/v2/";
 
+// Función para obtener la URL del servicio de la configuración
 async function getConfig() {
     const response = await fetch(MAPPING_YML_URL);
     const text = await response.text();
     const config = yaml.load(text);
-    return config.sensors;
+    return config.sensors; // Devuelve la configuración de los sensores, que incluye la URL de Orion
 }
+
+// Aquí es donde obtienes la configuración
+const config = await getConfig();
+
+// Ahora puedes usar config.url_orion
+const url_orion = config.url_orion;
+
+// Cambia https:// a http:// para la URL base de Orion
+const ORION_BASE_URL = url_orion.replace("https://", "http://");
 
 const getSensorMapping = async () => {
     try {
@@ -59,8 +66,8 @@ export const getEntitiesWithAlerts = async (req, res) => {
       }
 
       const headers = {
-          'Fiware-Service': req.headers['fiware-service'] || 'sv',
-          'Fiware-ServicePath': req.headers['fiware-servicepath'] || '/'
+          'Fiware-Service': req.headers['fiware-service'] ,
+          'Fiware-ServicePath': req.headers['fiware-servicepath'] 
       };
 
       const params = {
