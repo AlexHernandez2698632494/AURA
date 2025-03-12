@@ -1,73 +1,95 @@
-version: '3.9'
 services:
-  mongodb:
+  mongo-auth:
     image: mongo:latest
-    container_name: mongodb
+    container_name: mongo-auth
     ports:
       - "27018:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: aii
-      MONGO_INITDB_ROOT_PASSWORD: aii
+      MONGO_INITDB_ROOT_USERNAME: aai
+      MONGO_INITDB_ROOT_PASSWORD: aai
     volumes:
       - mongodb_data:/data/db
       - mongodb_config:/data/configdb
     networks:
       - default
 
- 
+  mongo-fiware:
+    image: mongo:6
+    container_name: mongo-fiware
+    restart: always
+    ports:
+      - "27019:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - default
+
+  server:
+    build:
+      context: ./server
+    container_name: server
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./server/.env
+    depends_on:
+      - mongo-auth
+    networks:
+      - default
+
   orion:
     image: fiware/orion
     container_name: fiware-orion
     hostname: orion
     expose:
       - "1026"
-    ports: 
+    ports:
       - "1026:1026"
-    command: -dbURI mongodb://aii:aii@mongodb:27017/iotagentul?authSource=admin
-    depends_on: 
-      - mongodb
-    networks: 
+    command: -dbURI mongodb://mongo-fiware:27017
+    depends_on:
+      - mongo-fiware
+    networks:
       - default
 
-  iot-agent:
+  fiware-iot-agent:
     image: fiware/iotagent-json:latest
-    container_name: fiware-iotagent
-    hostname: iot-agent
+    container_name: fiware-iot-agent
+    restart: always
+    depends_on:
+      - mongo-fiware
+      - orion
+      - mosquitto
     ports:
       - "4041:4041"
       - "7896:7896"
     environment:
-      - "IOTA_CB_HOST=orion"
-      - "IOTA_CB_PORT=1026"
-      - "IOTA_NORTH_PORT=4041"
-      - "IOTA_SOUTH_PORT=7896"
-      - "IOTA_REGISTRY_TYPE=mongodb"
-      - "IOTA_LOG_LEVEL=DEBUG"
-      - "IOTA_TIMESTAMP=true"
-      - "IOTA_CB_NGSI_VERSION=v2"
-      - "IOTA_AUTOCAST=true"
-      - "IOTA_MONGO_HOST=mongodb"
-      - "IOTA_MONGO_PORT=27017"
-      - "IOTA_MONGO_DB=iotagentul"
-      - "IOTA_MONGO_USER=aii"
-      - "IOTA_MONGO_PASSWORD=aii"
-      - "IOTA_MONGO_AUTH_SOURCE=admin"
-    depends_on:
-      - orion
-      - mongodb
-    networks: 
+      - IOTA_LOG_LEVEL=DEBUG
+      - IOTA_CB_HOST=orion
+      - IOTA_CB_PORT=1026
+      - IOTA_NORTH_PORT=4041
+      - IOTA_MONGO_HOST=mongo-fiware
+      - IOTA_MONGO_PORT=27017
+      - IOTA_MQTT_HOST=mosquitto
+      - IOTA_MQTT_PORT=1883
+      - IOTA_HTTP_PORT=7896
+      - IOTA_PROVIDER_URL=http://fiware-iot-agent:4041
+    networks:
       - default
 
-  mqtt-broker:
-    image: eclipse-mosquitto
-    container_name: mqttbroker
-    hostname: mqttbroker
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: mosquitto
+    restart: always
     ports:
       - "1883:1883"
       - "9001:9001"
-    networks: 
+    volumes:
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_config:/mosquitto/config
+      - mosquitto_log:/mosquitto/log
+    networks:
       - default
-  
+
   crate-db:
     image: crate
     container_name: crate-db
@@ -82,10 +104,9 @@ services:
       - crate-db:/data
     environment:
       - CRATE-HEAP-SIZE=4G
-    networks: 
+    networks:
       - default
-    
-    
+
   quantumleap:
     image: orchestracities/quantumleap
     hostname: quantumleap
@@ -109,6 +130,10 @@ services:
 volumes:
   mongodb_data:
   mongodb_config:
+  mongo_data:
+  mosquitto_data:
+  mosquitto_config:
+  mosquitto_log:
   crate-db:
 
 networks:
