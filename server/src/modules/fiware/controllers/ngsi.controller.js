@@ -220,7 +220,7 @@ export const sendDataToAgent = async (req, res) => {
     const body = req.body; // Body de la solicitud
 
     // URL del agente (puerto 7896)
-    const url_json = getConf.url_mqtt;
+    const url_json = config.url_mqtt;
     const apiUrl = url_json.replace("https://", "http://"); // Aseguramos que use http
 
     // Enviamos la solicitud al agente en el puerto 7896
