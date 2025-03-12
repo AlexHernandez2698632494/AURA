@@ -1,32 +1,40 @@
 <div *ngIf="isLargeScreen">
     <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
-  </div>
-  <div *ngIf="!isLargeScreen">
+</div>
+<div *ngIf="!isLargeScreen">
     <app-bottom-tab></app-bottom-tab>
-  </div>
-  <div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
+</div>
+<div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
     <div class="overview-container">
         <div class="card">
-            <img src="" alt="Alertas">
-            <h3>Alertas</h3>
+            <div class="card-header">
+                <img src="/assets/imagen/alerta.png" alt="Alertas">
+                <h3>Alertas</h3>
+            </div>
             <p class="sub-title">Número de alertas <strong></strong></p>
             <a href="#" class="btn">Ver todas las alertas</a>
         </div>
         <div class="card">
-            <img src="" alt="servicios">
-            <h3>Edificios</h3>
+            <div class="card-header">
+                <img src="/assets/imagen/building.png" alt="servicios">
+                <h3>Edificios</h3>
+            </div>
             <p class="sub-title">Número de edificios <strong></strong></p>
             <a href="#" class="btn">Ver todos los servicios</a>
         </div>
         <div class="card">
-            <img src="" alt="suscripciones">
-            <h3>Suscripciones</h3>
+            <div class="card-header">
+                <img src="/assets/imagen/subscription.png" alt="suscripciones">
+                <h3>Suscripciones</h3>
+            </div>
             <p class="sub-title">Número de suscripciones<strong></strong></p>
             <a href="#" class="btn">Ver todas las suscripciones</a>
         </div>
         <div class="card">
-            <img src="" alt="servicios">
-            <h3>Dispositivos IoT</h3>
+            <div class="card-header">
+                <img src="/assets/imagen/vpn-logo_color-icon.png" alt="servicios">
+                <h3>Dispositivos IoT</h3>
+            </div>
             <p class="sub-title">Número de dispositivos IoT<strong></strong></p>
             <a href="#" class="btn">Ver todos los dispositivos IoT</a>
         </div>

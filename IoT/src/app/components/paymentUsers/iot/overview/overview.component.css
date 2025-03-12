@@ -6,11 +6,11 @@
   grid-template-rows: 50% 50%;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 5px 70px;
+  gap: 5px 5%;
 }
 
 .center {
-  margin-left: 5%;
+  margin-top: 20px;
   justify-content: center;
   min-height: 97vh;
   transition: margin-left 0.3s ease;
@@ -24,7 +24,7 @@
 /* Tarjetas */
 .card {
   background: #fff;
-  margin: 5%;
+  margin: 6%;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
@@ -41,7 +41,7 @@
   gap: 10px;
 }
 
-.card-header img {
+.card img{
   width: 40px;
   height: 40px;
 }
@@ -107,4 +107,21 @@
 .history-card {
   width: 50%;
   text-align: left;
+}
+
+@media screen and (max-width: 768px) {
+  .overview-container {
+    width: 100%;
+    display: flex;
+    grid-template-columns: 60%;
+    grid-template-rows: 50%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 5px 5%;
+  }
+
+  .card img{
+    width: 60px;
+    height: 60px;
+  }
 }
