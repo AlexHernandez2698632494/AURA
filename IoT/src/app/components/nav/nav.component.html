@@ -1,6 +1,19 @@
-<div *ngIf="isLargeScreen">
-  <app-side></app-side>
+<div *ngIf="isPremiumUser">
+  <!-- Si es un usuario premium, mostrar componentes premium -->
+  <div *ngIf="isLargeScreen">
+    <app-premium-side></app-premium-side>
+  </div>
+  <div *ngIf="!isLargeScreen">
+    <app-bottom-tab></app-bottom-tab>
+  </div>
 </div>
-<div *ngIf="!isLargeScreen">
-  <app-bottom-tab></app-bottom-tab>
+
+<div *ngIf="!isPremiumUser">
+  <!-- Si no es un usuario premium, mostrar componentes normales -->
+  <div *ngIf="isLargeScreen">
+    <app-side></app-side>
+  </div>
+  <div *ngIf="!isLargeScreen">
+    <app-bottom-tab></app-bottom-tab>
+  </div>
 </div>

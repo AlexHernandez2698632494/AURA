@@ -1,41 +1,78 @@
 .bottom-tab-navigator {
-  z-index: 10;
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-    background-color:white;
-    padding: 10px 0;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-  }
-  
-  .tab-items {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-  }
-  
-  .tab-item {
-    text-align: center;
-    cursor: pointer;
-    color: #003366;
-  }
-  
-  .tab-item.active {
-    color: #003366;
-    font-weight: bold;
-  }
-  
-  .tab-item i {
-    font-size: 24px;
-  }
-  
-  .tab-item span {
-    display: block;
-    font-size: 12px;
-  }
-  
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  padding: 16px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0px -2px 10px rgba(0, 0, 0, 0.3);
+  border-radius: 16px 16px 0 0;
+}
+
+.tab-items {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.tab-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #003366;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 12px;
+  flex: 1;
+}
+
+/* Círculo de fondo cuando el ítem está activo */
+.tab-item.active::before {
+  content: "";
+  position: absolute;
+  bottom: -10px; /* Ajustado para que el círculo no se vea muy abajo */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 55px;
+  height: 90px;
+  background: radial-gradient(circle, #003366 30%, rgba(0, 192, 255, 0.2) 90%);
+  border-radius: 50%;
+  z-index: -1; /* El círculo está completamente detrás del icono */
+  box-shadow: 0px 0px 18px rgba(0, 192, 255, 0.5);
+}
+
+/* Icono del tab */
+.tab-item i {
+  font-size: 24px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* Ajuste del icono activo (se eleva un poco) */
+.tab-item.active i {
+  font-size: 28px;
+  color: white;
+  transform: translateY(-5px); /* Hace que el icono suba ligeramente */
+}
+
+/* Etiqueta del tab */
+.tab-item span {
+  font-size: 12px;
+  margin-top: 4px;
+  opacity: 0.8;
+}
+
+/* Subrayado del texto cuando está activo */
+.tab-item.active span {
+  color: #fff;
+  text-decoration: underline;
+}

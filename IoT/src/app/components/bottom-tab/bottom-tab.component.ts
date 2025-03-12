@@ -25,24 +25,36 @@ export class BottomTabComponent implements OnInit {
 
     if (!storedToken || (this.authorities.length === 0 && !storedToken)) {
       this.menuItems = [
-        { icon: 'home', label: 'Home', route: '/' },
+        { icon: 'home', label: 'Home', route: '/Home' },
         { icon: 'help', label: 'Help', route: '/about-us' },
         { icon: 'login', label: 'Login', route: '/login' },
       ];
     } else if (storedToken && this.authorities.length === 0) {
       this.menuItems = [
-        { icon: 'home', label: 'Home', route: '/' },
+        { icon: 'home', label: 'Home', route: '/Home' },
         { icon: 'lock', label: 'Cambiar Contraseña', route: '/users/cambiarContra' },
         { icon: 'logout', label: 'Cerrar Sesión', route: '/logout', action: this.logout.bind(this) },
       ];
     } else if (storedToken && this.authorities.length > 0) {
-      this.menuItems = [
-        { icon: 'home', label: 'Home', route: '/' },
-        { icon: 'more_horiz', label: 'More', route: '/more' },
-        { icon: 'logout', label: 'Cerrar Sesión', route: '/logout', action: this.logout.bind(this) },
-      ];
+      // Aquí verificamos si el usuario tiene 'super_usuario' en sus authorities
+      if (this.authorities.includes('super_usuario')) {
+        this.menuItems = [
+          { icon: 'home', label: 'Home', route: '/Home' },
+          { icon: 'subscriptions', label: 'Subscription', route: '/overview' },
+          { icon: 'devices', label: 'IoT', route: '/premium/iot/overview' },
+          { icon: 'lock', label: 'Cambiar Contraseña', route: '/users/cambiarContra' },
+          { icon: 'logout', label: 'Cerrar Sesión', route: '/logout', action: this.logout.bind(this) },
+        ];
+      } else {
+        this.menuItems = [
+          { icon: 'home', label: 'Home', route: '/Home' },
+          { icon: 'more_horiz', label: 'More', route: '/more' },
+          { icon: 'logout', label: 'Cerrar Sesión', route: '/logout', action: this.logout.bind(this) },
+        ];
+      }
     }
   }
+
   private getApiUrl(): string {
     return this.apiConfig.getApiUrl();
   }

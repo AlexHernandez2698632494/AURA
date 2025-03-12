@@ -6,13 +6,14 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
 import { AdminService } from '../../services/admin/admin.service';
-
+import { PremiumSideComponent } from '../paymentUsers/side/side.component';
 @Component({
   selector: 'app-change-password',
   standalone: true,
   imports: [
      SideComponent,
       BottomTabComponent, 
+      PremiumSideComponent,
       FormsModule, 
       CommonModule],
   templateUrl: './change-password.component.html',
@@ -20,6 +21,7 @@ import { AdminService } from '../../services/admin/admin.service';
 })
 export class ChangePasswordComponent {
   isLargeScreen: boolean = window.innerWidth > 1024;
+  isPremiumUser: boolean = false;
   @Output() bodySizeChange = new EventEmitter<boolean>();
   @HostListener('window:resize', ['$event'])
   onResize(event: Event): void {
@@ -29,6 +31,13 @@ export class ChangePasswordComponent {
   isSidebarCollapsed = true
   onSideNavToggle(collapsed: boolean) {
     this.isSidebarCollapsed = collapsed;
+  }
+
+  ngOnInit(): void {
+    const authorities = JSON.parse(sessionStorage.getItem('authorities') || '[]');
+    if (authorities.includes('super_usuario')) {
+      this.isPremiumUser = true;
+    }
   }
   currentPassword: string = '';
   newPassword: string = '';
