@@ -1,0 +1,30 @@
+<div *ngIf="isLargeScreen">
+    <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
+</div>
+<div *ngIf="!isLargeScreen">
+    <app-bottom-tab></app-bottom-tab>
+</div>
+<div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
+    <div class="main-container">
+        <div class="header">
+            <h1>Edificios</h1>
+            <button mat-fab extended class="create-button" (click)="navigateToCreateBuilding()">
+                <mat-icon>add</mat-icon>
+                <p> Crear edificio </p>
+            </button>
+        </div>
+        
+        <!-- Mostrar los edificios -->
+        <div *ngFor="let building of buildings" class="building-card">
+            <div class="building-info">
+                <img src="{{ building.imagenPrincipal }}" alt="Imagen del edificio"  class="buildingimagen">
+                <span>{{ building.nombre }}</span>
+            </div>
+            <div class="actions">
+                <a href="" class="action">Ver edificio</a>
+                <button class="action">Editar edificio</button>
+                <button class="action">Eliminar edificio</button>
+            </div>
+        </div>
+    </div>
+</div>

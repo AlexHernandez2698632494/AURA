@@ -1,0 +1,96 @@
+<div *ngIf="isLargeScreen">
+  <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
+</div>
+<div *ngIf="!isLargeScreen">
+  <app-bottom-tab></app-bottom-tab>
+</div>
+
+<div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
+  <div class="main-container">
+    <div class="header">
+      <h1 class="title">Registro de nuevo edificio</h1>
+    </div>
+
+    <div class="form-container">
+      <h2 class="form-title">Registro de edificio</h2>
+      <hr class="separator" />
+      <p class="form-description">Información general del edificio</p>
+      <p class="form-instruction">Ingrese la información que se solicita</p>
+
+      <form [formGroup]="buildingForm" (ngSubmit)="registerBuilding()">
+        <!-- Nombre del edificio -->
+        <div class="input-field">
+          <mat-form-field appearance="fill">
+            <mat-label>Nombre</mat-label>
+            <input matInput id="nombre" formControlName="nombre" type="text" placeholder="Ingrese nombre" />
+            <mat-icon matSuffix>person</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <!-- Número de plantas -->
+        <div class="input-field">
+          <mat-form-field appearance="fill">
+            <mat-label>Numero de Plantas</mat-label>
+            <input matInput id="numeroPlantas" formControlName="numeroPlantas" type="number" placeholder="Ingrese numero de plantas" min="1" (input)="onNivelChange()" />
+            <mat-icon matSuffix>layers</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <!-- Imagen Principal -->
+<div class="input-field">
+  <mat-form-field appearance="fill">
+    <mat-label>Subir Imagen</mat-label>
+    <input matInput id="imagen" formControlName="imagenPrincipal" type="text" placeholder="Ingrese Imagen" [value]="imageName" readonly />
+    <button mat-raised-button (click)="triggerFileInput()" matSuffix>Seleccionar Imagen</button>
+    <input type="file" id="imagenFile" accept="image/*" style="display: none;" (change)="onImageSelected($event)" />
+  </mat-form-field>
+</div>
+
+<!-- Imágenes por planta (dynamically generated) -->
+<div formArrayName="imagenesPlantas">
+  <div *ngFor="let planta of plantas; let i = index" [formGroupName]="i">
+    <div class="input-field">
+      <mat-form-field appearance="fill">
+        <mat-label>Subir Imagen Planta {{i + 1}}</mat-label>
+        <input matInput [id]="'imagenPlanta' + i" formControlName="imagenPlanta" type="text" placeholder="Ingrese Imagen Planta" [value]="imageName" readonly />
+        <button mat-raised-button (click)="triggerFileInputPlanta(i)" matSuffix>Seleccionar Imagen Planta {{i + 1}}</button>
+        <input type="file" [id]="'imagenPlanta' + i + 'File'" accept="image/*" style="display: none;" (change)="onImagePlantaSelected($event, i)" />
+      </mat-form-field>
+    </div>
+  </div>
+</div>
+
+
+        <!-- Latitud -->
+        <div class="input-field">
+          <mat-form-field appearance="fill">
+            <mat-label>Latitud</mat-label>
+            <input matInput formControlName="latitud" type="number" (input)="onCoordinatesChange()" />
+            <mat-icon matSuffix>location_on</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <!-- Longitud -->
+        <div class="input-field">
+          <mat-form-field appearance="fill">
+            <mat-label>Longitud</mat-label>
+            <input matInput formControlName="longitud" type="number" (input)="onCoordinatesChange()" />
+            <mat-icon matSuffix>location_on</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <!-- Mapa de ubicación -->
+        <div class="input-field">
+          <mat-label>Locación</mat-label>
+          <div id="map" style="height: 300px;"></div>
+        </div>
+
+        <!-- Botón de registrar -->
+        <button mat-raised-button color="primary" class="register-button" type="submit" [disabled]="buildingForm.invalid">
+          Registrar edificio
+        </button>        
+      </form>
+
+    </div>
+  </div>
+</div>

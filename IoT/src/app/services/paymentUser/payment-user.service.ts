@@ -112,6 +112,22 @@ getUsername(): string {
     );
   }  
 
+   //Metodos para edificios y salas
+   getBuildings(): Observable<any[]> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<any[]>(`${this.getApiUrl()}/v1/smartcity/building`, { headers }).pipe(
+      catchError(err => throwError(err))
+    );
+  }
+
+  createBuilding(formData: FormData): Observable<any> {
+    const url = `${this.getApiUrl()}/v1/smartcity/building/`;
+    const headers = this.getAuthHeaders();
+  
+    return this.http.post(url, formData, { headers });
+  }
+  
+  
   // Manejar errores de HTTP
   private handleError(error: any): Observable<never> {
     console.error('Ocurrió un error:', error);

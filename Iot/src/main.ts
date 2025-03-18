@@ -45,6 +45,8 @@ import { OverviewComponent } from './app/components/paymentUsers/overview/overvi
 import { CreatePaymetUserComponent } from './app/components/paymentUsers/create/create.component';
 import { OverviewIoTComponent } from './app/components/paymentUsers/iot/overview/overview.component';
 import { PremiumUsersComponent } from './app/components/paymentUsers/users/users.component';
+import { BuildingsComponent } from './app/components/paymentUsers/iot/buildings/buildings.component';
+import { BuildingsCreateComponent } from './app/components/paymentUsers/iot/buildings/create/create.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
@@ -209,7 +211,19 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     data: { authorities: ['super_usuario'] },
   },
+  {
+    path:'premium/building',
+    component: BuildingsComponent,
+    canActivate: [AuthGuard],
+    data: { authorities: ['super_usuario'] },
+  },
 
+  {
+    path:'premium/building/create',
+    component: BuildingsCreateComponent,
+    canActivate: [AuthGuard],
+    data: { authorities: ['super_usuario'] },
+  },
   {
     path: 'users/cambiarContra',
     component: ChangePasswordComponent,

@@ -7,7 +7,7 @@ export class ApiConfigService {
   private apiUrls = [
     'http://localhost:8080',
     'http://192.168.1.82:8080',
-    'http://10.0.12.71:8080',
+    'http://10.0.12.138:8080',
     'http://172.16.99.86:8080',
     'http://192.168.1.25:8080',
     'http://10.0.12.86:8080',
