@@ -133,7 +133,7 @@ export class LoginComponent {
       if (route === '/oauth2/payment/user/login' && response.user.authorities) {
         // Si la ruta es '/payment/user/login', aplanamos el array de arrays a un solo array
         authorities = response.user.authorities[0];  // Tomamos el primer array de la respuesta (el único array)
-        sessionStorage.setItem('fiware-service', 'pizzahut');
+        sessionStorage.setItem('fiware-service', authorities[1]);
         sessionStorage.setItem('fiware-servicepath', '/#');
     
       } else if (response.user.authorities) {
