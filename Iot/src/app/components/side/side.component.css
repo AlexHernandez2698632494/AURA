@@ -61,7 +61,6 @@
 
 }
 
-/* From Uiverse.io by vinodjangid07 */ 
 #checkbox {
   display: none;
 }
@@ -181,7 +180,7 @@
   opacity: 0;
   visibility: hidden;
   font-size: clamp(0.7rem, 1vw, 1.2rem);
-  transition: opacity 2s ease, visibility 0.1s ease-in-out;
+  transition: opacity 1s ease, visibility 0.1s ease-in-out;
   background-color: #003366dc;
   pointer-events: none; 
   z-index: 10000;
@@ -369,4 +368,8 @@
   .sidebar.collapsed {
     width: 3%;
   }
+  .menu-icon-container .tooltip {
+    left: 3%; 
+  }
+  
 }

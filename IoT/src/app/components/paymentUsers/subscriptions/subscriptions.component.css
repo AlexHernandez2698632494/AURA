@@ -2,7 +2,7 @@
 .center {
     margin-left: 5%;
     justify-content: center;
-    min-height: 100vh;
+    min-height: 97vh;
     transition: margin-left 0.3s ease;  
   }
   .shifted {

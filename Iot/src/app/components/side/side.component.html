@@ -9,21 +9,25 @@
         <img src="https://github.com/AlexHernandez2698632494/pictures/blob/main/SIMATI/SIMATI%20UDB%202.0.png?raw=true"
           alt="Image 2" />
       </div>
-      <input id="checkbox" type="checkbox" [checked]="!isCollapsed" (change)="toggleSidebar()" >
+      <input id="checkbox" type="checkbox" [checked]="!isCollapsed" (change)="toggleSidebar()">
       <label class="toggle" for="checkbox">
-          <div id="bar1" class="bars"></div>
-          <div id="bar2" class="bars"></div>
-          <div id="bar3" class="bars"></div>
+        <div id="bar1" class="bars"></div>
+        <div id="bar2" class="bars"></div>
+        <div id="bar3" class="bars"></div>
       </label>
     </div>
   </div>
 
   <div class="sidebar-content">
     <div class="userInfo" *ngIf="username">
-      <div class="separator"><hr /></div>
+      <div class="separator">
+        <hr />
+      </div>
       <i class="material-icons">person</i>
       <p *ngIf="!isCollapsed" class="username">{{ username }}</p>
-      <div class="separator"><hr /></div>
+      <div class="separator">
+        <hr />
+      </div>
     </div>
 
     <ul class="menu">
@@ -42,7 +46,9 @@
           </li>
         </ul>
       </li>
-      <div class="separator"><hr /></div>
+      <div class="separator">
+        <hr />
+      </div>
       <li *ngFor="let item of menuItemsBottom" class="menu-item" (click)="logout()"
         [ngClass]="{'active': isActive(item.route)}">
         <a>
