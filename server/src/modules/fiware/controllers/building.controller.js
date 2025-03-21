@@ -3,6 +3,7 @@ import { Authority } from '../../auth/models/authorities.models.js'; // Importar
 import mongoose from 'mongoose';
 import { Readable } from 'stream';
 import { connectDB } from '../../../config/db.js';
+import { GridFSBucket } from 'mongodb';
 
 // Función para crear un edificio
 export const createBuilding = async (req, res) => {
@@ -99,3 +100,71 @@ export const getBuildings = async (req, res) => {
       res.status(500).json({ message: "Error al obtener los edificios." });
     }
   };
+
+// Función para obtener todos los edificios con sus imágenes reales
+export const getAllBuildings = async (req, res) => {
+  try {
+    // Obtener todos los edificios (sin considerar la eliminación)
+    const edificios = await building.find({ estadoEliminacion: 0 }).populate('authorities');
+
+    const bucket = new mongoose.mongo.GridFSBucket(connectDB.db, { bucketName: 'images' });
+
+    // Recuperamos los edificios con las imágenes reales
+    const edificiosConImagenes = await Promise.all(
+      edificios.map(async (edificio) => {
+        const mainImageId = edificio.imagenPrincipal;
+        const plantImagesIds = edificio.imagenesPlantas;
+
+        // Obtener la imagen principal
+        const mainImage = await getImageById(mainImageId);
+
+        // Obtener las imágenes de las plantas
+        const plantImages = await Promise.all(plantImagesIds.map(id => getImageById(id)));
+
+        return {
+          ...edificio.toObject(),
+          mainImage, // Imagen principal como buffer
+          plantImages, // Imágenes de plantas como buffers
+        };
+      })
+    );
+
+    return res.status(200).json({ edificios: edificiosConImagenes });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Hubo un error al obtener los edificios.', error: error.message });
+  }
+};
+
+// Función para obtener una imagen desde GridFS por su ID
+export const getImageById = async (req, res, next) => {
+  // Verificar si el ID es válido
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(404).send({ success: false, message: 'Media not found' });
+  }
+
+  // Crear una instancia de GridFSBucket usando la conexión correcta
+  const bucket = new mongoose.mongo.GridFSBucket(connectDB.db, { bucketName: 'images' });
+
+  // Buscar el archivo en GridFS
+  const cursor = bucket.find({ _id: new mongoose.Types.ObjectId(req.params.id) });  // Uso de "new"
+
+  try {
+    // Convertir el cursor a un array para obtener los archivos
+    const files = await cursor.toArray();
+    
+    if (!files.length) {
+      return res.status(404).send({ success: false, message: 'Media not found' });
+    }
+
+    // Configurar los encabezados para la respuesta
+    res.header('Content-Type', files[0].metadata.mimetype);
+    res.header('Accept-Ranges', 'bytes');
+
+    // Iniciar el flujo de descarga desde GridFS y enviarlo al cliente
+    const downloadStream = bucket.openDownloadStream(files[0]._id);
+    downloadStream.pipe(res);
+  } catch (err) {
+    next(err); // Manejar errores si ocurren
+  }
+};

@@ -2,8 +2,11 @@ import express from 'express';
 import multer from 'multer';
 import {
   createBuilding,
+  getAllBuildings,
   getBuildings,
+  getImageById,
 } from "../controllers/building.controller.js";
+import { get } from 'http';
 
 // Configuración de multer
 const upload = multer({
@@ -18,6 +21,8 @@ router.post("/building", upload.fields([{ name: 'mainImage' }, { name: 'imageFor
 
 // Ruta para obtener edificios
 router.get("/building", getBuildings);
+router.get("/building/", getAllBuildings);
+router.get('/building/:id', getImageById);
 
 
 export default router;
