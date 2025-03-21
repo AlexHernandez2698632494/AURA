@@ -22,6 +22,7 @@ export class BuildingsComponent {
     subscriptionsList: { name: string; isExpired: boolean }[] = []; // Definir correctamente el array
     usersCount: number = 0;
     buildings: any[] = [];
+    buildingImages: { [id: string]: string } = {};
     constructor(
       private paymentUserService: PaymentUserService,
       private router: Router  // Inyectamos el servicio Router
@@ -32,15 +33,34 @@ export class BuildingsComponent {
       this.loadBuildings();
     }
   
-    // Lógica para obtener los edificios
     loadBuildings(): void {
       this.paymentUserService.getBuildings().subscribe({
         next: (data) => {
-          this.buildings = data;  // Almacenamos los edificios en la variable
+          this.buildings = data;
           console.log('Edificios obtenidos:', this.buildings);
+          
+          // Cargar las imágenes después de obtener los edificios
+          this.buildings.forEach(building => {
+            if (building.imagenPrincipal) {
+              this.loadImage(building.imagenPrincipal);
+            }
+          });
         },
         error: (err) => {
           console.error('Error al obtener los edificios:', err);
+        }
+      });
+    }
+  
+    loadImage(imageId: string): void {
+      this.paymentUserService.getImageById(imageId).subscribe({
+        next: (imageBlob) => {
+          // Crear una URL de la imagen con el Blob obtenido
+          const imageUrl = URL.createObjectURL(imageBlob);
+          this.buildingImages[imageId] = imageUrl;
+        },
+        error: (err) => {
+          console.error('Error al obtener la imagen:', err);
         }
       });
     }

@@ -1,103 +1,149 @@
 .center {
-    margin-top: 20px;
-    justify-content: center;
-    min-height: 97vh;
-    transition: margin-left 0.3s ease;
-  }
-  
-  .shifted {
-    margin-left: 14%;
-    transition: margin-left 0.3s ease;
-  }
-  
+  margin-top: 20px;
+  justify-content: center;
+  min-height: 97vh;
+  transition: margin-left 0.3s ease;
+}
+
+.shifted {
+  margin-left: 14%;
+  transition: margin-left 0.3s ease;
+}
+
+.main-container {
+  margin-bottom: 20%;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 90%;
+  padding: 20px;
+}
+
+.header {
+  margin-left: 15%;
+  max-width: 70%;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+}
+
+.header h1 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.create-button {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  background: #003366;
+  justify-content: center;
+  color: white;
+  border: none;
+  padding: 7px;
+  border-radius: 40px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.building-card {
+  margin: 20px 15%; /* Añadir margen para separar las tarjetas */
+  max-width: 70%;
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.building-info {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  border: none;
+  padding: 7px;
+  font-weight: bold;
+}
+
+.building-info img {
+  margin-right: 10px; /* Espacio entre la imagen y el nombre */
+}
+
+.building-info span {
+  margin-top: 5%;
+}
+
+.actions {
+  margin-right: 6%;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.action {
+  font-size: 16px;
+  background: none;
+  margin: 5px;
+  color: #003366;
+  border: 2px solid #003366;
+  padding: 5px 10px;
+  border-radius: 15px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.buildingimagen {
+  width: 100px;
+  height: auto;
+}
+
+/* Media queries para dispositivos menores a 1024px */
+@media (max-width: 1024px) {
   .main-container {
-    margin-bottom: 20%;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    max-width: 90%;
-    padding: 20px; 
+    max-width: 100%;
+    padding: 10px;
   }
 
-  .header{
-    margin-left: 15%;
-    max-width: 70%;
+  .header {
+    margin-left: 0;
+    max-width: 100%;
+  }
+
+  .building-card {
+    margin: 10px; /* Reducir el margen entre tarjetas en pantallas pequeñas */
+    flex-direction: column; /* Hacer que las tarjetas se apilen verticalmente */
+    align-items: center; /* Centrar los elementos dentro de la tarjeta */
+    max-width: 100%; /* Asegurarse de que las tarjetas ocupen todo el ancho disponible */
+  }
+
+  .building-info {
+    flex-direction: column; /* Colocar la imagen encima del nombre */
+    align-items: center;
     text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px;
   }
 
-  .header h1 {  
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
-    margin: 0;
-  }
-
-  .create-button{
-    display: flex;
-    align-items:center;
-    text-align:center;
-    background: #003366;
-    justify-content: center;
-    color: white;
-    border: none;
-    padding: 7px;
-    border-radius: 40px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-
-  .building-card{
-    margin-left: 15%;
-    max-width: 70%;
-    display: flex;
-    justify-content: space-between;
-    padding: 15px;
-    align-items: center;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-
-  .building-info{
-    display: flex;
-    align-items:center;
-    text-align:center;
-    justify-content: center;
-    border: none;
-    padding: 7px;
-    font-weight: bold;
-  }
-
-  .building-info span{
-    margin-top: 5%;
-  }
-
-  .actions{
-    margin-right: 6%;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-  }
-
-  .action{
-    font-size: 16px;
-    background: none;
-    margin: 5px;
-    color: #003366;
-    border: 2px solid #003366;
-    padding: 5px 10px;
-    border-radius: 15px;
-    cursor: pointer;
-    text-decoration:underline;
+  .building-info img {
+    margin-bottom: 10px; /* Espacio entre la imagen y el nombre en pantallas pequeñas */
   }
 
   .buildingimagen{
-    width: 100px;
+    width: 80%;
     height: auto;
   }
+
+  .actions {
+    margin-top: 10px;
+    margin-right: 0;
+    gap: 10px;
+    flex-direction: column; /* Asegurarse de que los botones de acción se apilen verticalmente */
+    align-items: center;
+  }
+}

@@ -127,6 +127,17 @@ getUsername(): string {
     return this.http.post(url, formData, { headers });
   }
   
+  // Método para obtener la imagen por ID
+getImageById(imageId: string): Observable<Blob> {
+  const headers = this.getAuthHeaders();
+  return this.http.get(`${this.getApiUrl()}/v1/smartcity/building/${imageId}`, {
+    headers,
+    responseType: 'blob'  // Esto es para que la respuesta sea la imagen (Blob)
+  }).pipe(
+    catchError(err => throwError(err))
+  );
+}
+
   
   // Manejar errores de HTTP
   private handleError(error: any): Observable<never> {

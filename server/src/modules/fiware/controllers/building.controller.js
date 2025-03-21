@@ -47,24 +47,26 @@ export const createBuilding = async (req, res) => {
     uploadStream.on('finish', async () => {
       const mainImageId = uploadStream.id; // ID del archivo subido
 
-      // Subir las imágenes de las plantas
-      const imageForPlantIds = [];
-      for (let i = 0; i < req.files.imageForPlant.length; i++) {
-        const plantImageFile = req.files.imageForPlant[i]; // `imageForPlant` también será un arreglo
-        const plantUploadStream = bucket.openUploadStream(plantImageFile.originalname, { metadata: { mimetype: plantImageFile.mimetype } });
-        const plantReadable = new Readable();
-        plantReadable.push(plantImageFile.buffer);
-        plantReadable.push(null);
-        plantReadable.pipe(plantUploadStream);
+      // Subir las imágenes de las plantas y esperar a que todas se suban
+      const imageForPlantIds = await Promise.all(
+        req.files.imageForPlant.map(async (plantImageFile) => {
+          return new Promise((resolve, reject) => {
+            const plantUploadStream = bucket.openUploadStream(plantImageFile.originalname, { metadata: { mimetype: plantImageFile.mimetype } });
+            const plantReadable = new Readable();
+            plantReadable.push(plantImageFile.buffer);
+            plantReadable.push(null);
+            plantReadable.pipe(plantUploadStream);
 
-        plantUploadStream.on('error', err => {
-          return res.status(500).json({ message: 'Error al subir la imagen de planta.', error: err });
-        });
+            plantUploadStream.on('error', err => {
+              reject(err);
+            });
 
-        plantUploadStream.on('finish', () => {
-          imageForPlantIds.push(plantUploadStream.id);
-        });
-      }
+            plantUploadStream.on('finish', () => {
+              resolve(plantUploadStream.id); // Devuelve el ID de la imagen de la planta
+            });
+          });
+        })
+      );
 
       // Crear el nuevo edificio en la base de datos
       const nuevoEdificio = new building({
@@ -74,7 +76,6 @@ export const createBuilding = async (req, res) => {
         imagenesPlantas: imageForPlantIds, // Guardar los IDs de las imágenes de plantas
         localizacion: localizacionArray,
         authorities: foundAuthority._id,
-        enabled: true,
       });
 
       await nuevoEdificio.save();
@@ -86,6 +87,7 @@ export const createBuilding = async (req, res) => {
     return res.status(500).json({ message: 'Hubo un error al crear el edificio.', error: error.message });
   }
 };
+
 
 export const getBuildings = async (req, res) => {
     try {
@@ -100,41 +102,6 @@ export const getBuildings = async (req, res) => {
       res.status(500).json({ message: "Error al obtener los edificios." });
     }
   };
-
-// Función para obtener todos los edificios con sus imágenes reales
-export const getAllBuildings = async (req, res) => {
-  try {
-    // Obtener todos los edificios (sin considerar la eliminación)
-    const edificios = await building.find({ estadoEliminacion: 0 }).populate('authorities');
-
-    const bucket = new mongoose.mongo.GridFSBucket(connectDB.db, { bucketName: 'images' });
-
-    // Recuperamos los edificios con las imágenes reales
-    const edificiosConImagenes = await Promise.all(
-      edificios.map(async (edificio) => {
-        const mainImageId = edificio.imagenPrincipal;
-        const plantImagesIds = edificio.imagenesPlantas;
-
-        // Obtener la imagen principal
-        const mainImage = await getImageById(mainImageId);
-
-        // Obtener las imágenes de las plantas
-        const plantImages = await Promise.all(plantImagesIds.map(id => getImageById(id)));
-
-        return {
-          ...edificio.toObject(),
-          mainImage, // Imagen principal como buffer
-          plantImages, // Imágenes de plantas como buffers
-        };
-      })
-    );
-
-    return res.status(200).json({ edificios: edificiosConImagenes });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Hubo un error al obtener los edificios.', error: error.message });
-  }
-};
 
 // Función para obtener una imagen desde GridFS por su ID
 export const getImageById = async (req, res, next) => {

@@ -17,8 +17,8 @@
         <!-- Mostrar los edificios -->
         <div *ngFor="let building of buildings" class="building-card">
             <div class="building-info">
-                <img src="{{ building.imagenPrincipal }}" alt="Imagen del edificio"  class="buildingimagen">
-                <span>{{ building.nombre }}</span>
+                <img *ngIf="building.imagenPrincipal" [src]="buildingImages[building.imagenPrincipal]" alt="Imagen del edificio" class="buildingimagen">
+        <span>{{ building.nombre }}</span>
             </div>
             <div class="actions">
                 <a href="" class="action">Ver edificio</a>
