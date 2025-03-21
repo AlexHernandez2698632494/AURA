@@ -12,6 +12,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatChipsModule } from '@angular/material/chips';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
 import * as L from 'leaflet';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-create',
@@ -34,7 +35,8 @@ export class BuildingsCreateComponent implements OnInit, AfterViewInit {
   usersCount: number = 0;
   buildings: any[] = [];
   buildingForm: FormGroup;
-  imageName: string = ''; // Variable para almacenar el nombre de la imagen seleccionada
+  imagePrincipalName: string = ''; // Variable para almacenar el nombre de la imagen seleccionada
+  imagePlantasNames: string[] = [];
   hasLocationPermission: boolean = false;  // Variable para controlar si se obtuvo permiso de ubicación
 
   plantas: number[] = [];  // Array to hold plant details (based on "nivel" or number of plants)
@@ -118,9 +120,10 @@ export class BuildingsCreateComponent implements OnInit, AfterViewInit {
   onNivelChange(): void {
     const numeroPlantas = this.buildingForm.get('numeroPlantas')?.value;
     this.plantas = Array.from({ length: numeroPlantas }, (_, i) => i + 1);  // Creamos un array basado en el número de plantas
+    this.imagePlantasNames = new Array(numeroPlantas).fill('');  // Inicializamos el array de imágenes de plantas
     this.addDynamicControls();  // Añadimos controles dinámicos para cada imagen de planta
   }
-
+  
   // Añadimos controles dinámicos para las imágenes de plantas basados en el número de plantas
   addDynamicControls() {
     const imagenesPlantasArray = this.buildingForm.get('imagenesPlantas') as FormArray;
@@ -135,8 +138,68 @@ export class BuildingsCreateComponent implements OnInit, AfterViewInit {
   }
 
   registerBuilding(): void {
-    
+    if (this.buildingForm.invalid) {
+      return; // Si el formulario es inválido, no hacemos nada
+    }
+  
+    // Obtener los valores del formulario
+    const nombre = this.buildingForm.get('nombre')?.value;
+    const nivel = this.buildingForm.get('numeroPlantas')?.value;
+    const latitud = this.buildingForm.get('latitud')?.value;
+    const longitud = this.buildingForm.get('longitud')?.value;
+    const authorities = sessionStorage.getItem('fiware-service'); // Obtener la autoridad del sessionStorage
+    const imageForPlant = this.imagePlantasNames; // Nombres de las imágenes de plantas
+  
+    // Crear un objeto FormData para enviar los datos
+    const formData = new FormData();
+    formData.append('nombre', nombre);
+    formData.append('nivel', nivel);
+    formData.append('localizacion', JSON.stringify([latitud, longitud])); // Convertir a string
+    formData.append('authorities', authorities || ''); // Asegurarse de que no sea null
+  
+    // Obtener el input de la imagen principal
+    const mainImageInput: HTMLInputElement | null = document.getElementById('imagenFile') as HTMLInputElement;
+    if (mainImageInput && mainImageInput.files && mainImageInput.files.length > 0) {
+      formData.append('mainImage', mainImageInput.files[0]); // Agregar el archivo de la imagen principal
+    } else {
+      console.error('No se ha seleccionado una imagen principal.');
+      return; // Salir si no hay imagen principal
+    }
+  
+    // Agregar imágenes de plantas
+    imageForPlant.forEach((imageName, index) => {
+      const fileInput: HTMLInputElement | null = document.getElementById(`imagenPlanta${index}File`) as HTMLInputElement;
+      if (fileInput && fileInput.files && fileInput.files.length > 0) {
+        formData.append('imageForPlant', fileInput.files[0]); // Agregar cada archivo de imagen de planta
+      } else {
+        console.error(`No se ha seleccionado una imagen para la planta ${index + 1}.`);
+      }
+    });
+  
+    // Hacer la solicitud al backend
+    this.paymentUserService.createBuilding(formData).subscribe({
+      next: (response) => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Éxito',
+          text: 'Edificio creado con éxito.',
+        }).then(() => {
+          // Redirigir a la ruta después de que el usuario cierre el mensaje de éxito
+          this.router.navigate(['/premium/building']);
+        });
+      },
+      error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Error al crear el edificio: ' + (err.error.message || 'Error desconocido.'),
+        });
+        // Aquí puedes mostrar un mensaje de error
+      }
+    });
   }
+  
+  
   
   // Método para activar el input file al hacer clic en el botón
   triggerFileInput() {
@@ -149,10 +212,10 @@ onImageSelected(event: any) {
   const file = event.target.files[0];  // Obtenemos el primer archivo seleccionado
   if (file) {
     console.log('Imagen seleccionada:', file);
-    this.imageName = file.name; // Guardamos el nombre de la imagen seleccionada
+    this.imagePrincipalName = file.name; // Guardamos el nombre de la imagen seleccionada
     
     // Actualizar el valor del formulario con el nombre de la imagen seleccionada
-    this.buildingForm.get('imagenPrincipal')?.setValue(this.imageName);
+    this.buildingForm.get('imagenPrincipal')?.setValue(this.imagePrincipalName);
   }
 }
 
@@ -167,10 +230,11 @@ onImageSelected(event: any) {
     const file = event.target.files[0];  // Obtenemos el primer archivo seleccionado
     if (file) {
       console.log(`Imagen seleccionada para planta ${i + 1}:`, file);
+      this.imagePlantasNames[i] = file.name;  // Guardamos el nombre de la imagen de la planta
       (this.buildingForm.get('imagenesPlantas') as FormArray).at(i).get('imagenPlanta')?.setValue(file.name);
     }
   }
-  
+    
   // Inicialización del mapa
   initMap() {
     // Coordenadas por defecto de El Salvador

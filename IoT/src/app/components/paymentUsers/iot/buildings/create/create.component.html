@@ -40,7 +40,7 @@
 <div class="input-field">
   <mat-form-field appearance="fill">
     <mat-label>Subir Imagen</mat-label>
-    <input matInput id="imagen" formControlName="imagenPrincipal" type="text" placeholder="Ingrese Imagen" [value]="imageName" readonly />
+    <input matInput id="imagen" formControlName="imagenPrincipal" type="text" placeholder="Ingrese Imagen" [value]="imagePrincipalName" readonly />
     <button mat-raised-button (click)="triggerFileInput()" matSuffix>Seleccionar Imagen</button>
     <input type="file" id="imagenFile" accept="image/*" style="display: none;" (change)="onImageSelected($event)" />
   </mat-form-field>
@@ -52,7 +52,7 @@
     <div class="input-field">
       <mat-form-field appearance="fill">
         <mat-label>Subir Imagen Planta {{i + 1}}</mat-label>
-        <input matInput [id]="'imagenPlanta' + i" formControlName="imagenPlanta" type="text" placeholder="Ingrese Imagen Planta" [value]="imageName" readonly />
+        <input matInput [id]="'imagenPlanta' + i" formControlName="imagenPlanta" type="text" placeholder="Ingrese Imagen Planta" [value]="imagePlantasNames[i]" readonly />
         <button mat-raised-button (click)="triggerFileInputPlanta(i)" matSuffix>Seleccionar Imagen Planta {{i + 1}}</button>
         <input type="file" [id]="'imagenPlanta' + i + 'File'" accept="image/*" style="display: none;" (change)="onImagePlantaSelected($event, i)" />
       </mat-form-field>

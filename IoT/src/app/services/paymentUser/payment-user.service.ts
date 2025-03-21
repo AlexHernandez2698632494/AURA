@@ -120,11 +120,10 @@ getUsername(): string {
     );
   }
 
-  createBuilding(formData: FormData): Observable<any> {
-    const url = `${this.getApiUrl()}/v1/smartcity/building/`;
-    const headers = this.getAuthHeaders();
   
-    return this.http.post(url, formData, { headers });
+  createBuilding(formData: FormData): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.post<any>(`${this.getApiUrl()}/v1/smartcity/building`, formData, { headers });
   }
   
   // Método para obtener la imagen por ID

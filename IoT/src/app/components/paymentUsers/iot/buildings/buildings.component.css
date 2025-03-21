@@ -100,10 +100,10 @@
   text-decoration: underline;
 }
 
-.buildingimagen {
+/* .buildingimagen {
   width: 100px;
   height: auto;
-}
+} */
 
 /* Media queries para dispositivos menores a 1024px */
 @media (max-width: 1024px) {
