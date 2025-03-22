@@ -14,7 +14,6 @@ export class PaymentUserService {
   private getApiUrl(): string {
     return this.apiConfig.getApiUrl();  // Usa el servicio para obtener la URL
   }
-
   private getAuthHeaders(): HttpHeaders {
     const token = sessionStorage.getItem('token');
     if (!token) {
@@ -123,13 +122,13 @@ getUsername(): string {
   
   createBuilding(formData: FormData): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.post<any>(`${this.getApiUrl()}/v1/smartcity/building`, formData, { headers });
+    return this.http.post(`${this.getApiUrl()}/v1/smartcity/building`, formData, { headers });
   }
   
   // Método para obtener la imagen por ID
 getImageById(imageId: string): Observable<Blob> {
   const headers = this.getAuthHeaders();
-  return this.http.get(`${this.getApiUrl()}/v1/smartcity/building/${imageId}`, {
+  return this.http.get(`${this.getApiUrl()}/v1/smartcity/building/image/${imageId}`, {
     headers,
     responseType: 'blob'  // Esto es para que la respuesta sea la imagen (Blob)
   }).pipe(
@@ -137,7 +136,20 @@ getImageById(imageId: string): Observable<Blob> {
   );
 }
 
-  
+getBuildingById(id: string): Observable<any[]> {
+  const headers = this.getAuthHeaders();
+  return this.http.get<any[]>(`${this.getApiUrl()}/v1/smartcity/building/${id}`, { headers }).pipe(
+    catchError(err => throwError(err))
+  );
+}
+
+deleteBuilding(id: string): Observable<any[]> {
+  const headers = this.getAuthHeaders();
+  return this.http.delete<any[]>(`${this.getApiUrl()}/v1/smartcity/building/${id}/cleanSlate`, { headers }).pipe(
+    catchError(err => throwError(err))
+  );
+}
+
   // Manejar errores de HTTP
   private handleError(error: any): Observable<never> {
     console.error('Ocurrió un error:', error);

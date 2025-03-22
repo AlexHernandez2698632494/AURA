@@ -21,10 +21,10 @@
         <span>{{ building.nombre }}</span>
             </div>
             <div class="actions">
-                <a href="" class="action">Ver edificio</a>
-                <button class="action">Editar edificio</button>
-                <button class="action">Eliminar edificio</button>
-            </div>
+                <button mat-button class="action" (click)="navigateToViewBuilding(building._id)">Ver edificio</button>
+                <button mat-button class="action" (click)="navigateToEditBuilding(building._id)">Editar edificio</button>
+                <button mat-button class="action" (click)="deleteBuilding(building._id)">Eliminar edificio</button>
+              </div>
         </div>
     </div>
 </div>

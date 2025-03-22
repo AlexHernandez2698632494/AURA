@@ -19,14 +19,27 @@
   padding: 20px;
 }
 
+.back-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: #333;
+}
+
 .header {
-  margin-left: 15%;
-  max-width: 70%;
+  background-color: var(--background-color);
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
+  margin-bottom: 20px;
+  margin-left: 15%;
+  max-width: 80%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px;
 }
 
 .header h1 {
@@ -34,25 +47,26 @@
   font-weight: bold;
   color: #333;
   margin: 0;
+  text-align: center;
 }
 
 .create-button {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  background: #003366;
-  justify-content: center;
+  background-color: #003366;
   color: white;
-  border: none;
+  border: 2px;
   padding: 7px;
   border-radius: 40px;
   cursor: pointer;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
 }
 
 .building-card {
   margin: 20px 15%;
-  max-width: 70%;
+  max-width: 80%;
   display: flex;
   justify-content: space-between;
   padding: 15px;
@@ -65,20 +79,24 @@
 
 .building-info {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  text-align: center;
   justify-content: center;
+  text-align: center;
   border: none;
   padding: 7px;
   font-weight: bold;
 }
 
 .building-info img {
-  margin-right: 10px; 
+  margin-bottom: 20px;
 }
 
 .building-info span {
-  margin-top: 5%;
+  font-size: 18px;
+  font-weight: bold;
+  color: #003366;
+  padding-bottom: 10px
 }
 
 .actions {
@@ -100,10 +118,11 @@
   text-decoration: underline;
 }
 
-/* .buildingimagen {
-  width: 100px;
+
+.building-info img {
+  width: 400px;
   height: auto;
-} */
+}
 
 /* Media queries para dispositivos menores a 1024px */
 @media (max-width: 1024px) {
@@ -123,19 +142,15 @@
     flex-direction: column;
     align-items: center;
   }
-
   .building-info {
-    flex-direction: column; 
+    flex-direction: column;
     align-items: center;
     text-align: center;
   }
 
   .building-info img {
-    margin-bottom: 10px; 
-  }
-
-  .buildingimagen{
-    width: 80%;
+    margin-bottom: 10px;
+    width: 300px;
     height: auto;
   }
 
@@ -143,7 +158,7 @@
     margin-top: 10px;
     margin-right: 0;
     gap: 10px;
-    flex-direction: column; 
+    flex-direction: column;
     align-items: center;
   }
 }
