@@ -4,6 +4,7 @@ import {
   cleanSlateBuilding,
   createBuilding,
   deleteBuilding,
+  getBuildigById,
   getBuildings,
   getImageById,
   restoreBuilding,
@@ -35,7 +36,8 @@ router.post(
   createBuilding
 );
 router.get("/building", getBuildings);
-router.get("/building/:id", getImageById);
+router.get("/building/:id",getBuildigById)
+router.get("/building/image/:id", getImageById);
 router.put(
   "/building/:id",
   upload.fields([{ name: "mainImage" }, { name: "imageForPlant" }]),

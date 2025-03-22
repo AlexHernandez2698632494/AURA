@@ -195,104 +195,133 @@ export const getImageById = async (req, res, next) => {
   }
 };
 
-//Funcion para editar un edificio
+//Funcion para obtener un edificio
+export const getBuildigById = async (req,res) =>{
+  try {
+    const { id } = req.params
+    const edificio = await building.findById({
+      _id:id,enabled:true,estadoEliminacion:0
+    })
+
+    res.status(201).json(edificio)
+  } catch (error) {
+    console.error("Error al obtener el edificio:", error);
+    res.status(500).json({ message: "Error al obtener el edificio." });
+  }
+};
+
+// Función para actualizar un edificio
+// Función para actualizar un edificio
 export const updateBuilding = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nombre, nivel, authorities } = req.body;
+    const { nombre, nivel, localizacion, authorities } = req.body;
 
-    // Buscar el edificio a editar
+    // Buscar el edificio en la base de datos
     const edificio = await building.findById(id);
     if (!edificio) {
       return res.status(404).json({ message: "Edificio no encontrado." });
     }
 
-    // Validar el nivel: no se puede editar si el nivel es menor o igual al nivel actual
-    if (nivel <= edificio.nivel) {
-      return res.status(400).json({ message: "El nivel debe ser mayor al nivel actual." });
+    let levelChanged = false;
+    let isModified = false;  // Bandera para verificar si algún campo ha sido modificado
+
+    // Validar localización si se proporciona
+    if (localizacion) {
+      const { error: errorLocalizacion, localizacionArray } = validarLocalizacion(localizacion);
+      if (errorLocalizacion) {
+        return res.status(400).json({ message: errorLocalizacion });
+      }
+      // Si la localización ha cambiado, actualizarla
+      if (JSON.stringify(edificio.localizacion) !== JSON.stringify(localizacionArray)) {
+        edificio.localizacion = localizacionArray;
+        isModified = true;
+      }
     }
 
-    // Si authorities está presente, buscar la autoridad
-    let autoridadId = edificio.authorities;  // Mantener la autoridad actual si no se edita
+    // Validar el nivel si se proporciona y si ha cambiado
+    if (nivel !== undefined) {
+      // Validación de que el nivel debe ser mayor que el nivel actual
+      if (nivel <= edificio.nivel) {
+        return res.status(400).json({ message: "El nivel debe ser mayor al nivel actual." });
+      }
 
+      // Si el nivel ha cambiado, establecer la bandera de nivel cambiado
+      levelChanged = true;
+
+      // Calcular cuántas imágenes adicionales son necesarias
+      const requiredImages = nivel - edificio.nivel;
+
+      // Si se están enviando imágenes para las plantas, deben ser suficientes
+      if (!req.files || !req.files.imageForPlant || req.files.imageForPlant.length < requiredImages) {
+        return res.status(400).json({ message: `Se necesitan ${requiredImages} imágenes adicionales para completar el nivel.` });
+      }
+
+      // Subir las imágenes adicionales de las plantas
+      const bucket = new mongoose.mongo.GridFSBucket(connectDB.db, { bucketName: "images" });
+      const newImages = await Promise.all(
+        req.files.imageForPlant.slice(0, requiredImages).map(async (plantImageFile) => {
+          return await subirImagenAGridFS(bucket, plantImageFile);
+        })
+      );
+
+      // Actualizar las imágenes de las plantas
+      edificio.imagenesPlantas.push(...newImages);
+      isModified = true;
+
+      // Actualizar el nivel
+      edificio.nivel = nivel;
+    }
+
+    // Si se intenta modificar la autoridad pero el nivel no cambia, arrojar error
+    if (authorities && !levelChanged) {
+      return res.status(400).json({ message: "Para modificar la autoridad, el nivel debe incrementarse." });
+    }
+
+    // Si se intenta modificar las imágenes de las plantas pero el nivel no cambia, arrojar error
+    if (req.files && req.files.imageForPlant && !levelChanged) {
+      return res.status(400).json({ message: "Para modificar las imágenes de las plantas, el nivel debe incrementarse." });
+    }
+
+    // Si se proporciona una nueva autoridad, actualizarla
     if (authorities) {
       const foundAuthority = await Authority.findOne({ type: authorities });
       if (!foundAuthority) {
-        return res.status(400).json({
-          message: `La autoridad con el tipo ${authorities} no fue encontrada.`,
-        });
-      }
-      autoridadId = foundAuthority._id; // Actualizar solo si se encuentra la nueva autoridad
-    }
-
-    // Verificar si hay cambios en las imágenes de las plantas solo si el nivel cambia
-    let imageForPlantIds = [...edificio.imagenesPlantas];
-
-    if (nivel !== edificio.nivel) {
-      // Si el nivel cambia, hay que asegurarse de que las imágenes de las plantas estén correctamente asociadas con los niveles
-      if (req.files && req.files.imageForPlant) {
-        // Si se envían nuevas imágenes de plantas, agregarlas
-        const bucket = new mongoose.mongo.GridFSBucket(connectDB.db, { bucketName: "images" });
-        try {
-          const newImagesForPlant = await Promise.all(
-            req.files.imageForPlant.map(async (plantImageFile) => {
-              return await subirImagenAGridFS(bucket, plantImageFile);
-            })
-          );
-          // Agregar las nuevas imágenes a las existentes si el nivel aumenta
-          imageForPlantIds = [...imageForPlantIds, ...newImagesForPlant];
-        } catch (err) {
-          return res.status(500).json({
-            message: "Error al subir las imágenes de las plantas.",
-            error: err,
-          });
-        }
+        return res.status(400).json({ message: `La autoridad con el tipo ${authorities} no fue encontrada.` });
       }
 
-      // Si el nivel es menor, ajustar la cantidad de imágenes de plantas para que coincida con el nuevo nivel
-      if (nivel < edificio.nivel) {
-        imageForPlantIds = imageForPlantIds.slice(0, nivel);  // Mantener solo las imágenes correspondientes al nivel
+      // Solo se modifica la autoridad si es diferente a la actual
+      if (edificio.authorities.toString() !== foundAuthority._id.toString()) {
+        edificio.authorities = foundAuthority._id;
+        isModified = true;
       }
     }
 
-    // Si no se cambia el nivel, las imágenes de plantas no deben modificarse
-    if (nivel === edificio.nivel) {
-      imageForPlantIds = edificio.imagenesPlantas;  // No modificar imágenes si el nivel no cambia
+    // Si se proporciona un nuevo nombre, actualizarlo
+    if (nombre && nombre !== edificio.nombre) {
+      edificio.nombre = nombre;
+      isModified = true;
     }
 
-    // Si se edita el nivel y no viene una nueva imagen, retorna error
-    if (nivel !== undefined && !req.files?.mainImage && !req.files?.imageForPlant) {
-      return res.status(400).json({ message: "Debe proveer una imagen al editar el nivel." });
+    // Si no se modificó nada, enviar un mensaje indicando que no hubo cambios
+    if (!isModified) {
+      return res.status(400).json({ message: "No se ha modificado ningún dato." });
     }
 
-    // Actualizar el edificio con los nuevos datos
-    edificio.nombre = nombre || edificio.nombre;
-    edificio.nivel = nivel || edificio.nivel;
-    edificio.authorities = autoridadId; // Mantener la autoridad actual si no se edita
-    edificio.imagenesPlantas = imageForPlantIds; // Actualizar las imágenes de las plantas
-    if (req.files && req.files.mainImage) {
-      const bucket = new mongoose.mongo.GridFSBucket(connectDB.db, { bucketName: "images" });
-      try {
-        edificio.imagenPrincipal = await subirImagenAGridFS(bucket, req.files.mainImage[0]);
-      } catch (err) {
-        return res.status(500).json({ message: "Error al subir la imagen principal.", error: err });
-      }
-    }
-
+    // Guardar los cambios en el edificio
     await edificio.save();
 
     return res.status(200).json({
       message: "Edificio actualizado con éxito.",
-      edificio,
+      edificio: edificio,
     });
+
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      message: "Hubo un error al editar el edificio.",
-      error: error.message,
-    });
+    console.error("Error actualizando el edificio:", error);
+    return res.status(500).json({ message: "Hubo un error al actualizar el edificio.", error: error.message });
   }
 };
+
 
 //FUncion para eliminar un edificio
 export const deleteBuilding = async (req, res) => {
