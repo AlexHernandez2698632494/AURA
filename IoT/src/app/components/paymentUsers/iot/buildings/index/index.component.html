@@ -18,8 +18,8 @@
 
         <!-- Mostrar las plantas de cada edificio en tarjetas separadas -->
         <div *ngFor="let building of buildings">
-            <div *ngFor="let plantImageId of building.imagenesPlantas; let i = index" class="building-card">
-                <div class="building-info">
+            <div *ngFor="let plantImageId of building.imagenesPlantas; let i = index" class="plant-card">
+                <div class="plant-info">
                     <span>Planta {{ i + 1 }}</span>
                     <img [src]="buildingImages[plantImageId]" alt="Imagen de la planta" class="plantimagen">
                 </div>
