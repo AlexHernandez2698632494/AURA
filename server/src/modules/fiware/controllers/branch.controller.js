@@ -58,7 +58,7 @@ const subirImagenAGridFS = async (bucket, file) => {
         imagen_salon: imagenSalonId,
         edificioId: foundBuilding._id,
         nivel,
-        fiware_servicepath: `/building/${buildingName}/nivel_${nivel}/${nombre_salon}`,
+        fiware_servicepath: `/${buildingName}/nivel_${nivel}/${nombre_salon}`,
       });
   
       await nuevoSalon.save();

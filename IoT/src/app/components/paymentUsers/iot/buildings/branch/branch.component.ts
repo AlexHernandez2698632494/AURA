@@ -89,4 +89,8 @@ export class BuildingBranchComponent {
       console.error('No se encontró el edificioId');
     }
   }
+  
+  CreateBranch(): void {
+    this.router.navigate(['/premium/building/branch/create']);
+  }
 }

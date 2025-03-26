@@ -1,0 +1,46 @@
+<div *ngIf="isLargeScreen">
+    <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
+</div>
+<div *ngIf="!isLargeScreen">
+    <app-bottom-tab></app-bottom-tab>
+</div>
+
+<div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
+    <div class="main-container">
+        <div class="header">
+            <h1 class="title">Registro de nuevo salon</h1>
+        </div>
+        <div class="form-container">
+            <h2 class="form-title">Registro de salon</h2>
+            <hr class="separator" />
+            <p class="form-description">Información general del salon</p>
+            <p class="form-instruction">Ingrese la información que se solicita</p>
+
+            <form [formGroup]="BranchForm" (ngSubmit)="registerBranch()">
+                <!-- Nombre del salon -->
+                <div class="input-field">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Nombre</mat-label>
+                        <input matInput id="nombre" formControlName="nombre" type="text" placeholder="Ingrese nombre" />
+                        <mat-icon matSuffix>person</mat-icon>
+                    </mat-form-field>
+                </div>
+                <div class="input-field">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Numero de planta del salon</mat-label>
+                        <input matInput id="nivel" formControlName="nivel" type="number" placeholder="Ingrese el nivel de salon" min="1" />
+                        <mat-icon matSuffix>layers</mat-icon>
+                    </mat-form-field>
+                </div>
+                <div class="input-field">
+                    <mat-form-field appearance="fill">
+                      <mat-label>Subir Imagen</mat-label>
+                      <input matInput id="imagen" formControlName="imagenPrincipal" type="text" placeholder="Ingrese Imagen" [value]="imagePrincipalName" readonly />
+                      <button mat-raised-button (click)="triggerFileInput()" matSuffix>Seleccionar Imagen</button>
+                      <input type="file" id="imagenFile" accept="image/*" style="display: none;" (change)="onImageSelected($event)" />
+                    </mat-form-field>
+                  </div>
+            </form>
+        </div>
+    </div>
+</div>

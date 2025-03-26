@@ -1,5 +1,5 @@
 <div *ngIf="isLargeScreen">
-    <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
+    <app-side (sideNavToggle)="onSideNavToggle($event)"></app-side>
   </div>
   <div *ngIf="!isLargeScreen">
     <app-bottom-tab></app-bottom-tab>
@@ -44,9 +44,10 @@
               <mat-form-field appearance="fill">
                 <mat-label>Tipo de Plan</mat-label>
                 <mat-select formControlName="planType" (selectionChange)="onPlanTypeChange($event)">
-                  <mat-option value="gratis">Gratis</mat-option>
-                  <mat-option value="mes">Mes</mat-option>
-                  <mat-option value="año">Año</mat-option>
+                  <mat-option value="free">Gratis</mat-option>
+                  <mat-option value="month">Mes</mat-option>
+                  <mat-option value="year">Año</mat-option>
+                  <mat-option value="unlimited">Ilimitado</mat-option>
                 </mat-select>
               </mat-form-field>
             </div>

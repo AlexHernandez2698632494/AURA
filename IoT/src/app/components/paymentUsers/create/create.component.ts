@@ -1,6 +1,6 @@
 import { Component, OnInit, HostListener, Output, EventEmitter } from '@angular/core';
 import { PaymentUserService } from '../../../services/paymentUser/payment-user.service';
-import { PremiumSideComponent } from '../side/side.component';
+import { SideComponent } from '../../side/side.component';
 import { BottomTabComponent } from '../../bottom-tab/bottom-tab.component';
 import {  Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -25,7 +25,7 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
     MatSelectModule,
     ReactiveFormsModule,
     CommonModule,
-    PremiumSideComponent,
+    SideComponent,
     BottomTabComponent,
     MatButtonModule,
   ],
@@ -54,7 +54,7 @@ export class CreatePaymetUserComponent {
   isDurationDisabled: boolean = true;
 
   constructor(
-    private router: Router,
+    private router: Router,           
     private fb: FormBuilder,
     private premiumService: PaymentUserService
   ) {
@@ -71,16 +71,19 @@ export class CreatePaymetUserComponent {
     const planType = event.value;
 
     // Restablecer las opciones de duración y habilitar o deshabilitar el campo
-    if (planType === 'gratis') {
+    if (planType === 'free') {
       this.durationOptions = [1];
       this.isDurationDisabled = true;
-    } else if (planType === 'mes') {
+    } else if (planType === 'month') {
       this.durationOptions = Array.from({ length: 11 }, (_, i) => i + 1);
       this.isDurationDisabled = false;
-    } else if (planType === 'año') {
+    } else if (planType === 'year') {
       this.durationOptions = Array.from({ length: 5 }, (_, i) => i + 1);
       this.isDurationDisabled = false;
-    }
+    } else  if (planType === 'unlimited') {
+      this.durationOptions = [0];
+      this.isDurationDisabled = true;
+    } 
 
     // Restablecer la duración a un valor vacío
     this.premiumForm.get('duration')?.setValue('');

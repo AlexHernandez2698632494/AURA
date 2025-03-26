@@ -50,6 +50,7 @@ import { BuildingsCreateComponent } from './app/components/paymentUsers/iot/buil
 import { BuildingIndexComponent } from './app/components/paymentUsers/iot/buildings/index/index.component';
 import { BuildingUpdateComponent } from './app/components/paymentUsers/iot/buildings/update/update.component';
 import { BuildingBranchComponent } from './app/components/paymentUsers/iot/buildings/branch/branch.component';
+import { BuildingBranchCreateComponent } from './app/components/paymentUsers/iot/buildings/branch/create/create.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
@@ -242,6 +243,12 @@ const routes: Routes = [
   {
     path:'premium/building/:buildingName/branch/:id',
     component: BuildingBranchComponent,
+    canActivate: [AuthGuard],
+    data: { authorities: ['super_usuario'] },
+  },
+  {
+    path:'premium/building/branch/create',
+    component: BuildingBranchCreateComponent,
     canActivate: [AuthGuard],
     data: { authorities: ['super_usuario'] },
   },
