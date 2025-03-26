@@ -25,7 +25,7 @@
                 </div>
 
                 <div class="actions">
-                    <button mat-button class="action">Ver planta</button>
+                    <button mat-button class="action"(click)="navigateToViewBranch(building.nombre, i+1)">Ver planta</button>
                     <button mat-button class="action">Eliminar planta</button>
                 </div>
             </div>

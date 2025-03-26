@@ -1,0 +1,41 @@
+<div *ngIf="isLargeScreen">
+  <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
+</div>
+
+<div *ngIf="!isLargeScreen">
+  <app-bottom-tab></app-bottom-tab>
+</div>
+
+<div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
+  <div class="main-container">
+    <div *ngFor="let building of branches" class="header">
+      <button mat-icon-button class="back-button" (click)="onBackClick()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1>{{ building.buildingName }} <p class="branch-level">planta {{ building.nivel }} </p>
+      </h1>
+      <button mat-fab extended class="create-button">
+        <mat-icon>add</mat-icon>
+        <p>Crear Salon</p>
+      </button>
+    </div>
+
+    <!-- Mostrar las plantas de cada edificio en tarjetas separadas -->
+    <div *ngFor="let building of branches">
+      <div *ngFor="let salon of building.salones" class="branch-card">
+        <div class="branch-info">
+          <span>{{ salon.nombre_salon }}</span>
+
+          <!-- Aquí corregimos el acceso a la imagen -->
+          <img *ngIf="branchImages[salon.imagen_salon]" [src]="branchImages[salon.imagen_salon]" alt="Imagen del salon"
+            class="branchimagen">
+        </div>
+
+        <div class="actions">
+          <button mat-button class="action">Ver salon</button>
+          <button mat-button class="action">Eliminar salon</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -22,7 +22,7 @@ const upload = multer({
 const router = express.Router();
 
 router.post("/branch", upload.fields([{ name: "imagen_salon" }]), createBranch);
-router.get("/branch/:buildingName/:nivel?", getBranch);
 router.get("/branch/image/:id", getImageById);
+router.get("/branch/:buildingName/:nivel?", getBranch);
 
 export default router;

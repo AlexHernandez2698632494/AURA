@@ -150,6 +150,23 @@ deleteBuilding(id: string): Observable<any[]> {
   );
 }
 
+getBranchById(name:string,id: string, ): Observable<any[]> {
+  const headers = this.getAuthHeaders();
+  return this.http.get<any[]>(`${this.getApiUrl()}/v1/starcity/branch/${name}/${id}`, { headers }).pipe(
+    catchError(err => throwError(err))
+  );
+}
+
+getBranchImageById(imageId: string): Observable<Blob> {
+  const headers = this.getAuthHeaders();
+  return this.http.get(`${this.getApiUrl()}/v1/starcity/branch/image/${imageId}`, {
+    headers,
+    responseType: 'blob'  // Esto es para que la respuesta sea la imagen (Blob)
+  }).pipe(
+    catchError(err => throwError(err))
+  );
+}
+
   // Manejar errores de HTTP
   private handleError(error: any): Observable<never> {
     console.error('Ocurrió un error:', error);

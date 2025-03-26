@@ -1,0 +1,166 @@
+.center {
+    margin-top: 20px;
+    justify-content: center;
+    min-height: 97vh;
+    transition: margin-left 0.3s ease;
+  }
+  
+  .shifted {
+    margin-left: 14%;
+    transition: margin-left 0.3s ease;
+  }
+  
+  .main-container {
+    margin-bottom: 20%;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 90%;
+    padding: 20px;
+  }
+  
+  .back-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    color: #333;
+  }
+  
+  .header {
+    background-color: var(--background-color);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-bottom: 20px;
+    margin-left: 15%;
+    max-width: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .header h1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .header h1 .branch-level {
+    font-weight: bold;
+    margin-left: 10px;  /* Espaciado entre el nombre del edificio y la planta */
+  } 
+  .create-button {
+    background-color: #003366;
+    color: white;
+    border: 2px;
+    padding: 7px;
+    border-radius: 40px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+  }
+  
+  .branch-card {
+    margin-left: 15%;
+    margin-top: 20px;
+    max-width: 80%;
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .branch-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border: none;
+    padding: 7px;
+    font-weight: bold;
+  }
+  
+  .branch-info img {
+    margin-bottom: 20px;
+  }
+  
+  .branch-info span {
+    font-size: 18px;
+    font-weight: bold;
+    color: #003366;
+    padding-bottom: 10px
+  }
+  
+  .actions {
+    margin-right: 6%;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .action {
+    font-size: 16px;
+    background: none;
+    margin: 5px;
+    color: #003366;
+    border: 2px solid #003366;
+    padding: 5px 10px;
+    border-radius: 15px;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  
+  
+  .branch-info img {
+    width: 400px;
+    height: auto;
+  }
+  
+  /* Media queries para dispositivos menores a 1024px */
+  @media (max-width: 1024px) {
+    .main-container {
+      max-width: 95%;
+      padding: 10px;
+    }
+  
+    .header {
+      margin-left: 0;
+      max-width: 90%;
+    }
+  
+    .branch-card {
+      margin: 20px 2px;
+      max-width: 90%;
+      flex-direction: column;
+      align-items: center;
+    }
+    .branch-info {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+  
+    .branch-info img {
+      margin-bottom: 10px;
+      width: 300px;
+      height: auto;
+    }
+  
+    .actions {
+      margin-top: 10px;
+      margin-right: 0;
+      gap: 10px;
+      flex-direction: column;
+      align-items: center;
+    }
+  }

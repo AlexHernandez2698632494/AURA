@@ -92,16 +92,18 @@ export const getBranch = async (req, res) => {
       // Obtener el modelo de salón para la base de datos dinámica
       const SalonModel = await getSalonModel(buildingName);
       const filter = { nivel: nivel };
-
+console.log(filter)
     // Filtrar los salones por el ID del edificio y el nivel
     const salones = await SalonModel.find({
         edificioId: foundBuilding._id,
         nivel: nivel, // Filtramos por nivel
       });
-  
+  console.log(salones)
       return res.status(200).json({
         message: "Salones obtenidos con éxito",
         salones,
+        buildingName,
+        nivel
       });
     } catch (error) {
       console.error("Error al obtener los salones:", error);
