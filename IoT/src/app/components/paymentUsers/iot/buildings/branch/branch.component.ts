@@ -47,20 +47,24 @@ export class BuildingBranchComponent {
       this.loadBuilding(buildingName, nivel); // Llamar a loadBuilding pasando el id
     }
   }
-  loadBuilding(name:string, id: string): void {
+  loadBuilding(name: string, id: string): void {
     this.paymentUserService.getBranchById(name, id).subscribe({
       next: (data) => {
         console.log('Respuesta del servicio:', data);
   
         // Convertir el objeto en un arreglo
-        this.branches = [data];  // `buildings` ahora es un arreglo con un solo objeto
+        this.branches = [data];  // `branches` ahora es un arreglo con un solo objeto
   
         // Acceder al primer (y único) elemento del arreglo
         const branch = this.branches[0];  // Acceder al objeto
-        console.log("d",branch.salones[0].imagen_salon)
-        // Ahora puedes acceder a las propiedades del objeto  
+        console.log("d", branch.salones);
+  
+        // Verificar si hay salones y cargarlos
         if (branch.salones) {
-          this.loadImage(branch.salones[0].imagen_salon);
+          // Usar `any` para el parámetro 'salon' en el `forEach`
+          branch.salones.forEach((salon: any) => { 
+            this.loadImage(salon.imagen_salon);
+          });
         }
       },
       error: (err) => {
@@ -68,6 +72,8 @@ export class BuildingBranchComponent {
       }
     });
   }
+  
+  
   
   loadImage(imageId: string): void {
     this.paymentUserService.getBranchImageById(imageId).subscribe({
@@ -80,6 +86,7 @@ export class BuildingBranchComponent {
       }
     });
   }
+  
   onBackClick(): void {
     const edificioId = this.branches[0]?.salones[0]?.edificioId; // Obtener el id del edificio
     if (edificioId) {
@@ -90,7 +97,7 @@ export class BuildingBranchComponent {
     }
   }
   
-  CreateBranch(): void {
-    this.router.navigate(['/premium/building/branch/create']);
+  CreateBranch(buildingName:string, nivel:number) : void{
+    this.router.navigate([`/premium/building/${buildingName}/branch/${nivel}/create`]);
   }
 }

@@ -167,6 +167,12 @@ getBranchImageById(imageId: string): Observable<Blob> {
   );
 }
 
+createBranch(formData: FormData): Observable<any> {
+  const headers = this.getAuthHeaders();
+  return this.http.post(`${this.getApiUrl()}/v1/starcity/branch/`, formData, { headers });
+}
+
+
   // Manejar errores de HTTP
   private handleError(error: any): Observable<never> {
     console.error('Ocurrió un error:', error);

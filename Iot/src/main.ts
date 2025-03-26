@@ -247,7 +247,7 @@ const routes: Routes = [
     data: { authorities: ['super_usuario'] },
   },
   {
-    path:'premium/building/branch/create',
+    path:'premium/building/:buildingName/branch/:id/create',
     component: BuildingBranchCreateComponent,
     canActivate: [AuthGuard],
     data: { authorities: ['super_usuario'] },
