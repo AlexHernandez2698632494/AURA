@@ -57,11 +57,12 @@ export class BuildingBranchCreateComponent {
   onSideNavToggle(collapsed: boolean) {
     this.isSidebarCollapsed = collapsed;
   }
-
+  // Método para activar el input file al hacer clic en el botón
   triggerFileInput() {
-    const fileInput = document.getElementById('imageFile') as HTMLElement;
-    fileInput.click();
+    const fileInput: HTMLElement = document.getElementById('imagenFile') as HTMLElement;
+    fileInput.click();  // Esto hace que se abra el diálogo de selección de archivo
   }
+
 
   onImageSelected(event: any) {
     const file = event.target.files[0];
