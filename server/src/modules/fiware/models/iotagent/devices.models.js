@@ -52,4 +52,4 @@ const deviceSchema = new mongoose.Schema({
   },
 });
 
-export default connectFiwareDB.model("Device", deviceSchema);
+export default connectFiwareDB.model("Devices", deviceSchema);
