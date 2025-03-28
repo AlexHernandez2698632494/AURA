@@ -97,7 +97,7 @@ console.log(filter)
     const salones = await SalonModel.find({
         edificioId: foundBuilding._id,
         nivel: nivel, // Filtramos por nivel
-      });
+      }).sort({ nombre_salon: 1 });;
   console.log(salones)
       return res.status(200).json({
         message: "Salones obtenidos con éxito",
