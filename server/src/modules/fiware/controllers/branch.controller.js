@@ -32,16 +32,19 @@ const subirImagenAGridFS = async (bucket, file) => {
     try {
       const { nombre_salon, nivel, buildingName } = req.body;
   
-      // Buscar el edificio por su nombre
-      const foundBuilding = await building.findOne({ nombre: buildingName });
+      // Formatear buildingName reemplazando los espacios por "_"
+      const formattedBuildingName = buildingName.replace(/ /g, "_");
+  
+      // Buscar el edificio por su nombre formateado
+      const foundBuilding = await building.findOne({ nombre: formattedBuildingName });
       if (!foundBuilding) {
         return res.status(400).json({
-          message: `El Edificio o Sucursal ${buildingName} no fue encontrada.`,
+          message: `El Edificio o Sucursal ${formattedBuildingName} no fue encontrado.`,
         });
       }
   
       // Validar que la base de datos y colección existan
-      const SalonModel = await getSalonModel(buildingName);
+      const SalonModel = await getSalonModel(formattedBuildingName);
   
       // Verificar si la imagen es válida
       if (!req.files || !req.files.imagen_salon) {
@@ -58,7 +61,7 @@ const subirImagenAGridFS = async (bucket, file) => {
         imagen_salon: imagenSalonId,
         edificioId: foundBuilding._id,
         nivel,
-        fiware_servicepath: `/${buildingName}/nivel_${nivel}/${nombre_salon}`,
+        fiware_servicepath: `/${formattedBuildingName}/nivel_${nivel}/${nombre_salon}`,
       });
   
       await nuevoSalon.save();
@@ -75,7 +78,7 @@ const subirImagenAGridFS = async (bucket, file) => {
       });
     }
   };
-
+  
 // Función para obtener los salones de un edificio
 export const getBranch = async (req, res) => {
     try {
