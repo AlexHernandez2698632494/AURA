@@ -21,7 +21,7 @@ const url_orion = config.url_orion;
 
 // Cambia https:// a http:// para la URL base de Orion
 const ORION_BASE_URL = url_orion.replace("https://", "http://");
-
+//const ORION_BASE_URL = "https://orion.sima.udb.edu.sv/v2/"
 const getSensorMapping = async () => {
     try {
         const response = await axios.get(MAPPING_YML_URL);
@@ -78,7 +78,7 @@ export const getEntitiesWithAlerts = async (req, res) => {
       const sensorMapping = await getSensorMapping();
       const entities = await getEntities(headers, params);
       const alerts = await getAlerts();
-
+ const color = "#fff";
       const combinedData = entities.map(entity => {
           const variables = entity.sensors?.value ? 
               Object.entries(entity.sensors.value).map(([key, value]) => {
@@ -108,7 +108,7 @@ export const getEntitiesWithAlerts = async (req, res) => {
               type: entity.type,
               location: entity.location,
               externalUri: entity.externalUri,
-              color: highestAlert ? highestAlert.color : undefined,
+              color: highestAlert ? highestAlert.color : color,
               level: highestAlert ? highestAlert.level : undefined,
               variables,
               timeInstant: entity.timeInstant
