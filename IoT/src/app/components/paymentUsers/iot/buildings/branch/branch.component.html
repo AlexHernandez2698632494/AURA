@@ -32,7 +32,10 @@
         </div>
 
         <div class="actions">
-          <button mat-button class="action">Ver salon</button>
+          <button mat-button class="action"
+            (click)="navigateToViewBranch(building.buildingName, building.nivel, salon.nombre_salon, salon.fiware_servicepath)">
+            Ver salon
+          </button>
           <button mat-button class="action">Eliminar salon</button>
         </div>
       </div>

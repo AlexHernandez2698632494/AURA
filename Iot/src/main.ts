@@ -51,6 +51,8 @@ import { BuildingIndexComponent } from './app/components/paymentUsers/iot/buildi
 import { BuildingUpdateComponent } from './app/components/paymentUsers/iot/buildings/update/update.component';
 import { BuildingBranchComponent } from './app/components/paymentUsers/iot/buildings/branch/branch.component';
 import { BuildingBranchCreateComponent } from './app/components/paymentUsers/iot/buildings/branch/create/create.component';
+import { BuildingBranchIndexComponent } from './app/components/paymentUsers/iot/buildings/branch/index/index.component';
+import { DeviceComponent } from './app/components/paymentUsers/iot/fiware/device/device.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
@@ -249,6 +251,18 @@ const routes: Routes = [
   {
     path:'premium/building/:buildingName/branch/:id/create',
     component: BuildingBranchCreateComponent,
+    canActivate: [AuthGuard],
+    data: { authorities: ['super_usuario'] },
+  },
+  {
+    path:'premium/building/:buildingName/level/:id/branch/:branchName',
+    component: BuildingBranchIndexComponent,
+    canActivate: [AuthGuard],
+    data: { authorities: ['super_usuario'] },
+  },
+  {
+    path:'premium/devices',
+    component: DeviceComponent,
     canActivate: [AuthGuard],
     data: { authorities: ['super_usuario'] },
   },

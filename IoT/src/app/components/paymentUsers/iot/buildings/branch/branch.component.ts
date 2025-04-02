@@ -28,7 +28,7 @@ export class BuildingBranchComponent {
     private paymentUserService: PaymentUserService,
     private router: Router,
     private activatedRoute: ActivatedRoute // Inyectar ActivatedRoute
-  ) {}
+  ) { }
   @HostListener('window:resize', ['$event'])
   onResize(event: Event): void {
     this.isLargeScreen = window.innerWidth > 1024;
@@ -41,8 +41,8 @@ export class BuildingBranchComponent {
     // Obtener el 'id' de los parámetros de la URL y cargar el edificio
     const nivel = this.activatedRoute.snapshot.paramMap.get('id');
     const buildingName = this.activatedRoute.snapshot.paramMap.get('buildingName')
-    console.log("el nivel es ",nivel)
-    console.log("el nombre es ",buildingName)
+    console.log("el nivel es ", nivel)
+    console.log("el nombre es ", buildingName)
     if (nivel && buildingName) {
       this.loadBuilding(buildingName, nivel); // Llamar a loadBuilding pasando el id
     }
@@ -51,18 +51,18 @@ export class BuildingBranchComponent {
     this.paymentUserService.getBranchById(name, id).subscribe({
       next: (data) => {
         console.log('Respuesta del servicio:', data);
-  
+
         // Convertir el objeto en un arreglo
         this.branches = [data];  // `branches` ahora es un arreglo con un solo objeto
-  
+
         // Acceder al primer (y único) elemento del arreglo
         const branch = this.branches[0];  // Acceder al objeto
         console.log("d", branch.salones);
-  
+
         // Verificar si hay salones y cargarlos
         if (branch.salones) {
           // Usar `any` para el parámetro 'salon' en el `forEach`
-          branch.salones.forEach((salon: any) => { 
+          branch.salones.forEach((salon: any) => {
             this.loadImage(salon.imagen_salon);
           });
         }
@@ -72,9 +72,9 @@ export class BuildingBranchComponent {
       }
     });
   }
-  
-  
-  
+
+
+
   loadImage(imageId: string): void {
     this.paymentUserService.getBranchImageById(imageId).subscribe({
       next: (imageBlob) => {
@@ -86,7 +86,7 @@ export class BuildingBranchComponent {
       }
     });
   }
-  
+
   onBackClick(): void {
     const edificioId = this.branches[0]?.salones[0]?.edificioId; // Obtener el id del edificio
     if (edificioId) {
@@ -96,8 +96,13 @@ export class BuildingBranchComponent {
       console.error('No se encontró el edificioId');
     }
   }
-  
-  CreateBranch(buildingName:string, nivel:number) : void{
+
+  CreateBranch(buildingName: string, nivel: number): void {
     this.router.navigate([`/premium/building/${buildingName}/branch/${nivel}/create`]);
   }
+  navigateToViewBranch(buildingName: string, nivel: number, branchName: string, fiwareServicePath: string): void {
+    sessionStorage.setItem('fiware-servicepath', fiwareServicePath);
+    this.router.navigate([`/premium/building/${buildingName}/level/${nivel}/branch/${branchName}`]);
+  }
+
 }
