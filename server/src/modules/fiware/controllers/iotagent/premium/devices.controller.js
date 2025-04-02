@@ -8,11 +8,12 @@ const CONFIG_URL =
 
 // Función para obtener la URL del servicio de la configuración
 async function getConfig() {
-  const response = await fetch(CONFIG_URL);
-  const text = await response.text();
-  const config = yaml.load(text);
-  return config.sensors.url_json;
+    const response = await fetch(CONFIG_URL);
+    const text = await response.text();
+    const config = yaml.load(text);
+    return config.sensors; // Devuelve la configuración de los sensores, que incluye la URL de Orion
 }
+const config = await getConfig();
 
 export const createServiceDeviceJSON = async (req, res) => {
   try {
@@ -41,7 +42,7 @@ export const createServiceDeviceJSON = async (req, res) => {
     else if (!locacion)
       return res.status(400).json({ message: "Faltan la locacion." });
 
-    const url_json = await getConfig();
+    const url_json = config.url_json;
     const apiUrl = url_json.replace("https://", "http://");
 
     // Validación 1: Verificar si la API key ya existe en los servicios
@@ -85,6 +86,10 @@ export const createServiceDeviceJSON = async (req, res) => {
 
       // Crear el dispositivo si no existe
       await createDevice(deviceId, apikey, transporte, locacion, timezone, deviceName, fiware_service, fiware_servicepath, apiUrl);
+
+      // Enviar los datos después de crear el dispositivo
+      await sendData(apikey, deviceId, fiware_service, fiware_servicepath, res);
+
       return res.status(201).json({ message: "Dispositivo creado exitosamente." });
     } else {
       // Si el servicio no existe, se procederá con las validaciones y creación del servicio
@@ -153,6 +158,9 @@ export const createServiceDeviceJSON = async (req, res) => {
 
       // Ahora que el servicio ha sido creado, creamos el dispositivo
       await createDevice(deviceId, apikey, transporte, locacion, timezone, deviceName, fiware_service, fiware_servicepath, apiUrl);
+
+      // Enviar los datos después de crear el dispositivo
+      await sendData(apikey, deviceId, fiware_service, fiware_servicepath, res);
     }
 
   } catch (error) {
@@ -163,8 +171,8 @@ export const createServiceDeviceJSON = async (req, res) => {
 
 // Función que maneja la creación del dispositivo
 async function createDevice(deviceId, apikey, transporte, locacion, timezone, deviceName, fiware_service, fiware_servicepath, apiUrl) {
-  const entity_name = `urn:ngsi-ld:${deviceId.substring(0, 4)}:${deviceId.substring(4, 9)}`;
-  const entity_type = deviceId.substring(0, 4);
+  const entity_name = `urn:ngsi-ld:${deviceId.substring(0, 5)}:${deviceId.substring(6, 10)}`;
+  const entity_type = deviceId.substring(0, 5);
 
   const deviceBody = {
     devices: [
@@ -176,23 +184,9 @@ async function createDevice(deviceId, apikey, transporte, locacion, timezone, de
         protocol: "IoTA-JSON",
         transport: transporte, // Incluir transporte
         apikey: apikey,
-        address: {
-          type: "StructuredValue",
-          value: {
-            addressCountry: "SV",  // Puedes ajustar la dirección según tus necesidades
-            addressLocality: "San Salvador",
-            streetAddress: "Apopa Rio Tomayate",
-          },
-        },
-        location: {
-          type: "geo:json",
-          value: {
-            type: "Point",
-            coordinates: locacion, // Usar las coordenadas pasadas dinámicamente
-          },
-        },
         attributes: [
-          { object_id: "0ru", name: "sensors", type: "Object" },
+          { object_id: "sensors", name: "sensors", type: "Object" },
+          { object_id:"location", name:"location", type:"geo:json"},
         ],
         static_attributes: [
           {
@@ -220,4 +214,40 @@ async function createDevice(deviceId, apikey, transporte, locacion, timezone, de
       "fiware-servicepath": fiware_servicepath,
     },
   });
+}
+
+// Función sendData (agregada al final del flujo)
+async function sendData(apikey, deviceId, fiware_service, fiware_servicepath, res) {
+  const k = apikey;
+  const i = deviceId;
+
+  // URL del agente (puerto 7896)
+  const url_json = config.url_mqtt;
+  const apiUrl = url_json.replace("https://", "http://"); // Aseguramos que use http
+  // Cuerpo de la solicitud para enviar los datos al agente
+  const body = {
+    sensors: {},  // Un objeto vacío como mencionas
+  };
+  try {
+    // Enviamos la solicitud al agente en el puerto 7896
+    const response = await axios.post(`${apiUrl}`, body, {
+      headers: {
+        'fiware-service': fiware_service,
+        'fiware-servicepath': fiware_servicepath,
+      },
+      params: {
+        k, // Parámetro k
+        i, // Parámetro i
+      },
+    });
+
+    // Devolvemos la respuesta del agente
+    return res.status(200).json({
+      message: 'Datos enviados al agente correctamente',
+      response: response.data,
+    });
+  } catch (error) {
+    console.error('Error al enviar datos al agente:', error);
+    return res.status(500).json({ message: 'Error interno del servidor' });
+  }
 }
