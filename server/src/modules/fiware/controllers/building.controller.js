@@ -1,4 +1,5 @@
 import building from "../models/building.models.js";
+import FiwareBuilding from "../models/fiwareBuilding.models.js";
 import { Authority } from "../../auth/models/authorities.models.js";
 import mongoose from "mongoose";
 import { Readable } from "stream";
@@ -55,8 +56,11 @@ const subirImagenAGridFS = async (bucket, file) => {
 export const createBuilding = async (req, res) => {
   try {
     const { nombre, nivel, localizacion, authorities } = req.body;
-
-    // Validar archivos
+    const fiwareService = req.header('fiwareService');
+    if (!fiwareService) {
+      return res.status(400).json({ message: 'El servicio FIWARE es obligatorio.' });
+    }
+        // Validar archivos
     if (req.fileValidationError) {
       return res.status(400).json({ message: req.fileValidationError });
     }
@@ -128,6 +132,12 @@ export const createBuilding = async (req, res) => {
     });
 
     await nuevoEdificio.save();
+    const formattedBuildingName = nombre.replace(/ /g,"_")
+    const fiware_service = new FiwareBuilding({
+      fiware_service:fiwareService,
+      fiware_servicepath:formattedBuildingName
+    })
+    await fiware_service.save()
 
     return res.status(201).json({
       message: "Edificio creado con éxito",
@@ -144,14 +154,35 @@ export const createBuilding = async (req, res) => {
 
 export const getBuildings = async (req, res) => {
   try {
+    // Obtener todos los edificios activos
     const buildings = await building.find({
       enabled: true,
       estadoEliminacion: 0,
     });
 
-    res.status(200).json(buildings);
+    // Obtener todos los servicios Fiware
+    const fiwareBuildings = await FiwareBuilding.find();
+
+    // Formatear los datos y combinarlos
+    const buildingsWithFiware = buildings.map((b) => {
+      // Formatear el nombre del edificio para que coincida con fiware_servicepath
+      const formattedSubservice = b.nombre.replace(/ /g, "_");
+
+      // Buscar el servicio correspondiente
+      const fiwareData = fiwareBuildings.find(
+        (fb) => fb.fiware_servicepath === formattedSubservice
+      );
+
+      return {
+        ...b.toObject(),
+        fiware_service: fiwareData ? fiwareData.fiware_service : null,
+        fiware_servicepath: fiwareData ? fiwareData.fiware_servicepath : null,
+      };
+    });
+
+    res.status(200).json(buildingsWithFiware);
   } catch (error) {
-    console.error("Error obteniendo los edificios:", error);
+    console.error("Error obteniendo los edificios con Fiware:", error);
     res.status(500).json({ message: "Error al obtener los edificios." });
   }
 };

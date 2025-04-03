@@ -1,12 +1,11 @@
 import mongoose from "mongoose";
 import { connectDB } from "../../../config/db.js";
 
-const fiwareSchema = new mongoose.Schema({
+const fiwareBuildingSchema = new mongoose.Schema({
     fiware_service:{type:String,require:true},
-    fiware_service_building:{type:String,require:true},
     fiware_servicepath:{type:String,require:true},
 })
 
-const Fiware = connectDB.model("fiware",fiwareSchema)
+const FiwareBuilding = connectDB.model("fiwareBuilding",fiwareBuildingSchema)
 
-export default Fiware
+export default FiwareBuilding

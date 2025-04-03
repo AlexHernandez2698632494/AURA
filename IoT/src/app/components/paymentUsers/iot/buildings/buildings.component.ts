@@ -77,9 +77,18 @@ export class BuildingsComponent {
 
   // Método para redirigir a la página de ver edificio
   navigateToViewBuilding(buildingId: string): void {
+    // Buscar el edificio por ID
+    const building = this.buildings.find(b => b._id === buildingId);
+    
+    if (building && building.fiware_servicepath) {
+      // Guardar fiware_servicepath en sessionStorage
+      sessionStorage.setItem('fiware-servicepath', building.fiware_servicepath);
+    }
+  
+    // Redirigir a la vista del edificio
     this.router.navigate([`/premium/building/index`, buildingId]);
   }
-
+  
   // Método para redirigir a la página de editar edificio
   navigateToEditBuilding(buildingId: string): void {
     console.log(buildingId)

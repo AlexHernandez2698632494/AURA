@@ -135,7 +135,8 @@ export class PaymentUserService {
 
 
   createBuilding(formData: FormData): Observable<any> {
-    const headers = this.getAuthHeaders();
+    const headers = this.getAuthHeaders()
+  .append('fiwareService', sessionStorage.getItem('fiware-service') || '')
     return this.http.post(`${this.getApiUrl()}/v1/smartcity/building`, formData, { headers });
   }
 
@@ -182,7 +183,9 @@ export class PaymentUserService {
   }
 
   createBranch(formData: FormData): Observable<any> {
-    const headers = this.getAuthHeaders();
+    const headers = this.getAuthHeaders()
+  .append('fiware-service', sessionStorage.getItem('fiware-service') || '')
+  .append('fiware-servicepath', sessionStorage.getItem('fiware-servicepath') || '');
     return this.http.post(`${this.getApiUrl()}/v1/starcity/branch/`, formData, { headers });
   }
 

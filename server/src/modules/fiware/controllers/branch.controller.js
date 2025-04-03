@@ -1,4 +1,5 @@
 import building from "../models/building.models.js";
+import Fiware from "../models/fiware.models.js"
 import { Authority } from "../../auth/models/authorities.models.js";
 import mongoose from "mongoose";
 import { Readable } from "stream";
@@ -31,15 +32,24 @@ const subirImagenAGridFS = async (bucket, file) => {
   export const createBranch = async (req, res) => {
     try {
       const { nombre_salon, nivel, buildingName } = req.body;
-  
+      const fiwareService = req.headers['fiware-service'];
+    const fiwareServicePath = req.headers['fiware-servicepath'];
+    if (!req.headers['fiware-service']) {
+      return res.status(400).json({
+          message: 'Faltan los headers requeridos: Fiware-Service.'
+      });
+  }else if (!req.headers['fiware-servicepath']) {
+      return res.status(400).json({ message: 'Faltan los headers requeridos: Fiware-ServicePath.' });
+  }
+
       // Formatear buildingName reemplazando los espacios por "_"
       const formattedBuildingName = buildingName.replace(/ /g, "_");
-  
+      const formattedBranchName = nombre_salon.replace(/ /g, "_")
       // Buscar el edificio por su nombre formateado
-      const foundBuilding = await building.findOne({ nombre: formattedBuildingName });
+      const foundBuilding = await building.findOne({ nombre: buildingName });
       if (!foundBuilding) {
         return res.status(400).json({
-          message: `El Edificio o Sucursal ${formattedBuildingName} no fue encontrado.`,
+          message: `El Edificio o Sucursal ${buildingName} no fue encontrado.`,
         });
       }
   
@@ -54,17 +64,24 @@ const subirImagenAGridFS = async (bucket, file) => {
       // Subir la imagen al GridFS
       const bucket = new mongoose.mongo.GridFSBucket(connectDB.db, { bucketName: "salones" });
       const imagenSalonId = await subirImagenAGridFS(bucket, req.files.imagen_salon[0]);
-  
+      const fiwareServicePathFormatted = `/${formattedBuildingName}/nivel_${nivel}/${formattedBranchName}`;
       // Crear el nuevo salón en la base de datos dinámica
       const nuevoSalon = new SalonModel({
         nombre_salon,
         imagen_salon: imagenSalonId,
         edificioId: foundBuilding._id,
         nivel,
-        fiware_servicepath: `/${formattedBuildingName}/nivel_${nivel}/${nombre_salon}`,
+        fiware_servicepath: fiwareServicePathFormatted,
       });
   
       await nuevoSalon.save();
+      const fiware = new Fiware({
+        fiware_service:fiwareService,
+        fiware_service_building:fiwareServicePath,
+        fiware_servicepath:fiwareServicePathFormatted,
+      })
+
+      await fiware.save()
   
       return res.status(201).json({
         message: "Salón creado con éxito",

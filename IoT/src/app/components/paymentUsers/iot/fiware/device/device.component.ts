@@ -124,7 +124,8 @@ export class DeviceComponent implements OnInit, AfterViewInit {
         timezone: this.getTimezone(),
         transporte: transporte,  // Asignar valor de transporte aquí
         locacion: [formData.latitud, formData.longitud],
-        deviceName: formData.name
+        deviceName: formData.name,
+        deviceType:"Building"
       };
   
       // Mostrar los datos con SweetAlert2
