@@ -1,8 +1,8 @@
 import axios from 'axios';
 import yaml from 'js-yaml';
 import Alert from "../models/Alert.models.js";
-import Device from "../models/iotagent/devices.models.js";
-
+import mongoose from 'mongoose';
+import { connectOrionDB } from '../../../config/db.js';
 const MAPPING_YML_URL = "https://raw.githubusercontent.com/AlexHernandez2698632494/IoT/refs/heads/master/server/src/modules/config/ngsi.api.service.yml";
 
 // Función para obtener la URL del servicio de la configuración
@@ -53,6 +53,38 @@ const getAlerts = async () => {
     const alerts = await Alert.find({ estadoEliminacion: 0 });
     return alerts;
 };
+
+// Ruta para obtener los 'servicepath' de las entidades
+export const getServicePaths = async (req, res) => {
+  try {
+    const fiwareService = req.headers['fiware-service'];
+    if (!fiwareService) {
+      return res.status(400).json({ error: 'El header fiware-service es requerido' });
+    }
+
+    // Conectar a la base de datos de Orion usando el fiwareService (MongoDB nativo)
+    const connection = await connectOrionDB(fiwareService);
+    const db = connection.db();
+    const entitiesCollection = db.collection('entities');
+
+    // Obtenemos solo los campos necesarios: "_id.servicePath"
+    const entitiesCursor = entitiesCollection.find({}, { projection: { "_id.servicePath": 1 } });
+    const entities = await entitiesCursor.toArray();
+
+    // Extraemos todos los servicePath
+    const servicePaths = entities.map(ent => ent._id.servicePath);
+
+    // Eliminamos duplicados usando Set
+    const uniqueServicePaths = [...new Set(servicePaths)];
+
+    // Devolvemos solo la lista de servicePath únicos
+    res.status(200).json(uniqueServicePaths);
+  } catch (error) {
+    console.error('❌ Error al obtener los servicePath:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 
 export const getEntitiesWithAlerts = async (req, res) => {
   try {
@@ -121,96 +153,6 @@ export const getEntitiesWithAlerts = async (req, res) => {
       res.status(500).json({ message: 'Error al obtener datos combinados.' });
   }
 };
-
-
-export const getSubService = async (req, res) => {
-    try {
-      const service = req.headers['fiware-service'];
-  
-      if (!service) {
-        return res.status(400).json({ error: "El header fiware-service es requerido" });
-      }
-  
-      // Buscar los dispositivos que pertenecen al servicio especificado
-      const devices = await Device.find({ service });
-  
-      if (!devices || devices.length === 0) {
-        return res.status(404).json({ error: `No se encontraron dispositivos para el servicio ${service}` });
-      }
-  
-      // Usamos un objeto para agrupar las coordenadas por subservicio, evitando duplicados
-      const subservicesMap = {};
-  
-      devices.forEach(device => {
-        const subservice = device.subservice;  // Obtener el subservicio
-        const coordinates = device.location?.value?.coordinates;  // Obtener las coordenadas
-  
-        if (coordinates && coordinates.length >= 2) {
-          // Si no existe el subservicio en el mapa, lo agregamos con sus coordenadas
-          if (!subservicesMap[subservice]) {
-            subservicesMap[subservice] = {
-              subservice, // Almacenamos el subservicio
-              latitude: coordinates[0],
-              longitude: coordinates[1],
-            };
-          }
-        } else {
-          // Si no hay coordenadas, también se agrega, pero con null
-          if (!subservicesMap[subservice]) {
-            subservicesMap[subservice] = {
-              subservice,
-              latitude: null,
-              longitude: null,
-            };
-          }
-        }
-      });
-  
-      // Convertimos el mapa a una lista
-      const subservices = Object.values(subservicesMap);
-  
-      // Ordenamos los subservicios alfabéticamente por nombre de subservicio en orden ascendente
-      subservices.sort((a, b) => a.subservice.localeCompare(b.subservice));
-  
-      // Devolver la respuesta con subservicios y sus ubicaciones
-      return res.json(subservices);
-  
-    } catch (error) {
-      console.error("Error al obtener subservicios:", error);
-      return res.status(500).json({
-        error: "Hubo un problema al obtener los subservicios.",
-      });
-    }
-};
-
-  
-// export const getSubService = async (req, res) => {
-//     try {
-//         const service = req.headers['fiware-service'] || 'sv';
-
-//         if(!service){
-//             return res.status(400).json({error: "the header fiware-service is required"});
-//         }
-
-//         // Buscar los dispositivos que pertenecen al servicio especificado
-//         const devices = await Device.find({ service });
-
-//         if(!devices || devices.length === 0){
-//             return res.status(404).json({error: `No devices found for service ${service}`});
-//         }
-
-//         const subservices = [...new Set(devices.map((device) => device.subservice))];
-
-//         // Devolver los subservicios tal como están en la base de datos
-//         return res.json(subservices);
-
-//   } catch (error) {
-//     console.error("Error al obtener subservicios:", error);
-//     return res.status(500).json({
-//       error: "Hubo un problema al obtener los subservicios.",
-//     });
-//   }
-// };
 
 export const sendDataToAgent = async (req, res) => {
   try {

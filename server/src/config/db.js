@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-
+import { MongoClient } from 'mongodb';
 // Cargar las variables de entorno
 dotenv.config();
 
@@ -19,7 +19,21 @@ export const connectBuildingDB = async (buildingName) => {
     throw new Error(`No se pudo conectar a la base de datos: building-${formattedBuildingName}`);
   }
 };
-// Conectar a la base de datos de autenticación
+
+// Función para crear una conexión dinámica con la base de datos de Orion
+export const connectOrionDB = async (fiwareService) => {
+  const uri = `mongodb://127.0.0.1:27019/orion-${fiwareService}`; // Asegúrate de que esta URL sea la correcta
+  const client = new MongoClient(uri);
+
+  try {
+    await client.connect();
+    console.log(`🌍 Conectado a la base de datos de Orion: ${uri}`);
+    return client; // Retorna el cliente de la conexión
+  } catch (error) {
+    console.error('❌ Error al conectar a la base de datos de Orion:', error);
+    throw new Error('No se pudo conectar a la base de datos');
+  }
+};// Conectar a la base de datos de autenticación
 connectDB.once("open", () => {
   console.log("📌 Conectado a la base de datos de autenticacion");
   console.log(`MongoDB Conectado: ${connectDB.host}`);  // Verificar la conexión de DB de autenticación
