@@ -3,6 +3,10 @@ import yaml from 'js-yaml';
 import Alert from "../models/Alert.models.js";
 import mongoose from 'mongoose';
 import { connectOrionDB } from '../../../config/db.js';
+import Fiware from '../models/fiware.models.js';
+import FiwareBuilding from '../models/fiwareBuilding.models.js';
+import building from "../models/building.models.js"; 
+
 const MAPPING_YML_URL = "https://raw.githubusercontent.com/AlexHernandez2698632494/IoT/refs/heads/master/server/src/modules/config/ngsi.api.service.yml";
 
 // Función para obtener la URL del servicio de la configuración
@@ -85,6 +89,69 @@ export const getServicePaths = async (req, res) => {
   }
 };
 
+export const getSubServiceBuilding = async (req, res) => {
+  try {
+      const service = req.headers['fiware-service'];
+
+      if (!service) {
+          return res.status(400).json({ error: "El header fiware-service es requerido" });
+      }
+
+      const buildings = await FiwareBuilding.find({ fiware_service: service });
+
+      if (!buildings || buildings.length === 0) {
+          return res.status(404).json({ error: `No se encontraron servicepaths para el servicio ${service}` });
+      }
+
+      const subservices = await Promise.all(buildings.map(async (fiwareBuilding) => {
+          try {
+              const buildingName = fiwareBuilding.fiware_servicepath.replace(/_/g, ' ');
+              const buildingData = await building.findOne({ nombre: buildingName });
+              return {
+                  subservice: fiwareBuilding.fiware_servicepath,
+                  location: buildingData ? buildingData.localizacion : null,
+                  name:buildingData ? buildingData.nombre : null,
+                  nivel:buildingData ? buildingData.nivel : null
+              };
+          } catch (err) {
+              console.error(`Error al buscar el edificio ${fiwareBuilding.fiware_servicepath}:`, err);
+              return { subservice: fiwareBuilding.fiware_servicepath, location: null };
+          }
+      }));
+
+      subservices.sort((a, b) => a.subservice.localeCompare(b.subservice));
+
+      return res.json(subservices);
+  } catch (error) {
+      console.error("Error al obtener subservicios de edificios:", error);
+      return res.status(500).json({ error: "Hubo un problema al obtener los subservicios de edificios." });
+  }
+};
+
+export const getSubServiceBranch = async (req, res) => {
+  try {
+      const service = req.headers['fiware-service'];
+      const serviceBuilding = req.headers['fiware-service-building'];
+
+      if (!service || !serviceBuilding) {
+          return res.status(400).json({ error: "Los headers fiware-service y fiware-service-building son requeridos" });
+      }
+
+      const branches = await Fiware.find({ fiware_service: service, fiware_service_building: serviceBuilding });
+
+      if (!branches || branches.length === 0) {
+          return res.status(404).json({ error: `No se encontraron servicepaths para el servicio ${service} y el edificio ${serviceBuilding}` });
+      }
+
+      const subservices = branches.map(branch => ({ subservice: branch.fiware_servicepath }));
+      subservices.sort((a, b) => a.subservice.localeCompare(b.subservice));
+
+      return res.json(subservices);
+  } catch (error) {
+      console.error("Error al obtener subservicios de sucursales:", error);
+      return res.status(500).json({ error: "Hubo un problema al obtener los subservicios de sucursales." });
+  }
+};
 
 export const getEntitiesWithAlerts = async (req, res) => {
   try {
