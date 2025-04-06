@@ -1,20 +1,19 @@
 <div class="app-container">
 
-    <div class="main-content">
-      <!-- Selector de ubicación -->
-      <select id="location" class="map-selector" (change)="onLocationChange($event)">
-        <option value="/#" selected>/#</option>
-        <option *ngFor="let subservice of subservices" [value]="subservice.subservice">
-          {{ subservice.subservice }}
-        </option>
-      </select>
-      <!-- Contenedor para el mapa -->
-      <div id="map"></div>
-  
-      <!-- Contenedor para el bottom tab -->
-      <div id="bottom-tab-container">
-        <app-nav></app-nav>
-      </div>
+  <div class="main-content">
+    <!-- Selector de ubicación -->
+    <select id="location" class="map-selector" (change)="onLocationChange($event)">
+      <option value="/#" selected>/#</option>
+      <option *ngFor="let subservice of subservices" [value]="subservice">
+        {{ subservice }}
+      </option>
+    </select>
+    <!-- Contenedor para el mapa -->
+    <div id="map"></div>
+
+    <!-- Contenedor para el bottom tab -->
+    <div id="bottom-tab-container">
+      <app-nav></app-nav>
     </div>
   </div>
-  
+</div>

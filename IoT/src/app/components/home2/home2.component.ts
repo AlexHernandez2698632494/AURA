@@ -30,6 +30,9 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       // Si no existen, las creamos con los valores correspondientes
       sessionStorage.setItem('fiware-service', 'sv');
       sessionStorage.setItem('fiware-servicepath', '/#');
+    } else {
+      // Si existe el servicio, aseguramos que `fiware-servicepath` se reinicie a "/#"
+      sessionStorage.setItem('fiware-servicepath', '/#');
     }
   
     this.initializeIcons();
@@ -43,7 +46,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       }
     });
   }
-  
+    
 
   loadSubServices(): void {
     const fiwareService = sessionStorage.getItem('fiware-service');
@@ -101,35 +104,61 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     const selectElement = event.target as HTMLSelectElement;
     const selectedSubservice = selectElement.value;
   
-    const subservice = this.subservices.find(service => service.subservice === selectedSubservice);
-    
-    if (subservice && subservice.latitude != null && subservice.longitude != null) {
-      const newLocation: [number, number] = [subservice.latitude, subservice.longitude];
-      const newZoom = 17;
+    // Guardar el subservicio seleccionado en sessionStorage como fiware-servicepath
+    sessionStorage.setItem('fiware-servicepath', selectedSubservice);
   
-      if (this.map) {
-        this.map.setView(newLocation, newZoom);
-        L.marker(newLocation).addTo(this.map).openPopup();
-      }
-    } else {
-      console.error('Coordenadas no válidas para el subservicio:', selectedSubservice);
-    }
+    // Cargar las entidades después de que se ha actualizado el subservicio
+    this.loadEntitiesWithAlerts(); // Recargar las entidades con el nuevo subservicio seleccionado
   }
 
   private loadEntitiesWithAlerts(): void {
     const fiwareService = sessionStorage.getItem('fiware-service') || '';
     const fiwareServicePath = sessionStorage.getItem('fiware-servicepath') || '';
   
+    let minLat: number = Infinity;
+    let maxLat: number = -Infinity;
+    let minLng: number = Infinity;
+    let maxLng: number = -Infinity;
+  
     this.fiwareService.getEntitiesWithAlerts(fiwareService, fiwareServicePath)
       .subscribe((entities) => {
+        console.log('Entidades con alertas:', entities);  // Muestra todas las entidades en consola
+  
+        // Limpia cualquier marcador previo
+        this.map?.eachLayer(layer => {
+          if (layer instanceof L.Marker) {
+            this.map!.removeLayer(layer);
+          }
+        });
+  
         entities.forEach((entity: any) => {
-          if (entity.location && entity.location.value && entity.color) {
+          if (entity.location && entity.location.value && entity.location.value.coordinates) {
             const [latitude, longitude] = entity.location.value.coordinates;
+  
+            // Actualizamos el bounding box con las coordenadas de esta entidad
+            minLat = Math.min(minLat, latitude);
+            maxLat = Math.max(maxLat, latitude);
+            minLng = Math.min(minLng, longitude);
+            maxLng = Math.max(maxLng, longitude);
+  
+            // Añadimos el marcador con el color de la entidad
             this.addColoredMarker(latitude, longitude, entity.color, entity.displayName, entity.type, entity.variables);
           }
         });
-      }, (error) => console.error('Error al obtener entidades:', error));
-  }
+  
+        // Ajustamos el mapa al bounding box de todas las entidades
+        if (this.map) {
+          const bounds = L.latLngBounds(
+            [minLat, minLng],  // Coordenada inferior izquierda
+            [maxLat, maxLng]   // Coordenada superior derecha
+          );
+          this.map.fitBounds(bounds);
+        }
+      }, (error) => {
+        console.error('Error al obtener entidades:', error);
+      });
+  }  
+  
   
   private addColoredMarker(lat: number, lng: number, color: string, name: string, type: string, variables: any[]): void {
     if (!this.map) return;
