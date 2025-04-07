@@ -23,7 +23,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   modalVisible: boolean = false;
   modalPosition: { top: string; left: string } = { top: '0px', left: '0px' };
 
-  constructor(private fiwareService: FiwareService) {}
+  constructor(private fiwareService: FiwareService) { }
 
   ngAfterViewInit(): void {
     if (!sessionStorage.getItem('fiware-service') && !sessionStorage.getItem('fiware-servicepath')) {
@@ -77,7 +77,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
   onLocationChange(event: Event): void {
     const selectedValue = (event.target as HTMLSelectElement).value;
-  
+
     // Si se selecciona Monitoreo, actualizamos sessionStorage y recargamos las entidades
     if (selectedValue === 'monitoreo') {
       // Establecemos fiware-servicepath como "/#"
@@ -89,7 +89,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       // Para otros subservicios
       const fiwareService = sessionStorage.getItem('fiware-service') || 'sv'; // Establece el servicio por defecto
       const token = sessionStorage.getItem('token') || localStorage.getItem('token'); // Obtener el token
-  
+
       if (token) {
         // Si se usa getSubServiceBuilding, guardamos los dos valores
         sessionStorage.setItem('fiware-servicepath', selectedValue);
@@ -100,12 +100,12 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
         sessionStorage.setItem('fiware-servicepath', selectedValue);
         console.log('Subservicio de path seleccionado:', selectedValue);
       }
-  
+
       // Cargar entidades con alertas con el subservicio seleccionado
-      this.loadEntitiesWithAlerts(); 
+      this.loadEntitiesWithAlerts();
     }
   }
-  
+
   updateFiwareServicePath(selectedValue: string): void {
     const fiwareService = sessionStorage.getItem('fiware-service') || 'sv';
     sessionStorage.setItem('fiware-servicepath', selectedValue);
@@ -122,13 +122,13 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   updateLocationSelectForMonitoreo(): void {
     const fiwareService = sessionStorage.getItem('fiware-service') || 'sv'; // Establece el servicio por defecto
     const selectElement = document.getElementById('location') as HTMLSelectElement;
-    
+
     // Obtener el valor seleccionado antes de borrar las opciones
     const currentSelectedValue = selectElement.value;
 
     // Aseguramos que la opción "/#" esté siempre presente en el select
     let hashOption = selectElement.querySelector('option[value="/#"]') as HTMLOptionElement;
-    
+
     // Si no existe la opción "/#", la agregamos
     if (!hashOption) {
       hashOption = document.createElement('option');
@@ -145,14 +145,14 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     otherOptions.forEach(option => option.remove());
 
     const token = sessionStorage.getItem('token') || localStorage.getItem('token'); // Obtener el token
-    
+
     // Si el token existe, cargamos los subservicios de getSubServiceBuilding
     if (token) {
       console.log('Cargando subservicios con el token (edificios)...');
 
       this.fiwareService.getSubServiceBuilding(fiwareService).subscribe((subservices) => {
         console.log('Subservicios recibidos de getSubServiceBuilding:', subservices);
-        
+
         if (subservices && subservices.length > 0) {
           const buildings: any[] = [];
 
@@ -182,20 +182,41 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
                   .addTo(this.map!);
 
                 // Almacenar los edificios con su ubicación
-                buildings.push({ 
+                buildings.push({
                   name: subservice.name,
                   location: [latitude, longitude],
                   subservice: subservice.subservice,
                   nivel: subservice.nivel,
+                  salones: subservice.salones,  // Añadimos la lista de salones
                   marker
                 });
 
-                // Mostrar un pop-up con la información del edificio
-                const nivelInfo = `Número de plantas: ${subservice.nivel}`;
-                marker.bindPopup(`
-                  <b>${subservice.name}</b><br>
-                  <i>${nivelInfo}</i>
-                `);
+                // Construir el contenido del pop-up
+                let popupContent = `<b>${subservice.name}</b><br>
+                  <i>Número de plantas: ${subservice.nivel}</i><br>`;
+
+                if (subservice.salones && subservice.salones.length > 0) {
+                  // Mostrar los salones de cada planta
+                  const nivelesSalones: { [nivel: string]: any[] } = subservice.salones.reduce((acc: { [nivel: string]: any[] }, salon: { nombre: string, nivel: number, subservice: string, enlace: string }) => {
+                    if (!acc[salon.nivel]) {
+                      acc[salon.nivel] = [];
+                    }
+                    acc[salon.nivel].push(salon);
+                    return acc;
+                  }, {});
+                  
+                  for (let nivel in nivelesSalones) {
+                    popupContent += `<hr><b>Planta ${nivel}</b><br>`;
+                    nivelesSalones[nivel].forEach((salon: { nombre: string, nivel: number, subservice: string, enlace: string }) => {
+                      popupContent += `<a href="${salon.enlace}" target="_blank">${salon.nombre}</a><br>`;
+                    });
+                  }
+
+                } else {
+                  popupContent += '<i>No hay salones disponibles</i>';
+                }
+
+                marker.bindPopup(popupContent);
               }
             } else {
               console.log('Subservicio inválido:', subservice);
@@ -213,11 +234,11 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       });
     } else {
       console.log('Token no encontrado, cargando subservicios de getSubServices...');
-      
+
       // Si no hay token, obtenemos los subservicios de getSubServices
       this.fiwareService.getSubServices(fiwareService).subscribe((subservices) => {
         console.log('Subservicios recibidos de getSubServices:', subservices);
-        
+
         if (subservices && subservices.length > 0) {
           subservices.forEach((subservice: string) => {
             if (subservice) {
@@ -289,7 +310,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     const R = 6371; // Radio de la Tierra en kilómetros
     const dLat = this.degreesToRadians(lat2 - lat1);
     const dLon = this.degreesToRadians(lon2 - lon1);
-    const a = 
+    const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(this.degreesToRadians(lat1)) * Math.cos(this.degreesToRadians(lat2)) *
       Math.sin(dLon / 2) * Math.sin(dLon / 2);
@@ -307,44 +328,44 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     const token = sessionStorage.getItem('token') || localStorage.getItem('token'); // Obtener el token
     const fiwareService = sessionStorage.getItem('fiware-service') || '';
     const fiwareServicePath = sessionStorage.getItem('fiware-servicepath') || '';
-    
+
     if (token) {
       // No cargamos las entidades si existe el token (es decir, se muestran edificios)
       console.log('Token encontrado, no cargamos entidades. Mostrando edificios...');
       return;
     }
-  
+
     let minLat: number = Infinity;
     let maxLat: number = -Infinity;
     let minLng: number = Infinity;
     let maxLng: number = -Infinity;
-  
+
     this.fiwareService.getEntitiesWithAlerts(fiwareService, fiwareServicePath)
       .subscribe((entities) => {
         console.log('Entidades con alertas:', entities);  // Muestra todas las entidades en consola
-  
+
         // Limpia cualquier marcador previo
         this.map?.eachLayer(layer => {
           if (layer instanceof L.Marker) {
             this.map!.removeLayer(layer);
           }
         });
-  
+
         entities.forEach((entity: any) => {
           if (entity.location && entity.location.value && entity.location.value.coordinates) {
             const [latitude, longitude] = entity.location.value.coordinates;
-  
+
             // Actualizamos el bounding box con las coordenadas de esta entidad
             minLat = Math.min(minLat, latitude);
             maxLat = Math.max(maxLat, latitude);
             minLng = Math.min(minLng, longitude);
             maxLng = Math.max(maxLng, longitude);
-  
+
             // Añadimos el marcador con el color de la entidad
             this.addColoredMarker(latitude, longitude, entity.color, entity.displayName, entity.type, entity.variables);
           }
         });
-  
+
         // Ajustamos el mapa al bounding box de todas las entidades
         if (this.map) {
           const bounds = L.latLngBounds(
@@ -357,7 +378,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
         console.error('Error al obtener entidades:', error);
       });
   }
-    // Método para cargar entidades con alertas en el mapa
+  // Método para cargar entidades con alertas en el mapa
 
   private addColoredMarker(lat: number, lng: number, color: string, name: string, type: string, variables: any[]): void {
     if (!this.map) return;
