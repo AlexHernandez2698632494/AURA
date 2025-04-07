@@ -15,6 +15,7 @@ import { CommonModule } from '@angular/common';
 export class HomeComponent implements AfterViewInit, OnDestroy {
   title = 'Home';
   subservices: any[] = [];
+  buildings: any[] = [];
   private map: L.Map | undefined;
   private currentLocation: [number, number] = [13.7942, -88.8965];
   private currentZoom: number = 7;
@@ -123,8 +124,8 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     const selectElement = document.getElementById('location') as HTMLSelectElement;
     
     // Obtener el valor seleccionado antes de borrar las opciones
-    const currentSelectedValue = selectElement.value; 
-  
+    const currentSelectedValue = selectElement.value;
+
     // Aseguramos que la opción "/#" esté siempre presente en el select
     let hashOption = selectElement.querySelector('option[value="/#"]') as HTMLOptionElement;
     
@@ -135,34 +136,77 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       hashOption.text = '/#';
       selectElement.appendChild(hashOption);
     }
-  
+
     // Volver a marcarla como seleccionada si es el valor actual
     hashOption.selected = (currentSelectedValue === '/#');
-  
+
     // Limpiar las otras opciones del select, pero sin eliminar "/#"
     const otherOptions = selectElement.querySelectorAll('option:not([value="/#"])');
     otherOptions.forEach(option => option.remove());
-  
+
     const token = sessionStorage.getItem('token') || localStorage.getItem('token'); // Obtener el token
     
     // Si el token existe, cargamos los subservicios de getSubServiceBuilding
     if (token) {
       console.log('Cargando subservicios con el token (edificios)...');
-  
+
       this.fiwareService.getSubServiceBuilding(fiwareService).subscribe((subservices) => {
         console.log('Subservicios recibidos de getSubServiceBuilding:', subservices);
         
         if (subservices && subservices.length > 0) {
+          const buildings: any[] = [];
+
+          // Agregar los edificios al mapa
           subservices.forEach((subservice: any) => {
             if (subservice && subservice.subservice) {
               const option = document.createElement('option');
               option.value = subservice.subservice;
               option.text = subservice.name;
               selectElement.appendChild(option);
+
+              // Añadir marcador en el mapa con icono y mostrar la información del edificio
+              const location = subservice.location;
+              if (location && location.length === 2) {
+                const [latitude, longitude] = location;
+
+                // Crear un icono estándar para cada edificio
+                const buildingIcon = L.icon({
+                  iconUrl: '/assets/images/building-icon.png',
+                  iconSize: [32, 32], // Tamaño del icono
+                  iconAnchor: [16, 32], // Centro del ícono (ancla en el centro)
+                  popupAnchor: [0, -32], // Donde aparecerá el pop-up
+                });
+
+                // Crear marcador y añadir al mapa
+                const marker = L.marker([latitude, longitude], { icon: buildingIcon })
+                  .addTo(this.map!);
+
+                // Almacenar los edificios con su ubicación
+                buildings.push({ 
+                  name: subservice.name,
+                  location: [latitude, longitude],
+                  subservice: subservice.subservice,
+                  nivel: subservice.nivel,
+                  marker
+                });
+
+                // Mostrar un pop-up con la información del edificio
+                const nivelInfo = `Número de plantas: ${subservice.nivel}`;
+                marker.bindPopup(`
+                  <b>${subservice.name}</b><br>
+                  <i>${nivelInfo}</i>
+                `);
+              }
             } else {
               console.log('Subservicio inválido:', subservice);
             }
           });
+
+          // Guardar edificios en el estado
+          this.buildings = buildings;
+
+          // Llamada a la función que manejará la selección de un edificio
+          this.handleBuildingSelection(selectElement, buildings);
         } else {
           console.log('No se recibieron subservicios de getSubServiceBuilding');
         }
@@ -191,7 +235,73 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
       });
     }
   }
-      
+
+  handleBuildingSelection(selectElement: HTMLSelectElement, buildings: any[]): void {
+    selectElement.addEventListener('change', (event) => {
+      const target = event.target as HTMLSelectElement; // Asegúrate de que event.target es un HTMLSelectElement
+
+      // Si target es null, retornamos
+      if (!target) return;
+
+      const selectedBuilding = target.value; // Ahora podemos acceder al value con seguridad
+
+      if (selectedBuilding === '/#') {
+        // Triangular todos los edificios
+        this.triangleAllBuildings(buildings);
+        return;
+      }
+
+      const building = buildings.find((b) => b.subservice === selectedBuilding);
+
+      if (building) {
+        // Centrar el mapa en el edificio seleccionado con zoom máximo
+        this.map!.setView(building.location, 20); // Zoom 20 para ver el edificio de cerca
+
+        // Mostrar solo ese edificio
+        this.showOnlySelectedBuilding(building, buildings);
+      }
+    });
+  }
+
+  triangleAllBuildings(buildings: any[]): void {
+    // Centrar el mapa para mostrar todos los edificios
+    const locations = buildings.map(b => b.location);
+    const bounds = locations.length > 0 ? L.latLngBounds(locations) : null;
+
+    if (bounds) {
+      this.map!.fitBounds(bounds, { maxZoom: 18 }); // Ajustar el zoom entre 16 y 18 para ver todos los edificios
+    }
+  }
+
+  showOnlySelectedBuilding(building: any, buildings: any[]): void {
+    // Remover todos los marcadores actuales del mapa
+    this.map!.eachLayer((layer) => {
+      if (layer instanceof L.Marker) {
+        this.map!.removeLayer(layer);
+      }
+    });
+
+    // Mostrar solo el edificio seleccionado
+    building.marker.addTo(this.map);
+  }
+
+  calculateDistance([lat1, lon1]: [number, number], [lat2, lon2]: [number, number]): number {
+    const R = 6371; // Radio de la Tierra en kilómetros
+    const dLat = this.degreesToRadians(lat2 - lat1);
+    const dLon = this.degreesToRadians(lon2 - lon1);
+    const a = 
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.degreesToRadians(lat1)) * Math.cos(this.degreesToRadians(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c * 1000; // Distancia en metros
+    return distance;
+  }
+
+  degreesToRadians(degrees: number): number {
+    return degrees * (Math.PI / 180);
+  }
+
   // Método que carga las entidades con alertas (igual que en entidadesComponent)
   private loadEntitiesWithAlerts(): void {
     const token = sessionStorage.getItem('token') || localStorage.getItem('token'); // Obtener el token
