@@ -173,6 +173,96 @@ export const getSubServiceBranch = async (req, res) => {
   }
 };
 
+export const getSubServiceBuildingAndBranch = async (req, res) => {
+  try {
+    const service = req.headers['fiware-service'];
+    const servicePath = req.headers['fiware-servicepath']; // Para filtrar por el servicepath
+
+    if (!service) {
+      return res.status(400).json({ error: "El header fiware-service es requerido" });
+    }
+
+    const buildings = await FiwareBuilding.find({ fiware_service: service });
+
+    if (!buildings || buildings.length === 0) {
+      return res.status(404).json({ error: `No se encontraron edificios para el servicio ${service}` });
+    }
+
+    // Filtramos según el servicepath si se proporciona
+    let filteredBuildings = buildings;
+
+    if (servicePath && servicePath !== '/#') {
+      const formattedServicePath = servicePath.trim().replace(/_/g, ' ').toLowerCase();
+      filteredBuildings = buildings.filter((building) => {
+        const formattedBuildingPath = building.fiware_servicepath.trim().replace(/_/g, ' ').toLowerCase();
+        return formattedBuildingPath === formattedServicePath;
+      });
+    }
+
+    if (filteredBuildings.length === 0) {
+      return res.status(404).json({ error: `No se encontró el subservicio para el servicepath ${servicePath}` });
+    }
+
+    // Obtenemos los datos de los subservicios y los salones
+    const subservices = await Promise.all(filteredBuildings.map(async (fiwareBuilding) => {
+      try {
+        const buildingName = fiwareBuilding.fiware_servicepath.replace(/_/g, ' ');
+        const buildingData = await building.findOne({ nombre: buildingName });
+
+        // Obtener la ubicación y el nivel del edificio
+        const buildingLocation = buildingData ? buildingData.localizacion : null;
+        const buildingLevel = buildingData ? buildingData.nivel : null;
+
+        // Buscamos los salones dentro del edificio
+        const branches = await Fiware.find({ fiware_service: service, fiware_service_building: fiwareBuilding.fiware_servicepath });
+
+        // Generamos los salones con su enlace
+        const salonesConEnlace = branches.map(branch => {
+          const branchName = branch.fiware_servicepath.split('/').pop(); // El nombre del salón es la última parte del path
+          const branchLink = `http://localhost:4201/premium/building/${buildingName}/level/${buildingLevel}/branch/${branchName}`;
+          return {
+            nombre: branchName,
+            nivel: buildingLevel, // Usamos el mismo nivel del edificio
+            subservice: branch.fiware_servicepath,
+            enlace: branchLink
+          };
+        });
+
+        return {
+          name: buildingName, // Nombre del edificio
+          subservice: fiwareBuilding.fiware_servicepath, // Subservice del edificio
+          nivel: buildingLevel, // Nivel del edificio
+          location: buildingLocation, // Ubicación del edificio
+          salones: salonesConEnlace // Incluir los salones
+        };
+
+      } catch (err) {
+        console.error(`Error al buscar el edificio ${fiwareBuilding.fiware_servicepath}:`, err);
+        return { subservice: fiwareBuilding.fiware_servicepath, location: null };
+      }
+    }));
+
+    // Aplanamos el arreglo para devolver solo los edificios y salones con la información que solicitaste
+    const result = subservices.map(building => {
+      const { name, subservice, nivel, location, salones } = building;
+      return {
+        name,
+        subservice,
+        nivel,
+        location,
+        salones
+      };
+    });
+
+    return res.json(result);
+
+  } catch (error) {
+    console.error("Error al obtener subservicios de edificios y salones:", error);
+    return res.status(500).json({ error: "Hubo un problema al obtener los subservicios de edificios y salones." });
+  }
+};
+
+
 export const getEntitiesWithAlerts = async (req, res) => {
     try {
         // Verificar si los headers necesarios están presentes
