@@ -90,44 +90,64 @@ export const getServicePaths = async (req, res) => {
 };
 
 export const getSubServiceBuilding = async (req, res) => {
-  try {
+    try {
       const service = req.headers['fiware-service'];
-
+      const servicePath = req.headers['fiware-servicepath']; // Agregamos la variable para leer el servicepath
+  
       if (!service) {
-          return res.status(400).json({ error: "El header fiware-service es requerido" });
+        return res.status(400).json({ error: "El header fiware-service es requerido" });
       }
-
+  
       const buildings = await FiwareBuilding.find({ fiware_service: service });
-
+  
       if (!buildings || buildings.length === 0) {
-          return res.status(404).json({ error: `No se encontraron servicepaths para el servicio ${service}` });
+        return res.status(404).json({ error: `No se encontraron edificios para el servicio ${service}` });
       }
-
-      const subservices = await Promise.all(buildings.map(async (fiwareBuilding) => {
-          try {
-              const buildingName = fiwareBuilding.fiware_servicepath.replace(/_/g, ' ');
-              const buildingData = await building.findOne({ nombre: buildingName });
-              return {
-                  subservice: fiwareBuilding.fiware_servicepath,
-                  location: buildingData ? buildingData.localizacion : null,
-                  name:buildingData ? buildingData.nombre : null,
-                  nivel:buildingData ? buildingData.nivel : null
-              };
-          } catch (err) {
-              console.error(`Error al buscar el edificio ${fiwareBuilding.fiware_servicepath}:`, err);
-              return { subservice: fiwareBuilding.fiware_servicepath, location: null };
-          }
+  
+      // Filtramos según el servicepath si se proporciona, o devolvemos todos si es "/"
+      let filteredBuildings = buildings;
+  
+      if (servicePath && servicePath !== '/#') {
+        // Reemplazamos los guiones bajos por espacios en los servicePaths antes de compararlos
+        const formattedServicePath = servicePath.trim().replace(/_/g, ' ').toLowerCase();
+  
+        filteredBuildings = buildings.filter((building) => {
+          // Reemplazamos los guiones bajos por espacios en la base de datos para compararlo
+          const formattedBuildingPath = building.fiware_servicepath.trim().replace(/_/g, ' ').toLowerCase();
+          return formattedBuildingPath === formattedServicePath;
+        });
+      }
+  
+      if (filteredBuildings.length === 0) {
+        return res.status(404).json({ error: `No se encontró el subservicio para el servicepath ${servicePath}` });
+      }
+  
+      // Obtenemos los datos de los subservicios
+      const subservices = await Promise.all(filteredBuildings.map(async (fiwareBuilding) => {
+        try {
+          const buildingName = fiwareBuilding.fiware_servicepath.replace(/_/g, ' ');
+          const buildingData = await building.findOne({ nombre: buildingName });
+          return {
+            subservice: fiwareBuilding.fiware_servicepath,
+            location: buildingData ? buildingData.localizacion : null,
+            name: buildingData ? buildingData.nombre : null,
+            nivel: buildingData ? buildingData.nivel : null
+          };
+        } catch (err) {
+          console.error(`Error al buscar el edificio ${fiwareBuilding.fiware_servicepath}:`, err);
+          return { subservice: fiwareBuilding.fiware_servicepath, location: null };
+        }
       }));
-
+  
       subservices.sort((a, b) => a.subservice.localeCompare(b.subservice));
-
+  
       return res.json(subservices);
-  } catch (error) {
+    } catch (error) {
       console.error("Error al obtener subservicios de edificios:", error);
       return res.status(500).json({ error: "Hubo un problema al obtener los subservicios de edificios." });
-  }
-};
-
+    }
+  };
+    
 export const getSubServiceBranch = async (req, res) => {
   try {
       const service = req.headers['fiware-service'];
