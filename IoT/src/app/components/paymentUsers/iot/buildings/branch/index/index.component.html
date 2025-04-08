@@ -1,14 +1,15 @@
 <div *ngIf="isLargeScreen">
-    <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
+  <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
 </div>
 <div *ngIf="!isLargeScreen">
-    <app-bottom-tab></app-bottom-tab>
+  <app-bottom-tab></app-bottom-tab>
 </div>
+
 <div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
   <div class="main-container">
     <div class="header">
       <!-- Botón de regresar -->
-      <button mat-icon-button class="back-button" (click)="onBackClick()"> 
+      <button mat-icon-button class="back-button" (click)="onBackClick()">
         <mat-icon>arrow_back</mat-icon>
       </button>
       <h1>{{ branchName }}</h1>
@@ -18,5 +19,25 @@
         <p>Crear Dispositivo</p>
       </button>
     </div>
+
+
+    <!-- Contenedor para el dispositivo y gauges -->
+    <div class="device-info-container">
+      <div class="device-info-item" *ngFor="let device of devicesInfo">
+        <h3>{{ device.deviceName }}</h3>
+        <p>Sensores: {{ device.variableCount }}</p>
+        <button class="levelButton" [ngStyle]="{ 'background-color': device.color }">
+          Nivel {{ device.level }}
+        </button>
+        <a (click)="onViewDevice(device.deviceName)" class="buttonView">
+          Ver
+        </a>
+      </div>
+    </div>
+        <!-- Contenedor para el mapa -->
+   <div class="device-map">
+    <div id="map" style="height: 500px;"></div>
+   </div>  
+
   </div>
 </div>
