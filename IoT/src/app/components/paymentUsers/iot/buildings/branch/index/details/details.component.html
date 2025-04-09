@@ -1,0 +1,45 @@
+<div *ngIf="isLargeScreen">
+    <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
+  </div>
+  <div *ngIf="!isLargeScreen">
+    <app-bottom-tab></app-bottom-tab>
+  </div>
+  
+  <div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
+    <div class="main-container">
+        <div class="header">
+            <!-- Botón de regresar -->
+            <button mat-icon-button class="back-button" (click)="onBackClick()"> 
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            <h1>{{ branchName }} - {{ entitiesWithAlerts[0]?.deviceName }}</h1> <!-- Mostrar el nombre del salón y dispositivo -->
+        </div>
+  
+        <!-- Contenedor para el nombre del dispositivo y los gauges -->
+        <div class="device-info-container">
+            <div class="gauge-container">
+                <div class="columns">
+                    <div class="column" *ngFor="let entity of entitiesWithAlerts; let i = index">
+                        <div *ngFor="let variable of entity.variables">
+                            <div *ngIf="variable.value">
+                                <!-- Mostrar el gauge con color dinámico -->
+                                <ngx-gauge 
+                                    [value]="getNumericValue(variable.value)" 
+                                    [min]="getGaugeRange(variable).min" 
+                                    [max]="getGaugeRange(variable).max" 
+                                    [type]="'arch'"
+                                    [thresholds]="getGaugeThresholds(variable)">
+                                </ngx-gauge>
+                                <div class="variable-info">
+                                    <span class="variable-name">{{ variable.name }}:</span>
+                                    <span class="variable-value">{{ variable.value }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+  
