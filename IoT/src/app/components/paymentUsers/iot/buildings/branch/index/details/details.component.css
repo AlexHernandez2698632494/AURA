@@ -1,32 +1,32 @@
 .center {
-    margin-top: 20px;
-    justify-content: center;
-    min-height: 97vh;
-    transition: margin-left 0.3s ease;
-  }
-  
-  .shifted {
-    margin-left: 14%;
-    transition: margin-left 0.3s ease;
-  }
-  
-  .main-container {
-    margin-bottom: 20%;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    max-width: 90%;
-    padding: 20px;
-  }
-  
-  .back-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 20px;
-    color: #333;
-  }
-  
+  margin-top: 20px;
+  justify-content: center;
+  min-height: 97vh;
+  transition: margin-left 0.3s ease;
+}
+
+.shifted {
+  margin-left: 14%;
+  transition: margin-left 0.3s ease;
+}
+
+.main-container {
+  margin-bottom: 20%;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 90%;
+  padding: 20px;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: #333;
+}
+
 .header {
   background-color: #fff;
   border: 1px solid #ddd;
@@ -39,73 +39,132 @@
   max-width: 80%;
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Asegura que los elementos estén distribuidos */
+  justify-content: space-between;
 }
 
 .header h1 {
-  margin: 0; /* Elimina el margen que podría afectar la alineación */
-  font-size: 24px; /* Ajusta el tamaño del texto si es necesario */
-  flex-grow: 1; /* Hace que el h1 ocupe el espacio disponible y se centre */
-  text-align: center; /* Asegura que el texto esté centrado dentro del espacio */
+  margin: 0;
+  font-size: 24px;
+  flex-grow: 1;
+  text-align: center;
 }
-  
-  /* Estilo para el contenedor del nombre del dispositivo y los gauges */
+
+.device-info-container {
+  margin-top: 30px;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 80%;
+  margin-left: 15%;
+}
+
+.device-info-container h1 {
+  font-size: 22px;
+  color: #003366;
+  margin-bottom: 20px;
+}
+
+.device-name h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #003366;
+}
+
+.gauge-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.column {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.variable-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  color: #333;
+  margin-top: 10px;
+}
+
+.variable-name {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.variable-value {
+  color: #1a5fb4;
+  font-style: italic;
+}
+
+.ngx-gauge {
+  width: 80%;
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+/* RESPONSIVE - Columnas de 4 → 3 → 2 → 1 según el tamaño de pantalla */
+
+@media (max-width: 1024px) {
+  .column {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .header,
   .device-info-container {
-    margin-top: 30px;
-    background-color: #ffffff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-left: 5%;
+    max-width: 90%;
+  }
+}
+
+@media (max-width: 768px) {
+  .column {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .header,
+  .device-info-container {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 95%;
+  }
+
+  .back-button {
+    position: absolute;
+    left: 200x;
+  }
+
+  .header h1 {
+    font-size: 18px;
     text-align: center;
-    max-width: 80%;
-    margin-left: 15%;
-  }
-  
-  .device-name h2 {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    color: #003366;
-  }
-  
-  /* Contenedor para los gauges */
-  .gauge-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
   }
 
-  .column{
-    display: grid;
-    grid-template-columns: 30% 30% 30% 30%;
-    flex-wrap: wrap;
-    justify-content: center;
+  .device-info-container h1 {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .column {
+    grid-template-columns: 1fr;
   }
 
+  .header,
+  .device-info-container {
+    max-width: 98%;
+    padding: 15px;
+  }
 
-  .variable-info {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  .device-info-container h1 {
     font-size: 16px;
-    color: #333;
-    margin-top: 10px;
   }
-  
-  .variable-name {
-    font-weight: bold;
-    margin-right: 5px;
-  }
-  
-  .variable-value {
-    color: #1a5fb4;
-    font-style: italic;
-  }
-  
-  .ngx-gauge {
-    width: 80%;
-    max-width: 200px;
-    margin: 0 auto; /* Centrar el gauge dentro de su contenedor */
-  }
-  
+}
