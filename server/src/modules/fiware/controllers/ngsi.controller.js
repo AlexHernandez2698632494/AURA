@@ -290,7 +290,7 @@ export const getEntitiesWithAlerts = async (req, res) => {
       const color = "#fff";
 
       const combinedData = entities.map(entity => {
-          const variables = entity.sensors?.value ?
+          const variables = entity.sensors?.value ? 
               Object.entries(entity.sensors.value).map(([key, value]) => {
                   const mappedData = sensorMapping[key] || { label: key, unit: '' };
                   
@@ -325,6 +325,9 @@ export const getEntitiesWithAlerts = async (req, res) => {
               return max;
           }, null);
 
+          // Convertir y formatear el TimeInstant
+          const formattedTimeInstant = entity.TimeInstant?.value ? formatTimeInstant(entity.TimeInstant.value) : null;
+
           return {
               id: entity.id,
               type: entity.type,
@@ -333,7 +336,7 @@ export const getEntitiesWithAlerts = async (req, res) => {
               color: highestAlert ? highestAlert.color : color,
               level: highestAlert ? highestAlert.level : undefined,
               variables,
-              timeInstant: entity.timeInstant,
+              timeInstant: formattedTimeInstant,  // Aquí lo estamos incluyendo
               deviceName: entity.deviceName?.value, // Añadir deviceName
               deviceType: entity.deviceType?.value  // Añadir deviceType
           };
@@ -345,6 +348,33 @@ export const getEntitiesWithAlerts = async (req, res) => {
       res.status(500).json({ message: 'Error al obtener datos combinados.' });
   }
 };
+
+// Función para formatear el TimeInstant
+function formatTimeInstant(timeInstant) {
+  // Crear un objeto Date desde el valor del TimeInstant (es un string con formato ISO 8601)
+  const date = new Date(timeInstant);
+
+  // Restar 6 horas (para ajustarlo a la zona horaria GMT-6)
+  date.setHours(date.getHours() );  // Restar las 6 horas para ajustar a GMT-6
+console.log("Fecha ajustada:", date); // Para depuración
+  // Formatear la fecha
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = date.toLocaleString('es-ES', { month: 'short' });  // Obtiene el mes en español (abreviado)
+  const year = date.getFullYear();
+
+  // Convertir la hora a formato de 12 horas
+  let hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  let ampm = hours >= 12 ? 'P.M.' : 'A.M.';
+  
+  // Convertir a formato de 12 horas
+  hours = hours % 12;
+  hours = hours ? hours : 12; // La hora 0 debe ser 12 en formato de 12 horas
+
+  // Formato: dd-mmm-yyyy hh:mm A.M./P.M.
+  return `${day}-${month}-${year} ${hours}:${minutes} ${ampm}`;
+}
+
 
 export const sendDataToAgent = async (req, res) => {
   try {
