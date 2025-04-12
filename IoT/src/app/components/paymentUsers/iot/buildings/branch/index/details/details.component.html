@@ -1,11 +1,11 @@
 <div *ngIf="isLargeScreen">
     <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
-  </div>
-  <div *ngIf="!isLargeScreen">
+</div>
+<div *ngIf="!isLargeScreen">
     <app-bottom-tab></app-bottom-tab>
-  </div>
-  
-  <div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
+</div>
+
+<div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
     <div class="main-container">
         <div class="header">
             <!-- Botón de regresar -->
@@ -14,22 +14,26 @@
             </button>
             <h1>{{ branchName }} - {{ entitiesWithAlerts[0]?.deviceName }}</h1> <!-- Mostrar el nombre del salón y dispositivo -->
         </div>
-  
+
         <!-- Contenedor para el nombre del dispositivo y los gauges -->
         <div class="device-info-container">
+            <!-- Mostrar la última actualización -->
+            <h1>Última Actualización: {{ entitiesWithAlerts[0]?.timeInstant }}</h1>
             <div class="gauge-container">
                 <div class="columns">
                     <div class="column" *ngFor="let entity of entitiesWithAlerts; let i = index">
                         <div *ngFor="let variable of entity.variables">
                             <div *ngIf="variable.value">
-                                <!-- Mostrar el gauge con color dinámico -->
                                 <ngx-gauge 
-                                    [value]="getNumericValue(variable.value)" 
-                                    [min]="getGaugeRange(variable).min" 
-                                    [max]="getGaugeRange(variable).max" 
-                                    [type]="'arch'"
-                                    [thresholds]="getGaugeThresholds(variable)">
-                                </ngx-gauge>
+                                [value]="getNumericValue(variable.value)" 
+                                [min]="getGaugeRange(variable).min" 
+                                [max]="getGaugeRange(variable).max" 
+                                [type]="'arch'"
+                                [thick]="15"
+                                [foregroundColor]="variable.colorGauge" 
+                                [backgroundColor]="'black'" 
+                                [thresholds]="getGaugeThresholds(variable)">
+                              </ngx-gauge>
                                 <div class="variable-info">
                                     <span class="variable-name">{{ variable.name }}:</span>
                                     <span class="variable-value">{{ variable.value }}</span>
@@ -41,5 +45,4 @@
             </div>
         </div>
     </div>
-  </div>
-  
+</div>

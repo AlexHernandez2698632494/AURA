@@ -1,11 +1,11 @@
 import { Component, OnInit, HostListener, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, ActivatedRoute } from '@angular/router'; // Importar ActivatedRoute
+import { Router, ActivatedRoute } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { PremiumSideComponent } from '../../../../../side/side.component';
 import { BottomTabComponent } from '../../../../../../bottom-tab/bottom-tab.component';
 import { PaymentUserService } from '../../../../../../../services/paymentUser/payment-user.service';
-import { FiwareService } from '../../../../../../../services/fiware/fiware.service'; // Importar FiwareService
+import { FiwareService } from '../../../../../../../services/fiware/fiware.service';
 import { NgxGaugeModule } from 'ngx-gauge';
 
 @Component({
@@ -23,7 +23,7 @@ export class DetailsDeviceComponent implements OnInit {
   buildingName: string = '';
   branchName: string = '';
   branchId: string = '';
-  entitiesWithAlerts: any[] = []; // Para almacenar las entidades con alertas
+  entitiesWithAlerts: any[] = [];
 
   constructor(
     private paymentUserService: PaymentUserService,
@@ -41,9 +41,17 @@ export class DetailsDeviceComponent implements OnInit {
 
     const fiwareService = sessionStorage.getItem('fiware-service');
     const fiwareServicePath = sessionStorage.getItem('fiware-servicepath');
-    
+
     if (fiwareService && fiwareServicePath) {
-      this.fiwareService.getEntitiesWithAlerts(fiwareService, fiwareServicePath).subscribe(entities => {
+      this.fiwareService.getEntitiesWithAlerts(fiwareService, fiwareServicePath).subscribe((entities: any[]) => {
+        entities.forEach((entity: any) => {
+          entity.variables.forEach((variable: any) => {
+            const hasAlert = !!variable.alert;
+            variable.minGauge = hasAlert ? (variable.minRange ?? 0) : 0;
+            variable.maxGauge = hasAlert ? (variable.maxRange ?? 100) : 100;
+            variable.colorGauge = hasAlert ? (variable.alert.color || '#fff') : '#fff';
+          });
+        });
         this.entitiesWithAlerts = entities;
       });
     } else {
@@ -68,58 +76,31 @@ export class DetailsDeviceComponent implements OnInit {
     this.router.navigate([`/premium/devices`]);
   }
 
-// Método para obtener el valor numérico
-getNumericValue(value: string): number {
-  return parseFloat(value) || 0;
-}
+  getNumericValue(value: string): number {
+    return parseFloat(value) || 0;
+  }
 
-// Método para obtener el rango dinámico (min y max) según la alerta
-getGaugeRange(variable: any): { min: number, max: number } {
-  if (variable.alert) {
+  getGaugeRange(variable: any): { min: number, max: number } {
     return {
-      min: variable.alert.minRange !== null ? variable.alert.minRange : 0,  // Usamos 0 si no tiene minRange
-      max: variable.alert.maxRange !== null ? variable.alert.maxRange : 100  // Usamos 100 si no tiene maxRange
+      min: variable.minGauge ?? 0,
+      max: variable.maxGauge ?? 100
     };
-  } else {
-    return { min: 0, max: 100 };
   }
-}
 
-// Método para obtener los thresholds para el color del gauge
-getGaugeThresholds(variable: any): any[] {
-  // Si existe una alerta, usamos el color de la alerta para el threshold
-  if (variable.alert) {
+  getGaugeThresholds(variable: any): any[] {
     return [
       {
-        value: variable.alert.minRange !== null ? variable.alert.minRange : 0, // Min del threshold
-        color: variable.alert.color || '#fff'  // Color de la alerta o blanco
+        value: variable.minGauge ?? 0,
+        color: variable.colorGauge || '#fff'
       },
       {
-        value: variable.alert.maxRange !== null ? variable.alert.maxRange : 100, // Max del threshold
-        color: variable.alert.color || '#fff'  // Color de la alerta o blanco
-      }
-    ];
-  } else {
-    // Si no tiene alerta, usamos el color blanco para todo el rango
-    return [
-      {
-        value: 0,
-        color: '#fff'
-      },
-      {
-        value: 100,
-        color: '#fff'
+        value: variable.maxGauge ?? 100,
+        color: variable.colorGauge || '#fff'
       }
     ];
   }
-}
 
-// Método para obtener el color según la alerta
-getGaugeColor(variable: any): string {
-  if (variable.alert) {
-    return variable.alert.color || '#fff'; // Devolvemos el color de la alerta
-  } else {
-    return '#fff'; // Si no hay alerta, devolvemos blanco
+  getGaugeColor(variable: any): string {
+    return variable.colorGauge || '#fff';
   }
-}
 }
