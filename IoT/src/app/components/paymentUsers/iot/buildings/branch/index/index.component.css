@@ -27,32 +27,36 @@
   color: #333;
 }
 
+/* === HEADER FIJO (IZQ - CENTRO - DER) === */
 .header {
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 20px;
+  padding: 10px 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  margin-bottom: 20px;
-  margin-left: 15%;
-  max-width: 90%;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
+  margin-left: 15%;
+  max-width: 90%;
+  margin-bottom: 20px;
 }
 
 .header h1 {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  font-size: 20px;
+  white-space: nowrap;
 }
 
 .create-button {
   background-color: #003366;
   color: white;
   border: 2px;
-  padding: 7px;
+  padding: 7px 12px;
   border-radius: 40px;
   cursor: pointer;
   font-weight: bold;
@@ -60,10 +64,12 @@
   align-items: center;
   text-align: center;
   justify-content: center;
+  gap: 5px;
+  z-index: 1;
 }
 
 
-/* Contenedor de dispositivos con cuadrícula */
+/* === CONTENEDOR DE DISPOSITIVOS === */
 .device-info-container {
   background-color: var(--background-color);
   border: 1px solid #ddd;
@@ -73,14 +79,13 @@
   text-align: center;
   margin-bottom: 20px;
   margin-left: 15%;
-  max-width: 100%;  /* Cambio: Ocupa todo el ancho disponible */
+  max-width: 100%;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);  /* Cambio: 4 columnas */
-  gap: 20px;  /* Espacio entre las celdas */
-  grid-auto-rows: minmax(150px, auto);  /* Ajuste de filas automáticas con un mínimo de 150px */
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  grid-auto-rows: minmax(150px, auto);
 }
 
-/* Estilo de cada item dentro de la cuadrícula */
 .device-info-item {
   background-color: white;
   border-radius: 8px;
@@ -88,7 +93,7 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  align-items: center; /* Asegura que el contenido esté centrado */
+  align-items: center;
   justify-content: space-between;
 }
 
@@ -102,28 +107,28 @@
   color: #555;
 }
 
-/* From Uiverse.io by vinodjangid07 */ 
+/* === LEVEL BUTTON === */
 .levelButton {
-  background-color: #1a5fb4; /* Color por defecto */
+  background-color: #1a5fb4;
   color: white;
   border: none;
-  padding: 5px 10px; /* Reducir el padding para hacerlo más delgado */
+  padding: 5px 10px;
   border-radius: 8px;
   font-weight: bold;
-  cursor: not-allowed; /* Cambiar el cursor para indicar que está deshabilitado */
+  cursor: not-allowed;
   margin-bottom: 10px;
-  font-size: 14px; /* Reducir el tamaño de la fuente */
-  width: auto; /* Ajustar el tamaño automáticamente según el contenido */
-  max-width: 100px; /* Establecer un ancho máximo para que no sea tan grande */
-  pointer-events: none; /* Asegura que el botón no sea clickeable */
-  opacity: 0.7; /* Deshabilitar visualmente */
+  font-size: 14px;
+  width: auto;
+  max-width: 100px;
+  pointer-events: none;
+  opacity: 0.7;
 }
 
 .levelButton:hover {
-  opacity: 0.7; /* Mantener el mismo nivel de opacidad al pasar el mouse */
+  opacity: 0.7;
 }
 
-/* Estilo del botón de "Ver" */
+/* === BOTÓN VER === */
 .buttonView {
   --color: #0077ff;
   font-family: inherit;
@@ -167,6 +172,7 @@
   left: -30px;
 }
 
+/* === MAPA === */
 .device-map {
   background-color: var(--background-color);
   border: 1px solid #ddd;
@@ -176,78 +182,96 @@
   text-align: center;
   margin-bottom: 20px;
   margin-left: 15%;
-  max-width: 100%;  /* Cambio: Ocupa todo el ancho disponible */
-  display: block;  /* Asegura que el contenedor de mapa sea de bloque */
+  max-width: 100%;
+  display: block;
 }
 
 #map {
-  height: 100%;  /* Ajusta la altura del mapa según sea necesario */
-  width: 100%;   /* Ajusta el mapa para que ocupe el 100% del contenedor */
+  height: 100%;
+  width: 100%;
 }
-/* Medios de consulta para pantallas de hasta 1024px */
-@media (max-width: 1024px) {
+
+/* =========================== */
+/* === MEDIA QUERIES === */
+/* =========================== */
+
+/* === <=1024px === */
+@media screen and (max-width: 1024px) {
   .device-info-container {
-    grid-template-columns: repeat(2, 1fr); /* 2 columnas */
-    gap: 15px;  /* Reduce el espacio entre los elementos */
-    padding: 10px; /* Añadir más espacio alrededor */
+    grid-template-columns: repeat(2, 1fr);
+    margin-left: 5%;
+  }
+
+  .header,
+  .device-map {
+    margin-left: 5%;
+    max-width: 95%;
+  }
+
+  .shifted {
+    margin-left: 0;
+  }
+}
+
+/* === <=768px === */
+@media screen and (max-width: 768px) {
+  .device-info-container {
+    grid-template-columns: 1fr;
+    margin-left: 2%;
+  }
+
+  .header {
+    margin-left: 0;
+    max-width: 100%;
+    padding: 10px;
+  }
+
+  .header h1 {
+    font-size: 18px;
+  }
+
+  .create-button p {
+    display: none;
+  }
+
+  .create-button mat-icon,
+  .back-button mat-icon {
+    font-size: 24px;
+  }
+
+  .device-map {
+    margin-left: 2%;
+    padding: 15px;
+  }
+}
+
+/* === <=480px === */
+@media screen and (max-width: 480px) {
+  .main-container {
+    padding: 10px;
+    margin-bottom: 30%;
+  }
+
+  .header h1 {
+    font-size: 16px;
   }
 
   .device-info-item h3 {
-    font-size: 14px; /* Reducir tamaño de fuente del título */
+    font-size: 14px;
   }
 
-  .device-info-item p {
-    font-size: 12px; /* Reducir tamaño de fuente de la descripción */
-  }
-
-  .levelButton {
-    font-size: 13px;  /* Ajuste de tamaño de fuente */
-    padding: 4px 8px;  /* Ajuste de padding */
-    max-width: 80px; /* Reducir el ancho máximo */
-  }
-
+  .device-info-item p,
+  .levelButton,
   .buttonView {
-    font-size: 15px; /* Reducir tamaño de fuente */
-    width: 5em;  /* Reducir tamaño del botón */
-  }
-}
-
-/* Medios de consulta para pantallas de hasta 768px */
-@media (max-width: 768px) {
-  .device-info-container {
-    grid-template-columns: 1fr; /* 1 columna */
-    gap: 10px; /* Espacio entre los elementos */
+    font-size: 12px;
   }
 
-  .device-info-item h3 {
-    font-size: 12px; /* Reducir aún más el tamaño del título */
+  .create-button p {
+    display: none;
   }
 
-  .device-info-item p {
-    font-size: 10px; /* Reducir aún más el tamaño de la descripción */
-  }
-
-  .levelButton {
-    font-size: 12px;  /* Ajustar fuente */
-    padding: 3px 6px;  /* Reducir padding */
-    max-width: 70px; /* Reducir el ancho máximo */
-  }
-
-  .buttonView {
-    font-size: 14px; /* Reducir aún más el tamaño de la fuente */
-    width: 4.5em;  /* Ajustar tamaño del botón */
-  }
-}
-
-/* Medios de consulta para pantallas aún más pequeñas (ej. móviles) */
-@media (max-width: 480px) {
-  .levelButton {
-    font-size: 11px; /* Ajuste del tamaño de fuente para dispositivos muy pequeños */
-    padding: 3px 5px;  /* Ajuste de padding */
-  }
-
-  .buttonView {
-    font-size: 13px; /* Ajustar tamaño de fuente */
-    width: 4em;  /* Hacer el botón más pequeño */
+  .device-map {
+    margin-left: 0;
+    padding: 10px;
   }
 }
