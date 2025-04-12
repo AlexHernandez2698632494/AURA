@@ -122,8 +122,7 @@
   
   
   .branch-info img {
-    width: 400px;
-    height: auto;
+    height: 200px;
   }
   
   /* Media queries para dispositivos menores a 1024px */
