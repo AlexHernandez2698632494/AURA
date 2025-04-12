@@ -65,14 +65,18 @@
 
 .building-info {
   display: flex;
+  flex-direction: column;
   align-items: center;
   text-align: center;
-  justify-content: center;
-  border: none;
-  padding: 7px;
-  font-weight: bold;
 }
 
+.building-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #003366;
+  text-align: center;
+}
 .building-info img {
   margin-right: 10px; 
 }
@@ -90,6 +94,7 @@
 
 .action {
   font-size: 16px;
+  width: 90%;
   background: none;
   margin: 5px;
   color: #003366;
@@ -100,10 +105,9 @@
   text-decoration: underline;
 }
 
-/* .buildingimagen {
-  width: 100px;
-  height: auto;
-} */
+.buildingimagen {
+  height: 200px;
+}
 
 /* Media queries para dispositivos menores a 1024px */
 @media (max-width: 1024px) {

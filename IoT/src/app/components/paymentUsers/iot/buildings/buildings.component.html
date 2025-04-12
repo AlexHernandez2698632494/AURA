@@ -17,11 +17,11 @@
         <!-- Mostrar los edificios -->
         <div *ngFor="let building of buildings" class="building-card">
             <div class="building-info">
-                <img *ngIf="building.imagenPrincipal" [src]="buildingImages[building.imagenPrincipal]" alt="Imagen del edificio" class="buildingimagen">
-        <span>{{ building.nombre }}</span>
+                        <span>{{ building.nombre }}</span>
+<img *ngIf="building.imagenPrincipal" [src]="buildingImages[building.imagenPrincipal]" alt="Imagen del edificio" class="buildingimagen">
             </div>
             <div class="actions">
-                <button mat-button class="action" (click)="navigateToViewBuilding(building._id)">Ver edificio</button>
+                <button mat-button class="action" (click)="navigateToViewBuilding(building._id)">Ver    edificio</button>
                 <button mat-button class="action" (click)="navigateToEditBuilding(building._id)">Editar edificio</button>
                 <button mat-button class="action" (click)="deleteBuilding(building._id)">Eliminar edificio</button>
               </div>
