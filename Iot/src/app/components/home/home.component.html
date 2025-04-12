@@ -2,7 +2,8 @@
   <div class="main-content">
     <!-- Selector de ubicación -->
     <select id="location" class="map-selector" (change)="onLocationChange($event)">
-      <option value="/#" selected>/#</option>
+      <option value="" selected disabled>Seleccione uno de los servicios</option>
+      <option value="/#">Todos los servicios</option>
       <option value="monitoreo">Monitoreo</option>
       <option value="transporteUDB">Transporte UDB</option>
       <option value="transportePublico">Transporte Público</option>

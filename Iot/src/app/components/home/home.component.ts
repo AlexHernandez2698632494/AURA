@@ -172,7 +172,7 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
                 // Crear un icono estándar para cada edificio
                 const buildingIcon = L.icon({
                   iconUrl: '/assets/images/building-icon.png',
-                  iconSize: [32, 32], // Tamaño del icono
+                  iconSize: [62, 62], // Tamaño del icono
                   iconAnchor: [16, 32], // Centro del ícono (ancla en el centro)
                   popupAnchor: [0, -32], // Donde aparecerá el pop-up
                 });
