@@ -38,8 +38,8 @@
   margin-left: 15%;
   max-width: 80%;
   display: flex;
+  justify-content: center;
   align-items: center;
-  justify-content: space-between;
 }
 
 .header h1 {
@@ -48,6 +48,7 @@
   color: #333;
   margin: 0;
   text-align: center;
+  flex-grow: 1;
 }
 
 .create-button {
@@ -119,47 +120,113 @@
   text-decoration: underline;
 }
 
-
 .plant-info img {
   width: 400px;
   height: auto;
 }
 
-/* Media queries para dispositivos menores a 1024px */
-@media (max-width: 1024px) {
-  .main-container {
-    max-width: 95%;
-    padding: 10px;
-  }
+/* ===================== */
+/*     MEDIA QUERIES     */
+/* ===================== */
 
+@media (max-width: 1024px) {
   .header {
-    margin-left: 0;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-left: 5%;
     max-width: 90%;
   }
 
   .plant-card {
-    margin: 20px 2px;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 5%;
     max-width: 90%;
-    flex-direction: column;
-    align-items: center;
-  }
-  .plant-info {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .plant-info img {
-    margin-bottom: 10px;
-    width: 300px;
-    height: auto;
   }
 
   .actions {
-    margin-top: 10px;
-    margin-right: 0;
+    flex-direction: row;
+    display: flex;
     gap: 10px;
+    margin: 10px 0;
+  }
+
+  .plant-info img {
+    width: 100%;
+    max-width: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: row;
+    align-items: center;
+    margin-left: 0;
+    max-width: 100%;
+    padding: 20px;
+  }
+
+  .header h1 {
+    flex: 1;
+    text-align: center;
+    font-size: 24px; /* Aumentamos el tamaño de fuente */
+  }
+
+  .plant-card {
     flex-direction: column;
     align-items: center;
+    margin: 20px auto; /* Aumentamos el margen para más espacio */
+    max-width: 95%;
+  }
+
+  .plant-info img {
+    width: 100%;
+    max-width: 350px; /* Aumentamos el tamaño de la imagen */
+  }
+
+  .plant-info span {
+    margin-top: 15px;
+    font-size: 18px; /* Aumentamos el tamaño de fuente */
+  }
+
+  .actions {
+    flex-direction: row;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+  }
+
+  .action {
+    font-size: 18px; /* Aumentamos el tamaño de los botones */
+    padding: 8px 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    flex-direction: row;
+    padding: 15px; /* Aumentamos el padding para más espacio */
+  }
+
+  .back-button {
+    margin-right: 15px; /* Aumentamos el margen */
+  }
+
+  .header h1 {
+    font-size: 26px; /* Aumentamos aún más el tamaño de fuente */
+  }
+
+  .plant-info img {
+    width: 100%;
+    max-width: 300px; /* Aumentamos un poco el tamaño de las imágenes */
+  }
+
+  .plant-info span {
+    font-size: 18px; /* Aumentamos el tamaño del texto */
+  }
+
+  .action {
+    font-size: 18px; /* Aumentamos el tamaño de los botones */
+    padding: 8px 15px;
   }
 }
