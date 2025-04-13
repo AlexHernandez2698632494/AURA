@@ -24,6 +24,18 @@ services:
     networks:
       - default
 
+  server:
+    build:
+      context: ./server 
+    container_name: server
+    ports:
+      - "8090:8090"
+    env_file:
+      - ./server/.env 
+    depends_on:
+      - mongo-auth
+    networks:
+      - default
 
 
   orion:
