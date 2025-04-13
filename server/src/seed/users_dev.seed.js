@@ -5,7 +5,14 @@ import { UserDev } from "../modules/auth/models/dev/users_dev.models.js";
 
 dotenv.config();
 
-await connectDB();
+// Obtener la conexión de usuarios (autenticación)
+const dbConnection = connectDB;
+
+// Esperar a que la conexión esté lista
+await new Promise((resolve, reject) => {
+  dbConnection.once("open", resolve);
+  dbConnection.on("error", reject);
+});
 
 const users = [
   {
@@ -19,24 +26,25 @@ const users = [
 
 const seedUsers = async () => {
   try {
-    console.log("Seeding users...");
+    console.log("🚀 Seeding users...");
 
     for (const user of users) {
-      const exists = await UserDev.findOne({ correo: user.correo });
+      const exists = await UserDev.findOne({ correo: user.correo }).exec();
       if (!exists) {
         await UserDev.create(user);
-        console.log(`User created: ${user.nombre}`);
+        console.log(`✅ User created: ${user.nombre}`);
       } else {
-        console.log(`User already exists: ${user.nombre}`);
+        console.log(`⚠️ User already exists: ${user.nombre}`);
       }
     }
 
-    console.log("Users seeding completed.");
-    // await mongoose.connection.close();
+    console.log("✅ Users seeding completed.");
   } catch (error) {
-    console.error("Error while seeding users:", error);
+    console.error("❌ Error while seeding users:", error);
     process.exit(1);
   }
 };
+
+await seedUsers();
 
 export default seedUsers;
