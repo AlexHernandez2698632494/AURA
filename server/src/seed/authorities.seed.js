@@ -1,16 +1,25 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import { connectDB } from "../config/db.js"; // Asegúrate de que esta ruta es correcta
+import { connectDB } from "../config/db.js";
 import { Authority } from "../modules/auth/models/authorities.models.js";
 
 dotenv.config();
 
-// Usar la conexión de base de datos de autenticación
-const dbConnection = connectDB;
+// 👇 Esperar a que connectDB esté listo usando Promise + "open" event
+const waitForConnection = (db) =>
+  new Promise((resolve, reject) => {
+    db.once("open", () => {
+      console.log("📌 Conectado a la base de datos de autenticación desde seed");
+      resolve();
+    });
+    db.on("error", (err) => {
+      console.error("❌ Error en la conexión a la DB desde seed:", err);
+      reject(err);
+    });
+  });
 
-await dbConnection.once("open", () => {
-  console.log("📌 Conectado a la base de datos de autenticación");
-});
+// 👉 El modelo tiene que estar registrado en la conexión correspondiente
+const AuthorityModel = connectDB.model("Authority", Authority.schema, "authorities");
 
 // Lista de autoridades para seed
 const authorities = [
@@ -44,28 +53,30 @@ const authorities = [
   { name: "restore_iot_service", type: "restore_iot_service" },
 ];
 
-// Función de seeding para autoridades
 const seedAuthorities = async () => {
   try {
-    console.log("Seeding authorities...");
+    // ⏳ Esperar a que se abra la conexión
+    await waitForConnection(connectDB);
+
+    console.log("🚀 Seeding authorities...");
 
     for (const authority of authorities) {
-      const exists = await Authority.findOne({ name: authority.name }).exec();
+      const exists = await AuthorityModel.findOne({ name: authority.name }).exec();
       if (!exists) {
-        await Authority.create(authority);
-        console.log(`Authority created: ${authority.name}`);
+        await AuthorityModel.create(authority);
+        console.log(`✅ Authority created: ${authority.name}`);
       } else {
-        console.log(`Authority already exists: ${authority.name}`);
+        console.log(`ℹ️ Authority already exists: ${authority.name}`);
       }
     }
 
-    console.log("Authorities seeding completed.");
+    console.log("✅ Authorities seeding completed.");
+    process.exit(0);
   } catch (error) {
-    console.error("Error while seeding authorities:", error);
+    console.error("❌ Error while seeding authorities:", error);
     process.exit(1);
   }
 };
 
 await seedAuthorities();
-
 export default seedAuthorities;
