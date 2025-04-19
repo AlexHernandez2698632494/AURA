@@ -37,6 +37,16 @@ services:
     networks:
       - default
 
+  frontend:
+    build:
+      context: ./IoT
+    container_name: frontend_IoT
+    ports:
+      - "4201:4201" 
+    depends_on:
+      - server
+    networks:
+      - default
 
   orion:
     image: fiware/orion
