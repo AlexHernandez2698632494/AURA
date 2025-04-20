@@ -40,7 +40,7 @@ services:
   frontend:
     build:
       context: ./IoT
-    container_name: frontend_IoT
+    container_name: frontend
     ports:
       - "4201:4201" 
     depends_on:
