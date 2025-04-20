@@ -3,7 +3,7 @@ sensors:
   url_json: https://localhost:4041/iot/
   #Unicamente para dispositivos lorawan, ya que en este flujo no se crean servicios
   url_lorawan: https://localhost:4041/iot/devices
-  url_orion: https://orion:1026/v2/
+  url_orion: https://localhost:1026/v2/
   #Para enviar la informacion acerca del sensor y poder replicar el dsipositivo en orion
   url_mqtt: https://localhost:7896/iot/json
   
