@@ -99,3 +99,99 @@ export const welcomeMessage = (req, res) => {
     port: port,
   });
 };
+
+// NUEVO: Obtener todos los prefijos únicos
+export const getPrefixes = (req, res) => {
+  const getRoutes = (stack, parentPath = '') => {
+    const routes = [];
+
+    stack.forEach((middleware) => {
+      if (middleware.route) {
+        let path = `${parentPath}${middleware.route.path}`.replace(/\/+/g, '/');
+        if (path === '') path = '/';
+        routes.push(path);
+      } else if (middleware.name === 'router' && middleware.handle.stack) {
+        const modulePath = middleware.regexp?.source
+          .replace(/^\^/, '')
+          .replace(/\\\//g, '/')
+          .replace(/\(\?:\(\?=\/\|\$\)\)/g, '')
+          .replace(/\(\.\*\)\?/g, '')
+          .replace(/\?\(\?=\/\|\$\)/g, '')
+          .replace(/\/$/, '') || '';
+
+        const newParentPath = `${parentPath}/${modulePath}`.replace(/\/+/g, '/');
+        const nestedRoutes = getRoutes(middleware.handle.stack, newParentPath);
+        routes.push(...nestedRoutes);
+      }
+    });
+
+    return routes;
+  };
+
+  const cleanRoutes = (routes) =>
+    routes.map((route) =>
+      route === '/' ? '/' : route.replace(/\/+/g, '/').replace(/\/$/, '')
+    );
+
+  const allRoutes = cleanRoutes(getRoutes(req.app._router.stack));
+
+  // Extraer los primeros segmentos como prefijos (ej. '/v1/ngsi', '/oauth2')
+  const prefixes = new Set(
+    allRoutes
+      .map((route) => {
+        const segments = route.split('/').filter(Boolean);
+        return segments.length > 0 ? `/${segments[0]}` : '/';
+      })
+  );
+
+  res.status(200).json({
+    prefixes: Array.from(prefixes),
+  });
+};
+
+// NUEVO: Obtener rutas por prefijo
+export const getRoutesByPrefix = (req, res) => {
+  const { prefix } = req.params;
+
+  const getRoutes = (stack, parentPath = '') => {
+    const routes = [];
+
+    stack.forEach((middleware) => {
+      if (middleware.route) {
+        let path = `${parentPath}${middleware.route.path}`.replace(/\/+/g, '/');
+        if (path === '') path = '/';
+        routes.push(path);
+      } else if (middleware.name === 'router' && middleware.handle.stack) {
+        const modulePath = middleware.regexp?.source
+          .replace(/^\^/, '')
+          .replace(/\\\//g, '/')
+          .replace(/\(\?:\(\?=\/\|\$\)\)/g, '')
+          .replace(/\(\.\*\)\?/g, '')
+          .replace(/\?\(\?=\/\|\$\)/g, '')
+          .replace(/\/$/, '') || '';
+
+        const newParentPath = `${parentPath}/${modulePath}`.replace(/\/+/g, '/');
+        const nestedRoutes = getRoutes(middleware.handle.stack, newParentPath);
+        routes.push(...nestedRoutes);
+      }
+    });
+
+    return routes;
+  };
+
+  const cleanRoutes = (routes) =>
+    routes.map((route) =>
+      route === '/' ? '/' : route.replace(/\/+/g, '/').replace(/\/$/, '')
+    );
+
+  const allRoutes = cleanRoutes(getRoutes(req.app._router.stack));
+
+  const filteredRoutes = allRoutes.filter((route) =>
+    route.startsWith(`/${prefix}`)
+  );
+
+  res.status(200).json({
+    prefix: `/${prefix}`,
+    routes: filteredRoutes,
+  });
+};
