@@ -1,31 +1,29 @@
 import { Component } from '@angular/core';
 import { NavComponent } from '../nav/nav.component';
-import { FormsModule } from '@angular/forms'; // Para manejar ngModel
-import { HttpClientModule } from '@angular/common/http'; // Para solicitudes HTTP
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { CommonModule } from '@angular/common'; // Importar CommonModule para *ngIf
+import { CommonModule } from '@angular/common';
 import { ApiConfigService } from '../../services/ApiConfig/api-config.service';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
-  standalone: true, // Componente standalone
-  imports: [ NavComponent, FormsModule, HttpClientModule, CommonModule], // Agregar CommonModule
+  standalone: true,
+  imports: [NavComponent, FormsModule, HttpClientModule, CommonModule],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'], // styleUrls en plural
+  styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
   title = 'login';
 
-  // Variables para capturar datos del formulario
   usernameOrEmail: string = '';
   password: string = '';
   errorMessage: string = '';
 
   constructor(private http: HttpClient, private router: Router, private apiConfig: ApiConfigService) {}
 
-  // Método para obtener la URL correcta dependiendo del entorno
   private getApiUrl(): string {
     return this.apiConfig.getApiUrl();
   }
@@ -34,7 +32,6 @@ export class LoginComponent {
     this.http.get(`${this.getApiUrl()}/oauth2/users/exist`).subscribe(
       (response: any) => {
         if (!response.usersExist) {
-          // Redirigir a la vista de registro del superadministrador
           this.router.navigate(['/register-superadmin']);
         }
       },
@@ -44,7 +41,6 @@ export class LoginComponent {
     );
   }
 
-  // Método para manejar el inicio de sesión
   login() {
     if (!this.usernameOrEmail || !this.password) {
       this.errorMessage = 'Por favor, complete todos los campos.';
@@ -56,56 +52,17 @@ export class LoginComponent {
       contrasena: this.password,
     };
 
-    // Intentar login en la primera ruta
     this.http.post(`${this.getApiUrl()}/oauth2/login`, loginData).subscribe(
       (response: any) => {
         if (response.token) {
-          this.handleSuccessfulLogin(response, '/login');  // Se maneja la respuesta como antes
+          this.handleSuccessfulLogin(response);
         } else {
-          console.error('No se recibió un token en la respuesta de la primera API');
-          this.errorMessage = '';  // Limpiamos el mensaje de error antes de probar la siguiente ruta
-          // Intentar login en la segunda ruta
-          this.loginFallback(loginData, 2);  // Paso a la segunda ruta
+          this.errorMessage = 'Inicio de sesión fallido. Verifique sus credenciales.';
         }
       },
       (error) => {
-        console.error('Error en el login de la primera API:', error);
-        this.errorMessage =
-          error.error?.message || 'Error al iniciar sesión. Intentando con la segunda ruta...';
-        // Intentar login en la segunda ruta
-        this.loginFallback(loginData, 2);  // Paso a la segunda ruta
-      }
-    );
-  }
-
-  // Método para intentar el login en las rutas fallback
-  loginFallback(loginData: any, routeAttempt: number) {
-    let route = '';
-    
-    if (routeAttempt === 2) {
-      route = '/oauth2/dev/login';  // Segunda ruta
-    } else if (routeAttempt === 3) {
-      route = '/oauth2/payment/user/login';  // Tercera ruta: esta es la que tiene la nueva estructura
-    }
-
-    this.http.post(`${this.getApiUrl()}${route}`, loginData).subscribe(
-      (response: any) => {
-        if (response.token) {
-          this.handleSuccessfulLogin(response, route);  // Pasamos la ruta como argumento
-        } else {
-          console.error(`No se recibió un token en la respuesta de la ruta ${route}`);
-          if (routeAttempt < 3) {
-            this.errorMessage = `Error al procesar el inicio de sesión en la ruta ${route}.`;
-          }
-        }
-      },
-      (error) => {
-        console.error(`Error en el login de la ruta ${route}:`, error);
-        if (routeAttempt < 3) {
-          this.loginFallback(loginData, routeAttempt + 1);  // Intentar con la siguiente ruta
-        } else {
-          this.errorMessage = 'Error al iniciar sesión en las tres rutas. Por favor, intente más tarde.';
-        }
+        console.error('Error en el login:', error);
+        this.errorMessage = error.error?.message || 'No se pudo iniciar sesión. Intente más tarde.';
       }
     );
   }
@@ -114,38 +71,36 @@ export class LoginComponent {
     this.router.navigate(['/registrate']);
   }
 
-  // Método para manejar el inicio de sesión exitoso
-  handleSuccessfulLogin(response: any, route: string) {
+  handleSuccessfulLogin(response: any) {
     console.log('Token recibido:', response.token);
-    sessionStorage.setItem('token', response.token); // Guarda el token en sessionStorage
-
+    sessionStorage.setItem('token', response.token);
+  
     if (response.user) {
-      const nombre = response.user.nombre || ''; // Extrae el nombre de usuario, si existe
+      const nombre = response.user.nombre || '';
       const apellido = response.user.apellido || '';
-      let fullname = `${nombre}  ${apellido}`; 
       const username = response.user.usuario;
-      console.log("usuario", username);
-      sessionStorage.setItem('username', fullname); // Guarda el nombre del usuario
+      const fullname = `${nombre} ${apellido}`.trim();
+  
+      sessionStorage.setItem('username', fullname);
       sessionStorage.setItem('usuario', username);
-
-      let authorities: any[] = [];
-
-      if (route === '/oauth2/payment/user/login' && response.user.authorities) {
-        // Si la ruta es '/payment/user/login', aplanamos el array de arrays a un solo array
-        authorities = response.user.authorities[0];  // Tomamos el primer array de la respuesta (el único array)
-        sessionStorage.setItem('fiware-service', authorities[1].toLowerCase());
-        sessionStorage.setItem('fiware-servicepath', '/#');
-    
-      } else if (response.user.authorities) {
-        // Para las otras rutas, procesamos directamente 'authorities' del usuario
-        authorities = response.user.authorities;  // Suponiendo que 'authorities' es un array directo    
+  
+      // Ahora authorities siempre tiene [rol, fiware-service]
+      let authorities: any[] = response.user.authorities || [];
+  
+      // Si viene como array anidado, lo aplanamos
+      if (Array.isArray(authorities[0])) {
+        authorities = authorities[0];
       }
-
-      console.log('Authorities recibidos:', authorities);
-      sessionStorage.setItem('authorities', JSON.stringify(authorities)); // Guarda los roles en sessionStorage
-
-      // Mostrar el SweetAlert si el usuario tiene el rol 'dev'
-      if (authorities.some((auth: any) => auth.includes('dev'))) {
+  
+      const rol = authorities[0] || 'sin_rol';
+      const fiwareService = authorities[1] || 'default';
+      console.log(rol, fiwareService);
+      sessionStorage.setItem('authorities', JSON.stringify(authorities));
+      sessionStorage.setItem('fiware-service', fiwareService.toLowerCase());
+      sessionStorage.setItem('fiware-servicepath', '/#'); // Puedes cambiarlo si necesitas hacerlo dinámico más adelante
+  
+      // Alerta especial si es dev
+      if (rol.includes('dev')) {
         Swal.fire({
           title: 'Bienvenido al modo Programador',
           text: 'Has iniciado sesión como desarrollador.',
@@ -153,8 +108,7 @@ export class LoginComponent {
           confirmButtonText: 'Entendido',
         });
       }
-
-      let routeToNavigate = '/'; // Ruta predeterminada si no hay roles específicos
+  
       const routes: { [key: string]: string } = {
         'super_administrador': '/admin/index',
         'dev': '/admin/index',
@@ -181,19 +135,12 @@ export class LoginComponent {
         'delete_iot_service': '/services/index',
         'super_usuario': '/overview'
       };
-
-      // Determinar la ruta a la que redirigir según las autoridades
-      for (let authority of authorities) {
-        if (routes[authority]) {
-          routeToNavigate = routes[authority];
-          break;
-        }
-      }
-
-      // Redirigir al usuario a la ruta determinada
+  
+      const routeToNavigate = routes[rol] || '/';
+  
       this.router.navigate([routeToNavigate]);
     } else {
       console.warn('No se recibieron datos del usuario en la respuesta');
     }
   }
-}
+  }
