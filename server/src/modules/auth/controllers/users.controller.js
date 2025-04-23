@@ -7,6 +7,7 @@ import nodemailer from "nodemailer";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import moment from "moment";
+import mongoose from 'mongoose';
 
 // Obtener todos los usuarios activos
 export const getUsers = async (req, res) => {
@@ -270,84 +271,117 @@ export const restoreUser = async (req, res) => {
   }
 };
 
-// Login de usuario
-import mongoose from 'mongoose';
-
 export const loginUser = async (req, res) => {
   const { identifier, contrasena } = req.body;
 
   try {
-    // Intentamos buscar el correo a partir del string 'identifier'
+    if (!identifier || !contrasena) {
+      return res.status(400).json({ message: 'Faltan campos obligatorios' });
+    }
+
     let user;
+
     if (mongoose.Types.ObjectId.isValid(identifier)) {
-      // Si el identifier es un ObjectId (probablemente el correo en la colección de Email)
       user = await User.findOne({
         $or: [{ correo: mongoose.Types.ObjectId(identifier) }, { usuario: identifier }],
-      }).populate("authorities", "name");
-    } else {
-      // Si no es un ObjectId, significa que estamos usando un correo en texto plano
+      })
+        .populate('correo')
+        .populate('registrationKey')
+        .populate({
+          path: 'authorities',
+          select: 'name type',
+        });
+    } else if (identifier.includes('@')) {
       const email = await Email.findOne({ correo: identifier });
       if (email) {
         user = await User.findOne({
           $or: [{ correo: email._id }, { usuario: identifier }],
-        }).populate("authorities", "name");
+        })
+          .populate('correo')
+          .populate('registrationKey')
+          .populate({
+            path: 'authorities',
+            select: 'name type',
+          });
       } else {
-        // Si no encontramos el correo, buscamos solo por el usuario
-        user = await User.findOne({
-          $or: [{ usuario: identifier }],
-        }).populate("authorities", "name");
+        user = await User.findOne({ usuario: identifier })
+          .populate('correo')
+          .populate('registrationKey')
+          .populate({
+            path: 'authorities',
+            select: 'name type',
+          });
       }
+    } else {
+      user = await User.findOne({ usuario: identifier })
+        .populate('correo')
+        .populate('registrationKey')
+        .populate({
+          path: 'authorities',
+          select: 'name type',
+        });
     }
 
-    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+    if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
 
-    // Verificamos la contraseña
     const isMatch = await bcrypt.compare(contrasena, user.contrasena);
-    if (!isMatch) return res.status(401).json({ message: "Contraseña incorrecta" });
+    if (!isMatch) return res.status(401).json({ message: 'Contraseña incorrecta' });
 
-    // Generar token de JWT
     const token = jwt.sign(
       {
         id: user._id,
         nombre: user.nombre,
         apellido: user.apellido,
-        correo: user.correo.correo,
+        correo: user.correo?.correo || null,
         usuario: user.usuario,
+        nivel: user.nivel || 0,  // Si no tiene nivel, le asignamos 0 por defecto
       },
       process.env.JWT_SECRET,
-      { expiresIn: "24h" }
+      { expiresIn: '24h' }
     );
 
-    // Registrar en la tabla history
-    const currentDateTime = moment().format("DD/MM/YYYY HH:mm:ss");
-    const historyEntry = new History({
-      username: user.usuario,
-      datetime: currentDateTime,
-      action: "login", // Acción realizada
-      nivel: 0,
-    });
-    await historyEntry.save();
+    // Solo devolvemos las autoridades del usuario (no las de registrationKey)
+    const authorities = user.authorities || [];
 
-    // Responder con el token y datos del usuario
+    // Registrar en el historial si aplica
+    if (user.usuario) {
+      const currentDateTime = moment().format('DD/MM/YYYY HH:mm:ss');
+      const historyEntry = new History({
+        username: user.usuario,
+        datetime: currentDateTime,
+        action: 'login',
+        nivel: 0,
+      });
+      await historyEntry.save();
+    }
+
     res.status(200).json({
-      message: "Inicio de sesión exitoso",
+      message: 'Inicio de sesión exitoso',
       token,
       user: {
         id: user._id,
         nombre: user.nombre,
         apellido: user.apellido,
-        correo: user.correo.correo,
         usuario: user.usuario,
-        authorities: user.authorities.map((auth) => auth.name),
+        correo: user.correo?.correo || null,
+        registrationKey: user.registrationKey
+          ? user.registrationKey.map(reg => reg.key)
+          : [],
+          authorities: authorities.reduce((acc, auth) => {
+            if (auth.name) acc.push(auth.name);
+            if (auth.type) acc.push(auth.type);
+            return acc;
+          }, []),
+          
+        nivel: user.nivel || 0,  // Si no tiene nivel, devolvemos 0 por defecto
       },
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({ message: 'Error en el servidor', error: error.message });
   }
 };
 
-
-// Cambiar contraseña
 export const changePassword = async (req, res) => {
   const { contrasenaActual, nuevaContrasena } = req.body;
   const { user } = req;
@@ -439,7 +473,7 @@ export const logoutUser = async (req, res) => {
 
 export const checkIfUsersExist = async (req, res) => {
   try {
-    const userCount = await User.countDocuments();
+    const userCount = await User.countDocuments({ nivel: 0 });
     if (userCount === 0) {
       return res.status(200).json({ usersExist: false });
     }
@@ -455,7 +489,7 @@ export const registerFirstAdmin = async (req, res) => {
 
   try {
     // Verificar si ya existe algún usuario en la base de datos
-    const existingUser = await User.countDocuments();
+    const existingUser = await User.countDocuments({ nivel: 0 });
     if (existingUser > 0) {
       return res.status(400).json({ message: "Ya existe un usuario en el sistema" });
     }
@@ -487,6 +521,7 @@ export const registerFirstAdmin = async (req, res) => {
       contrasena: hashedPassword,
       authorities: [superAdminAuthority._id], // Asignamos la autoridad de superadmin
       estadoEliminacion: 0, // Aseguramos que el usuario no esté eliminado
+      nivel: 0, // Asignamos el nivel de superadmin
     });
 
     const newUser = await user.save();

@@ -1,4 +1,4 @@
-import { UserDev } from "../../models/dev/users_dev.models.js";
+import { User } from "../../models/users.models.js";
 import { History } from "../../models/history.models.js";
 import { Authority } from "../../models/authorities.models.js";
 import bcrypt from "bcryptjs";
@@ -10,7 +10,7 @@ import moment from "moment";
 // Obtener todos los usuarios activos en dev
 export const getDevUsers = async (req, res) => {
   try {
-    const users = await UserDev.find({ estadoEliminacion: 0 }).populate("authorities");
+    const users = await User.find({ estadoEliminacion: 0,nivel:2 }).populate("authorities");
     res.json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -20,7 +20,7 @@ export const getDevUsers = async (req, res) => {
 // Obtener todos los usuarios eliminados en dev
 export const getDeletedDevUsers = async (req, res) => {
   try {
-    const users = await UserDev.find({ estadoEliminacion: 1 }).populate("authorities");
+    const users = await User.find({ estadoEliminacion: 1, nivel:2 }).populate("authorities");
     res.json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -30,7 +30,7 @@ export const getDeletedDevUsers = async (req, res) => {
 // Obtener un usuario por ID en dev
 export const getDevUserById = async (req, res) => {
   try {
-    const user = await UserDev.findOne({ _id: req.params.id, estadoEliminacion: 0 }).populate("authorities");
+    const user = await User.findOne({ _id: req.params.id, estadoEliminacion: 0, nivel:2 }).populate("authorities");
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
     res.json(user);
   } catch (error) {
@@ -59,13 +59,14 @@ export const createDevUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(randomPassword, salt);
 
-    const user = new UserDev({
+    const user = new User({
       nombre,
       correo,
       usuario,
       contrasena: hashedPassword,
       authorities: validAuthorities.map((auth) => auth._id),
       estadoEliminacion: estadoEliminacion || 0,
+      nivel: 2, // Asignar nivel 2 por defecto
     });
 
     const newUser = await user.save();
@@ -91,7 +92,7 @@ export const createDevUser = async (req, res) => {
 
     await transporter.sendMail(mailOptions);
 
-    const userWithAuthorities = await UserDev.findById(newUser._id).populate("authorities");
+    const userWithAuthorities = await User.findById(newUser._id).populate("authorities");
     res.status(201).json({ message: "Usuario creado exitosamente", user: userWithAuthorities });
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -104,7 +105,7 @@ export const updateDevUser = async (req, res) => {
   const usuarioHistory = req.body.usuarioHistory;
 
   try {
-    const user = await UserDev.findById(req.params.id);
+    const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
     if (authorities && Array.isArray(authorities)) {
@@ -134,7 +135,7 @@ export const updateDevUser = async (req, res) => {
 
     await newHistory.save();
 
-    const updatedUser = await UserDev.findById(req.params.id).populate("authorities");
+    const updatedUser = await User.findById(req.params.id).populate("authorities");
     res.json({ message: "Usuario actualizado exitosamente", user: updatedUser });
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -146,7 +147,7 @@ export const deleteDevUser = async (req, res) => {
   const { usuarioHistory } = req.body;
 
   try {
-    const user = await UserDev.findById(req.params.id);
+    const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
     user.estadoEliminacion = 1;
@@ -173,7 +174,7 @@ export const restoreDevUser = async (req, res) => {
   const { usuarioHistory } = req.body;
 
   try {
-    const user = await UserDev.findByIdAndUpdate(req.params.id, { estadoEliminacion: 0 }, { new: true });
+    const user = await User.findByIdAndUpdate(req.params.id, { estadoEliminacion: 0 }, { new: true });
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
     const currentDateTime = moment().format("DD/MM/YYYY HH:mm:ss");
@@ -197,7 +198,7 @@ export const loginDevUser = async (req, res) => {
   const { identifier, contrasena } = req.body;
 
   try {
-    const user = await UserDev.findOne({
+    const user = await User.findOne({
       $or: [{ correo: identifier }, { usuario: identifier }],
     }).populate("authorities", "name");
 
@@ -268,7 +269,7 @@ export const changeDevPassword = async (req, res) => {
   const { user } = req;
 
   try {
-    const usuario = await UserDev.findOne({ usuario: user.usuario });
+    const usuario = await User.findOne({ usuario: user.usuario });
     if (!usuario) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
@@ -293,7 +294,7 @@ export const restoreDevPassword = async (req, res) => {
   const { correo } = req.body;
 
   try {
-    const user = await UserDev.findOne({ correo });
+    const user = await User.findOne({ correo });
     if (!user) return res.status(404).json({ message: "Correo no encontrado" });
 
     const tempPassword = crypto.randomBytes(8).toString("hex");
@@ -327,7 +328,7 @@ export const restoreDevPassword = async (req, res) => {
 // Verificar si existen usuarios en dev
 export const checkIfDevUsersExist = async (req, res) => {
   try {
-    const userCount = await UserDev.countDocuments();
+    const userCount = await User.countDocuments();
     res.status(200).json({ exists: userCount > 0 });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -339,13 +340,13 @@ export const registerFirstDevAdmin = async (req, res) => {
   const { nombre, correo, usuario, contrasena } = req.body;
 
   try {
-    const existingAdmin = await UserDev.findOne({ roles: "admin" });
+    const existingAdmin = await User.findOne({ roles: "admin" });
     if (existingAdmin) return res.status(400).json({ message: "Ya existe un administrador" });
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(contrasena, salt);
 
-    const admin = new UserDev({
+    const admin = new User({
       nombre,
       correo,
       usuario,

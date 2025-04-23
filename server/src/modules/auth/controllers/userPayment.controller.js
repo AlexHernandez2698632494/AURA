@@ -2,7 +2,7 @@ import crypto from 'crypto'; // Para generar una contraseña aleatoria
 import nodemailer from 'nodemailer'; // Para enviar correos
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { UserPayment } from "../models/userPayment.models.js";  // Cambio: Renombrado a PaymentUser
+import { User } from '../models/users.models.js';
 import { Email } from "../models/emails.models.js";
 import { RegistrationKey } from "../models/registrationKey.models.js";
 import { Authority } from '../models/authorities.models.js';
@@ -63,13 +63,14 @@ export const createFirstUserPayment = async (req, res) => {
     const encryptedPassword = await bcrypt.hash(rawPassword, salt); // Aquí usamos rawPassword en lugar de randomPassword
 
     // Crear usuario con las claves de registro (pueden ser múltiples)
-    const newUser = new UserPayment({
+    const newUser = new User({
       nombre,
       apellido,
       usuario,
       correo: emailDoc._id,
       contrasena: encryptedPassword,
       registrationKey: registrationKeysDocs.map(keyDoc => keyDoc._id), // Guardamos todas las claves asociadas
+      nivel:1
     });
 
     // Registrar en historial
@@ -117,6 +118,7 @@ export const createFirstUserPayment = async (req, res) => {
         contrasena: encryptedPassword, // Contraseña sin cifrar para que el usuario la vea
         registrationKey: registrationKeysDocs.map(keyDoc => decrypt(keyDoc.key)), // Claves de registro descifradas
         authoritiesType: authoritiesDocs.map(authority => authority.type), // Tipos de autoridad
+        nivel: newUser.nivel, // Nivel del usuario
       },
     });
   } catch (error) {
@@ -128,7 +130,7 @@ export const createFirstUserPayment = async (req, res) => {
 export const getPaymentUsers = async (req, res) => {
   try {
     // Buscar los usuarios con estadoEliminacion = 0
-    const users = await UserPayment.find({ estadoEliminacion: 0 })
+    const users = await User.find({ estadoEliminacion: 0, nivel: 1 })
       .populate('correo registrationKey'); // Poblamos las colecciones de correo y registrationKey
 
     // Si no se encuentran usuarios, devolver mensaje
@@ -153,6 +155,7 @@ export const getPaymentUsers = async (req, res) => {
         contrasena:user.contrasena,
         registrationKey: decryptedKey,
         authoritiesType: authoritiesDoc ? authoritiesDoc.type : null,
+        nivel: user.nivel,
       };
     }));
 
@@ -169,7 +172,7 @@ export const getPaymentUserById = async (req, res) => {
     const { id } = req.params;
 
     // Buscar un solo usuario con estadoEliminacion = 0
-    const user = await UserPayment.findOne({ _id: id, estadoEliminacion: 0 })
+    const user = await User.findOne({ _id: id, estadoEliminacion: 0, nivel: 1 })
       .populate('correo registrationKey');
 
     if (!user) {
@@ -191,6 +194,7 @@ export const getPaymentUserById = async (req, res) => {
       correo: emailDoc ? emailDoc.correo : null,
       registrationKey: decryptedKey,
       authoritiesType: authoritiesDoc ? authoritiesDoc.type : null,
+      nivel: user.nivel,
     };
 
     return res.status(200).json(transformedData);
@@ -207,7 +211,7 @@ export const updatePaymentUser = async (req, res) => {
     const { nombre, apellido, usuario, correo } = req.body;
 
     // Buscar el usuario por ID
-    const user = await UserPayment.findById(id).populate('correo registrationKey');
+    const user = await User.findById(id).populate('correo registrationKey');
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
@@ -262,7 +266,7 @@ export const deletePaymentUser = async (req, res) => {
     const { id } = req.params;
 
     // Buscar el usuario por ID
-    const user = await UserPayment.findById(id);
+    const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
@@ -289,7 +293,7 @@ export const restorePaymentUser = async (req, res) => {
     const { id } = req.params;
 
     // Buscar el usuario por ID
-    const user = await UserPayment.findById(id);
+    const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
@@ -322,7 +326,7 @@ export const loginPaymentUser = async (req, res) => {
     let user;
     if (identifier.includes('@')) {
       // Si el identifier contiene un '@', se trata de un correo
-      user = await UserPayment.findOne({ correo: identifier })
+      user = await User.findOne({ correo: identifier })
         .populate('correo')  // Poblamos la referencia al correo
         .populate('registrationKey')  // Poblamos la referencia al registrationKey
         .populate({
@@ -333,7 +337,7 @@ export const loginPaymentUser = async (req, res) => {
         });
     } else {
       // Si no contiene '@', se trata de un nombre de usuario
-      user = await UserPayment.findOne({ usuario: identifier })
+      user = await User.findOne({ usuario: identifier })
         .populate('correo')  // Poblamos la referencia al correo
         .populate('registrationKey')  // Poblamos la referencia al registrationKey
         .populate({
@@ -404,7 +408,7 @@ export const resetPasswordPaymentUser = async (req, res) => {
       }
   
       // Buscar el usuario por nombre de usuario
-      const user = await UserPayment.findOne({ usuario }).populate('correo');
+      const user = await User.findOne({ usuario }).populate('correo');
   
       // Si no se encuentra el usuario
       if (!user) {
@@ -457,7 +461,7 @@ export const getUserPaymentInfo = async (req, res) => {
     const { username } = req.params;
 
     // Buscar el usuario en UserPayment
-    const user = await UserPayment.findOne({ usuario: username })
+    const user = await User.findOne({ usuario: username })
       .populate('registrationKey')  // Usamos populate para traer las referencias de registrationKey
       .populate('correo');  // Si necesitas información del correo
 
@@ -485,10 +489,10 @@ export const getUserPaymentInfo = async (req, res) => {
         const decryptedKey = decrypt(regKeyDetail.key);
 
         // Contar cuántos usuarios tienen este registrationKey
-        const userCount = await UserPayment.countDocuments({ registrationKey: regKey._id });
+        const userCount = await User.countDocuments({ registrationKey: regKey._id });
 
         // Obtener la información de todos los usuarios que tienen la misma registrationKey
-        const usersWithSameKey = await UserPayment.find({ registrationKey: regKey._id })
+        const usersWithSameKey = await User.find({ registrationKey: regKey._id })
           .select('nombre apellido correo')  // Solo seleccionamos los campos necesarios
           .populate('correo', 'email');  // Asumimos que "correo" es un documento con un campo "email"
 
@@ -531,7 +535,7 @@ export const getUserPaymentInfoById = async (req, res) => {
     }
 
     // Buscar usuarios asociados a esta registrationKey
-    const users = await UserPayment.find({ registrationKey: id })
+    const users = await User.find({ registrationKey: id })
       .select("_id nombre apellido correo")
       .populate("correo", "_id");
       const decryptedKey = decrypt(registrationKey.key);
