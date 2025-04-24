@@ -1,5 +1,6 @@
 import { Component, AfterViewInit, OnDestroy } from '@angular/core';
 import { FiwareService } from '../../services/fiware/fiware.service';
+import { SocketService } from '../../services/socket/socket.service'; 
 import { NavComponent } from '../nav/nav.component';
 import * as L from 'leaflet';
 import Swal from 'sweetalert2';  // Importar SweetAlert2
@@ -22,8 +23,14 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
   selectedEntity: any = null;
   modalVisible: boolean = false;
   modalPosition: { top: string; left: string } = { top: '0px', left: '0px' };
+  private socket: any;
+  entitiesWithAlerts: any[] = [];
+  devicesInfo: any[] = [];
 
-  constructor(private fiwareService: FiwareService) { }
+  constructor(
+    private fiwareService: FiwareService,
+    private socketService: SocketService,  // ✅ Inyectar servicio WebSocket
+  ) {}
 
   ngAfterViewInit(): void {
     if (!sessionStorage.getItem('fiware-service') && !sessionStorage.getItem('fiware-servicepath')) {
@@ -33,14 +40,30 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
 
     this.initializeIcons();
     this.initializeMap();
-
+this.initializeSocket();
     window.addEventListener('resize', () => {
       if (this.map) {
         this.map.invalidateSize();
       }
     });
   }
+private initializeSocket(): void {
+   // Recibir las entidades a través del WebSocket
+   this.socketService.entitiesWithAlerts$.subscribe((entities) => {
+    if (entities && entities.length > 0) {
+      this.entitiesWithAlerts = entities;
+      this.devicesInfo = entities.map((entity: any) => ({
+        deviceName: entity.raw.deviceName,
+        color: entity.color,
+        level: entity.nivel,
+        variableCount: entity.variables.length,
+      }));
 
+      // Recargar el mapa con las entidades nuevas
+      this.loadEntitiesWithAlerts();
+    }
+  });
+}
   private initializeIcons(): void {
     const iconRetinaUrl = 'assets/images/marker-icon-2x.png';
     const iconUrl = 'assets/images/marker-icon.png';
@@ -328,49 +351,60 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
     const token = sessionStorage.getItem('token') || localStorage.getItem('token'); // Obtener el token
     const fiwareService = sessionStorage.getItem('fiware-service') || '';
     const fiwareServicePath = sessionStorage.getItem('fiware-servicepath') || '';
-
+  
     if (token) {
-      // No cargamos las entidades si existe el token (es decir, se muestran edificios)
-      console.log('Token encontrado, no cargamos entidades. Mostrando edificios...');
-      return;
+      // Si existe el token, mostramos los edificios
+      console.log('Token encontrado, mostrando edificios...');
+      this.loadEdificios();  // Aquí puedes agregar la lógica para cargar los edificios
+    } else {
+      // Si no existe el token, mostramos las entidades con alertas
+      console.log('Token no encontrado, mostrando entidades con alertas...');
+      this.loadEntitiesWithAlertsData(fiwareService, fiwareServicePath);
     }
-
+  }
+  
+  private loadEdificios(): void {
+    // Lógica para cargar los edificios (por ejemplo, desde una API o base de datos)
+    // Esto es solo un ejemplo; deberías reemplazarlo con la lógica adecuada para tu caso.
+    console.log('Cargando edificios...');
+    // Ejemplo de código para cargar edificios
+  }
+  
+  private loadEntitiesWithAlertsData(fiwareService: string, fiwareServicePath: string): void {
     let minLat: number = Infinity;
     let maxLat: number = -Infinity;
     let minLng: number = Infinity;
     let maxLng: number = -Infinity;
-
+  
     this.fiwareService.getEntitiesWithAlerts(fiwareService, fiwareServicePath)
       .subscribe((entities) => {
-        console.log('Entidades con alertas:', entities);  // Muestra todas las entidades en consola
-
-        // Limpia cualquier marcador previo
+        console.log('Entidades con alertas:', entities);
+  
+        // Limpiar cualquier marcador previo
         this.map?.eachLayer(layer => {
           if (layer instanceof L.Marker) {
             this.map!.removeLayer(layer);
           }
         });
-
+  
         entities.forEach((entity: any) => {
           if (entity.location && entity.location.value && entity.location.value.coordinates) {
             const [latitude, longitude] = entity.location.value.coordinates;
-
-            // Actualizamos el bounding box con las coordenadas de esta entidad
+  
             minLat = Math.min(minLat, latitude);
             maxLat = Math.max(maxLat, latitude);
             minLng = Math.min(minLng, longitude);
             maxLng = Math.max(maxLng, longitude);
-
+  
             // Añadimos el marcador con el color de la entidad
             this.addColoredMarker(latitude, longitude, entity.color, entity.displayName, entity.type, entity.variables);
           }
         });
-
-        // Ajustamos el mapa al bounding box de todas las entidades
+  
         if (this.map) {
           const bounds = L.latLngBounds(
-            [minLat, minLng],  // Coordenada inferior izquierda
-            [maxLat, maxLng]   // Coordenada superior derecha
+            [minLat, minLng],
+            [maxLat, maxLng]
           );
           this.map.fitBounds(bounds);
         }
@@ -378,7 +412,8 @@ export class HomeComponent implements AfterViewInit, OnDestroy {
         console.error('Error al obtener entidades:', error);
       });
   }
-  // Método para cargar entidades con alertas en el mapa
+  
+   // Método para cargar entidades con alertas en el mapa
 
   private addColoredMarker(lat: number, lng: number, color: string, name: string, type: string, variables: any[]): void {
     if (!this.map) return;

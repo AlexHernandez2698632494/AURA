@@ -7,13 +7,14 @@ import { BottomTabComponent } from '../../../../../../bottom-tab/bottom-tab.comp
 import { PaymentUserService } from '../../../../../../../services/paymentUser/payment-user.service';
 import { FiwareService } from '../../../../../../../services/fiware/fiware.service';
 import { NgxGaugeModule } from 'ngx-gauge';
+import { SocketService } from '../../../../../../../services/socket/socket.service';
 
 @Component({
   selector: 'app-details',
   standalone: true,
   imports: [CommonModule, PremiumSideComponent, MatIconModule, BottomTabComponent, NgxGaugeModule],
   templateUrl: './details.component.html',
-  styleUrl: './details.component.css'
+  styleUrls: ['./details.component.css']
 })
 export class DetailsDeviceComponent implements OnInit {
   isLargeScreen: boolean = window.innerWidth > 1024;
@@ -29,7 +30,8 @@ export class DetailsDeviceComponent implements OnInit {
     private paymentUserService: PaymentUserService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private fiwareService: FiwareService
+    private fiwareService: FiwareService,
+    private socketService: SocketService
   ) {}
 
   ngOnInit() {
@@ -43,19 +45,19 @@ export class DetailsDeviceComponent implements OnInit {
     const fiwareServicePath = sessionStorage.getItem('fiware-servicepath');
 
     if (fiwareService && fiwareServicePath) {
-      this.fiwareService.getEntitiesWithAlerts(fiwareService, fiwareServicePath).subscribe((entities: any[]) => {
-        entities.forEach((entity: any) => {
-          entity.variables.forEach((variable: any) => {
-            const hasAlert = !!variable.alert;
-            variable.minGauge = hasAlert ? (variable.minRange ?? 0) : 0;
-            variable.maxGauge = hasAlert ? (variable.maxRange ?? 100) : 100;
-            variable.colorGauge = hasAlert ? (variable.alert.color || '#fff') : '#fff';
-          });
-        });
+      // Escuchar datos del socket
+      this.socketService.entitiesWithAlerts$.subscribe((entities: any[]) => {
         this.entitiesWithAlerts = entities;
       });
+
+      // Fallback si no llegan datos por socket
+      setTimeout(() => {
+        if (!this.socketService.hasReceivedData()) {
+          this.socketService.loadEntitiesFromAPI(fiwareService, fiwareServicePath, this.fiwareService);
+        }
+      }, 3000);
     } else {
-      console.error('No se encontraron fiwareService o fiwareServicePath en sessionStorage');
+      console.error('❌ No se encontraron fiwareService o fiwareServicePath en sessionStorage');
     }
   }
 
@@ -69,7 +71,9 @@ export class DetailsDeviceComponent implements OnInit {
   }
 
   onBackClick() {
-    this.router.navigate([`/premium/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}`]);
+    this.router.navigate([
+      `/premium/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}`
+    ]);
   }
 
   onCreateClick() {
@@ -80,7 +84,7 @@ export class DetailsDeviceComponent implements OnInit {
     return parseFloat(value) || 0;
   }
 
-  getGaugeRange(variable: any): { min: number, max: number } {
+  getGaugeRange(variable: any): { min: number; max: number } {
     return {
       min: variable.minGauge ?? 0,
       max: variable.maxGauge ?? 100
