@@ -1,5 +1,9 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter, Routes } from '@angular/router';
+import { ToastrModule } from 'ngx-toastr'; // ✅ Importa ToastrModule aquí
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideToastr } from 'ngx-toastr';
 import { AppComponent } from './app/app.component';
 import { provideHttpClient } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -287,5 +291,7 @@ bootstrapApplication(AppComponent, {
     provideRouter(routes),
     provideHttpClient(),
     provideAnimationsAsync(),
+    provideAnimations(), // required animations providers
+    provideToastr(), // Toastr providers
   ],
 }).catch((err) => console.error(err));

@@ -84,6 +84,8 @@ app.post("/v1/notify/", async (req, res) => {
 
     const sensorsRaw = entity.sensors || {};
     let hasAlert = false;
+    let highestAlertName = '';  // Variable para el nombre de la alerta más alta
+    let highestAlertVariable = '';  // Variable para la variable con la alerta más alta
     let nivel = 0;
     let color = '';
 
@@ -103,6 +105,8 @@ app.post("/v1/notify/", async (req, res) => {
         if (matchingAlert.level > nivel) {
           nivel = matchingAlert.level;
           color = matchingAlert.color;
+          highestAlertName = matchingAlert.displayName;  // Asignamos el nombre de la alerta
+          highestAlertVariable = mapped.label;  // Asignamos la variable con la alerta más alta
         }
       }
 
@@ -119,7 +123,7 @@ app.post("/v1/notify/", async (req, res) => {
       };
     });
 
-    // Enriquecemos la entidad con el nivel y color
+    // Enriquecemos la entidad con el nivel, color, highestAlertName y highestAlertVariable
     if (hasAlert) {
       const enrichedEntity = {
         id: entity.id,
@@ -128,7 +132,9 @@ app.post("/v1/notify/", async (req, res) => {
         variables,
         raw: entity,
         nivel,
-        color
+        color,
+        highestAlertName,  // Agregamos el nombre de la alerta más alta
+        highestAlertVariable  // Agregamos la variable con la alerta más alta
       };
       io.emit("orion-alert", enrichedEntity); // Emitimos si hay alerta
     }
@@ -141,7 +147,8 @@ app.post("/v1/notify/", async (req, res) => {
 });
 
  // Ruta para consultar historial de notificaciones (mapeadas)
- app.get("/v1/messages", async (req, res) => {
+// Ruta para consultar historial de notificaciones (mapeadas)
+app.get("/v1/messages", async (req, res) => {
   try {
     const sensorMapping = await getSensorMapping();
     const alerts = await Alert.find({ estadoEliminacion: 0 });
@@ -151,6 +158,8 @@ app.post("/v1/notify/", async (req, res) => {
       const entity = body.data?.[0] || {};
       const sensorsRaw = entity.sensors || {};
 
+      let highestAlertName = '';  // Variable para el nombre de la alerta más alta
+      let highestAlertVariable = '';  // Variable para la variable con la alerta más alta
       let nivel = 0;
       let color = '';
 
@@ -165,6 +174,8 @@ app.post("/v1/notify/", async (req, res) => {
         if (alert && alert.level > nivel) {
           nivel = alert.level;
           color = alert.color;
+          highestAlertName = alert.displayName;  // Asignamos el nombre de la alerta
+          highestAlertVariable = mappedData.label;  // Asignamos la variable con la alerta más alta
         }
 
         return {
@@ -175,7 +186,7 @@ app.post("/v1/notify/", async (req, res) => {
           alert: alert ? {
             name: alert.displayName,
             color: alert.color,
-            level: alert.level,
+            level: alert.level
           } : undefined
         };
       });
@@ -187,7 +198,9 @@ app.post("/v1/notify/", async (req, res) => {
         variables,
         raw: entity,
         nivel,
-        color
+        color,
+        highestAlertName,  // Agregamos el nombre de la alerta más alta
+        highestAlertVariable  // Agregamos la variable con la alerta más alta
       };
     });
 
