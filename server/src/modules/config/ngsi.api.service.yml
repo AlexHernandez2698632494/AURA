@@ -6,7 +6,7 @@ sensors:
   url_orion: https://localhost:1026/v2/
   #Para enviar la informacion acerca del sensor y poder replicar el dsipositivo en orion
   url_mqtt: https://localhost:7896/iot/json
-  url_quantumleap: https://localhost:8668
+  url_quantumleap: https://localhost:8668/v2
   
 mappings:
   "[Temperatura Aire]":
