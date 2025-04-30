@@ -29,72 +29,82 @@ const subirImagenAGridFS = async (bucket, file) => {
     });
   };
 
-  export const createBranch = async (req, res) => {
-    try {
-      const { nombre_salon, nivel, buildingName } = req.body;
-      const fiwareService = req.headers['fiware-service'];
+// Función para reemplazar espacios, comas y puntos por "_"
+const formatName = (text) => {
+  return text.replace(/[ ,\.]/g, "_");
+};
+
+export const createBranch = async (req, res) => {
+  try {
+    const { nombre_salon, nivel, buildingName } = req.body;
+    const fiwareService = req.headers['fiware-service'];
     const fiwareServicePath = req.headers['fiware-servicepath'];
-    if (!req.headers['fiware-service']) {
+
+    if (!fiwareService) {
       return res.status(400).json({
-          message: 'Faltan los headers requeridos: Fiware-Service.'
+        message: 'Faltan los headers requeridos: Fiware-Service.'
       });
-  }else if (!req.headers['fiware-servicepath']) {
-      return res.status(400).json({ message: 'Faltan los headers requeridos: Fiware-ServicePath.' });
-  }
-
-      // Formatear buildingName reemplazando los espacios por "_"
-      const formattedBuildingName = buildingName.replace(/ /g, "_");
-      const formattedBranchName = nombre_salon.replace(/ /g, "_")
-      // Buscar el edificio por su nombre formateado
-      const foundBuilding = await building.findOne({ nombre: buildingName });
-      if (!foundBuilding) {
-        return res.status(400).json({
-          message: `El Edificio o Sucursal ${buildingName} no fue encontrado.`,
-        });
-      }
-  
-      // Validar que la base de datos y colección existan
-      const SalonModel = await getSalonModel(formattedBuildingName);
-  
-      // Verificar si la imagen es válida
-      if (!req.files || !req.files.imagen_salon) {
-        return res.status(400).json({ message: "Falta la imagen del salón." });
-      }
-  
-      // Subir la imagen al GridFS
-      const bucket = new mongoose.mongo.GridFSBucket(connectDB.db, { bucketName: "salones" });
-      const imagenSalonId = await subirImagenAGridFS(bucket, req.files.imagen_salon[0]);
-      const fiwareServicePathFormatted = `/${formattedBuildingName}/nivel_${nivel}/${formattedBranchName}`;
-      // Crear el nuevo salón en la base de datos dinámica
-      const nuevoSalon = new SalonModel({
-        nombre_salon,
-        imagen_salon: imagenSalonId,
-        edificioId: foundBuilding._id,
-        nivel,
-        fiware_servicepath: fiwareServicePathFormatted,
-      });
-  
-      await nuevoSalon.save();
-      const fiware = new Fiware({
-        fiware_service:fiwareService,
-        fiware_service_building:fiwareServicePath,
-        fiware_servicepath:fiwareServicePathFormatted,
-      })
-
-      await fiware.save()
-  
-      return res.status(201).json({
-        message: "Salón creado con éxito",
-        salon: nuevoSalon,
-      });
-    } catch (error) {
-      console.error("Error al crear el salón:", error);
-      return res.status(500).json({
-        message: "Hubo un error al crear el salón.",
-        error: error.message,
+    } else if (!fiwareServicePath) {
+      return res.status(400).json({ 
+        message: 'Faltan los headers requeridos: Fiware-ServicePath.' 
       });
     }
-  };
+
+    // Formatear nombres
+    const formattedBuildingName = formatName(buildingName);
+    const formattedBranchName = formatName(nombre_salon);
+
+    // Buscar el edificio por su nombre original (no formateado)
+    const foundBuilding = await building.findOne({ nombre: buildingName });
+    if (!foundBuilding) {
+      return res.status(400).json({
+        message: `El Edificio o Sucursal ${buildingName} no fue encontrado.`,
+      });
+    }
+
+    // Validar que la base de datos y colección existan
+    const SalonModel = await getSalonModel(formattedBuildingName);
+
+    if (!req.files || !req.files.imagen_salon) {
+      return res.status(400).json({ message: "Falta la imagen del salón." });
+    }
+
+    // Subir imagen al GridFS
+    const bucket = new mongoose.mongo.GridFSBucket(connectDB.db, { bucketName: "salones" });
+    const imagenSalonId = await subirImagenAGridFS(bucket, req.files.imagen_salon[0]);
+
+    const fiwareServicePathFormatted = `/${formattedBuildingName}/nivel_${nivel}/${formattedBranchName}`;
+
+    const nuevoSalon = new SalonModel({
+      nombre_salon: formattedBranchName,
+      imagen_salon: imagenSalonId,
+      edificioId: foundBuilding._id,
+      nivel,
+      fiware_servicepath: fiwareServicePathFormatted,
+    });
+
+    await nuevoSalon.save();
+
+    const fiware = new Fiware({
+      fiware_service: fiwareService,
+      fiware_service_building: fiwareServicePath,
+      fiware_servicepath: fiwareServicePathFormatted,
+    });
+
+    await fiware.save();
+
+    return res.status(201).json({
+      message: "Salón creado con éxito",
+      salon: nuevoSalon,
+    });
+  } catch (error) {
+    console.error("Error al crear el salón:", error);
+    return res.status(500).json({
+      message: "Hubo un error al crear el salón.",
+      error: error.message,
+    });
+  }
+};
   
 // Función para obtener los salones de un edificio
 export const getBranch = async (req, res) => {

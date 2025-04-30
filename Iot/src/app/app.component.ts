@@ -1,5 +1,6 @@
 import { Component, Renderer2, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { SocketService } from './services/socket/socket.service'; // <-- Asegúrate de que la ruta sea correcta
 
 @Component({
   selector: 'app-root',
@@ -8,12 +9,17 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'], 
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'IoT';
-  constructor(private renderer: Renderer2) {}
+
+  constructor(
+    private renderer: Renderer2,
+    private socketService: SocketService  // <-- Solo se inyecta, no se usa directamente
+  ) {}
 
   ngOnInit() {
     this.applyTheme();
+    // No llamamos a métodos del socket aquí; solo se asegura que esté inicializado
   }
 
   applyTheme() {

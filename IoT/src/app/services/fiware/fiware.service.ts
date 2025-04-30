@@ -33,6 +33,23 @@ export class FiwareService {
     return this.http.get(`${this.baseUrl}/services-path`, { headers })
       .pipe(catchError(this.handleError));
   }
+
+  getAllSubServices(): HttpHeaders {
+    const token = sessionStorage.getItem('token');
+    const fiwareService = sessionStorage.getItem('fiware-service');
+    const fiwareServicePath = sessionStorage.getItem('fiware-servicepath'); // Aquí estaba un error de tipo en el nombre de la clave en sessionStorage
+  
+    if (!token || !fiwareService || !fiwareServicePath) {
+      throw new Error('Faltan datos en sessionStorage');
+    }
+  
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'fiware-service': fiwareService,
+      'fiware-servicepath': fiwareServicePath,
+    });
+  }
+  
   getSubServiceBuilding(fiwareService: string): Observable<any> {
     const headers = this.getAuthHeaders(fiwareService);
 
@@ -60,6 +77,17 @@ export class FiwareService {
 
     return this.http.get(`${this.baseUrl}/entities`, { headers, params })
       .pipe(catchError(this.handleError));
+  }
+
+  getHistoricalData(id: string):Observable<any>{
+    return this.http.get(`${this.baseUrl}/historical/${id}/sensors`, {
+      headers: this.getAllSubServices()
+    }).pipe(
+      catchError(err => {
+        console.error('Error en la API:', err);
+        return throwError(err);
+      })
+    );
   }
 
   // Manejo de errores
