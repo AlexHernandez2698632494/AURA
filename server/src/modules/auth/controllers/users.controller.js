@@ -2,12 +2,36 @@ import {User} from '../models/users.models.js';
 import {Authority} from '../models/authorities.models.js';
 import {History} from '../models/history.models.js';
 import {Email} from '../models/emails.models.js';
+import { RegistrationKey } from '../models/registrationKey.models.js';
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import moment from "moment";
 import mongoose from 'mongoose';
+
+const ENCRYPTION_KEY = process.env.JWT_SECRET; // Debe ser de 32 bytes
+const IV_LENGTH = 16; // Longitud del IV para AES
+
+// Función para cifrar una clave
+const encrypt = (text) => {
+  const iv = crypto.randomBytes(IV_LENGTH);
+  const cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from(ENCRYPTION_KEY), iv);
+  let encrypted = cipher.update(text);
+  encrypted = Buffer.concat([encrypted, cipher.final()]);
+  return iv.toString("hex") + ":" + encrypted.toString("hex");
+};
+
+// Función para descifrar una clave
+const decrypt = (text) => {
+  const textParts = text.split(":");
+  const iv = Buffer.from(textParts[0], "hex");
+  const encryptedText = Buffer.from(textParts[1], "hex");
+  const decipher = crypto.createDecipheriv("aes-256-cbc", Buffer.from(ENCRYPTION_KEY), iv);
+  let decrypted = decipher.update(encryptedText);
+  decrypted = Buffer.concat([decrypted, decipher.final()]);
+  return decrypted.toString();
+};
 
 // Obtener todos los usuarios activos
 export const getUsers = async (req, res) => {
@@ -56,68 +80,154 @@ export const getUserById = async (req, res) => {
 export const getUserByUsername = async (req, res) => {
   try {
     const user = await User.findOne({
-      usuario: req.params.usuario,  // Cambiar _id por 'usuario'
-      estadoEliminacion: 0, // Filtrar por estadoEliminacion
-    }).populate("authorities").populate("correo"); // Poblar authorities
+      usuario: req.params.usuario,
+      estadoEliminacion: 0,
+    })
+    .populate("authorities")
+    .populate("correo")
+    .populate("registrationKey"); // Poblar registrationKey
 
     if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
-    res.json(user);
+
+    // Convertir los registrationKey a objetos con ID y valor descifrado
+    const decryptedRegistrationKeys = user.registrationKey.map(key => ({
+      _id: key._id,
+      key: decrypt(key.key),
+    }));
+
+    const responseUser = {
+      ...user.toObject(),
+      registrationKey: decryptedRegistrationKeys,
+    };
+
+    res.json(responseUser);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
 
+export const getUsersByAuthorityAndKey = async (req, res) => {
+  try {
+    const { authorityId, registrationKeyId } = req.query;
+
+    if (!authorityId || !registrationKeyId) {
+      return res.status(400).json({ message: "Faltan parámetros de búsqueda." });
+    }
+
+    const users = await User.find({
+      authorities: authorityId,
+      registrationKey: registrationKeyId,
+      estadoEliminacion: 0 // Opcional: excluir eliminados
+    })
+    .populate("authorities")
+    .populate("registrationKey")
+    .populate("correo");
+
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener usuarios.", error });
+  }
+};
+
 // Crear un nuevo usuario
 export const createUser = async (req, res) => {
-  const { nombre, apellido, correo, usuario, authorities, estadoEliminacion, usuarioHistory } = req.body;
-
   try {
-    // Verificar si las autoridades proporcionadas existen
-    const validAuthorities = await Authority.find({
-      _id: { $in: authorities.map((auth) => auth.id) },
-    });
-    if (validAuthorities.length !== authorities.length) {
-      return res.status(400).json({ message: "Algunas autoridades no son válidas" });
-    }
-
-    // Verificar si el correo ya está registrado en la colección Email
-    let email = await Email.findOne({ correo });
-    if (!email) {
-      // Si el correo no existe, lo creamos y lo guardamos en la colección Email
-      email = new Email({ correo });
-      await email.save();
-    }
-
-    // Generar una contraseña aleatoria
-    const randomPassword = crypto.randomBytes(8).toString("hex");
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(randomPassword, salt);
-
-    // Crear el usuario con la referencia al correo de la colección Email
-    const user = new User({
+    const {
       nombre,
       apellido,
-      correo: email._id,  // Guardar el ObjectId de Email en lugar del correo directo
       usuario,
-      contrasena: hashedPassword,
-      authorities: validAuthorities.map((auth) => auth._id),
-      estadoEliminacion: estadoEliminacion || 0,  // Establecer estadoEliminacion si no se pasa
+      correo,
+      authorities,
+      registrationKey,
+      correoVerificacion,
+      usuarioHistory,
+    } = req.body;
+
+    // Buscar o crear el Email real del usuario
+    let emailDoc = await Email.findOne({ correo });
+    if (!emailDoc) {
+      emailDoc = await Email.create({ correo });
+    }
+
+    // Generar contraseña aleatoria y cifrarla
+    const rawPassword = crypto.randomBytes(8).toString("hex");
+    const salt = await bcrypt.genSalt(10);
+    const encryptedPassword = await bcrypt.hash(rawPassword, salt);
+
+    let finalAuthorities = [];
+    let registrationKeysDocs = [];
+    let nivelUsuario = 0;
+
+    if (registrationKey) {
+      // Usar correoVerificacion si se provee, si no usar el mismo correo del nuevo usuario
+      const correoParaValidar = correoVerificacion || correo;
+      const emailVerifDoc = await Email.findOne({ correo: correoParaValidar });
+
+      if (!emailVerifDoc) {
+        return res.status(400).json({ message: "No se encontró el correo de verificación" });
+      }
+
+      registrationKeysDocs = await RegistrationKey.find({ correo: emailVerifDoc._id });
+      console.log("correo verigfi",emailVerifDoc._id)
+console.log("registrationKey",registrationKey)
+      if (!registrationKeysDocs || registrationKeysDocs.length === 0) {
+        return res.status(400).json({ message: "No se encontraron claves de registro para este correo" });
+      }
+
+      // Verificar si alguna clave coincide
+      const validKeyDoc = registrationKeysDocs.find((regKeyDoc) => {
+        const decryptedKey = decrypt(regKeyDoc.key);
+        return decryptedKey === registrationKey;
+      });
+
+      if (!validKeyDoc) {
+        return res.status(400).json({ message: "Clave de registro incorrecta" });
+      }
+
+      // Obtener autoridades desde las claves de registro
+      finalAuthorities = await Authority.find({
+        _id: { $in: registrationKeysDocs.map((keyDoc) => keyDoc.authorities).flat() },
+      });
+
+      nivelUsuario = 1;
+    } else if (authorities.length > 0) {
+      const validAuthorities = await Authority.find({
+        _id: { $in: authorities.map((auth) => auth.id) },
+      });
+
+      if (validAuthorities.length !== authorities.length) {
+        return res.status(400).json({ message: "Algunas autoridades no son válidas" });
+      }
+
+      finalAuthorities = validAuthorities;
+    }
+
+    // Crear el nuevo usuario
+    const newUser = new User({
+      nombre,
+      apellido,
+      usuario,
+      correo: emailDoc._id,
+      contrasena: encryptedPassword,
+      authorities: finalAuthorities.map((auth) => auth._id),
+      registrationKey: registrationKeysDocs.map((keyDoc) => keyDoc._id),
+      nivel: nivelUsuario,
+      estadoEliminacion: 0,
     });
 
-    const newUser = await user.save();
+    await newUser.save();
 
-    // Registrar la acción en el historial
-    const currentDateTime = moment().format("DD/MM/YYYY HH:mm:ss");
+    // Registrar en historial
     const historyEntry = new History({
-      username: usuarioHistory,  // El usuario que está creando el nuevo usuario
-      datetime: currentDateTime,
-      action: "create_user",  // Acción realizada
-      nivel: 0,
+      username: usuarioHistory || usuario,
+      action: "create_user",
+      datetime: new Date().toISOString(),
+      nivel: nivelUsuario,
     });
     await historyEntry.save();
 
-    // Enviar correo de notificación al nuevo usuario
+    // Enviar correo al nuevo usuario
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -130,24 +240,28 @@ export const createUser = async (req, res) => {
       from: process.env.EMAIL_USER,
       to: correo,
       subject: "Registro exitoso",
-      text: `Hola ${nombre} ${apellido},\n\nTu cuenta ha sido creada exitosamente.\nUsuario: ${usuario}\nContraseña: ${randomPassword}\n\nPor favor, cambia tu contraseña después de iniciar sesión.\nSaludos, El equipo.`,
+      text: `Hola ${nombre} ${apellido},\n\nTu cuenta ha sido creada exitosamente.\nUsuario: ${usuario}\nContraseña: ${rawPassword}\n\nPor favor, cambia tu contraseña después de iniciar sesión.\nSaludos, El equipo.`,
     };
 
     await transporter.sendMail(mailOptions);
 
-    // Responder con el nuevo usuario creado
-    const userWithAuthorities = await User.findById(newUser._id).populate("authorities");
-
-    res.status(201).json({
+    return res.status(201).json({
       message: "Usuario creado exitosamente",
-      user: userWithAuthorities,
+      user: {
+        id: newUser._id,
+        nombre,
+        apellido,
+        usuario,
+        correo,
+        nivel: nivelUsuario,
+        registrationKeys: registrationKeysDocs.map((k) => decrypt(k.key)),
+        authorities: finalAuthorities.map((auth) => auth.type),
+      },
     });
-
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    return res.status(500).json({ message: "Error al crear el usuario", error: error.message });
   }
 };
-
 // Actualizar un usuario
 export const updateUser = async (req, res) => {
   const { authorities, removeAuthorityId, nombre, usuario, correo } = req.body;
