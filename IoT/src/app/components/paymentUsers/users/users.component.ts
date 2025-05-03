@@ -11,11 +11,12 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './users.component.html',
   styleUrl: './users.component.css'
 })
-export class PremiumUsersComponent {
+export class PremiumUsersComponent implements OnInit {
   isLargeScreen: boolean = window.innerWidth > 1024;
   subscriptions: any[] = [];
   isLoading = true;
   errorMessage = '';
+  users: any[] = [];  // Aquí almacenaremos la lista de usuarios
 
   @Output() bodySizeChange = new EventEmitter<boolean>();
 
@@ -30,5 +31,34 @@ export class PremiumUsersComponent {
 
   onSideNavToggle(collapsed: boolean) {
     this.isSidebarCollapsed = collapsed;
+  }
+
+  goToCreateUser() {
+    this.router.navigate(['premium/users/create']);
+  }
+
+  ngOnInit(): void {
+    // Puedes obtener los valores de authorityId y registrationKeyId desde donde sea necesario, por ejemplo, sessionStorage o pasarlos como parámetros.
+    const authorityId = '6814d5eb49a46961238169a3';
+    const registrationKeyId = '6814d5eb49a46961238169a8';
+
+    this.loadUsers(authorityId, registrationKeyId);
+  }
+
+  loadUsers(authorityId: string, registrationKeyId: string): void {
+    this.isLoading = true;
+  
+    this.paymentUserService.getUsersWithFilters(authorityId, registrationKeyId).subscribe({
+      next: (usersData) => {
+        console.log('Lista de usuarios:', usersData);
+        this.users = usersData;  // Guardamos los usuarios en la variable
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error al obtener usuarios:', error);
+        this.isLoading = false;
+        this.errorMessage = 'Error al cargar la lista de usuarios.';
+      }
+    });
   }
 }

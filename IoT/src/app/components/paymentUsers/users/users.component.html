@@ -9,19 +9,26 @@
     <div class="main-container">
         <div class="header">
             <h1>Usuarios</h1>
-            <button mat-fab extended class="create-button">
+            <button mat-fab extended class="create-button" (click)="goToCreateUser()">
                 <mat-icon>add</mat-icon>
-                <p>   Crear usuario   </p>
-              </button>
+                <span class="button-text">Crear usuario</span>
+            </button>
+            
         </div>
-        <div class="user-card">
+
+        <!-- Mostrar usuarios -->
+        <div *ngIf="isLoading">Cargando usuarios...</div>
+        <div *ngIf="errorMessage">{{ errorMessage }}</div>
+
+        <div *ngFor="let user of users" class="user-card">
             <div class="user-info">
                 <img src="../../../../assets/imagen/users.png" alt="icono" width="50" height="50">
-                <span class="username">Pepito</span>
+                <span class="username">{{ user.nombre }} {{ user.apellido }}</span>
             </div>
             <div class="actions">
-                <button class="action" >Delete user</button>
-                <button class="action" >Edit user</button>
+                <button class="action">Ver</button>
+                <button class="action">Editar</button>
+                <button class="action">Eliminar</button>
             </div>
         </div>
     </div>

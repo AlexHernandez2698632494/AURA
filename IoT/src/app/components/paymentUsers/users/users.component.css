@@ -1,98 +1,240 @@
+/* Estilos generales */
 .center {
-    margin-left: 5%;
-    justify-content: center;
-    align-items: center;
-    min-height: auto;
-    transition: margin-left 0.3s ease;  
-  }
-  .shifted {
-    margin-left: 5%; 
-    transition: margin-left 0.3s ease; 
+  margin-left: 5%;
+  justify-content: center;
+  align-items: center;
+  min-height: auto;
+  transition: margin-left 0.3s ease;  
+}
+
+.shifted {
+  margin-left: 5%; 
+  transition: margin-left 0.3s ease; 
+}
+
+.main-container {
+  margin-bottom: 20%;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 90%;
+  padding: 20px; 
+}
+
+.header {
+  margin-left: 15%;
+  max-width: 70%;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+}
+
+.header h1 {  
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.user-card {
+  margin-left: 15%;
+  max-width: 70%;
+  display: flex;
+  flex-direction: row; /* Aseguramos que las tarjetas estén en fila horizontal */
+  justify-content: space-between;
+  padding: 15px;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px; /* Añadimos espacio debajo de cada tarjeta */
+}
+
+.user-card:last-child {
+  margin-bottom: 0; /* El último elemento no tendrá margen en la parte inferior */
+}
+
+.create-button {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  background: #003366;
+  justify-content: center;
+  color: white;
+  border: none;
+  padding: 7px;
+  border-radius: 40px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  border: none;
+  padding: 7px;
+  font-weight: bold;
+}
+
+.user-info span {
+  margin-top: 5%;
+}
+
+.actions {
+  margin-right: 6%;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.action {
+  font-size: 16px;
+  background: none;
+  margin: 5px;
+  color: #003366;
+  border: 2px solid #003366;
+  padding: 5px 10px;
+  border-radius: 15px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Responsive - Dispositivos menores a 1025px (Tabletas y móviles) */
+@media screen and (max-width: 1024px) {
+  .center {
+      margin-left: 10%; /* Reducir el margen en pantallas más pequeñas */
   }
 
   .main-container {
-    margin-bottom: 20%;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    max-width: 90%;
-    padding: 20px; 
+      padding: 10px; /* Reducir el padding para pantallas pequeñas */
   }
 
-  .header{
-    margin-left: 15%;
-    max-width: 70%;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px;
+  .header {
+      margin-left: 5%; /* Reducir el margen de la cabecera */
+      max-width: 100%; /* Hacer que ocupe el 100% de la pantalla */
   }
 
-  .header h1 {  
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
-    margin: 0;
+  .user-card {
+      margin-left: 0; /* Eliminar márgenes para pantallas pequeñas */
+      max-width: 100%; /* Hacer las tarjetas más anchas en pantallas pequeñas */
+      margin-bottom: 10px; /* Reducir espacio entre tarjetas */
+      flex-direction: column; /* Cambiar la dirección de las tarjetas a columna */
   }
 
-  .user-card{
-    margin-left: 15%;
-    max-width: 70%;
-    display: flex;
-    justify-content: space-between;
-    padding: 15px;
-    align-items: center;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  .user-info {
+      font-size: 14px; /* Reducir el tamaño de la fuente */
+      padding: 10px;
   }
 
-  .create-button{
-    display: flex;
-    align-items:center;
-    text-align:center;
-    background: #003366;
-    justify-content: center;
-    color: white;
-    border: none;
-    padding: 7px;
-    border-radius: 40px;
-    cursor: pointer;
-    font-weight: bold;
+  .create-button {
+      width: 100%; /* Hacer el botón más grande en pantallas pequeñas */
+      padding: 10px;
   }
 
-  .user-info{
-    display: flex;
-    align-items:center;
-    text-align:center;
-    justify-content: center;
-    border: none;
-    padding: 7px;
-    font-weight: bold;
+  .actions {
+      gap: 10px;
   }
 
-  .user-info span{
-    margin-top: 5%;
+  .action {
+      font-size: 14px;
+      padding: 4px 8px;
+  }
+}
+
+/* Responsive - Dispositivos muy pequeños (móviles) */
+@media screen and (max-width: 600px) {
+  .header h1 {
+      font-size: 20px; /* Reducir el tamaño de la fuente en pantallas pequeñas */
   }
 
-  .actions{
-    margin-right: 6%;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
+  .user-card {
+      padding: 10px;
   }
 
-  .action{
-    font-size: 16px;
-    background: none;
-    margin: 5px;
-    color: #003366;
-    border: 2px solid #003366;
-    padding: 5px 10px;
-    border-radius: 15px;
-    cursor: pointer;
-    text-decoration:underline;
+  .user-info span {
+      font-size: 12px; /* Reducir el tamaño de la fuente en móviles */
   }
+
+  .create-button {
+      font-size: 14px; /* Reducir tamaño del texto */
+      padding: 8px; /* Ajustar el tamaño del botón */
+  }
+}
+
+/* Responsive - Dispositivos grandes (4K y televisores) */
+@media screen and (min-width: 2560px) {
+  .center {
+      margin-left: 15%; /* Más espacio a la izquierda en pantallas grandes */
+  }
+
+  .main-container {
+      padding: 30px; /* Mayor padding en pantallas grandes */
+  }
+
+  .header {
+      margin-left: 10%;
+      max-width: 80%; /* Hacer el contenido más grande */
+  }
+
+  .user-card {
+      max-width: 50%; /* Reducir el ancho de las tarjetas en pantallas muy grandes */
+  }
+
+  .create-button {
+      font-size: 18px; /* Botón más grande en pantallas grandes */
+  }
+}
+
+/* Responsive - Dispositivos ultra anchos (pantallas 4K o similares) */
+@media screen and (min-width: 3840px) {
+  .center {
+      margin-left: 20%; /* Mucho más espacio a la izquierda en pantallas muy grandes */
+  }
+
+  .main-container {
+      width: 80%; /* Hacer que el contenedor ocupe menos espacio */
+  }
+
+  .header {
+      font-size: 28px; /* Hacer los textos más grandes */
+  }
+
+  .user-card {
+      max-width: 40%; /* Reducir aún más el ancho de las tarjetas */
+  }
+
+  .create-button {
+      font-size: 20px;
+      padding: 12px; /* Botón más grande */
+  }
+}
+
+/* NUEVO: Mostrar solo ícono en móviles, texto en pantallas grandes */
+.button-text {
+  display: inline-block;
+  margin-left: 8px;
+}
+
+/* En pantallas pequeñas, ocultar texto y hacer botón circular */
+@media screen and (max-width: 600px) {
+  .button-text {
+      display: none;
+  }
+
+  .create-button {
+      justify-content: center;
+      padding: 12px;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+  }
+
+  .create-button mat-icon {
+      margin: 0;
+  }
+}
