@@ -1,0 +1,261 @@
+/* ==== CONTENEDORES Y ESTRUCTURA ==== */
+
+.center {
+    margin-left: 15%;
+    justify-content: center;
+    align-items: center;
+    min-height: auto;
+    transition: margin-left 0.3s ease;
+  }
+  
+  .shifted {
+    margin-left: 5%;
+    transition: margin-left 0.3s ease;
+  }
+  
+  .main-container {
+    width: 80%;
+    max-width: 85%;
+    padding: 20px;
+    width: calc(100% - 120px);
+    box-sizing: border-box;
+  }
+  
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .back-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    color: #333;
+  }
+  
+  .title {
+    flex: 1;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+  }
+  
+  /* ==== FORMULARIO ==== */
+  
+  .form-container {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 10px;
+    padding: 20px;
+  }
+  
+  .form-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .separator {
+    width: 100%;
+    border: 1px solid #003366;
+    margin-top: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .form-description {
+    font-size: 16px;
+    font-weight: bold;
+    color: #555;
+    margin: 0 0 10px 0;
+  }
+  
+  .form-instruction {
+    font-size: 15px;
+    color: #525252;
+    margin-bottom: 30px;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+  
+  .row {
+    display: flex;
+    gap: 20px;
+  }
+  
+  /* ==== CAMPOS DE ENTRADA ==== */
+  
+  .input-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin-bottom: 16px;
+  }
+  
+  .input-field label {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 5px;
+  }
+  
+  .input-field input[type="file"] {
+    display: block;
+    width: 98%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-top: 4px;
+  }
+  
+  label {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 5px;
+  }
+  
+  mat-form-field {
+    width: 100%;
+  }
+  
+  mat-icon[matPrefix] {
+    margin-right: 8px;
+    color: #666;
+  }
+  
+  /* ==== BOTÓN DE REGISTRO ==== */
+  
+  .register-button {
+    background-color: white;
+    color: #003366;
+    border: 1px solid #ccc; /* Borde suave para darle estructura */
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra sutil que le da volumen */
+  }
+  
+  .register-button:hover:not(:disabled) {
+    background-color: #003366;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Más sombra al hacer hover */
+  }
+  
+  .register-button:active:not(:disabled) {
+    transform: translateY(1px); /* Efecto de pulsación */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .register-button:disabled {
+    background-color: #f0f0f0;
+    color: #999;
+    border: 1px solid #ddd;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+      
+  /* ==== SPINNER ==== */
+  
+  .spinner {
+    margin: 20px auto;
+    display: block;
+  }
+  
+  /* ==== MENSAJE DE ERROR ==== */
+  
+  .error-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #d32f2f;
+    background-color: #fdecea;
+    padding: 10px;
+    margin-top: 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    border: 1px solid #f5c6cb;
+  }
+  
+  /* ==== RESPONSIVE DESIGN ==== */
+  
+  @media (max-width: 1024px) {
+    .center {
+      display: flex;
+      justify-content: center;
+      padding: 0 0 35px 0;
+    }
+  
+    .main-container {
+      width: 95%;
+      max-width: 95%;
+      box-sizing: border-box;
+    }
+  
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #fff;
+      padding: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+  
+    .title {
+      flex: 1;
+      text-align: center;
+      font-size: 19px;
+      font-weight: bold;
+      color: #333;
+      margin: 0;
+    }
+  
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+  
+    .row {
+      display: block;
+      gap: 20px;
+    }
+  
+    .input-field {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+  
+    label {
+      font-size: 14px;
+      margin-bottom: 5px;
+      color: #333;
+    }
+  }
+  
