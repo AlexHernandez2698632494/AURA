@@ -40,7 +40,7 @@ export class PaymentUserService {
   
   // Crear un usuario premium de pago
   register(paymentUserData: any): Observable<any> {
-    return this.http.post(`${this.getApiUrl()}/oauth2/premium/user`, paymentUserData).pipe(
+    return this.http.post(`${this.getApiUrl()}/oauth2/user`, paymentUserData).pipe(
       catchError(err => throwError(err))
     );
   }
@@ -82,8 +82,8 @@ export class PaymentUserService {
   }
 
   // Obtener un usuario premium de pago por ID
-  getPaymentUserById(id: string): Observable<any> {
-    const url = `${this.getApiUrl()}/oauth2/premium/user/${id}`;
+  getPaymentUserById(userName: string): Observable<any> {
+    const url = `${this.getApiUrl()}/oauth2/user/${userName}`;
     const headers = this.getAuthHeaders();
     return this.http.get<any>(url, { headers }).pipe(
       catchError(this.handleError)
@@ -198,6 +198,15 @@ export class PaymentUserService {
       catchError(err => throwError(err))
     );
   }
+
+  getUsersWithFilters(authorityId: string, registrationKeyId: string): Observable<any[]> {
+    const url = `${this.getApiUrl()}/oauth2/users/filter?authorityId=${authorityId}&registrationKeyId=${registrationKeyId}`;
+    const headers = this.getAuthHeaders();
+    return this.http.get<any[]>(url, { headers }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
 
   // Manejar errores de HTTP
   private handleError(error: any): Observable<never> {
