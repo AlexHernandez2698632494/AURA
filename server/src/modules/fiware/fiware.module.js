@@ -7,6 +7,7 @@ import buildingRoutes from "./routes/building.routes.js";
 import branchRoutes from "./routes/branch.routes.js"
 import devicesjsonRoutes from "./routes/iotagent/premium/devices.routes.js"
 import historicalRoutes from "./routes/historical.routes.js"
+import keyRoutes from "./routes/key.routes.js"
 
 const router = express.Router();
 
@@ -18,5 +19,6 @@ router.use("/v1/ngsi",devicesjsonRoutes)
 router.use("/v1/smartcity", buildingRoutes);
 router.use("/v1/starcity",branchRoutes)
 router.use("/v1/ngsi",historicalRoutes)
+router.use("/v1/smartcity",keyRoutes)
 
 export default router;
