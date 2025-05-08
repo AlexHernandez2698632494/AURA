@@ -11,7 +11,7 @@ export class FiwareService {
   private baseUrl: string;
 
   constructor(private http: HttpClient, private apiConfig: ApiConfigService) {
-    this.baseUrl = `${this.apiConfig.getApiUrl()}/v1/ngsi`;  // URL de la API de Fiware
+    this.baseUrl = `${this.apiConfig.getApiUrl()}`;  // URL de la API de Fiware
   }
   private getAuthHeaders(fiwareService: string): HttpHeaders {
     const token = sessionStorage.getItem('token');
@@ -23,14 +23,23 @@ export class FiwareService {
       'fiware-service': fiwareService
     });
   }
-  
+  private getTokenHeaders(): HttpHeaders {
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+      throw new Error('No se encontró el token en sessionStorage');
+    }
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+  }
+
   // Método para obtener servicios de la ruta /v1/ngsi/services-path
   getSubServices(fiwareService: string): Observable<any> {
     const headers = new HttpHeaders({
       'fiware-service': fiwareService
     });
 
-    return this.http.get(`${this.baseUrl}/services-path`, { headers })
+    return this.http.get(`${this.baseUrl}/v1/ngsi/services-path`, { headers })
       .pipe(catchError(this.handleError));
   }
 
@@ -38,32 +47,32 @@ export class FiwareService {
     const token = sessionStorage.getItem('token');
     const fiwareService = sessionStorage.getItem('fiware-service');
     const fiwareServicePath = sessionStorage.getItem('fiware-servicepath'); // Aquí estaba un error de tipo en el nombre de la clave en sessionStorage
-  
+
     if (!token || !fiwareService || !fiwareServicePath) {
       throw new Error('Faltan datos en sessionStorage');
     }
-  
+
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'fiware-service': fiwareService,
       'fiware-servicepath': fiwareServicePath,
     });
   }
-  
+
   getSubServiceBuilding(fiwareService: string): Observable<any> {
     const headers = this.getAuthHeaders(fiwareService);
 
-    return this.http.get(`${this.baseUrl}/services-path/building`, { headers })
+    return this.http.get(`${this.baseUrl}/v1/ngsi/services-path/building`, { headers })
       .pipe(catchError(this.handleError));
   }
 
-  getSubServiceBranch(fiwareService: string,fiwareServicePath:string): Observable<any> {
+  getSubServiceBranch(fiwareService: string, fiwareServicePath: string): Observable<any> {
     const headers = new HttpHeaders({
       'fiware-service': fiwareService,
       'fiware-service-building': fiwareServicePath
     });
 
-    return this.http.get(`${this.baseUrl}/services-path/branch`, { headers })
+    return this.http.get(`${this.baseUrl}/v1/ngsi/services-path/branch`, { headers })
       .pipe(catchError(this.handleError));
   }
   // Método para obtener entidades de la ruta /v1/ngsi/entities
@@ -75,12 +84,12 @@ export class FiwareService {
 
     const params = { type, limit };
 
-    return this.http.get(`${this.baseUrl}/entities`, { headers, params })
+    return this.http.get(`${this.baseUrl}/v1/ngsi/entities`, { headers, params })
       .pipe(catchError(this.handleError));
   }
 
-  getHistoricalData(id: string):Observable<any>{
-    return this.http.get(`${this.baseUrl}/historical/${id}/sensors`, {
+  getHistoricalData(id: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/v1/ngsi/historical/${id}/sensors`, {
       headers: this.getAllSubServices()
     }).pipe(
       catchError(err => {
@@ -90,6 +99,43 @@ export class FiwareService {
     );
   }
 
+  getApiKeys(): Observable<any[]> {
+    const headers = this.getTokenHeaders();
+    return this.http.get<any[]>(`${this.baseUrl}/v1/smartcity/view/apikeys`, { headers })
+      .pipe(catchError(this.handleError));
+  }
+
+  getDeviceKeys(): Observable<any[]> {
+    const headers = this.getTokenHeaders();
+    return this.http.get<any[]>(`${this.baseUrl}/v1/smartcity/view/devicekeys`, { headers })
+      .pipe(catchError(this.handleError));
+  }
+
+  createApiKeys(apikeys: any): Observable<any> {
+    const headers = this.getTokenHeaders();
+    return this.http.post(`${this.baseUrl}/v1/smartcity/create/apikey`, apikeys, { headers }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  createDeviceKeys(apikeys: any): Observable<any> {
+    const headers = this.getTokenHeaders();
+    return this.http.post(`${this.baseUrl}/v1/smartcity/create/devicekey`, apikeys, { headers }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  getGenerateApiKeys(): Observable<any[]> {
+    const headers = this.getTokenHeaders();
+    return this.http.get<any[]>(`${this.baseUrl}/v1/smartcity/generate/apikey`, { headers })
+      .pipe(catchError(this.handleError));
+  }
+
+  getGenerateDeviceKeys(): Observable<any[]> {
+    const headers = this.getTokenHeaders();
+    return this.http.get<any[]>(`${this.baseUrl}/v1/smartcity/generate/devicekey`, { headers })
+      .pipe(catchError(this.handleError));
+  }
   // Manejo de errores
   private handleError(error: any): Observable<never> {
     console.error('Error al obtener datos', error);
