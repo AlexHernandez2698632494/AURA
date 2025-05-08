@@ -1,0 +1,55 @@
+<div *ngIf="isLargeScreen">
+    <app-side (sideNavToggle)="onSideNavToggle($event)"></app-side>
+  </div>
+  <div *ngIf="!isLargeScreen">
+    <app-bottom-tab></app-bottom-tab>
+  </div>
+  
+  <div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
+    <form>
+      <!-- Selector principal -->
+      <mat-form-field appearance="fill">
+        <mat-label>Selecciona una opción</mat-label>
+        <mat-select [(ngModel)]="selectedOption" name="option" (selectionChange)="onOptionChange()">
+          <mat-option value="apikey">API Key</mat-option>
+          <mat-option value="device">Device</mat-option>
+        </mat-select>
+      </mat-form-field>
+      
+  
+      <!-- Mostrar pregunta si hay selección -->
+      <div *ngIf="selectedOption">
+        <label style="display:block; margin-top: 16px;">¿Deseas generar API Key?</label>
+  
+        <div style="display: flex; gap: 10px;">
+          <mat-checkbox
+            [checked]="checkboxValue === 'si'"
+            (change)="onCheckboxChange('si')">
+            Sí
+          </mat-checkbox>
+  
+          <mat-checkbox
+            [checked]="checkboxValue === 'no'"
+            (change)="onCheckboxChange('no')">
+            No
+          </mat-checkbox>
+        </div>
+  
+        <!-- Mostrar inputs según valor del checkbox -->
+        <div *ngIf="checkboxValue === 'no'">
+          <mat-form-field appearance="fill">
+            <mat-label>Key</mat-label>
+            <input matInput [(ngModel)]="key" name="key" />
+          </mat-form-field>
+        </div>
+  
+        <div *ngIf="checkboxValue === 'si' || checkboxValue === 'no'">
+          <mat-form-field appearance="fill">
+            <mat-label>Type</mat-label>
+            <input matInput [(ngModel)]="type" name="type" />
+          </mat-form-field>
+        </div>
+      </div>
+    </form>
+  </div>
+  

@@ -1,0 +1,68 @@
+<div *ngIf="isLargeScreen">
+    <app-side (sideNavToggle)="onSideNavToggle($event)"></app-side>
+  </div>
+  <div *ngIf="!isLargeScreen">
+    <app-bottom-tab></app-bottom-tab>
+  </div>
+  <div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
+    <div class="main-container">
+        <div class="header">
+            <h2>Control llaves</h2>
+        </div>
+        <div class="sub-header">Llaves registradas
+            <hr>      <div class="table-controls">
+                <div class="left">
+                  <label for="records">Mostrar</label>
+                  <select id="records" [(ngModel)]="recordsToShow">
+                    <option *ngFor="let option of [5, 10, 15, 20]" [value]="option">{{ option }}</option>
+                  </select>
+                  <span>registros</span>
+                </div>
+                <div class="right">
+                  <mat-form-field class="search-input">
+                    <mat-label class="search-label">buscar</mat-label>
+                    <input matInput type="text" [(ngModel)]="searchTerm">
+                  </mat-form-field>
+                </div>
+              </div>
+              <div class="table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>apikey/DeviceId</th>
+                      <th>tipo</th>
+                      <th>Autoridad</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let key of filteredKeys()">
+                        <td>{{ key.key }}</td>
+                        <td>{{ key.type }}</td>
+                        <td>{{ key.authotities }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+          
+              <!-- Información de registros y paginación -->
+              <div class="footer">
+                <div class="left">
+                  Mostrando registros del {{ (currentPage - 1) * recordsToShow + 1 }}
+                  al {{ Math.min(currentPage * recordsToShow, keys.length) }}
+                  de un total de {{ keys.length }} registros
+                </div>
+                <div class="right pagination">
+                  <button mat-fab extended (click)="previousPage()" [disabled]="currentPage === 1">
+                    <mat-icon>arrow_back</mat-icon>
+                    Anterior
+                  </button>
+                  <span>{{ currentPage }}</span>
+                  <button mat-fab extended (click)="nextPage()" [disabled]="currentPage === totalPages()">
+                    <mat-icon>arrow_forward</mat-icon>
+                    Siguiente
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
