@@ -59,6 +59,8 @@ import { BuildingBranchIndexComponent } from './app/components/paymentUsers/iot/
 import { DeviceComponent } from './app/components/paymentUsers/iot/fiware/device/device.component';
 import { DetailsDeviceComponent } from './app/components/paymentUsers/iot/buildings/branch/index/details/details.component';
 import { PremiumUsersCreateComponent } from './app/components/paymentUsers/users/create/create.component';
+import { KeyIndexComponent } from './app/components/key/index/index.component';
+import { KeyCreateComponent } from './app/components/key/create/create.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
@@ -185,6 +187,18 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     data: { authorities: ['super_administrador', 'dev'] },
   },
+  {
+    path: 'key/index',
+    component: KeyIndexComponent,
+    canActivate: [AuthGuard],
+    data: { authorities: ['super_administrador', 'dev'] },
+  },
+  {
+    path: 'key/create',
+    component: KeyCreateComponent,
+    canActivate: [AuthGuard],
+    data: { authorities: ['super_administrador', 'dev'] },
+  },
   // rutas de Subscriptions o Usuarios con permisos de licencia :
   {
     path:'overview',
@@ -272,7 +286,7 @@ const routes: Routes = [
     data: { authorities: ['super_usuario'] },
   },
   {
-    path:'premium/devices',
+    path:'premium/building/:buildingName/level/:id/branch/:branchName/create/devices',
     component: DeviceComponent,
     canActivate: [AuthGuard],
     data: { authorities: ['super_usuario'] },
