@@ -195,7 +195,7 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
   }
 
   onCreateClick() {
-    this.router.navigate([`/premium/devices`]);
+    this.router.navigate([`/premium/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/create/devices`]);
   }
 
   getNumericValue(value: string): number {
