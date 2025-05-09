@@ -392,7 +392,7 @@ export const createServiceDeviceJSON = async (req, res) => {
         // Segunda suscripción (url_notify02)
         if (url_notify02) {
           const secondSubscriptionBody = {
-            description: "Notificar sensor rakSensor",
+            description: description,
             subject: {
               entities: [
                 {
