@@ -1,11 +1,11 @@
 <div *ngIf="isLargeScreen">
     <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
-  </div>
-  <div *ngIf="!isLargeScreen">
+</div>
+<div *ngIf="!isLargeScreen">
     <app-bottom-tab></app-bottom-tab>
-  </div>
-  
-  <div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
+</div>
+
+<div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
     <div class="main-container">
         <div class="header">
             <button mat-icon-button class="back-button" (click)="onBackClick()">
@@ -13,12 +13,12 @@
             </button>
             <h1 class="title">Registro de nuevo dispositivo</h1>
         </div>
-  
+
         <div class="form-container">
             <h2 class="form-title">Registro de dispositivo</h2>
             <hr class="separator" />
             <p class="form-description">Seleccione el tipo de dispositivo y complete los datos requeridos</p>
-  
+
             <form [formGroup]="sensorForm" (ngSubmit)="registerSensor()">
                 <!-- Selección del tipo de sensor -->
                 <div>
@@ -28,26 +28,33 @@
                         <mat-radio-button value="lorawanMqtt" matTooltip="Dispositivo LoraWAN">Tipo C</mat-radio-button>
                     </mat-radio-group>
                 </div>
-  
+
                 <!-- Contenedor para JSON/MQTT -->
                 <div *ngIf="sensorForm.get('sensorType')?.value === 'jsonMqtt'">
                     <h3>Información General de Tipo A</h3>
                     <div class="row">
-                      <mat-form-field class="col" appearance="fill">
-                          <mat-label>Device ID</mat-label>
-                          <input matInput formControlName="deviceId" placeholder="Ingrese el Device ID" />
-                      </mat-form-field>
-                      <mat-form-field class="col" appearance="fill">
-                          <mat-label>Nombre del dispositivo</mat-label>
-                          <input matInput formControlName="name" placeholder="Ej: Sensor de temperatura" />
-                      </mat-form-field>
-                      <mat-form-field class="col" appearance="fill">
-                          <mat-label>apikey</mat-label>
-                          <input matInput formControlName="entityType" placeholder="Ingrese el API Key" />
-                      </mat-form-field>
-                  </div>
+                        <mat-form-field class="col" appearance="fill">
+                            <mat-label>Device ID</mat-label>
+                            <input matInput formControlName="deviceId" placeholder="Ingrese el Device ID" />
+                        </mat-form-field>
+                        <mat-form-field class="col" appearance="fill">
+                            <mat-label>Nombre del dispositivo</mat-label>
+                            <input matInput formControlName="name" placeholder="Ej: Sensor de temperatura" />
+                        </mat-form-field>
+                        <mat-form-field class="col" appearance="fill">
+                            <mat-label>apikey</mat-label>
+                            <input matInput formControlName="entityType" placeholder="Ingrese el API Key" />
+                        </mat-form-field>
+                    </div>
+                    <h3>Descripción del Dispositivo</h3>
+                    <div class="input-field">
+                        <mat-form-field class="col">
+                            <mat-label>Descripcion</mat-label>
+                            <input matInput formControlName="description" placeholder="Ingrese la descripcion" />
+                        </mat-form-field>
+                    </div>
                 </div>
-  
+
                 <!-- Contenedor para LoraWAN/MQTT -->
                 <div *ngIf="sensorForm.get('sensorType')?.value === 'lorawanMqtt'">
                     <h3>Información General de Tipo C</h3>
@@ -71,7 +78,7 @@
                             <input matInput formControlName="timezone" />
                         </mat-form-field>
                     </div>
-  
+
                     <h3>LoraWAN</h3>
                     <div class="row">
                         <mat-form-field class="col" appearance="fill">
@@ -130,49 +137,48 @@
                         </mat-form-field>
                     </div>
                 </div>
-  
+
                 <!-- Contenedor para JSON/HTTP -->
                 <div *ngIf="sensorForm.get('sensorType')?.value === 'jsonHttp'">
-                  <h3>Información General de Tipo B</h3>
-                  <div class="row">
-                      <mat-form-field class="col" appearance="fill">
-                          <mat-label>Device ID</mat-label>
-                          <input matInput formControlName="deviceId" placeholder="Ingrese el Device ID" />
-                      </mat-form-field>
-                      <mat-form-field class="col" appearance="fill">
-                          <mat-label>Nombre del dispositivo</mat-label>
-                          <input matInput formControlName="name" placeholder="Ej: Sensor de temperatura" />
-                      </mat-form-field>
-                      <mat-form-field class="col" appearance="fill">
-                          <mat-label>apikey</mat-label>
-                          <input matInput formControlName="entityType" placeholder="Ingrese el API Key" />
-                      </mat-form-field>
-                  </div>
-              </div>
-              
+                    <h3>Información General de Tipo B</h3>
+                    <div class="row">
+                        <mat-form-field class="col" appearance="fill">
+                            <mat-label>Device ID</mat-label>
+                            <input matInput formControlName="deviceId" placeholder="Ingrese el Device ID" />
+                        </mat-form-field>
+                        <mat-form-field class="col" appearance="fill">
+                            <mat-label>Nombre del dispositivo</mat-label>
+                            <input matInput formControlName="name" placeholder="Ej: Sensor de temperatura" />
+                        </mat-form-field>
+                        <mat-form-field class="col" appearance="fill">
+                            <mat-label>apikey</mat-label>
+                            <input matInput formControlName="entityType" placeholder="Ingrese el API Key" />
+                        </mat-form-field>
+                    </div>
+                </div>
+
                 <!-- Mapa de ubicación (ANTES del botón de registrar) -->
                 <div>
                     <h3>Locación</h3>
                     <div class="row">
-                      <mat-form-field appearance="fill" class="col">
-                        <mat-label>Latitud</mat-label>
-                        <input matInput formControlName="latitud" type="number" />
-                        <mat-icon matSuffix>location_on</mat-icon>
-                      </mat-form-field>
-                      <mat-form-field appearance="fill" class="col">
-                        <mat-label>Longitud</mat-label>
-                        <input matInput formControlName="longitud" type="number" />
-                      </mat-form-field>
+                        <mat-form-field appearance="fill" class="col">
+                            <mat-label>Latitud</mat-label>
+                            <input matInput formControlName="latitud" type="number" />
+                            <mat-icon matSuffix>location_on</mat-icon>
+                        </mat-form-field>
+                        <mat-form-field appearance="fill" class="col">
+                            <mat-label>Longitud</mat-label>
+                            <input matInput formControlName="longitud" type="number" />
+                        </mat-form-field>
                     </div>
                     <div id="map" style="height: 300px;"></div> <!-- Contenedor para el mapa -->
                 </div>
-  
+
                 <!-- Botón de registro -->
                 <button mat-raised-button color="primary" type="submit" [disabled]="!isButtonEnabled">
-                  Registrar Dispositivo
+                    Registrar Dispositivo
                 </button>
             </form>
         </div>
     </div>
-  </div>
-  
+</div>
