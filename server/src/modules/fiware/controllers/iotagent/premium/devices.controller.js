@@ -205,7 +205,6 @@ export const createServiceDeviceJSON = async (req, res) => {
             notification: {
               http: {
                 url: url_notify02, // URL para la segunda suscripción
-                timeout: 5000,
               },
               attrs: [
                 "id",
@@ -215,7 +214,6 @@ export const createServiceDeviceJSON = async (req, res) => {
                 "servicePath",
                 "deviceName",
               ],
-              attrsFormat: "keyValues",
             },
             metadata: ["dateCreated", "dateModified"],
           };
@@ -409,7 +407,6 @@ export const createServiceDeviceJSON = async (req, res) => {
             notification: {
               http: {
                 url: url_notify02, // URL para la segunda suscripción
-                timeout: 5000,
               },
               attrs: [
                 "id",
@@ -419,7 +416,6 @@ export const createServiceDeviceJSON = async (req, res) => {
                 "servicePath",
                 "deviceName",
               ],
-              attrsFormat: "keyValues",
             },
             metadata: ["dateCreated", "dateModified"],
           };
