@@ -24,6 +24,9 @@ export const createServiceDeviceJSON = async (req, res) => {
       timezone,
       deviceName,
       deviceType,
+      description,
+      url_notify,
+      url_notify02, // <-- nuevo campo
     } = req.body;
     const fiware_service = req.headers["fiware-service"];
     const fiware_servicepath = req.headers["fiware-servicepath"];
@@ -44,8 +47,22 @@ export const createServiceDeviceJSON = async (req, res) => {
         .json({ message: "Faltan el tipo de dispositivo." });
     else if (!locacion)
       return res.status(400).json({ message: "Faltan la locacion." });
+    else if (!description) {
+      return res.status(400).json({
+        message: "Faltan 'description'",
+      });
+    } else if (!url_notify) {
+      return res.status(400).json({
+        message: "Faltan 'url_notify' ",
+      });
+    }else if (!url_notify02) {
+      return res.status(400).json({
+        message: "Faltan 'url_notify02' ",
+      });
+    }
 
     const url_json = config.url_json;
+    const url_orion = config.url_orion.replace("https://", "http://");
     const apiUrl = url_json.replace("https://", "http://");
 
     const { data } = await axios.get(`${apiUrl}services`, {
@@ -112,11 +129,127 @@ export const createServiceDeviceJSON = async (req, res) => {
       );
 
       if (!result.success) {
-        return res.status(500).json({ message: "Error al enviar datos al agente." });
+        return res
+          .status(500)
+          .json({ message: "Error al enviar datos al agente." });
+      }
+
+      const entity_name = `urn:ngsi-ld:${deviceId.substring(
+        0,
+        5
+      )}:${deviceId.substring(6, 10)}`;
+      const entity_type = deviceId.substring(0, 5);
+
+      const subscriptionBody = {
+        description,
+        subject: {
+          entities: [
+            {
+              idPattern: entity_name,
+              type: entity_type,
+            },
+          ],
+          condition: {
+            attrs: [
+              "id",
+              "sensors",
+              "location",
+              "deviceName",
+              "status",
+              "command",
+            ],
+          },
+        },
+        notification: {
+          http: {
+            url: url_notify,
+            timeout: 5000,
+          },
+          attrs: [
+            "id",
+            "sensors",
+            "location",
+            "TimeInstant",
+            "servicePath",
+            "deviceName",
+          ],
+          attrsFormat: "keyValues",
+        },
+        metadata: ["dateCreated", "dateModified"],
+      };
+
+      try {
+        await axios.post(`${url_orion}subscriptions`, subscriptionBody, {
+          headers: {
+            "Content-Type": "application/json",
+            "fiware-service": fiware_service,
+            "fiware-servicepath": fiware_servicepath,
+          },
+        });
+
+        // Segunda suscripción (url_notify02)
+        if (url_notify02) {
+          const secondSubscriptionBody = {
+            description: "Notificar sensor rakSensor",
+            subject: {
+              entities: [
+                {
+                  idPattern: entity_name,
+                  type: entity_type,
+                },
+              ],
+              condition: {
+                attrs: ["id", "sensors", "location"],
+              },
+            },
+            notification: {
+              http: {
+                url: url_notify02, // URL para la segunda suscripción
+                timeout: 5000,
+              },
+              attrs: [
+                "id",
+                "sensors",
+                "location",
+                "TimeInstant",
+                "servicePath",
+                "deviceName",
+              ],
+              attrsFormat: "keyValues",
+            },
+            metadata: ["dateCreated", "dateModified"],
+          };
+
+          try {
+            await axios.post(
+              `${url_orion}subscriptions`,
+              secondSubscriptionBody,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  "fiware-service": fiware_service,
+                  "fiware-servicepath": fiware_servicepath,
+                },
+              }
+            );
+          } catch (error) {
+            console.error(
+              "Error al crear la segunda suscripción:",
+              error.response?.data || error.message
+            );
+            // No se detiene el flujo, pero se informa
+          }
+        }
+      } catch (error) {
+        return res.status(500).json({
+          message: "Dispositivo creado, pero falló la suscripción.",
+          agentResponse: result.data,
+          error: error.response?.data || error.message,
+        });
       }
 
       return res.status(201).json({
-        message: "Dispositivo creado exitosamente.",
+        message: "Dispositivo y suscripción creados exitosamente.",
         agentResponse: result.data,
       });
     } else {
@@ -162,9 +295,9 @@ export const createServiceDeviceJSON = async (req, res) => {
 
       const entity_name = `urn:ngsi-ld:${deviceId.substring(
         0,
-        4
-      )}:${deviceId.substring(4, 9)}`;
-      const entity_type = deviceId.substring(0, 4);
+        5
+      )}:${deviceId.substring(6, 10)}`;
+      const entity_type = deviceId.substring(0, 5);
 
       const serviceBody = {
         services: [
@@ -206,11 +339,121 @@ export const createServiceDeviceJSON = async (req, res) => {
       );
 
       if (!result.success) {
-        return res.status(500).json({ message: "Error al enviar datos al agente." });
+        return res
+          .status(500)
+          .json({ message: "Error al enviar datos al agente." });
+      }
+
+      const subscriptionBody = {
+        description,
+        subject: {
+          entities: [
+            {
+              idPattern: entity_name,
+              type: entity_type,
+            },
+          ],
+          condition: {
+            attrs: [
+              "id",
+              "sensors",
+              "location",
+              "deviceName",
+              "status",
+              "command",
+            ],
+          },
+        },
+        notification: {
+          http: {
+            url: url_notify,
+            timeout: 5000,
+          },
+          attrs: [
+            "id",
+            "sensors",
+            "location",
+            "TimeInstant",
+            "servicePath",
+            "deviceName",
+          ],
+          attrsFormat: "keyValues",
+        },
+        metadata: ["dateCreated", "dateModified"],
+      };
+
+      try {
+        await axios.post(`${url_orion}subscriptions`, subscriptionBody, {
+          headers: {
+            "Content-Type": "application/json",
+            "fiware-service": fiware_service,
+            "fiware-servicepath": fiware_servicepath,
+          },
+        });
+
+        // Segunda suscripción (url_notify02)
+        if (url_notify02) {
+          const secondSubscriptionBody = {
+            description: "Notificar sensor rakSensor",
+            subject: {
+              entities: [
+                {
+                  idPattern: entity_name,
+                  type: entity_type,
+                },
+              ],
+              condition: {
+                attrs: ["id", "sensors", "location"],
+              },
+            },
+            notification: {
+              http: {
+                url: url_notify02, // URL para la segunda suscripción
+                timeout: 5000,
+              },
+              attrs: [
+                "id",
+                "sensors",
+                "location",
+                "TimeInstant",
+                "servicePath",
+                "deviceName",
+              ],
+              attrsFormat: "keyValues",
+            },
+            metadata: ["dateCreated", "dateModified"],
+          };
+
+          try {
+            await axios.post(
+              `${url_orion}subscriptions`,
+              secondSubscriptionBody,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  "fiware-service": fiware_service,
+                  "fiware-servicepath": fiware_servicepath,
+                },
+              }
+            );
+          } catch (error) {
+            console.error(
+              "Error al crear la segunda suscripción:",
+              error.response?.data || error.message
+            );
+            // No se detiene el flujo, pero se informa
+          }
+        }
+      } catch (error) {
+        return res.status(500).json({
+          message: "Dispositivo creado, pero falló la suscripción.",
+          agentResponse: result.data,
+          error: error.response?.data || error.message,
+        });
       }
 
       return res.status(201).json({
-        message: "Servicio y dispositivo creados exitosamente.",
+        message: "Servicio, dispositivo y suscripción creados exitosamente.",
         agentResponse: result.data,
       });
     }
@@ -291,7 +534,6 @@ async function createDevice(
   });
 }
 
-// ✅ Corregido: sendData ahora NO usa `res`, solo devuelve resultados
 async function sendData(apikey, deviceId, fiware_service, fiware_servicepath) {
   const k = apikey;
   const i = deviceId;
