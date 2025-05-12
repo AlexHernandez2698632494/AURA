@@ -96,7 +96,7 @@ services:
       - "9001:9001"
     volumes:
       - mosquitto_data:/mosquitto/data
-      - mosquitto_config:/mosquitto/config
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
       - mosquitto_log:/mosquitto/log
     networks:
       - default
