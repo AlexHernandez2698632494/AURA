@@ -25,14 +25,15 @@
                 <h2>Control del Actuador</h2>
 
                 <!-- Botón único para encendido/apagado -->
-                <div class="actuador-toggle">
+                <div class="device-actuador"><div class="actuador-toggle">
+                    <button></button>
                     <button class="toggle-btn" [ngClass]="{ 'on': estadoActuador, 'off': !estadoActuador }"
                         (click)="toggleActuador()">
                         <mat-icon>{{ estadoActuador ? 'power' : 'power_off' }}</mat-icon>
                         {{ estadoActuador ? 'Encendido' : 'Apagado' }}
 
                     </button>
-                </div>
+                </div></div>
 
                 <!-- Control analógico mejorado -->
                 <div class="analogo-control">
