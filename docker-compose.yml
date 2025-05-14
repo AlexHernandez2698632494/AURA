@@ -120,21 +120,17 @@ services:
 
   quantumleap:
     image: orchestracities/quantumleap
-    hostname: quantumleap
     container_name: quantumleap
+    depends_on:
+      - crate-db
+      - orion
     ports:
       - "8668:8668"
-    expose:
-      - "8668"
-    depends_on:
-      - orion
-      - crate-db
     environment:
-      - QL_DATABASE_HOST=crate-db
-      - QL_DATABASE_PORT=4200
-      - QL_DATABASE_NAME=crate
-      - QL_DEFAULT_LIMIT=10000
       - QL_LOGLEVEL=DEBUG
+      - CRATE_HOST=crate-db
+      - USE_GEOCODING=False
+      - CACHE_QUERIES=False
     networks:
       - default
 
