@@ -145,117 +145,127 @@ export class DeviceComponent implements OnInit, AfterViewInit {
 
   isButtonEnabled: boolean | undefined = false;
 
-  registerSensor(): void {
-    if (this.sensorForm.valid) {
-      const formData = this.sensorForm.value;
-  
-      let transporte = '';
-      switch (formData.transporte) {
-        case 'jsonMqtt':
-          transporte = 'MQTT';
-          break;
-        case 'jsonHttp':
-          transporte = 'HTTP';
-          break;
-        case 'lorawanMqtt':
-          transporte = 'LORA';
-          break;
-        default:
-          transporte = 'DESCONOCIDO';
-      }
-  
-      // NUEVO: Calcular isSensorActuador
-      let isSensorActuador = 0;
-      const roles = this.selectedDeviceRoles;
-      if (roles.includes('SENSOR') && roles.includes('ACTUADOR')) {
-        isSensorActuador = 2;
-      } else if (roles.includes('ACTUADOR')) {
-        isSensorActuador = 1;
-      }
-  
-      // NUEVO: Construir nameStates y commandName
-      const nameStates: string[] = [];
-      const commandName: string[] = [];
-  
-      const commandNameToggle: string[] = [];
-      const commandNameAnalogo: string[] = [];
-      const commandNameDial: string[] = [];
-      const commandNameToggleText: string[] = [];
-  
-      this.selectedControlTypes.forEach(control => {
-        nameStates.push(`${control}_states`);
-        commandName.push(control);
-  
-        if (control.startsWith('switch')) {
-          commandNameToggle.push(control);
-        } else if (control.startsWith('analogo')) {
-          commandNameAnalogo.push(control);
-        } else if (control.startsWith('dial')) {
-          commandNameDial.push(control);
-        } else if (control.startsWith('toggleText')) {
-          commandNameToggleText.push(control);
-        }
-      });
-  
-      const url_socket = `${this.apiConfig.getApiUrl()}/v1/notify`;
-      const url_quantumleap = `${this.apiConfig.getApiUrlMoquitto()}/v2/notify`;
-  
-      const requestData = {
-        apikey: formData.entityType,
-        deviceId: formData.deviceId,
-        timezone: this.getTimezone(),
-        transporte: transporte,
-        locacion: [formData.latitud, formData.longitud],
-        deviceName: formData.name,
-        deviceType: "Building",
-        url_notify: url_socket,
-        url_notify02: url_quantumleap,
-        description: formData.description,
-  
-        // NUEVAS variables
-        isSensorActuador: isSensorActuador,
-        nameStates: nameStates,
-        commandName: commandName,
-        commandNameToggle: commandNameToggle,
-        commandNameAnalogo: commandNameAnalogo,
-        commandNameDial: commandNameDial,
-        commandNameToggleText: commandNameToggleText
-      };
-  
-      Swal.fire({
-        title: 'Datos a registrar',
-        html: `
-          <strong>apikey:</strong> ${requestData.apikey} <br>
-          <strong>deviceId:</strong> ${requestData.deviceId} <br>
-          <strong>timezone:</strong> ${requestData.timezone} <br>
-          <strong>transporte:</strong> ${requestData.transporte} <br>
-          <strong>Locación:</strong> [${requestData.locacion.join(', ')}] <br>
-          <strong>deviceName:</strong> ${requestData.deviceName} <br>
-          <strong>Descripcion:</strong> ${requestData.description} <br>
-          <strong>isSensorActuador:</strong> ${requestData.isSensorActuador} <br>
-          <strong>nameStates:</strong> ${requestData.nameStates.join(', ')} <br>
-          <strong>commandName:</strong> ${requestData.commandName.join(', ')} <br>
-        `,
-        icon: 'info',
-        confirmButtonText: 'Confirmar',
-        cancelButtonText: 'Cancelar',
-        showCancelButton: true,
-        reverseButtons: true,
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.sensorService.registerSerivceDevice(requestData).subscribe(response => {
-            Swal.fire('Éxito', 'Dispositivo registrado correctamente', 'success');
-          }, error => {
-            Swal.fire('Error', 'Hubo un error al registrar el dispositivo', 'error');
-          });
-        } else if (result.isDismissed) {
-          console.log('Registro cancelado');
-        }
-      });
-    } else {
-      Swal.fire('Error', 'Por favor, completa el formulario correctamente.', 'error');
+registerSensor(): void {
+  if (this.sensorForm.valid) {
+    const formData = this.sensorForm.value;
+
+    // Traducir tipo de transporte
+    let transporte = '';
+    switch (formData.transporte) {
+      case 'jsonMqtt':
+        transporte = 'MQTT';
+        break;
+      case 'jsonHttp':
+        transporte = 'HTTP';
+        break;
+      case 'lorawanMqtt':
+        transporte = 'LORA';
+        break;
+      default:
+        transporte = 'DESCONOCIDO';
     }
+
+    // Calcular isSensorActuador
+    let isSensorActuador = 0;
+    const roles = this.selectedDeviceRoles;
+    if (roles.includes('SENSOR') && roles.includes('ACTUADOR')) {
+      isSensorActuador = 2;
+    } else if (roles.includes('ACTUADOR')) {
+      isSensorActuador = 1;
+    }
+
+    // Inicializar arrays para los comandos
+    const nameStates: string[] = [];
+    const commandName: string[] = [];
+    const commandNameToggle: string[] = [];
+    const commandNameAnalogo: string[] = [];
+    const commandNameDial: string[] = [];
+    const commandNameToggleText: string[] = [];
+
+    // Separar comandos según tipo
+    this.selectedControlTypes.forEach(control => {
+      if (!control || control.trim() === '') return;
+
+      nameStates.push(`${control}_states`);
+      commandName.push(control);
+
+      if (control.startsWith('switch')) {
+        commandNameToggle.push(control);
+      } else if (control.startsWith('analogo')) {
+        commandNameAnalogo.push(control);
+      } else if (control.startsWith('dial')) {
+        commandNameDial.push(control);
+      } else if (control.startsWith('toggleText')) {
+        commandNameToggleText.push(control);
+      }
+    });
+
+    // Utilidad para arrays limpios (sin strings vacíos)
+    const cleanArray = (arr: string[]) => arr.filter(x => x && x.trim() !== '');
+
+    const url_socket = `${this.apiConfig.getApiUrl()}/v1/notify`;
+    const url_quantumleap = `${this.apiConfig.getApiUrlMoquitto()}/v2/notify`;
+
+    const requestData = {
+      apikey: formData.entityType,
+      deviceId: formData.deviceId,
+      timezone: this.getTimezone(),
+      transporte: transporte,
+      locacion: [
+        parseFloat(formData.latitud),
+        parseFloat(formData.longitud)
+      ],
+      deviceName: formData.name,
+      deviceType: "Building", // Ajusta si es case sensitive
+      url_notify: url_socket,
+      url_notify02: url_quantumleap,
+      description: formData.description,
+      isSensorActuador: isSensorActuador,
+      nameStates: cleanArray(nameStates),
+      commandName: cleanArray(commandName),
+      commandNameToggle: cleanArray(commandNameToggle),
+      commandNameAnalogo: cleanArray(commandNameAnalogo),
+      commandNameDial: cleanArray(commandNameDial),
+      commandNameToggleText: cleanArray(commandNameToggleText)
+    };
+
+    Swal.fire({
+      title: 'Datos a registrar',
+      html: `
+        <strong>Apikey:</strong> ${requestData.apikey} <br>
+        <strong>DeviceId:</strong> ${requestData.deviceId} <br>
+        <strong>Zona Horaria:</strong> ${requestData.timezone} <br>
+        <strong>Transporte:</strong> ${requestData.transporte} <br>
+        <strong>Locación:</strong> [${requestData.locacion.join(', ')}] <br>
+        <strong>Nombre del dispositivo:</strong> ${requestData.deviceName} <br>
+        <strong>Descripcion:</strong> ${requestData.description} <br>
+        <strong>Categoria del dispositivo:</strong> ${this.selectedDeviceRoles.join(', ')} <br>
+        <strong>Tipos de Actuador:</strong> ${requestData.commandName.join(', ')} <br>
+      `,
+      icon: 'info',
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+      showCancelButton: true,
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.sensorService.registerSerivceDevice(requestData).subscribe(
+          response => {
+            Swal.fire('Éxito', 'Dispositivo registrado correctamente', 'success');
+          },
+          error => {
+            Swal.fire('Error', 'Hubo un error al registrar el dispositivo', 'error');
+          }
+        );
+      } else if (result.isDismissed) {
+        console.log('Registro cancelado');
+      }
+    });
+  } else {
+    Swal.fire('Error', 'Por favor, completa el formulario correctamente.', 'error');
   }
+}
+
   
 
   onBackClick(): void {
