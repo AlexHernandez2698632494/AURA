@@ -51,6 +51,7 @@ export const createServiceDeviceJSON = async (req, res) => {
       locacion,
       description,
       url_notify,
+      url_notify02,
     };
 
     for (const [key, value] of Object.entries(requiredFields)) {
@@ -72,16 +73,27 @@ export const createServiceDeviceJSON = async (req, res) => {
 
       for (const [key, value] of Object.entries(requiredActuatorFields)) {
         if (!value || (Array.isArray(value) && value.length === 0)) {
-          return res.status(400).json({ message: `Falta el campo '${key}' o está vacío.` });
+          return res
+            .status(400)
+            .json({ message: `Falta el campo '${key}' o está vacío.` });
         }
       }
 
       if (!Array.isArray(nameStates) || !Array.isArray(commandName)) {
-        return res.status(400).json({ message: "'nameStates' y 'commandName' deben ser arreglos." });
+        return res
+          .status(400)
+          .json({
+            message: "'nameStates' y 'commandName' deben ser arreglos.",
+          });
       }
 
       if (nameStates.length !== commandName.length) {
-        return res.status(400).json({ message: "'nameStates' y 'commandName' deben tener la misma cantidad de elementos." });
+        return res
+          .status(400)
+          .json({
+            message:
+              "'nameStates' y 'commandName' deben tener la misma cantidad de elementos.",
+          });
       }
     }
 
@@ -220,18 +232,33 @@ export const createServiceDeviceJSON = async (req, res) => {
         commandNameToggleText
       );
     }
+    let result = { success: true, data: {} }; // Valor por defecto
+    if (isSensorActuador !== 1) {
+      const result = await sendData(
+        apikey,
+        deviceId,
+        fiware_service,
+        fiware_servicepath
+      );
 
-    const result = await sendData(
-      apikey,
-      deviceId,
-      fiware_service,
-      fiware_servicepath
-    );
+      if (!result.success) {
+        return res
+          .status(500)
+          .json({ message: "Error al enviar datos al agente." });
+      }
+    } else if (isSensorActuador === 1) {
+      const result = await sendDataActuador(
+        apikey,
+        deviceId,
+        fiware_service,
+        fiware_servicepath
+      );
 
-    if (!result.success) {
-      return res
-        .status(500)
-        .json({ message: "Error al enviar datos al agente." });
+      if (!result.success) {
+        return res
+          .status(500)
+          .json({ message: "Error al enviar datos al agente." });
+      }
     }
 
     const entity_name = `urn:ngsi-ld:${deviceId.substring(
@@ -394,10 +421,16 @@ async function createDeviceActuador(
   const entity_type = deviceId.substring(0, 5);
 
   // Aseguramos que los campos commandName, commandNameToggle, commandNameAnalogo, etc., sean arrays
-  const toggleCommands = Array.isArray(commandNameToggle) ? commandNameToggle : [];
-  const analogoCommands = Array.isArray(commandNameAnalogo) ? commandNameAnalogo : [];
+  const toggleCommands = Array.isArray(commandNameToggle)
+    ? commandNameToggle
+    : [];
+  const analogoCommands = Array.isArray(commandNameAnalogo)
+    ? commandNameAnalogo
+    : [];
   const dialCommands = Array.isArray(commandNameDial) ? commandNameDial : [];
-  const toggleTextCommands = Array.isArray(commandNameToggleText) ? commandNameToggleText : [];
+  const toggleTextCommands = Array.isArray(commandNameToggleText)
+    ? commandNameToggleText
+    : [];
 
   // Aseguramos que los atributos estén construidos correctamente
   const attributes = [
@@ -494,10 +527,16 @@ async function createDeviceSensorActuador(
   const entity_type = deviceId.substring(0, 5);
 
   // Aseguramos que los campos commandNameToggle, commandNameAnalogo, commandNameDial, commandNameToggleText sean arrays
-  const toggleCommands = Array.isArray(commandNameToggle) ? commandNameToggle : [];
-  const analogoCommands = Array.isArray(commandNameAnalogo) ? commandNameAnalogo : [];
+  const toggleCommands = Array.isArray(commandNameToggle)
+    ? commandNameToggle
+    : [];
+  const analogoCommands = Array.isArray(commandNameAnalogo)
+    ? commandNameAnalogo
+    : [];
   const dialCommands = Array.isArray(commandNameDial) ? commandNameDial : [];
-  const toggleTextCommands = Array.isArray(commandNameToggleText) ? commandNameToggleText : [];
+  const toggleTextCommands = Array.isArray(commandNameToggleText)
+    ? commandNameToggleText
+    : [];
 
   // Aseguramos que los atributos estén construidos correctamente
   const attributes = [
@@ -569,13 +608,40 @@ async function createDeviceSensorActuador(
   });
 }
 
-
 async function sendData(apikey, deviceId, fiware_service, fiware_servicepath) {
   const k = apikey;
   const i = deviceId;
 
   const url_mqtt = config.url_mqtt.replace("https://", "http://");
   const body = { sensors: {} };
+
+  try {
+    const response = await axios.post(`${url_mqtt}`, body, {
+      headers: {
+        "fiware-service": fiware_service,
+        "fiware-servicepath": fiware_servicepath,
+      },
+      params: { k, i },
+    });
+
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error("Error al enviar datos al agente:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+async function sendDataActuador(
+  apikey,
+  deviceId,
+  fiware_service,
+  fiware_servicepath
+) {
+  const k = apikey;
+  const i = deviceId;
+
+  const url_mqtt = config.url_mqtt.replace("https://", "http://");
+  const body = {};
 
   try {
     const response = await axios.post(`${url_mqtt}`, body, {
