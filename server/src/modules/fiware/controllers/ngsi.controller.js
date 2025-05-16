@@ -290,34 +290,31 @@ export const getEntitiesWithAlerts = async (req, res) => {
     const color = "#fff";
 
     const combinedData = entities.map(entity => {
-      const variables = entity.sensors?.value ?
+      const variables = entity.sensors?.value ? 
         Object.entries(entity.sensors.value).map(([key, value]) => {
           const mappedData = sensorMapping[key] || { label: key, unit: '' };
-
-          // Filtrar las alertas que corresponden a esta variable
+          
           const relatedAlerts = alerts.filter(alert => alert.variable === mappedData.label);
 
-          // Encontrar el rango más bajo (initialRange) y el rango más alto (finalRange) para la variable
           const minRange = relatedAlerts.reduce((min, alert) => Math.min(min, alert.initialRange), Infinity);
           const maxRange = relatedAlerts.reduce((max, alert) => Math.max(max, alert.finalRange), -Infinity);
 
-          // Buscar la alerta correspondiente al valor de la variable
           const alert = relatedAlerts.find(alert => value >= alert.initialRange && value <= alert.finalRange);
 
           return {
             name: mappedData.label,
-            value: `${value} ${mappedData.unit}`, // Combine value with its unit
+            value: `${value} ${mappedData.unit}`,
             alert: alert ? {
               name: alert.displayName,
               color: alert.color,
               level: alert.level,
             } : undefined,
-            minRange, // El rango mínimo encontrado para la variable
-            maxRange  // El rango máximo encontrado para la variable
+            minRange,
+            maxRange
           };
         }) : [];
 
-      // Determinar el nivel más alto y el color correspondiente entre todas las variables
+      // Buscar la alerta más crítica
       const highestAlert = variables.reduce((max, variable) => {
         if (variable.alert && (!max || variable.alert.level > max.level)) {
           return variable.alert;
@@ -325,11 +322,9 @@ export const getEntitiesWithAlerts = async (req, res) => {
         return max;
       }, null);
 
-      // Encontrar la variable y la alerta correspondientes al nivel más alto
       let highestAlertName = '';
       let highestAlertVariable = '';
       if (highestAlert) {
-        // Buscar la variable y la alerta correspondiente al nivel más alto
         const highestAlertVariableData = variables.find(variable => variable.alert && variable.alert.level === highestAlert.level);
         if (highestAlertVariableData) {
           highestAlertName = highestAlertVariableData.alert.name;
@@ -337,23 +332,56 @@ export const getEntitiesWithAlerts = async (req, res) => {
         }
       }
 
-      // Convertir y formatear el TimeInstant
       const formattedTimeInstant = entity.TimeInstant?.value ? formatTimeInstant(entity.TimeInstant.value) : null;
 
-      return {
+      // Inicializar la estructura de salida
+      const result = {
         id: entity.id,
         type: entity.type,
         location: entity.location,
-        externalUri: entity.externalUri,
         color: highestAlert ? highestAlert.color : color,
-        level: highestAlert ? highestAlert.level : undefined,
-        highestAlertName, 
+        highestAlertName,
         highestAlertVariable,
         variables,
-        timeInstant: formattedTimeInstant,  // Aquí lo estamos incluyendo
-        deviceName: entity.deviceName?.value, // Añadir deviceName
-        deviceType: entity.deviceType?.value,  // Añadir deviceType
+        timeInstant: formattedTimeInstant,
+        deviceName: entity.deviceName?.value,
+        deviceType: entity.deviceType?.value,
+        commandTypes: entity.commandTypes?.value,
+        commands: []  // Lista que contendrá los comandos dinámicamente
       };
+
+      // Agrupar los comandos en la estructura "commands"
+      if (entity.commandTypes?.value) {
+        const commandTypes = entity.commandTypes.value;
+
+        for (const [type, commands] of Object.entries(commandTypes)) {
+          for (const command of commands) {
+            const commandObj = {
+              [command]: ""  // Agregar el comando con un valor vacío
+            };
+
+            // Agregar subpropiedades como _status, _info y _states si están presentes
+            const statusKey = `${command}_status`;
+            const infoKey = `${command}_info`;
+            const statesKey = `${command}_states`;
+
+            if (entity[statusKey]?.value !== undefined) {
+              commandObj[`${command}_status`] = entity[statusKey].value;
+            }
+            if (entity[infoKey]?.value !== undefined) {
+              commandObj[`${command}_info`] = entity[infoKey].value;
+            }
+            if (entity[statesKey]?.value !== undefined) {
+              commandObj[`${command}_states`] = entity[statesKey].value;
+            }
+
+            // Agregar el objeto de comando al arreglo de "commands"
+            result.commands.push(commandObj);
+          }
+        }
+      }
+
+      return result;
     });
 
     res.json(combinedData);
@@ -362,6 +390,7 @@ export const getEntitiesWithAlerts = async (req, res) => {
     res.status(500).json({ message: 'Error al obtener datos combinados.' });
   }
 };
+
 
 // Función para formatear el TimeInstant
 function formatTimeInstant(timeInstant) {
@@ -423,3 +452,4 @@ export const sendDataToAgent = async (req, res) => {
     return res.status(500).json({ message: 'Error interno del servidor' });
   }
 };
+
