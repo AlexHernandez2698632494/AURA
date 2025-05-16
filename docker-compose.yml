@@ -84,6 +84,8 @@ services:
       - IOTA_MQTT_PORT=1883
       - IOTA_HTTP_PORT=7896
       - IOTA_PROVIDER_URL=http://fiware-iot-agent:4041
+      - "IOTA_MONGO_DB=iotagentJson"
+
     networks:
       - default
 
