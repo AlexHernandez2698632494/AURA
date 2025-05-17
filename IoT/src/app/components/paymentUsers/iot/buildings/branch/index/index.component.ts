@@ -36,7 +36,7 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
     private activatedRoute: ActivatedRoute,
     private fiwareService: FiwareService,
     private socketService: SocketService // ✅ Inyectado
-  ) {}
+  ) { }
 
   ngOnInit() {
     // Extraer los parámetros de la ruta
@@ -110,11 +110,32 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
     let minLng: number = Infinity;
     let maxLng: number = -Infinity;
 
+    // 1️⃣ Obtener el nombre del dispositivo con popup abierto (si hay)
+    let openedPopupDevice: string | null = null;
+    if (this.map) {
+      this.map.eachLayer(layer => {
+        if (layer instanceof L.Marker && layer.getPopup()?.isOpen()) {
+          const popup = layer.getPopup();
+          if (popup) {
+            const content = popup.getContent();
+
+            // ✅ Solo si el contenido es un string
+            if (typeof content === 'string' && content.includes('<b>')) {
+              const match = content.match(/<b>(.*?)<\/b>/);
+              if (match) {
+                openedPopupDevice = match[1];
+              }
+            }
+          }
+        }
+      });
+    }
+
     this.fiwareService.getEntitiesWithAlerts(fiwareService, fiwareServicePath)
       .subscribe((entities) => {
         console.log('Entidades con alertas:', entities);
 
-        // Limpia cualquier marcador previo
+        // 2️⃣ Eliminar solo los marcadores previos
         this.map?.eachLayer(layer => {
           if (layer instanceof L.Marker) {
             this.map!.removeLayer(layer);
@@ -122,7 +143,7 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
         });
 
         entities.forEach((entity: any) => {
-          if (entity.location && entity.location.value && entity.location.value.coordinates) {
+          if (entity.location?.value?.coordinates) {
             const [latitude, longitude] = entity.location.value.coordinates;
 
             minLat = Math.min(minLat, latitude);
@@ -130,7 +151,19 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
             minLng = Math.min(minLng, longitude);
             maxLng = Math.max(maxLng, longitude);
 
-            this.addColoredMarker(latitude, longitude, entity.color, entity.displayName, entity.type, entity.variables);
+            // 3️⃣ Añadir marcador y verificar si hay que abrir el popup
+            const marker = this.addColoredMarker(
+              latitude,
+              longitude,
+              entity.color,
+              entity.displayName,
+              entity.type,
+              entity.variables
+            );
+
+            if (openedPopupDevice && entity.type === openedPopupDevice) {
+              marker.openPopup();
+            }
           }
         });
 
@@ -146,11 +179,12 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
       });
   }
 
-  private addColoredMarker(lat: number, lng: number, color: string, name: string, type: string, variables: any[]): void {
-    if (!this.map) return;
+
+  private addColoredMarker(lat: number, lng: number, color: string, name: string, type: string, variables: any[]): L.Marker {
+    if (!this.map) throw new Error('Mapa no inicializado');
 
     let popupContent = `<b>${type}</b><br>`;
-    if (variables && variables.length) {
+    if (variables?.length) {
       popupContent += '<ul>';
       variables.forEach(variable => {
         popupContent += `<li>${variable.name}: ${variable.value}`;
@@ -168,7 +202,7 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
       iconSize: [20, 20],
     });
 
-    L.marker([lat, lng], { icon: customIcon })
+    return L.marker([lat, lng], { icon: customIcon })
       .addTo(this.map)
       .bindPopup(popupContent);
   }
