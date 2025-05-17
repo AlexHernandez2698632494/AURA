@@ -64,11 +64,7 @@ export const createServiceDeviceJSON = async (req, res) => {
     if (isSensorActuador === 1 || isSensorActuador === 2) {
       const requiredActuatorFields = {
         nameStates,
-        commandName,
-        commandNameToggle,
-        commandNameAnalogo,
-        commandNameDial,
-        commandNameToggleText,
+        commandName
       };
 
       for (const [key, value] of Object.entries(requiredActuatorFields)) {
