@@ -65,6 +65,8 @@ const getSensorMapping = async () => {
 const orionMessagesMap = {};
 
 // Ruta para recibir notificaciones de Orion
+import moment from "moment"; // Asegúrate de tenerlo instalado
+
 app.post("/v1/notify/", async (req, res) => {
   const entity = req.body.data?.[0];
   if (!entity || !entity.id) {
@@ -82,39 +84,37 @@ app.post("/v1/notify/", async (req, res) => {
     const sensorMapping = await getSensorMapping();
     const alerts = await Alert.find({ estadoEliminacion: 0 });
 
-    const sensorsRaw = entity.sensors || {};
+    const sensorsRaw = { ...(entity.sensors || {}), ...(entity.actuators || {}) };
     let hasAlert = false;
-    let highestAlertName = '';  // Variable para el nombre de la alerta más alta
-    let highestAlertVariable = '';  // Variable para la variable con la alerta más alta
+    let highestAlertName = '';
+    let highestAlertVariable = '';
     let nivel = 0;
     let color = '';
 
     const variables = Object.entries(sensorsRaw).map(([key, value]) => {
       const mapped = sensorMapping[key] || { label: key, unit: "" };
-
       const relatedAlerts = alerts.filter(a => a.variable === mapped.label);
+
       const minRange = relatedAlerts.reduce((min, a) => Math.min(min, a.initialRange), Infinity);
       const maxRange = relatedAlerts.reduce((max, a) => Math.max(max, a.finalRange), -Infinity);
 
-      const matchingAlert = relatedAlerts.find(a =>
-        value >= a.initialRange && value <= a.finalRange
-      );
+      const matchingAlert = relatedAlerts.find(a => value >= a.initialRange && value <= a.finalRange);
 
       if (matchingAlert) {
         hasAlert = true;
         if (matchingAlert.level > nivel) {
           nivel = matchingAlert.level;
           color = matchingAlert.color;
-          highestAlertName = matchingAlert.displayName;  // Asignamos el nombre de la alerta
-          highestAlertVariable = mapped.label;  // Asignamos la variable con la alerta más alta
+          highestAlertName = matchingAlert.displayName;
+          highestAlertVariable = mapped.label;
         }
       }
 
       return {
         name: mapped.label,
         value: `${value} ${mapped.unit}`,
-        minRange,
-        maxRange,
+        minRange: isFinite(minRange) ? minRange : null,
+        maxRange: isFinite(maxRange) ? maxRange : null,
         alert: matchingAlert ? {
           name: matchingAlert.displayName,
           color: matchingAlert.color,
@@ -123,20 +123,47 @@ app.post("/v1/notify/", async (req, res) => {
       };
     });
 
-    // Enriquecemos la entidad con el nivel, color, highestAlertName y highestAlertVariable
-    if (hasAlert) {
-      const enrichedEntity = {
-        id: entity.id,
-        type: entity.type,
-        timestamp: data.timestamp,
-        variables,
-        raw: entity,
-        nivel,
-        color,
-        highestAlertName,  // Agregamos el nombre de la alerta más alta
-        highestAlertVariable  // Agregamos la variable con la alerta más alta
+    const enrichedEntity = {
+      id: entity.id,
+      type: entity.type,
+      timestamp: data.timestamp,
+      variables,
+      raw: entity,
+      nivel,
+      color,
+      highestAlertName,
+      highestAlertVariable,
+      timeInstant: entity.TimeInstant
+        ? moment(entity.TimeInstant).format("DD-MMM-YYYY hh:mm A")
+        : moment(data.timestamp).format("DD-MMM-YYYY hh:mm A")
+    };
+
+    if (entity.location?.coordinates) {
+      enrichedEntity.location = {
+        type: "geo:json",
+        value: {
+          type: "Point",
+          coordinates: entity.location.coordinates
+        },
+        metadata: {
+          TimeInstant: {
+            type: "DateTime",
+            value: entity.TimeInstant || data.timestamp
+          }
+        }
       };
-      io.emit("orion-alert", enrichedEntity); // Emitimos si hay alerta
+    }
+
+    // Solo para actuadores
+    if (entity.deviceName === "ACTUADOR") {
+      enrichedEntity.deviceName = entity.deviceName || "";
+      enrichedEntity.deviceType = entity.deviceType || "";
+      enrichedEntity.commands = entity.commands || [];
+      enrichedEntity.commandTypes = entity.commandTypes || {};
+    }
+
+    if (hasAlert || entity.deviceName === "ACTUADOR") {
+      io.emit("orion-alert", enrichedEntity); // Emitimos si hay alerta o si es actuador
     }
 
     res.status(200).json({});
@@ -147,7 +174,6 @@ app.post("/v1/notify/", async (req, res) => {
 });
 
  // Ruta para consultar historial de notificaciones (mapeadas)
-// Ruta para consultar historial de notificaciones (mapeadas)
 app.get("/v1/messages", async (req, res) => {
   try {
     const sensorMapping = await getSensorMapping();
@@ -156,15 +182,15 @@ app.get("/v1/messages", async (req, res) => {
 
     const mappedMessages = messagesArray.map(({ timestamp, body }) => {
       const entity = body.data?.[0] || {};
-      const sensorsRaw = entity.sensors || {};
+      const sensorsRaw = { ...(entity.sensors || {}), ...(entity.actuators || {}) };
 
-      let highestAlertName = '';  // Variable para el nombre de la alerta más alta
-      let highestAlertVariable = '';  // Variable para la variable con la alerta más alta
+      let highestAlertName = "";
+      let highestAlertVariable = "";
       let nivel = 0;
-      let color = '';
+      let color = "";
 
       const variables = Object.entries(sensorsRaw).map(([key, value]) => {
-        const mappedData = sensorMapping[key] || { label: key, unit: '' };
+        const mappedData = sensorMapping[key] || { label: key, unit: "" };
         const relatedAlerts = alerts.filter(alert => alert.variable === mappedData.label);
 
         const minRange = relatedAlerts.reduce((min, alert) => Math.min(min, alert.initialRange), Infinity);
@@ -174,15 +200,15 @@ app.get("/v1/messages", async (req, res) => {
         if (alert && alert.level > nivel) {
           nivel = alert.level;
           color = alert.color;
-          highestAlertName = alert.displayName;  // Asignamos el nombre de la alerta
-          highestAlertVariable = mappedData.label;  // Asignamos la variable con la alerta más alta
+          highestAlertName = alert.displayName;
+          highestAlertVariable = mappedData.label;
         }
 
         return {
           name: mappedData.label,
           value: `${value} ${mappedData.unit}`,
-          minRange,
-          maxRange,
+          minRange: isFinite(minRange) ? minRange : null,
+          maxRange: isFinite(maxRange) ? maxRange : null,
           alert: alert ? {
             name: alert.displayName,
             color: alert.color,
@@ -191,17 +217,44 @@ app.get("/v1/messages", async (req, res) => {
         };
       });
 
-      return {
+      const result = {
         id: entity.id,
         type: entity.type,
-        timestamp,
         variables,
         raw: entity,
         nivel,
         color,
-        highestAlertName,  // Agregamos el nombre de la alerta más alta
-        highestAlertVariable  // Agregamos la variable con la alerta más alta
+        highestAlertName,
+        highestAlertVariable,
+        timeInstant: entity.TimeInstant
+          ? moment(entity.TimeInstant).format("DD-MMM-YYYY hh:mm A")
+          : moment(timestamp).format("DD-MMM-YYYY hh:mm A")
       };
+
+      if (entity.location?.coordinates) {
+        result.location = {
+          type: "geo:json",
+          value: {
+            type: "Point",
+            coordinates: entity.location.coordinates
+          },
+          metadata: {
+            TimeInstant: {
+              type: "DateTime",
+              value: entity.TimeInstant || timestamp
+            }
+          }
+        };
+      }
+
+      if (entity.deviceName === "ACTUADOR") {
+        result.deviceName = entity.deviceName || "";
+        result.deviceType = entity.deviceType || "";
+        result.commands = entity.commands || [];
+        result.commandTypes = entity.commandTypes || {};
+      }
+
+      return result;
     });
 
     res.json(mappedMessages);
@@ -210,6 +263,8 @@ app.get("/v1/messages", async (req, res) => {
     res.status(500).json({ message: "Error al procesar mensajes Orion." });
   }
 });
+
+
  
 // WebSocket listeners
 io.on("connection", (socket) => {
