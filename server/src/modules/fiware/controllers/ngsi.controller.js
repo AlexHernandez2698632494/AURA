@@ -363,8 +363,8 @@ export const getEntitiesWithAlerts = async (req, res) => {
     const sensorMapping = await getSensorMapping();
     const entities = await getEntities(headers, params);
     const alerts = await getAlerts();
-    const defaultColor = "#fff"; // Blanco para sensores
-    const noAlertActuatorColor = "#808080"; // Gris para actuadores sin sensores ni alertas
+    const defaultSensorColor = "#fff"; // Blanco para sensores
+    const defaultActuatorColor = "#808080"; // Gris para actuadores
 
     const combinedData = entities.map((entity) => {
       const variables = entity.sensors?.value
@@ -430,9 +430,24 @@ export const getEntitiesWithAlerts = async (req, res) => {
         ? formatTimeInstant(entity.TimeInstant.value)
         : null;
 
-      // Verificar si es actuador sin sensores ni alertas
-      const isActuatorWithoutSensorsOrAlerts =
-        variables.length === 0 && entity.commandTypes?.value;
+      // Detectar si es actuador (por presencia de comandos)
+      const isActuator = !!entity.commandTypes?.value;
+      const isSensor = variables.length > 0;
+
+      // Determinar nivel
+      const level = highestAlert ? highestAlert.level : 0;
+
+      // Determinar color
+      let color;
+      if (highestAlert) {
+        color = highestAlert.color;
+      } else if (isActuator) {
+        color = defaultActuatorColor; // gris
+      } else if (isSensor) {
+        color = defaultSensorColor; // blanco
+      } else {
+        color = defaultSensorColor; // valor por defecto si no se puede determinar
+      }
 
       // Inicializar la estructura de salida
       const result = {
@@ -440,16 +455,8 @@ export const getEntitiesWithAlerts = async (req, res) => {
         type: entity.type,
         location: entity.location,
         externalUri: entity.externalUri,
-        color: highestAlert
-          ? highestAlert.color
-          : isActuatorWithoutSensorsOrAlerts
-          ? noAlertActuatorColor
-          : defaultColor, // ✅ Gris si es actuador sin sensores, blanco si no
-        level: highestAlert
-          ? highestAlert.level
-          : isActuatorWithoutSensorsOrAlerts
-          ? 0
-          : undefined, // ✅ Nivel 0 solo para actuadores sin sensores
+        color,
+        level,
         highestAlertName,
         highestAlertVariable,
         variables,
@@ -500,6 +507,7 @@ export const getEntitiesWithAlerts = async (req, res) => {
     res.status(500).json({ message: "Error al obtener datos combinados." });
   }
 };
+
 
 // Función para formatear el TimeInstant
 function formatTimeInstant(timeInstant) {
