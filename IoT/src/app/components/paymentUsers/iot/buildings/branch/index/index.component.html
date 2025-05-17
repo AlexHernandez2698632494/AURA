@@ -26,9 +26,18 @@
       <div class="device-info-item" *ngFor="let device of devicesInfo">
         <h3>{{ device.deviceName }}</h3>
         <p>Sensores: {{ device.variableCount }}</p>
-        <button class="levelButton" [ngStyle]="{ 'background-color': device.color }">
-          Nivel {{ device.level }}
-        </button>
+        <p>Actuadores:{{ device.actuadoresCount}}</p>
+        <button
+  class="levelButton"
+  [ngStyle]="{
+    'background-color': device.color,
+    'color': (device.color?.toLowerCase() === '#fff' || device.color?.toLowerCase() === '#ffffff') ? 'black' : 'white',
+    'border': (device.color?.toLowerCase() === '#fff' || device.color?.toLowerCase() === '#ffffff') ? '1px solid #ccc' : 'none'
+  }"
+>
+  Nivel {{ device.level }}
+</button>
+
         <a (click)="onViewDevice(device.deviceName)" class="buttonView">
           Ver
         </a>

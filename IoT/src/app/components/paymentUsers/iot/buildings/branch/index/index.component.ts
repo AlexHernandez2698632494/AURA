@@ -35,18 +35,16 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private fiwareService: FiwareService,
-    private socketService: SocketService // ✅ Inyectado
+    private socketService: SocketService
   ) { }
 
   ngOnInit() {
-    // Extraer los parámetros de la ruta
     this.activatedRoute.paramMap.subscribe(params => {
       this.buildingName = params.get('buildingName') || '';
       this.branchName = params.get('branchName') || '';
       this.branchId = params.get('id') || '';
     });
 
-    // Obtener los datos de Fiware desde sessionStorage
     const fiwareService = sessionStorage.getItem('fiware-service');
     const fiwareServicePath = sessionStorage.getItem('fiware-servicepath');
 
@@ -54,34 +52,53 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
       this.fiwareService.getEntitiesWithAlerts(fiwareService, fiwareServicePath).subscribe(entities => {
         this.entitiesWithAlerts = entities;
 
-        // Procesar la información de los dispositivos
         this.devicesInfo = entities.map((entity: any) => ({
           deviceName: entity.deviceName,
           color: entity.color,
           level: entity.level,
           variableCount: entity.variables.length,
+          actuadoresCount: entity.commands.length
         }));
       });
     } else {
       console.error('No se encontraron fiwareService o fiwareServicePath en sessionStorage');
     }
 
-    // ✅ Suscripción al socket
+    // ✅ Suscripción al socket con merge inteligente
     this.socketService.entitiesWithAlerts$.subscribe((entities) => {
       if (entities && entities.length > 0) {
-        this.entitiesWithAlerts = entities;
-
-        this.devicesInfo = entities.map((entity: any) => ({
-          deviceName: entity.raw.deviceName,
-          color: entity.color,
-          level: entity.nivel,
-          variableCount: entity.variables.length,
-        }));
-
-        // Recarga el mapa con los datos nuevos
-        this.loadEntitiesWithAlerts();
+        this.updateEntitiesWithSocket(entities);
       }
     });
+  }
+
+  private updateEntitiesWithSocket(newEntities: any[]) {
+    const newEntitiesMap = new Map(newEntities.map(e => [e.id || e.deviceName, e]));
+
+    // Reemplazar entidades existentes con nuevas si coinciden por ID o deviceName
+    this.entitiesWithAlerts = this.entitiesWithAlerts.map(existing => {
+      const key = existing.id || existing.deviceName;
+      return newEntitiesMap.get(key) || existing;
+    });
+
+    // Agregar nuevas entidades que no estaban antes
+    newEntities.forEach(newEntity => {
+      const key = newEntity.id || newEntity.deviceName;
+      if (!this.entitiesWithAlerts.some(e => (e.id || e.deviceName) === key)) {
+        this.entitiesWithAlerts.push(newEntity);
+      }
+    });
+
+    // Actualizar devicesInfo con base en la lista fusionada
+    this.devicesInfo = this.entitiesWithAlerts.map((entity: any) => ({
+      deviceName: entity.raw?.deviceName || entity.deviceName,
+      color: entity.color,
+      level: entity.nivel || entity.level,
+      variableCount: entity.variables?.length || 0,
+      actuadoresCount: entity.commands?.length || 0
+    }));
+
+    this.loadEntitiesWithAlerts();
   }
 
   ngAfterViewInit(): void {
@@ -110,7 +127,6 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
     let minLng: number = Infinity;
     let maxLng: number = -Infinity;
 
-    // 1️⃣ Obtener el nombre del dispositivo con popup abierto (si hay)
     let openedPopupDevice: string | null = null;
     if (this.map) {
       this.map.eachLayer(layer => {
@@ -118,8 +134,6 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
           const popup = layer.getPopup();
           if (popup) {
             const content = popup.getContent();
-
-            // ✅ Solo si el contenido es un string
             if (typeof content === 'string' && content.includes('<b>')) {
               const match = content.match(/<b>(.*?)<\/b>/);
               if (match) {
@@ -135,7 +149,6 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
       .subscribe((entities) => {
         console.log('Entidades con alertas:', entities);
 
-        // 2️⃣ Eliminar solo los marcadores previos
         this.map?.eachLayer(layer => {
           if (layer instanceof L.Marker) {
             this.map!.removeLayer(layer);
@@ -151,17 +164,18 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
             minLng = Math.min(minLng, longitude);
             maxLng = Math.max(maxLng, longitude);
 
-            // 3️⃣ Añadir marcador y verificar si hay que abrir el popup
             const marker = this.addColoredMarker(
               latitude,
               longitude,
               entity.color,
-              entity.displayName,
-              entity.type,
-              entity.variables
+              entity.displayName || entity.deviceName,
+              entity.variables,
+              entity.commands,
+              entity.commandTypes,
+              entity.timeInstant || entity.location?.metadata?.TimeInstant?.value
             );
 
-            if (openedPopupDevice && entity.type === openedPopupDevice) {
+            if (openedPopupDevice && (entity.displayName || entity.deviceName) === openedPopupDevice) {
               marker.openPopup();
             }
           }
@@ -179,21 +193,89 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
       });
   }
 
-
-  private addColoredMarker(lat: number, lng: number, color: string, name: string, type: string, variables: any[]): L.Marker {
+  private addColoredMarker(
+    lat: number,
+    lng: number,
+    color: string,
+    name: string,
+    variables: any[],
+    commands?: any[],
+    commandTypes?: any,
+    timeInstant?: string
+  ): L.Marker {
     if (!this.map) throw new Error('Mapa no inicializado');
 
-    let popupContent = `<b>${type}</b><br>`;
+    let popupContent = `<b>${name}</b><br>`;
+    if (timeInstant) {
+      popupContent += `<br><strong>Última actualización:</strong> ${timeInstant} 🕒<br><br>`;
+    }
+
     if (variables?.length) {
-      popupContent += '<ul>';
+      popupContent += `<b>📡 Sensores</b><ul>`;
       variables.forEach(variable => {
         popupContent += `<li>${variable.name}: ${variable.value}`;
         if (variable.alert) {
-          popupContent += ` - <span style="color:${variable.alert.color}">(${variable.alert.name})</span>`;
+          popupContent += ` <span style="color:${variable.alert.color}">(${variable.alert.name})</span>`;
         }
-        popupContent += '</li>';
+        popupContent += `</li>`;
       });
-      popupContent += '</ul>';
+      popupContent += `</ul>`;
+    }
+
+    if (commandTypes && commands?.length) {
+      popupContent += `<b>⚙️ Actuadores</b><ul>`;
+
+Object.keys(commandTypes).forEach((typeKey: string) => {
+  const commandList = commandTypes[typeKey];
+
+  commandList.forEach((cmdName: string) => {
+    // Busca el objeto que contenga el comando específico
+    const commandObj = commands.find(cmd => Object.keys(cmd).some(key => key.startsWith(cmdName)));
+
+    const status = commandObj?.[`${cmdName}_status`];
+    const states = commandObj?.[`${cmdName}_states`];
+    const timeInstant = commandObj?.[`${cmdName}_timeInstant`];
+
+    // 📍 Estado del actuador (ON/OFF/etc.)
+    const readableStates = states
+      ? `· Estado actual: <i>${states}</i> ✅`
+      : `· Estado actual: <i style="color:#93c5fd;">No reportado</i> ⚠️`;
+
+    // 🟡 Estado del sistema
+    let readableStatusText = 'No reportado';
+    let statusColor = '#3498db';
+
+    if (status) {
+  const normalizedStatus = status.toLowerCase();
+  if (normalizedStatus === 'ok') {
+    readableStatusText = 'OK 🟢';
+    statusColor = '#2ecc71';
+  } else if (normalizedStatus === 'pending') {
+    readableStatusText = 'PENDIENTE 🟠';
+    statusColor = '#f39c12';
+  } else {
+    readableStatusText = `${status.toUpperCase()} 🔴`;
+    statusColor = '#e74c3c';
+  }
+}
+
+    // 🕒 Última actualización (fecha)
+    const readableTimeInstant = timeInstant
+      ? `· Última actualización (hora): <i>${timeInstant}</i>`
+      : `· Última actualización (hora): <i>No reportado</i>`;
+
+    // 📋 Armar contenido del popup
+    popupContent += `
+<li><b>${cmdName}</b>:<br>
+  ${readableStates}<br>
+  · Estado del sistema: <span style="color:${statusColor}; font-weight: bold;">${readableStatusText}</span><br>
+</li>
+`;
+  });
+});
+
+
+      popupContent += `</ul>`;
     }
 
     const customIcon = L.divIcon({
