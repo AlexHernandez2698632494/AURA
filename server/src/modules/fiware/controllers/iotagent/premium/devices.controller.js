@@ -536,6 +536,7 @@ async function createDeviceSensorActuador(
 
   // Aseguramos que los atributos estén construidos correctamente
   const attributes = [
+    { object_id: "sensors", name: "sensors", type: "Object" },
     { object_id: "location", name: "location", type: "geo:json" },
     ...nameStates.map((name) => ({
       name,
