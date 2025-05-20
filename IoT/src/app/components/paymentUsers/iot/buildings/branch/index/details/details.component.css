@@ -49,7 +49,7 @@
   text-align: center;
 }
 
-.device-info-container {
+.device-columns {
   margin-top: 30px;
   background-color: #ffffff;
   border: 1px solid #ddd;
@@ -61,73 +61,12 @@
   margin-left: 15%;
 }
 
-.device-info-container h1 {
+.device-columns h1 {
   font-size: 22px;
   color: #003366;
   margin-bottom: 20px;
 }
 
-.device-name h2 {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: #003366;
-}
-
-.gauge-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.column {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.variable-info {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 16px;
-  color: #333;
-  margin-top: 10px;
-}
-
-.variable-name {
-  font-weight: bold;
-  margin-right: 5px;
-}
-
-.variable-value {
-  color: #1a5fb4;
-  font-style: italic;
-}
-
-.ngx-gauge {
-  width: 80%;
-  max-width: 200px;
-  margin: 0 auto;
-}
-
-.device-historical {
-  margin-top: 30px;
-  background-color: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  max-width: 80%;
-  margin-left: 15%;
-}
-
-.chart-container {
-  width: 100%;
-  height: 300px;
-}
 
 .device-actuador {
   margin-top: 30px;
@@ -138,132 +77,8 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
   max-width: 80%;
-  margin-left: 15%;
-  height: 65%;
-}
-
-/* RESPONSIVE - Columnas de 4 → 3 → 2 → 1 según el tamaño de pantalla */
-@media (max-width: 1024px) {
-  .column {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .header,
-  .device-info-container {
-    margin-left: 5%;
-    max-width: 90%;
-  }
-}
-
-@media (max-width: 768px) {
-  .column {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .header,
-  .device-info-container {
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 95%;
-  }
-
-  .back-button {
-    position: absolute;
-    left: 200x;
-  }
-
-  .header h1 {
-    font-size: 18px;
-    text-align: center;
-  }
-
-  .device-info-container h1 {
-    font-size: 18px;
-  }
-}
-
-@media (max-width: 480px) {
-  .column {
-    grid-template-columns: 1fr;
-  }
-
-  .header,
-  .device-info-container {
-    max-width: 98%;
-    padding: 15px;
-  }
-
-  .device-info-container h1 {
-    font-size: 16px;
-  }
-}
-
-/* ---------------------------------------------- */
-/* 🔽 ESTILOS NUEVOS PARA LAS FUNCIONALIDADES PEDIDAS 🔽 */
-/* ---------------------------------------------- */
-
-/* Contenedor en columnas para actuador + info */
-.device-columns {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  margin-left: 15%;
-  max-width: 80%;
-}
-
-/* Responsive: una sola columna en pantallas pequeñas */
-@media (max-width: 768px) {
-  .device-columns {
-    grid-template-columns: 1fr;
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
-
-/* Dos columnas para los gauges */
-.column {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
-  justify-content: center;
-}
-
-/* Más pequeño el gauge */
-.ngx-gauge {
-  width: 100%;
-  max-width: 120px;
-  margin: 0 auto;
-}
-
-/* Responsive para gauges */
-@media (max-width: 480px) {
-  .column {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* NUEVO: columnas para gráficas */
-.chart-columns {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
-
-/* Responsive: una columna en móviles */
-@media (max-width: 768px) {
-  .chart-columns {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Tamaño ajustado de cada gráfico */
-.chart-container {
-  width: 100%;
-  height: 250px;
-}
-
-.chart-wrapper {
-  margin-bottom: 30px;
+  margin-left: 5%;
+  height: 60%;
 }
 
 .actuador-control,
@@ -471,7 +286,6 @@
   left: 15%;
 }
 
-/* NUEVO: Estilos para el botón de actualización */
 .update-btn {
   background-color: #007bff;
   color: white;
@@ -488,36 +302,131 @@
   background-color: #0056b3;
 }
 
-/* Actuador de texto */
 .actuador-texto {
   margin-top: 20px;
-  text-align: center;
 }
 
-.actuador-texto label {
-  font-size: 16px;
-  font-weight: bold;
-  color: #003366;
-}
-
-.actuador-texto input[type="text"] {
-  font-size: 18px;
-  padding: 10px;
-  width: 80%;
-  max-width: 300px;
+.device-info-container {
+  margin-top: 30px;
+  background-color: #ffffff;
   border: 1px solid #ddd;
-  border-radius: 5px;
-  outline: none;
-  transition: border-color 0.3s ease;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 80%;
+  margin-left: 5%;
 }
 
-.actuador-texto input[type="text"]:focus {
-  border-color: #1a5fb4;
+.gauge-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-.actuador-texto p {
+.column {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  justify-content: center;
+}
+
+.variable-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-size: 16px;
   color: #333;
   margin-top: 10px;
+}
+
+.variable-name {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.variable-value {
+  color: #1a5fb4;
   font-style: italic;
+}
+
+.ngx-gauge {
+  width: 100%;
+  max-width: 120px;
+  margin: 0 auto;
+}
+
+.device-historical {
+  margin-top: 30px;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 80%;
+  margin-left: 5%;
+}
+
+.chart-container {
+  width: 100%;
+  height: 250px;
+}
+
+.chart-columns {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.chart-wrapper {
+  margin-bottom: 30px;
+}
+
+@media (max-width: 1024px) {
+  .column {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .header
+  {
+    margin-left: 5%;
+    max-width: 90%;
+  }
+}
+
+@media (max-width: 768px) {
+  .column {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .header{
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 95%;
+  }
+
+  .back-button {
+    position: absolute;
+    left: 200x;
+  }
+
+  .header h1 {
+    font-size: 18px;
+    text-align: center;
+  }
+
+
+}
+
+@media (max-width: 480px) {
+  .column {
+    grid-template-columns: 1fr;
+  }
+
+  .header{
+    max-width: 98%;
+    padding: 15px;
+  }
+
 }

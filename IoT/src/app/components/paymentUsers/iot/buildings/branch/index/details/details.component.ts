@@ -26,7 +26,7 @@ declare var CanvasJS: any;
 @Component({
   selector: 'app-details',
   standalone: true,
-  imports: [CommonModule, PremiumSideComponent, MatIconModule, BottomTabComponent, NgxGaugeModule,FormsModule],
+  imports: [CommonModule, PremiumSideComponent, MatIconModule, BottomTabComponent, NgxGaugeModule, FormsModule],
   templateUrl: './details.component.html',
   styleUrls: ['./details.component.css']
 })
@@ -39,12 +39,27 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
   branchName: string = '';
   branchId: string = '';
   entitiesWithAlerts: any[] = [];
+  deviceName: string = '';
 
   variables: any[] = [];
+  commands: any[] = [];
 
   @ViewChildren('chartContainer') chartContainers!: QueryList<ElementRef>;
 
-  private chartsRendered = false; // ✅ control de renderizado
+  private chartsRendered = false;
+
+  // NUEVO: Actuadores por tipo
+  actuadores: {
+    toggle: string[],
+    analogo: string[],
+    dial: string[],
+    toggleText: string[]
+  } = {
+    toggle: [],
+    analogo: [],
+    dial: [],
+    toggleText: []
+  };
 
   constructor(
     private paymentUserService: PaymentUserService,
@@ -52,7 +67,7 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     private activatedRoute: ActivatedRoute,
     private fiwareService: FiwareService,
     private socketService: SocketService,
-    private cdr: ChangeDetectorRef // ✅ necesario para AfterViewChecked
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -62,17 +77,37 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
       this.branchId = params.get('id') || '';
     });
 
+    this.deviceName = this.router.url.split('/').pop() || '';
+
     const fiwareService = sessionStorage.getItem('fiware-service');
     const fiwareServicePath = sessionStorage.getItem('fiware-servicepath');
 
     if (fiwareService && fiwareServicePath) {
       this.socketService.entitiesWithAlerts$.subscribe((entities: any[]) => {
-        this.entitiesWithAlerts = entities;
-        console.log("entidades: ", this.entitiesWithAlerts);
+        this.entitiesWithAlerts = entities.filter(entity => entity.deviceName === this.deviceName);
+        console.log("Entidad filtrada:", this.entitiesWithAlerts);
 
-        if (entities.length > 0) {
-          const entityId = entities[0].id;
-          this.loadHistoricalData(entityId);
+        if (this.entitiesWithAlerts.length > 0) {
+          const entidad = this.entitiesWithAlerts[0];
+          this.commands = entidad.commands || [];
+
+          // ✅ Mapear actuadores dinámicamente
+          if (entidad.commandTypes) {
+            this.actuadores = {
+              toggle: entidad.commandTypes.toggle || [],
+              analogo: entidad.commandTypes.analogo || [],
+              dial: entidad.commandTypes.dial || [],
+              toggleText: entidad.commandTypes.toggleText || []
+            };
+            console.log("Actuadores cargados:", this.actuadores);
+          }
+
+          // ✅ Cargar variables solo si hay
+          if (Array.isArray(entidad.variables) && entidad.variables.length > 0) {
+            this.loadHistoricalData(entidad.id);
+          } else {
+            console.warn("⚠️ La entidad no tiene variables. Se omite carga de historial.");
+          }
         }
       });
 
@@ -84,38 +119,12 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     } else {
       console.error('❌ No se encontraron fiwareService o fiwareServicePath en sessionStorage');
     }
-
-    // 🔥 Compatibilidad temporal con datos falsos
-    // this.variables = [
-    //   {
-    //     name: "Temperatura Aire",
-    //     value: "22.59 °C",
-    //     unit: "°C",
-    //     alert: { name: "Fresco", color: "#1a5fb4", level: 1 },
-    //     data: this.generateFakeData(10, "°C")
-    //   },
-    //   {
-    //     name: "Humedad del Aire",
-    //     value: "25.67 %",
-    //     unit: "%",
-    //     alert: { name: "Seco", color: "#1a5fb4", level: 1 },
-    //     data: this.generateFakeData(10, "%")
-    //   },
-    //   {
-    //     name: "Cantidad de lluvia",
-    //     value: "1.29 mm",
-    //     unit: "mm",
-    //     alert: { name: "Débil", color: "#1a5fb4", level: 1 },
-    //     data: this.generateFakeData(10, "mm")
-    //   },
-    // ];
   }
 
   ngAfterViewChecked(): void {
-    // ✅ Renderizar solo si las gráficas no han sido pintadas y los contenedores están listos
     if (this.variables.length > 0 &&
-        this.chartContainers.length === this.variables.length &&
-        !this.chartsRendered) {
+      this.chartContainers.length === this.variables.length &&
+      !this.chartsRendered) {
       this.chartsRendered = true;
       this.renderCharts();
       this.cdr.detectChanges();
@@ -124,6 +133,8 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
 
   loadHistoricalData(entityId: string) {
     this.fiwareService.getHistoricalData(entityId).subscribe(response => {
+      console.log("Respuesta de datos históricos:", response);
+
       const parsedData: { [name: string]: any } = {};
 
       response.values.forEach((entry: any) => {
@@ -146,17 +157,28 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
         }
       });
 
-      this.variables = Object.values(parsedData).map((sensor: any) => ({
-        ...sensor,
-        value: sensor.data[sensor.data.length - 1]?.value + ' ' + sensor.unit,
-        alert: {
-          name: "Fresco",
-          color: "#1a5fb4",
-          level: 1
-        }
-      }));
+      const mappedVariables = Object.values(parsedData)
+        .map((sensor: any) => {
+          const lastValue = sensor.data[sensor.data.length - 1]?.value;
+          return {
+            ...sensor,
+            value: lastValue + ' ' + sensor.unit,
+            alert: {
+              name: "Fresco",
+              color: "#1a5fb4",
+              level: 1
+            }
+          };
+        })
+        .filter(sensor => !isNaN(parseFloat(sensor.value)));
 
-      this.chartsRendered = false; // ⚠️ permitir nuevo render
+      if (mappedVariables.length === 0) {
+        console.warn("⚠️ No hay variables válidas con datos numéricos. No se carga historial.");
+        return;
+      }
+
+      this.variables = mappedVariables;
+      this.chartsRendered = false;
     });
   }
 
@@ -212,22 +234,6 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     this.router.navigate([`/premium/devices`]);
   }
 
-  // generateFakeData(count: number, unit: string) {
-  //   const data = [];
-  //   const now = new Date();
-  //   for (let i = count - 1; i >= 0; i--) {
-  //     const timestamp = new Date(now);
-  //     timestamp.setHours(now.getHours() - (count - 1 - i));
-  //     const value = (Math.random() * 50 + 10).toFixed(2);
-  //     data.push({
-  //       timestamp: timestamp,
-  //       value: parseFloat(value),
-  //       unit: unit
-  //     });
-  //   }
-  //   return data;
-  // }
-
   getNumericValue(value: string): number {
     return parseFloat(value) || 0;
   }
@@ -255,33 +261,32 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
   getGaugeColor(variable: any): string {
     return variable.colorGauge || '#fff';
   }
-  estadoActuador: boolean = false; // false = apagado, true = encendido
+
+  // 🔧 Estados básicos para actuadores (mejor con estructuras dinámicas si hay muchos)
+  estadoActuador: boolean = false;
   valorAnalogico: number = 128;
-  
+  dialValue = 0;
+  dialRotation = 0;
+  valorTextoActuador: string = '';
+  valorActual: string = 'Valor inicial';
+
   toggleActuador(): void {
     this.estadoActuador = !this.estadoActuador;
     console.log('Actuador encendido:', this.estadoActuador);
-    // Aquí podrías llamar a un servicio para enviar el estado al backend
   }
-  
+
   enviarValorAnalogico(valor: number): void {
     console.log('Valor analógico enviado:', valor);
-    // Aquí también podrías comunicarte con un backend o broker MQTT
   }
-  dialValue = 0; // 0 = OFF, 1..5 = niveles
-  dialRotation = 0; // ángulo de rotación
-  
+
   changeDial() {
-    this.dialValue = (this.dialValue + 1) % 6; // OFF → 1 → 2 → 3 → 4 → 5 → OFF
-    this.dialRotation = this.dialValue * 60; // 6 posiciones, 360° / 6 = 60°
-    // Aquí podrías emitir el valor a tu backend o usarlo para controlar el actuador
-    console.log("Dial en posición:", this.dialValue === 0 ? "OFF" : this.dialValue);
+    this.dialValue = (this.dialValue + 1) % 6;
+    this.dialRotation = this.dialValue * 60;
+    console.log("Dial en posición:", this.dialValue === 0 ? 'OFF' : this.dialValue);
   }
-  valorTextoActuador: string = '';   // Valor del actuador de texto (vacío al principio)
-  valorActual: string = 'Valor inicial';    // Método que se llama al escribir en el campo de texto
- // Método que se llama al hacer clic en el botón de actualización
- actualizarActuadorTexto() {
-  this.valorActual = this.valorTextoActuador;  // Cambia el valor mostrado a lo que se ingresó
-  console.log('Valor del actuador de texto actualizado:', this.valorActual);
-  // Aquí podrías hacer algo con el valor del actuador (por ejemplo, enviarlo a un servicio)
-}}
+
+  actualizarActuadorTexto(): void {
+    this.valorActual = this.valorTextoActuador;
+    console.log('Texto actualizado:', this.valorTextoActuador);
+  }
+}

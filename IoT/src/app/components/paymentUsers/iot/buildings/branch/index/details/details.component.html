@@ -1,97 +1,100 @@
 <!-- Componente lateral (side) -->
 <div *ngIf="isLargeScreen">
-    <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
+  <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
 </div>
 <div *ngIf="!isLargeScreen">
-    <app-bottom-tab></app-bottom-tab>
+  <app-bottom-tab></app-bottom-tab>
 </div>
 
 <!-- Contenedor principal -->
 <div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
-    <div class="main-container">
+  <div class="main-container">
 
-        <!-- Header -->
-        <div class="header">
-            <button mat-icon-button class="back-button" (click)="onBackClick()">
-                <mat-icon>arrow_back</mat-icon>
-            </button>
-            <h1>{{ branchName }} - {{ entitiesWithAlerts[0]?.deviceName }}</h1>
-        </div>
-
-        <!-- Contenedor de actuador e información -->
-        <div class="device-columns">
-            <!-- Actuador -->
-            <div class="device-actuador">
-                <h2>Control del Actuador</h2>
-
-                <!-- Botón único para encendido/apagado -->
-                <div class="deviceActuador"><div class="actuador-toggle">
-                    <button></button>
-                    <button class="toggle-btn" [ngClass]="{ 'on': estadoActuador, 'off': !estadoActuador }"
-                        (click)="toggleActuador()">
-                        <mat-icon>{{ estadoActuador ? 'power' : 'power_off' }}</mat-icon>
-                        {{ estadoActuador ? 'Encendido' : 'Apagado' }}
-
-                    </button>
-                </div></div>
-
-                <!-- Control analógico mejorado -->
-                <div class="analogo-control">
-                    <label for="slider">Valor analógico: <strong>{{ valorAnalogico }}</strong></label>
-                    <input type="range" id="slider" min="0" max="255" [(ngModel)]="valorAnalogico"
-                        (change)="enviarValorAnalogico(valorAnalogico)" />
-                </div>
-                <div class="dial-selector">
-                    <div class="dial" [ngStyle]="{ transform: 'rotate(' + dialRotation + 'deg)' }" (click)="changeDial()">
-                      <div class="dial-center"></div>
-                    </div>
-                    <div class="dial-labels">
-                      <span class="dial-label off">OFF</span>
-                      <span class="dial-label" *ngFor="let n of [1,2,3,4,5]">{{ n }}</span>
-                    </div>
-                  </div>
-                
-                <!-- Actuador de texto con botón -->
-                <div class="actuador-texto">
-                    <label for="actuadorInput">Valor del Actuador:</label>
-                    <input type="text" id="actuadorInput" [(ngModel)]="valorTextoActuador"/>
-                    <button class="update-btn" (click)="actualizarActuadorTexto()">Actualizar</button>
-                    <p>Valor Actual: <strong>{{ valorActual }}</strong></p>
-                </div>
-            </div>
-
-            <!-- Información del dispositivo -->
-            <div class="device-info-container">
-                <h1>Última Actualización: {{ entitiesWithAlerts[0]?.timeInstant }}</h1>
-                <div class="gauge-container">
-                    <div class="column" *ngFor="let entity of entitiesWithAlerts">
-                        <div *ngFor="let variable of entity.variables">
-                            <div *ngIf="variable.value">
-                                <ngx-gauge [value]="getNumericValue(variable.value)" [min]="getGaugeRange(variable).min"
-                                    [max]="getGaugeRange(variable).max" [type]="'arch'" [thick]="10" [size]="120"
-                                    [foregroundColor]="variable.colorGauge" [backgroundColor]="'black'"
-                                    [thresholds]="getGaugeThresholds(variable)">
-                                </ngx-gauge>
-                                <div class="variable-info">
-                                    <span class="variable-name">{{ variable.name }}:</span>
-                                    <span class="variable-value">{{ variable.value }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Histórico -->
-        <div class="device-historical">
-            <div class="chart-columns">
-                <div *ngFor="let variable of variables; let i = index" class="chart-wrapper">
-                    <div #chartContainer class="chart-container"></div>
-                </div>
-            </div>
-        </div>
-
-
+    <!-- Header -->
+    <div class="header">
+      <button mat-icon-button class="back-button" (click)="onBackClick()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1>{{ branchName }} - {{ entitiesWithAlerts[0]?.deviceName }}</h1>
     </div>
+
+    <!-- Contenedor de actuador e información -->
+    <div class="device-columns">
+      <h1>Última Actualización: {{ entitiesWithAlerts[0]?.timeInstant }}</h1>
+
+      <!-- Actuador -->
+      <div class="device-actuador" *ngIf="commands.length > 0">
+        <h2>Control del Actuador</h2>
+
+        <!-- 🔘 Toggle switches -->
+        <div class="deviceActuador" *ngFor="let toggle of actuadores.toggle">
+          <div class="actuador-toggle">
+            <button></button>
+            <button class="toggle-btn" [ngClass]="{ 'on': estadoActuador, 'off': !estadoActuador }"
+              (click)="toggleActuador()">
+              <mat-icon>{{ estadoActuador ? 'power' : 'power_off' }}</mat-icon>
+              {{ estadoActuador ? 'Encendido' : 'Apagado' }} ({{ toggle }})
+            </button>
+          </div>
+        </div>
+
+        <!-- 🎚️ Analogo sliders -->
+        <div class="analogo-control" *ngFor="let analogo of actuadores.analogo">
+          <label for="{{ analogo }}">Valor analógico ({{ analogo }}): <strong>{{ valorAnalogico }}</strong></label>
+          <input type="range" id="{{ analogo }}" min="0" max="255" [(ngModel)]="valorAnalogico"
+            (change)="enviarValorAnalogico(valorAnalogico)" />
+        </div>
+
+        <!-- 🔄 Dial selectors -->
+        <div class="dial-selector" *ngFor="let dial of actuadores.dial">
+          <div class="dial" [ngStyle]="{ transform: 'rotate(' + dialRotation + 'deg)' }" (click)="changeDial()">
+            <div class="dial-center"></div>
+          </div>
+          <div class="dial-labels">
+            <span class="dial-label off">OFF</span>
+            <span class="dial-label" *ngFor="let n of [1, 2, 3, 4, 5]">{{ n }}</span>
+          </div>
+          <p>Dial: {{ dial }}</p>
+        </div>
+
+        <!-- 📝 Actuador de texto -->
+        <div class="actuador-texto" *ngFor="let texto of actuadores.toggleText">
+          <label for="actuadorInput-{{ texto }}">Valor del Actuador ({{ texto }}):</label>
+          <input type="text" id="actuadorInput-{{ texto }}" [(ngModel)]="valorTextoActuador" />
+          <button class="update-btn" (click)="actualizarActuadorTexto()">Actualizar</button>
+          <p>Valor Actual: <strong>{{ valorActual }}</strong></p>
+        </div>
+      </div>
+
+      <!-- Información del dispositivo -->
+      <div class="device-info-container" *ngIf="variables.length > 0">
+        <div class="gauge-container">
+          <div class="column" *ngFor="let entity of entitiesWithAlerts">
+            <div *ngFor="let variable of entity.variables">
+              <div *ngIf="variable.value">
+                <ngx-gauge [value]="getNumericValue(variable.value)" [min]="getGaugeRange(variable).min"
+                  [max]="getGaugeRange(variable).max" [type]="'arch'" [thick]="10" [size]="120"
+                  [foregroundColor]="variable.colorGauge" [backgroundColor]="'black'"
+                  [thresholds]="getGaugeThresholds(variable)">
+                </ngx-gauge>
+                <div class="variable-info">
+                  <span class="variable-name">{{ variable.name }}:</span>
+                  <span class="variable-value">{{ variable.value }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Histórico -->
+      <div class="device-historical" *ngIf="variables.length > 0">
+        <div class="chart-columns">
+          <div *ngFor="let variable of variables; let i = index" class="chart-wrapper">
+            <div #chartContainer class="chart-container"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
