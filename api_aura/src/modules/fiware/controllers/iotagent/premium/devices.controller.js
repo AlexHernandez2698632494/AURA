@@ -4,7 +4,7 @@ import fetch from "node-fetch";
 import Fiware from "../../../models/fiware.models.js";
 
 const CONFIG_URL =
-  "https://raw.githubusercontent.com/AlexHernandez2698632494/IoT/refs/heads/master/server/src/modules/config/ngsi.api.service.yml";
+  "https://raw.githubusercontent.com/AlexHernandez2698632494/AURA/refs/heads/master/api_aura/src/modules/config/ngsi.api.service.yml";
 
 async function getConfig() {
   const response = await fetch(CONFIG_URL);
