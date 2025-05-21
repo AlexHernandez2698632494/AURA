@@ -365,6 +365,7 @@ export const getEntitiesWithAlerts = async (req, res) => {
     const alerts = await getAlerts();
     const defaultSensorColor = "#fff"; // Blanco para sensores
     const defaultActuatorColor = "#808080"; // Gris para actuadores
+   // console.log("entidades", entities);
 
     const combinedData = entities.map((entity) => {
       const variables = entity.sensors?.value
@@ -426,6 +427,7 @@ export const getEntitiesWithAlerts = async (req, res) => {
         }
       }
 
+      // Formatear el TimeInstant principal
       const formattedTimeInstant = entity.TimeInstant?.value
         ? formatTimeInstant(entity.TimeInstant.value)
         : null;
@@ -472,28 +474,56 @@ export const getEntitiesWithAlerts = async (req, res) => {
         const commandTypes = entity.commandTypes.value;
 
         for (const [type, commands] of Object.entries(commandTypes)) {
-          for (const command of commands) {
-            const commandObj = {
-              [command]: "", // Agregar el comando con un valor vacío
+          for (const commandObj of commands) {
+            const commandName = commandObj?.name;
+            if (!commandName) continue; // Evitar errores con comandos sin nombre
+
+            const command = {
+              name: commandName, // Nombre del comando
+              status: "", // Inicializa el status
+              states: "", // Inicializa los states
+              info: "", // Inicializa el campo de info
+              statusTimeInstant: "", // Inicializa el timeInstant de status
+              statesTimeInstant: "", // Inicializa el timeInstant de states
+              infoTimeInstant: "", // Inicializa el timeInstant de info
             };
 
-            // Agregar subpropiedades como _status, _info y _states si están presentes
-            const statusKey = `${command}_status`;
-            const infoKey = `${command}_info`;
-            const statesKey = `${command}_states`;
+            // Buscar las claves asociadas al comando
+            const statusKey = `${commandName}_status`;
+            const statesKey = `${commandName}_states`;
+            const infoKey = `${commandName}_info`;
+            //console.log(statusKey);
 
+            // Revisar si existen las claves y asignar sus valores
             if (entity[statusKey]?.value !== undefined) {
-              commandObj[`${command}_status`] = entity[statusKey].value;
+              command.status = entity[statusKey].value;
+              if (entity[statusKey]?.metadata?.TimeInstant?.value) {
+                command.statusTimeInstant = formatTimeInstant(
+                  entity[statusKey].metadata.TimeInstant.value
+                );
+              }
             }
-            if (entity[infoKey]?.value !== undefined) {
-              commandObj[`${command}_info`] = entity[infoKey].value;
-            }
+
             if (entity[statesKey]?.value !== undefined) {
-              commandObj[`${command}_states`] = entity[statesKey].value;
+              command.states = entity[statesKey].value;
+              if (entity[statesKey]?.metadata?.TimeInstant?.value) {
+                command.statesTimeInstant = formatTimeInstant(
+                  entity[statesKey].metadata.TimeInstant.value
+                );
+              }
+            }
+
+            if (entity[infoKey]?.value !== undefined) {
+              command.info = entity[infoKey].value;
+              if (entity[infoKey]?.metadata?.TimeInstant?.value) {
+                command.infoTimeInstant = formatTimeInstant(
+                  entity[infoKey].metadata.TimeInstant.value
+                );
+              }
             }
 
             // Agregar el objeto de comando al arreglo de "commands"
-            result.commands.push(commandObj);
+            result.commands.push(command);
           }
         }
       }
