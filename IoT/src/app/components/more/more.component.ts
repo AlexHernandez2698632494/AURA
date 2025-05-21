@@ -6,6 +6,7 @@ import { NavComponent } from '../nav/nav.component';
 
 @Component({
   selector: 'app-more',
+  standalone: true,
   imports: [CommonModule, RouterModule, FormsModule, NavComponent],
   templateUrl: './more.component.html',
   styleUrls: ['./more.component.css']

@@ -7,6 +7,7 @@ import { PaymentUserService } from '../../../../services/paymentUser/payment-use
 
 @Component({
   selector: 'app-overview',
+  standalone: true,
   imports: [CommonModule, PremiumSideComponent,BottomTabComponent],
   templateUrl: './overview.component.html',
   styleUrl: './overview.component.css'

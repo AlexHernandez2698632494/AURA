@@ -14,6 +14,7 @@ import { NgxColorsModule } from 'ngx-colors';
 
 @Component({
   selector: 'app-edit-alert-dialog',
+  standalone: true,
   imports: [    
     NgxColorsModule,
     MatDialogModule,

@@ -14,6 +14,7 @@ import Swal from 'sweetalert2';  // Importar SweetAlert2
 
 @Component({
   selector: 'app-index-e',
+  standalone: true,
   imports: [
     SideComponent,
     BottomTabComponent,

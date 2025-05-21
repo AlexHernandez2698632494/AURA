@@ -20,6 +20,7 @@ import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-index-sensor',
+  standalone: true,
   imports: [
     CommonModule,
     FormsModule,

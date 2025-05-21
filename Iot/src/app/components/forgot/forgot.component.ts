@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';  // Importar FormsModule
 
 @Component({
   selector: 'app-forgot',
+  standalone: true,
   imports: [ NavComponent,FormsModule],
   templateUrl: './forgot.component.html',
   styleUrls: ['./forgot.component.css']

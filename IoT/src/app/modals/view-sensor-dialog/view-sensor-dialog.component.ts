@@ -12,6 +12,7 @@ import Swal from 'sweetalert2';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 @Component({
   selector: 'app-view-sensor-dialog',
+  standalone: true,
   imports: [
     MatDialogModule,
     MatFormFieldModule,

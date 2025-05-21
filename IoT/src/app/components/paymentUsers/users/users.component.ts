@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-premium-users',
+  standalone: true,
   imports: [CommonModule, PremiumSideComponent,MatIconModule, BottomTabComponent],
   templateUrl: './users.component.html',
   styleUrl: './users.component.css'

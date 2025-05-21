@@ -13,6 +13,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-edit-sensor-dialog',
+  standalone: true,
   imports: [
     MatDialogModule,
     MatFormFieldModule,

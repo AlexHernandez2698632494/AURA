@@ -8,12 +8,12 @@ export class ApiConfigService {
     //'https://lm89f4q4-8080.use.devtunnels.ms',
     // 'http://192.168.1.82:8090',
     // "http://10.0.12.66:8090",
-    "http://10.0.12.82:8090",
-    //  'http://localhost:8090' ,
+    "http://192.168.1.20:8090",    
+    //  'http://localhost:8090' ,x
   ];
   private apiUrlsMoquitto = [
     // "http://10.0.12.66:8668",
-    "http://10.0.12.82:8668",
+    "http://192.168.1.20:8668",    
     //  'http://localhost:8668' ,
   ];
 

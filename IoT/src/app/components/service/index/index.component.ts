@@ -18,6 +18,7 @@ import { EditServiceDialogComponent } from '../../../modals/edit-service-dialog/
 
 @Component({
   selector: 'app-index',
+  standalone: true,
   imports: [
     CommonModule,
     FormsModule,

@@ -15,6 +15,7 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-create',
+  standalone: true,
   imports: [
     MatChipsModule,
     MatFormFieldModule,
