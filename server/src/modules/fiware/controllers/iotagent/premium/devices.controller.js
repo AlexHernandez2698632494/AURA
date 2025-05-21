@@ -691,6 +691,7 @@ async function createSubscription({
         "TimeInstant",
         "servicePath",
         "deviceName",
+        "status","command"
       ],
       attrsFormat: "keyValues",
     },
