@@ -1,7 +1,7 @@
 services:
-  mongo-auth:
+  mongodb-aura:
     image: mongo:latest
-    container_name: mongo-auth
+    container_name: mongodb-aura
     ports:
       - "27018:27017"
     environment:
@@ -24,27 +24,27 @@ services:
     networks:
       - default
 
-  server:
+  api-aura:
     build:
-      context: ./server 
-    container_name: server
+      context: ./api_aura 
+    container_name: api_aura
     ports:
       - "8090:8090"
     env_file:
-      - ./server/.env 
+      - ./api_aura/.env 
     depends_on:
-      - mongo-auth
+      - mongodb-aura
     networks:
       - default
 
-  frontend:
+  aura:
     build:
-      context: ./IoT
-    container_name: frontend
+      context: ./aura
+    container_name: aura
     ports:
       - "4201:4201" 
     depends_on:
-      - server
+      - api-aura
     networks:
       - default
 
