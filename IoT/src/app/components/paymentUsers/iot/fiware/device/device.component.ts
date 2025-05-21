@@ -268,9 +268,9 @@ registerSensor(): void {
 
   
 
-  onBackClick(): void {
-    this.router.navigate(['/premium/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}']);
-  }
+onBackClick(): void {
+  this.router.navigate([`/premium/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}`]);
+}
   initializeMap(): void {
     if (this.mapInitialized) return;
 
