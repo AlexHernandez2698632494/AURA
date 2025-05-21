@@ -29,12 +29,27 @@
         <!-- 🔘 Toggle switches -->
         <div class="deviceActuador" *ngFor="let toggle of actuadores.toggle">
           <div class="actuador-toggle">
-            <button></button>
-            <button class="toggle-btn" [ngClass]="{ 'on': estadoActuador, 'off': !estadoActuador }"
-              (click)="toggleActuador()">
-              <mat-icon>{{ estadoActuador ? 'power' : 'power_off' }}</mat-icon>
-              {{ estadoActuador ? 'Encendido' : 'Apagado' }} ({{ toggle }})
-            </button>
+
+            <div class="conditions">
+            <h3>{{ toggle.label }}</h3>
+              <button class="toggle-btn" [ngClass]="{ 'on': estadoActuador, 'off': !estadoActuador }"
+                (click)="toggleActuador()">
+                <mat-icon>{{ estadoActuador ? 'power' : 'power_off' }}</mat-icon>
+                {{ estadoActuador ? 'Encendido' : 'Apagado' }}
+              </button>
+              <button mat-icon-button class="createCondition">
+                <mat-icon>add</mat-icon>
+                <p>Crear Condicion</p>
+              </button>
+              <button mat-icon-button class="editCondition">
+                <mat-icon>update</mat-icon>
+                <p>Editar Condicion</p>
+              </button>
+              <button mat-icon-button class="deleteCondition">
+                <mat-icon>delete</mat-icon>
+                <p>Eliminar Condicion</p>
+              </button>
+            </div>
           </div>
         </div>
 

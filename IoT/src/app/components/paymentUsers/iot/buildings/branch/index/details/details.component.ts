@@ -50,10 +50,10 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
 
   // NUEVO: Actuadores por tipo
   actuadores: {
-    toggle: string[],
-    analogo: string[],
-    dial: string[],
-    toggleText: string[]
+    toggle: { label: string }[],
+    analogo: any[],
+    dial: any[],
+    toggleText: any[]
   } = {
     toggle: [],
     analogo: [],
@@ -91,10 +91,12 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
           const entidad = this.entitiesWithAlerts[0];
           this.commands = entidad.commands || [];
 
-          // ✅ Mapear actuadores dinámicamente
+          // ✅ Mapear actuadores dinámicamente y parsear si son strings
           if (entidad.commandTypes) {
             this.actuadores = {
-              toggle: entidad.commandTypes.toggle || [],
+              toggle: (entidad.commandTypes.toggle || []).map((item: any) =>
+                typeof item === 'string' ? JSON.parse(item) : item
+              ),
               analogo: entidad.commandTypes.analogo || [],
               dial: entidad.commandTypes.dial || [],
               toggleText: entidad.commandTypes.toggleText || []
@@ -262,7 +264,6 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     return variable.colorGauge || '#fff';
   }
 
-  // 🔧 Estados básicos para actuadores (mejor con estructuras dinámicas si hay muchos)
   estadoActuador: boolean = false;
   valorAnalogico: number = 128;
   dialValue = 0;
