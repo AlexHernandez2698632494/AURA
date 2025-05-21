@@ -66,6 +66,7 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
 
     // ✅ Suscripción al socket con merge inteligente
     this.socketService.entitiesWithAlerts$.subscribe((entities) => {
+      console.log('Entidades recibidas por socket:', entities); 
       if (entities && entities.length > 0) {
         this.updateEntitiesWithSocket(entities);
       }
@@ -193,101 +194,121 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
       });
   }
 
-  private addColoredMarker(
-    lat: number,
-    lng: number,
-    color: string,
-    name: string,
-    variables: any[],
-    commands?: any[],
-    commandTypes?: any,
-    timeInstant?: string
-  ): L.Marker {
-    if (!this.map) throw new Error('Mapa no inicializado');
+private addColoredMarker(
+  lat: number,
+  lng: number,
+  color: string,
+  name: string,
+  variables: any[],
+  commands?: any[],
+  commandTypes?: any,
+  timeInstant?: string
+): L.Marker {
+  if (!this.map) throw new Error('Mapa no inicializado');
 
-    let popupContent = `<b>${name}</b><br>`;
-    if (timeInstant) {
-      popupContent += `<br><strong>Última actualización:</strong> ${timeInstant} 🕒<br><br>`;
-    }
+  let popupContent = `<b>${name}</b><br>`;
 
-    if (variables?.length) {
-      popupContent += `<b>📡 Sensores</b><ul>`;
-      variables.forEach(variable => {
-        popupContent += `<li>${variable.name}: ${variable.value}`;
-        if (variable.alert) {
-          popupContent += ` <span style="color:${variable.alert.color}">(${variable.alert.name})</span>`;
-        }
-        popupContent += `</li>`;
-      });
-      popupContent += `</ul>`;
-    }
+  const hasSensors = Array.isArray(variables) && variables.length > 0;
+  const hasActuators = Array.isArray(commands) && commands.length > 0;
 
-    if (commandTypes && commands?.length) {
-      popupContent += `<b>⚙️ Actuadores</b><ul>`;
-
-Object.keys(commandTypes).forEach((typeKey: string) => {
-  const commandList = commandTypes[typeKey];
-
-  commandList.forEach((cmdName: string) => {
-    // Busca el objeto que contenga el comando específico
-    const commandObj = commands.find(cmd => Object.keys(cmd).some(key => key.startsWith(cmdName)));
-
-    const status = commandObj?.[`${cmdName}_status`];
-    const states = commandObj?.[`${cmdName}_states`];
-    const timeInstant = commandObj?.[`${cmdName}_timeInstant`];
-
-    // 📍 Estado del actuador (ON/OFF/etc.)
-    const readableStates = states
-      ? `· Estado actual: <i>${states}</i> ✅`
-      : `· Estado actual: <i style="color:#93c5fd;">No reportado</i> ⚠️`;
-
-    // 🟡 Estado del sistema
-    let readableStatusText = 'No reportado';
-    let statusColor = '#3498db';
-
-    if (status) {
-  const normalizedStatus = status.toLowerCase();
-  if (normalizedStatus === 'ok') {
-    readableStatusText = 'OK 🟢';
-    statusColor = '#2ecc71';
-  } else if (normalizedStatus === 'pending') {
-    readableStatusText = 'PENDIENTE 🟠';
-    statusColor = '#f39c12';
-  } else {
-    readableStatusText = `${status.toUpperCase()} 🔴`;
-    statusColor = '#e74c3c';
+  // Verificar si **algún comando tiene status definido**
+  let anyCommandHasStatus = false;
+  if (hasActuators) {
+    anyCommandHasStatus = commands!.some(cmd => !!cmd.status);
   }
-}
 
-    // 🕒 Última actualización (fecha)
-    const readableTimeInstant = timeInstant
-      ? `· Última actualización (hora): <i>${timeInstant}</i>`
-      : `· Última actualización (hora): <i>No reportado</i>`;
+  const showGlobalAsCreation = !hasSensors && !anyCommandHasStatus;
+  const mainDate = timeInstant || 'No disponible';
 
-    // 📋 Armar contenido del popup
-    popupContent += `
-<li><b>${cmdName}</b>:<br>
+  if (mainDate) {
+    popupContent += showGlobalAsCreation
+      ? `<br><strong>Fecha de creación:</strong> ${mainDate} 📅<br><br>`
+      : `<br><strong>· Última actualización:</strong> ${mainDate} 🕒<br><br>`;
+  }
+
+  // 📡 Sensores
+  if (hasSensors) {
+    popupContent += `<b>📡 Sensores</b><ul>`;
+    variables.forEach(variable => {
+      popupContent += `<li>${variable.name}: ${variable.value}`;
+      if (variable.alert) {
+        popupContent += ` <span style="color:${variable.alert.color}">(${variable.alert.name})</span>`;
+      }
+      popupContent += `</li>`;
+    });
+    popupContent += `</ul>`;
+  }
+
+  // ⚙️ Actuadores
+  if (commandTypes && hasActuators) {
+    popupContent += `<b>⚙️ Actuadores</b><ul>`;
+
+    Object.keys(commandTypes).forEach((typeKey: string) => {
+      const commandList = commandTypes[typeKey];
+
+      commandList.forEach((cmd: any) => {
+        const cmdName = cmd.name;
+        const cmdLabel = cmd.label || cmd.name;
+
+        const commandObj = commands.find(cmdObj => cmdObj.name === cmdName);
+
+        if (!commandObj) {
+          console.warn(`No se encontró un objeto de comando para '${cmdName}' en`, commands);
+          return;
+        }
+
+        const status = commandObj.status;
+        const states = commandObj.states;
+        const statusTimeInstant = commandObj.statusTimeInstant || 'No disponible';
+
+        const readableStates = states
+          ? `· Estado actual: <i>${states}</i> ✅`
+          : `· Estado actual: <i style="color:#93c5fd;">No reportado</i> ⚠️`;
+
+        let readableStatusText = 'No reportado';
+        let statusColor = '#3498db';
+
+        if (status) {
+          const normalizedStatus = status.toLowerCase();
+          if (normalizedStatus === 'ok') {
+            readableStatusText = 'OK 🟢';
+            statusColor = '#2ecc71';
+          } else if (normalizedStatus === 'pending') {
+            readableStatusText = 'PENDIENTE 🟠';
+            statusColor = '#f39c12';
+          } else {
+            readableStatusText = `${status.toUpperCase()} 🔴`;
+            statusColor = '#e74c3c';
+          }
+        }
+
+        const showCommandAsCreation = !status;
+
+        popupContent += `
+<li><b>${cmdLabel}</b>:<br>
   ${readableStates}<br>
   · Estado del sistema: <span style="color:${statusColor}; font-weight: bold;">${readableStatusText}</span><br>
+  ${showCommandAsCreation
+    ? `Fecha de creación: ${statusTimeInstant} 📅`
+    : `· Última actualización (hora): ${statusTimeInstant}`}
 </li>
 `;
-  });
-});
-
-
-      popupContent += `</ul>`;
-    }
-
-    const customIcon = L.divIcon({
-      className: 'custom-marker',
-      html: `<div style="width: 20px; height: 20px; background-color: ${color}; border-radius: 50%;"></div>`,
-      iconSize: [20, 20],
+      });
     });
 
-    return L.marker([lat, lng], { icon: customIcon })
-      .addTo(this.map)
-      .bindPopup(popupContent);
+    popupContent += `</ul>`;
   }
+
+  const customIcon = L.divIcon({
+    className: 'custom-marker',
+    html: `<div style="width: 20px; height: 20px; background-color: ${color}; border-radius: 50%;"></div>`,
+    iconSize: [20, 20],
+  });
+
+  return L.marker([lat, lng], { icon: customIcon })
+    .addTo(this.map)
+    .bindPopup(popupContent);
+}
 
   ngOnDestroy(): void {
     window.removeEventListener('resize', () => {
