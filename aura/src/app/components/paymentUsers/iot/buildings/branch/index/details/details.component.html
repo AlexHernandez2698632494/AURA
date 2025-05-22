@@ -31,24 +31,29 @@
           <div class="actuador-toggle">
 
             <div class="conditions">
-            <h3>{{ toggle.label }}</h3>
+              <h3 [ngStyle]="{ 'background-color': pastelColor }">{{ toggle.label }}</h3>
+
+
               <button class="toggle-btn" [ngClass]="{ 'on': estadoActuador, 'off': !estadoActuador }"
                 (click)="toggleActuador()">
                 <mat-icon>{{ estadoActuador ? 'power' : 'power_off' }}</mat-icon>
                 {{ estadoActuador ? 'Encendido' : 'Apagado' }}
               </button>
-              <button mat-icon-button class="createCondition">
-                <mat-icon>add</mat-icon>
-                <p>Crear Condicion</p>
-              </button>
-              <button mat-icon-button class="editCondition">
-                <mat-icon>update</mat-icon>
-                <p>Editar Condicion</p>
-              </button>
-              <button mat-icon-button class="deleteCondition">
-                <mat-icon>delete</mat-icon>
-                <p>Eliminar Condicion</p>
-              </button>
+
+              <div class="condition-buttons">
+                <button mat-icon-button class="createCondition">
+                  <mat-icon>add</mat-icon>
+                  <p>Crear Condición</p>
+                </button>
+                <button mat-icon-button class="editCondition">
+                  <mat-icon>update</mat-icon>
+                  <p>Editar Condición</p>
+                </button>
+                <button mat-icon-button class="deleteCondition">
+                  <mat-icon>delete</mat-icon>
+                  <p>Eliminar Condición</p>
+                </button>
+              </div>
             </div>
           </div>
         </div>

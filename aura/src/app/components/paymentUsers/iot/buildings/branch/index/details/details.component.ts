@@ -60,7 +60,7 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     dial: [],
     toggleText: []
   };
-
+pastelColor: string = '';
   constructor(
     private paymentUserService: PaymentUserService,
     private router: Router,
@@ -121,6 +121,7 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     } else {
       console.error('❌ No se encontraron fiwareService o fiwareServicePath en sessionStorage');
     }
+     this.pastelColor = this.getRandomPastelColor();
   }
 
   ngAfterViewChecked(): void {
@@ -290,4 +291,9 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     this.valorActual = this.valorTextoActuador;
     console.log('Texto actualizado:', this.valorTextoActuador);
   }
+  // Función que genera colores pastel
+getRandomPastelColor(): string {
+  const hue = Math.floor(Math.random() * 360);
+  return `hsl(${hue}, 70%, 85%)`; // Saturación alta, luminosidad alta → pastel
+}
 }
