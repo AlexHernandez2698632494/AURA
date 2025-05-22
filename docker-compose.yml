@@ -136,6 +136,20 @@ services:
     networks:
       - default
 
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    depends_on:
+      - crate-db
+    ports:
+      - "3000:3000"
+    expose:
+      - "3000"
+    volumes:
+      - grafana:/var/lib/grafana
+    networks:
+      - default
+
 volumes:
   mongodb_data:
   mongodb_config:
@@ -144,6 +158,7 @@ volumes:
   mosquitto_config:
   mosquitto_log:
   crate-db:
+  grafana:
 
 networks:
   default:
