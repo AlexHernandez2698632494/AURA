@@ -36,7 +36,8 @@ app.use(express.json());
 app.use(bodyParser.json());
 
 // Configuración
-const MAPPING_YML_URL = "https://raw.githubusercontent.com/AlexHernandez2698632494/IoT/refs/heads/master/server/src/modules/config/ngsi.api.service.yml";
+const MAPPING_YML_URL =   "https://raw.githubusercontent.com/AlexHernandez2698632494/AURA/refs/heads/master/api_aura/src/modules/config/ngsi.api.service.yml";
+
 
 // Obtener mappings
 const getSensorMapping = async () => {

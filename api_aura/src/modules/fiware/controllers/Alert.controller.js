@@ -2,7 +2,7 @@ import Alert from "../models/Alert.models.js";
 import axios from "axios";
 import yaml from "js-yaml";
 
-const MAPPING_YML_URL = "https://raw.githubusercontent.com/AlexHernandez2698632494/IoT/refs/heads/master/server/src/modules/config/ngsi.api.service.yml";
+const MAPPING_YML_URL = "https://raw.githubusercontent.com/AlexHernandez2698632494/AURA/refs/heads/master/api_aura/src/modules/config/ngsi.api.service.yml";
 
 export const createAlert = async (req, res) => {
     const { variable, displayName, initialRange, finalRange, color, level } = req.body;
