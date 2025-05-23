@@ -2,14 +2,14 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
-    width: 85%;
+    width: 70%;
     margin: 0 auto;
 }
 
 .center {
+    margin-top: 80px;
     margin-left: 5%;
     justify-content: center;
-    min-height: 97vh;
     transition: margin-left 0.3s ease;
 }
 
@@ -20,7 +20,7 @@
 
 /* Tarjetas */
 .card {
-    height: 300px;
+    height: 200px;
     border: 1px solid #ccc;
     background: #fff;
     padding: 20px;
@@ -78,7 +78,7 @@
 .card-body {
     display: grid;
     grid-template-columns: 1fr;
-        gap:    20px;   
+    gap: 20px;
 }
 
 .btn {
