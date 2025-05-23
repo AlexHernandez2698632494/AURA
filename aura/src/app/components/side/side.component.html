@@ -23,42 +23,44 @@
       <div class="separator">
         <hr />
       </div>
-      <i class="material-icons">person</i>
-      <p *ngIf="!isCollapsed" class="username">{{ username }}</p>
+      <div class="userInfo-row">
+        <i class="material-icons">person</i>
+        <p *ngIf="!isCollapsed" class="username">{{ username }}</p>
+      </div>
       <div class="separator">
         <hr />
       </div>
     </div>
+  </div>
 
-    <ul class="menu">
-      <li *ngFor="let item of menuItemsTop" class="menu-item" [class.open]="item.isSubmenuOpen"
-        [ngClass]="{'active': isActive(item.route) || isSubmenuActive(item.submenu)}"
-        (click)="item.submenu.length === 0 ? navigateTo(item.route) : toggleSubmenu(item)">
+  <ul class="menu">
+    <li *ngFor="let item of menuItemsTop" class="menu-item" [class.open]="item.isSubmenuOpen"
+      [ngClass]="{'active': isActive(item.route) || isSubmenuActive(item.submenu)}"
+      (click)="item.submenu.length === 0 ? navigateTo(item.route) : toggleSubmenu(item)">
+      <div class="menu-icon-container">
+        <i class="material-icons">{{ item.icon }}</i>
+        <p *ngIf="isCollapsed" class="tooltip">{{ item.label }}</p>
+        <span *ngIf="!isCollapsed">{{ item.label }}</span>
+      </div>
+      <ul class="submenu" *ngIf="item.isSubmenuOpen">
+        <li *ngFor="let subItem of item.submenu" class="submenu-item" [ngClass]="{'active': isActive(subItem.route)}"
+          [routerLink]="subItem.route">
+          <a [routerLink]="subItem.route">{{ subItem.label }}</a>
+        </li>
+      </ul>
+    </li>
+    <div class="separator">
+      <hr />
+    </div>
+    <li *ngFor="let item of menuItemsBottom" class="menu-item" (click)="logout()"
+      [ngClass]="{'active': isActive(item.route)}">
+      <a>
         <div class="menu-icon-container">
           <i class="material-icons">{{ item.icon }}</i>
           <p *ngIf="isCollapsed" class="tooltip">{{ item.label }}</p>
           <span *ngIf="!isCollapsed">{{ item.label }}</span>
         </div>
-        <ul class="submenu" *ngIf="item.isSubmenuOpen">
-          <li *ngFor="let subItem of item.submenu" class="submenu-item" [ngClass]="{'active': isActive(subItem.route)}"
-            [routerLink]="subItem.route">
-            <a [routerLink]="subItem.route">{{ subItem.label }}</a>
-          </li>
-        </ul>
-      </li>
-      <div class="separator">
-        <hr />
-      </div>
-      <li *ngFor="let item of menuItemsBottom" class="menu-item" (click)="logout()"
-        [ngClass]="{'active': isActive(item.route)}">
-        <a>
-          <div class="menu-icon-container">
-            <i class="material-icons">{{ item.icon }}</i>
-            <p *ngIf="isCollapsed" class="tooltip">{{ item.label }}</p>
-            <span *ngIf="!isCollapsed">{{ item.label }}</span>
-          </div>
-        </a>
-      </li>
-    </ul>
-  </div>
+      </a>
+    </li>
+  </ul>
 </div>

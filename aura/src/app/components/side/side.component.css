@@ -26,18 +26,6 @@
   background-color: white;
 }
 
-.sidebar-content {
-  flex-grow: 1;
-  overflow-y: auto;
-  scrollbar-width: none; 
-  padding-bottom: 10px;
-}
-
-.sidebar-content::-webkit-scrollbar {
-  display: none;
-}
-
-
 .header-content {
   display: flex;
   justify-content: space-between;
@@ -121,6 +109,13 @@
   height: 40px;
 }
 
+.userInfo-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+
 .username{
   margin-left: 10px;
   display: inline-block;
@@ -132,7 +127,7 @@
 
 .userInfo .material-icons{
   text-align: center;
-  margin-left: 15%;
+  margin-left: 9%;
   color: #003366;
   font-size: clamp(1.7rem, 2vw, 2.3rem);
   transition: background-color 0.4s ease;
@@ -162,6 +157,7 @@
   align-items: center;
   position: relative;
   overflow: visible;
+  z-index: 1000;
 }
 
 .menu-icon-container i {
@@ -170,7 +166,7 @@
 }
 
 .menu-icon-container .tooltip {
-  position: fixed; /* Posicionamiento absoluto dentro de su contenedor */
+  position: fixed;
   left: 5%; 
   transform: translateY(0%);
   color: #e0e0e0;
@@ -183,7 +179,6 @@
   transition: opacity 1s ease, visibility 0.1s ease-in-out;
   background-color: #003366dc;
   pointer-events: none; 
-  z-index: 10000;
   margin-left: 5px;
 }
 
@@ -331,7 +326,7 @@
 
 .separator hr {
   border: 0;
-  border-top: 1px solid #003366;
+  border-top: 2px solid #003366;
 }
 
 .sidebar.collapsed .submenu {

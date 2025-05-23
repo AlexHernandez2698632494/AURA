@@ -13,6 +13,7 @@ import { PruebaComponent } from './app/components/prueba/prueba.component';
 import { LoginComponent } from './app/components/login/login.component';
 import { RegisterComponent } from './app/components/register/register.component';
 import { ForgotComponent } from './app/components/forgot/forgot.component';
+import { AdminOverviewComponent } from './app/components/overview/overview.component';
 // admin
 import { CreateAdminComponent } from './app/components/admin/create/create.component';
 import { IndexAdminComponent } from './app/components/admin/index/index.component';
@@ -78,6 +79,12 @@ const routes: Routes = [
     component: CreateAdminComponent,
     canActivate: [AuthGuard],
     data: { authorities: ['create_users', 'super_administrador', 'administrador', 'dev'] },
+  },
+  {
+    path: 'overview',
+    component: AdminOverviewComponent,
+    canActivate: [AuthGuard],
+    data: { authorities: ['create_users', 'list_users', 'restore_user', 'super_administrador', 'administrador', 'dev'] },
   },
   {
     path: 'admin/index',
@@ -201,7 +208,7 @@ const routes: Routes = [
   },
   // rutas de Subscriptions o Usuarios con permisos de licencia :
   {
-    path:'overview',
+    path:'premium/overview',
     component:OverviewComponent,
     canActivate:[AuthGuard],
     data: { authorities: ['super_usuario'] },

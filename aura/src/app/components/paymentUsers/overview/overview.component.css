@@ -1,107 +1,141 @@
-/* Contenedor Principal */
 .overview-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-  }
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  width: 70%;
+  margin: 0 auto;
+}
 
-  .center {
-    margin-left: 5%;
-    justify-content: center;
-    min-height: 97vh;
-    transition: margin-left 0.3s ease;  
-  }
-  
-  .shifted {
-    margin-left: 14%; 
-    transition: margin-left 0.3s ease; 
-  }
+h1 {
+  text-align: center;
+}
 
-  /* Tarjetas */
-  .card {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  /* Encabezado de la tarjeta */
-  .card-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .card-header img {
-    width: 40px;
-    height: 40px;
-  }
-  
-  /* Subtítulo */
-  .sub-title {
-    font-size: 14px;
-    color: #555;
-  }
-  
-  /* Listado de suscripciones */
-  .subscriptions-list {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .subscriptions-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  /* Estado de los ítems */
-  .status.warning {
-    color: orange;
-  }
-  
-  .status.success {
-    color: green;
-  }
-  
-  .status.error {
-    color: red;
-    font-weight: bold;
-  }
-  
-  /* Botón */
-  .btn {
-    background: #003366;
-    color: #fff;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    text-align: center;
-  }
-  
-  /* Contenedor de issues */
-  .issue-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  /* Enlaces */
-  .link {
-    color: #003366;
-    text-decoration: none;
-    font-size: 14px;
-  }
-  
-  /* Tarjeta de historial */
-  .history-card {
-    width: 50%;
-    text-align: left;
-  }
-  
+.overview-wrapper {
+  width: 70%;
+  margin: 0 auto;
+}
+
+
+.header {
+  align-items: center;
+  gap: 10px;
+  border-radius: 8px;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+
+.center {
+  margin-top: 80px;
+  align-items: center;
+  margin-left: 5%;
+  justify-content: center;
+  transition: margin-left 0.3s ease;
+}
+
+.shifted {
+  margin-left: 14%;
+  transition: margin-left 0.3s ease;
+}
+
+/* Tarjetas */
+.card {
+  border: 1px solid #ccc;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Encabezado de la tarjeta */
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-header img {
+  width: 40px;
+  height: 40px;
+}
+
+/* Subtítulo */
+.sub-title {
+  font-size: 14px;
+  color: #555;
+}
+
+/* Listado de suscripciones */
+.subscriptions-list {
+  list-style: none;
+  padding: 0;
+}
+
+.subscriptions-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Estado de los ítems */
+.status.warning {
+  color: orange;
+}
+
+.status.success {
+  color: green;
+}
+
+.status.error {
+  color: red;
+  font-weight: bold;
+}
+
+/* Botón */
+.btn {
+  width: 80%;
+  background-color: #fff;
+  color: #003366;
+  border: #003366 solid 2px;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.btn:hover {
+  background-color: #003366;
+  color: #fff;
+}
+
+/* Contenedor de issues */
+.issue-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Enlaces */
+.link {
+  color: #003366;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+/* Tarjeta de historial */
+.history-card {
+  border: 1px solid #ccc;
+  text-align: left;
+  grid-column: span 2;
+}
+
+.history-card .btn {
+  margin: 0 auto;
+}

@@ -23,7 +23,7 @@ export class PremiumSideComponent implements OnInit{
 
   menuItemsTop = [
     { icon: 'home', label: 'Home', route: '/Home'}, 
-    { icon: 'space_dashboard', label: 'Overview', route: '/overview'}, 
+    { icon: 'space_dashboard', label: 'Overview', route: '/premium/overview'}, 
     {icon:'switch_account', label:'Usuarios',route:'/premium/users'}, 
     { icon: 'subscriptions', label: 'Suscripción', route: '/subscriptions'}, 
     { icon: 'hub', label: 'IoT', route: '/premium/iot/overview'}, 

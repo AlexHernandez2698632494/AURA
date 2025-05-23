@@ -26,40 +26,12 @@ export class SideComponent implements OnInit {
   menuItemsTop = [
     { icon: 'home', label: 'Home', route: '/Home', submenu: [], isSubmenuOpen: false, authorities: [] },
     {
-      icon: 'admin_panel_settings',
-      label: 'Registrar',
-      route: '',
+      icon: 'space_dashboard',
+      label: 'Overview',
+      route: '/overview',
       isSubmenuOpen: false,
-      submenu: [
-        { label: 'Registrar Administrador', route: '/admin/create', authorities: ['create_users', 'super_administrador', 'administrador', 'dev'] },
-        { label: 'Control Administrador', route: '/admin/index', authorities: ['list_users', 'super_administrador', 'administrador', 'dev'] },
-        { label: 'Administradores Eliminados', route: '/admin/restore/index', authorities: ['restore_user', 'super_administrador', 'administrador', 'dev'] },
-
-      ],
+      submenu: [],
       authorities: ['create_users', 'list_users', 'restore_user', 'super_administrador', 'administrador', 'dev']
-    },
-    {
-      icon: 'person_add ',
-      label: 'Registrar Usuarios Premium',
-      route: '',
-      isSubmenuOpen: false,
-      submenu: [
-        { label: 'Registrar usuario Independiente', route: '/premium/user/create', authorities: ['super_administrador'] },
-        { label: 'Control usuario Independiente', route: '/premium/user/index', authorities: ['super_administrador', 'dev'] },
-        { label: 'Administradores Eliminados', route: '/premium/user/restore/index', authorities: ['super_administrador', 'dev'] },
-      ],
-      authorities: ['super_administrador']
-    },
-    {
-      icon: 'key',
-      label: 'Generar Credenciales',
-      route: '',
-      isSubmenuOpen: false,
-      submenu: [
-        { label: 'Registrar credenciakes', route: '/key/create', authorities: ['super_administrador'] },
-        { label: 'Control credenciales', route: '/key/index', authorities: ['super_administrador', 'dev'] },
-      ],
-      authorities: ['super_administrador']
 
     },
     {

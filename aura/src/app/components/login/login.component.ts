@@ -110,7 +110,7 @@ export class LoginComponent {
       }
   
       const routes: { [key: string]: string } = {
-        'super_administrador': '/admin/index',
+        'super_administrador': '/overview',
         'dev': '/admin/index',
         'administrador': '/admin/index',
         'list_alert': '/alert/index',
@@ -133,7 +133,7 @@ export class LoginComponent {
         'delete_suscription': '/suscription/index',
         'delete_user': '/admin/index',
         'delete_iot_service': '/services/index',
-        'super_usuario': '/overview'
+        'super_usuario': '/premium/overview'
       };
   
       const routeToNavigate = routes[rol] || '/';

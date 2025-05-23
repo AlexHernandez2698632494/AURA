@@ -5,42 +5,44 @@
   <app-bottom-tab></app-bottom-tab>
 </div>
 <div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
-  <div class="overview-container">
-    <!-- Subscriptions Card -->
-    <div class="card">
-      <div class="card-header">
-        <img src="assets/imagen/subscription.png" alt="Subscriptions">
-        <h3>Subscriptions</h3>
-      </div>
-      <p class="sub-title">Number of subscriptions <strong>{{ subscriptionsCount }}</strong></p>
-      <ul class="subscriptions-list">
-        <li *ngFor="let subscription of subscriptionsList">
-          {{ subscription.name }}
-          <span class="status" [ngClass]="subscription.isExpired ? 'expired' : 'success'">
-            {{ subscription.isExpired ? '❌' : '✅' }}
-          </span>
-        </li>
-      </ul>
-      
-      <a href="/subscriptions" class="link">All subscriptions</a>
-    </div>
+  <div class="cuerpo">
+    <div class="overview-container">
+      <!-- Subscriptions Card -->
+      <div class="card">
+        <div class="card-header">
+          <img src="assets/imagen/subscription.png" alt="Subscriptions">
+          <h3>Subscriptions</h3>
+        </div>
+        <p class="sub-title">Number of subscriptions <strong>{{ subscriptionsCount }}</strong></p>
+        <ul class="subscriptions-list">
+          <li *ngFor="let subscription of subscriptionsList">
+            {{ subscription.name }}
+            <span class="status" [ngClass]="subscription.isExpired ? 'expired' : 'success'">
+              {{ subscription.isExpired ? '❌' : '✅' }}
+            </span>
+          </li>
+        </ul>
 
-    <!-- Users Card -->
-    <div class="card">
-      <div class="card-header">
-        <img src="assets/imagen/users.png" alt="Users">
-        <h3>Users</h3>
+        <a href="/subscriptions" class="link">All subscriptions</a>
       </div>
-      <p class="sub-title">Number of users <strong>{{ usersCount }}</strong></p>
-      <div class="issue-container"></div>
-      <a href="/premium/users" class="link">All users</a>
-    </div>
 
-    <!-- History Card -->
-    <div class="card history-card">
-      <h3>Historial</h3>
-      <p>Revisa los elementos eliminados o restaurados.</p>
-      <button class="btn">Ver todo en la papelera</button>
-</div>
+      <!-- Users Card -->
+      <div class="card">
+        <div class="card-header">
+          <img src="assets/imagen/users.png" alt="Users">
+          <h3>Users</h3>
+        </div>
+        <p class="sub-title">Number of users <strong>{{ usersCount }}</strong></p>
+        <div class="issue-container"></div>
+        <a href="/premium/users" class="link">All users</a>
+      </div>
+
+      <!-- History Card -->
+      <div class="card history-card">
+        <h3>Historial</h3>
+        <p>Revisa los elementos eliminados o restaurados.</p>
+        <button class="btn">Ver todo en la papelera</button>
+      </div>
+    </div>
   </div>
 </div>
