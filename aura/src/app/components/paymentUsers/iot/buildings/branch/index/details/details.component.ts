@@ -20,13 +20,15 @@ import { FiwareService } from '../../../../../../../services/fiware/fiware.servi
 import { NgxGaugeModule } from 'ngx-gauge';
 import { SocketService } from '../../../../../../../services/socket/socket.service';
 import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 declare var CanvasJS: any;
 
 @Component({
   selector: 'app-details',
   standalone: true,
-  imports: [CommonModule, PremiumSideComponent, MatIconModule, BottomTabComponent, NgxGaugeModule, FormsModule],
+  imports: [CommonModule, PremiumSideComponent, MatIconModule, BottomTabComponent, NgxGaugeModule, FormsModule, MatFormFieldModule, MatInputModule,],
   templateUrl: './details.component.html',
   styleUrls: ['./details.component.css']
 })
@@ -55,12 +57,12 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     dial: any[],
     toggleText: any[]
   } = {
-    toggle: [],
-    analogo: [],
-    dial: [],
-    toggleText: []
-  };
-pastelColor: string = '';
+      toggle: [],
+      analogo: [],
+      dial: [],
+      toggleText: []
+    };
+  pastelColor: string = '';
   constructor(
     private paymentUserService: PaymentUserService,
     private router: Router,
@@ -68,7 +70,7 @@ pastelColor: string = '';
     private fiwareService: FiwareService,
     private socketService: SocketService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe(params => {
@@ -121,7 +123,7 @@ pastelColor: string = '';
     } else {
       console.error('❌ No se encontraron fiwareService o fiwareServicePath en sessionStorage');
     }
-     this.pastelColor = this.getRandomPastelColor();
+    this.pastelColor = this.getRandomPastelColor();
   }
 
   ngAfterViewChecked(): void {
@@ -292,8 +294,25 @@ pastelColor: string = '';
     console.log('Texto actualizado:', this.valorTextoActuador);
   }
   // Función que genera colores pastel
-getRandomPastelColor(): string {
-  const hue = Math.floor(Math.random() * 360);
-  return `hsl(${hue}, 70%, 85%)`; // Saturación alta, luminosidad alta → pastel
-}
+  getRandomPastelColor(): string {
+    const hue = Math.floor(Math.random() * 360);
+    return `hsl(${hue}, 70%, 85%)`; // Saturación alta, luminosidad alta → pastel
+  }
+  dialLevels = ['OFF', '1', '2', '3', '4', '5'];
+  selectedDial = 'OFF';
+
+  selectDial(level: string) {
+    this.selectedDial = level;
+    console.log("dial seleccionado: ", this.selectedDial)
+  }
+
+  // Genera ángulos equidistantes en el círculo
+  getDialPosition(index: number, total: number): string {
+    const angle = (360 / total) * index - 90; // -90 para empezar desde arriba
+    const radius = 80; // radio del círculo
+    const x = radius * Math.cos(angle * (Math.PI / 180));
+    const y = radius * Math.sin(angle * (Math.PI / 180));
+    return `translate(${x}px, ${y}px)`;
+  }
+
 }

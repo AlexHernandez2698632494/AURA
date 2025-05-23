@@ -28,62 +28,122 @@
 
         <!-- 🔘 Toggle switches -->
         <div class="deviceActuador" *ngFor="let toggle of actuadores.toggle">
-          <div class="actuador-toggle">
+          <div class="conditionsToggle">
+            <h3 [ngStyle]="{ 'background-color': pastelColor }">{{ toggle.label }}</h3>
 
-            <div class="conditions">
-              <h3 [ngStyle]="{ 'background-color': pastelColor }">{{ toggle.label }}</h3>
+            <button class="toggle-btn" [ngClass]="{ 'on': estadoActuador, 'off': !estadoActuador }"
+              (click)="toggleActuador()">
+              <mat-icon>{{ estadoActuador ? 'power' : 'power_off' }}</mat-icon>
+              {{ estadoActuador ? 'Encendido' : 'Apagado' }}
+            </button>
 
-
-              <button class="toggle-btn" [ngClass]="{ 'on': estadoActuador, 'off': !estadoActuador }"
-                (click)="toggleActuador()">
-                <mat-icon>{{ estadoActuador ? 'power' : 'power_off' }}</mat-icon>
-                {{ estadoActuador ? 'Encendido' : 'Apagado' }}
+            <div class="condition-buttons">
+              <button mat-icon-button class="createCondition">
+                <mat-icon>add</mat-icon>
+                <p>Crear Condición</p>
               </button>
-
-              <div class="condition-buttons">
-                <button mat-icon-button class="createCondition">
-                  <mat-icon>add</mat-icon>
-                  <p>Crear Condición</p>
-                </button>
-                <button mat-icon-button class="editCondition">
-                  <mat-icon>update</mat-icon>
-                  <p>Editar Condición</p>
-                </button>
-                <button mat-icon-button class="deleteCondition">
-                  <mat-icon>delete</mat-icon>
-                  <p>Eliminar Condición</p>
-                </button>
-              </div>
+              <button mat-icon-button class="editCondition">
+                <mat-icon>update</mat-icon>
+                <p>Editar Condición</p>
+              </button>
+              <button mat-icon-button class="deleteCondition">
+                <mat-icon>delete</mat-icon>
+                <p>Eliminar Condición</p>
+              </button>
             </div>
           </div>
         </div>
 
         <!-- 🎚️ Analogo sliders -->
-        <div class="analogo-control" *ngFor="let analogo of actuadores.analogo">
-          <label for="{{ analogo }}">Valor analógico ({{ analogo }}): <strong>{{ valorAnalogico }}</strong></label>
-          <input type="range" id="{{ analogo }}" min="0" max="255" [(ngModel)]="valorAnalogico"
-            (change)="enviarValorAnalogico(valorAnalogico)" />
+        <div class="conditionsAnalogo">
+          <div class="analogo-control" *ngFor="let analogo of actuadores.analogo">
+            <h3 [ngStyle]="{ 'background-color': pastelColor }">{{ analogo.label }}</h3>
+            <label for="{{ analogo }}">Valor : <strong>{{ valorAnalogico }}</strong></label>
+            <input type="range" id="{{ analogo }}" min="0" max="255" [(ngModel)]="valorAnalogico"
+              (change)="enviarValorAnalogico(valorAnalogico)" />
+          </div>
+
+          <div class="condition-buttons">
+            <button mat-icon-button class="createCondition">
+              <mat-icon>add</mat-icon>
+              <p>Crear Condición</p>
+            </button>
+            <button mat-icon-button class="editCondition">
+              <mat-icon>update</mat-icon>
+              <p>Editar Condición</p>
+            </button>
+            <button mat-icon-button class="deleteCondition">
+              <mat-icon>delete</mat-icon>
+              <p>Eliminar Condición</p>
+            </button>
+          </div>
         </div>
 
         <!-- 🔄 Dial selectors -->
-        <div class="dial-selector" *ngFor="let dial of actuadores.dial">
-          <div class="dial" [ngStyle]="{ transform: 'rotate(' + dialRotation + 'deg)' }" (click)="changeDial()">
-            <div class="dial-center"></div>
-          </div>
-          <div class="dial-labels">
-            <span class="dial-label off">OFF</span>
-            <span class="dial-label" *ngFor="let n of [1, 2, 3, 4, 5]">{{ n }}</span>
-          </div>
-          <p>Dial: {{ dial }}</p>
-        </div>
+<div class="conditionsDial">
+  <div class="dial-selector" *ngFor="let dial of actuadores.dial">
+    <h3 [ngStyle]="{ 'background-color': pastelColor }">{{ dial.label }}</h3>
+
+    <div class="dial">
+      <div 
+        class="dial-option" 
+        *ngFor="let level of dialLevels; let i = index"
+        [class.active]="level === selectedDial"
+        [style.transform]="getDialPosition(i, dialLevels.length)"
+        (click)="selectDial(level)">
+        {{ level }}
+      </div>
+    </div>
+  </div>
+
+  <div class="condition-buttons">
+    <button mat-icon-button class="createCondition">
+      <mat-icon>add</mat-icon>
+      <p>Crear Condición</p>
+    </button>
+    <button mat-icon-button class="editCondition">
+      <mat-icon>update</mat-icon>
+      <p>Editar Condición</p>
+    </button>
+    <button mat-icon-button class="deleteCondition">
+      <mat-icon>delete</mat-icon>
+      <p>Eliminar Condición</p>
+    </button>
+  </div>
+</div>
 
         <!-- 📝 Actuador de texto -->
-        <div class="actuador-texto" *ngFor="let texto of actuadores.toggleText">
-          <label for="actuadorInput-{{ texto }}">Valor del Actuador ({{ texto }}):</label>
-          <input type="text" id="actuadorInput-{{ texto }}" [(ngModel)]="valorTextoActuador" />
-          <button class="update-btn" (click)="actualizarActuadorTexto()">Actualizar</button>
-          <p>Valor Actual: <strong>{{ valorActual }}</strong></p>
-        </div>
+<div class="conditionsToggleText">
+  <div class="actuador-texto" *ngFor="let texto of actuadores.toggleText">
+    <h3 [ngStyle]="{ 'background-color': pastelColor }">{{ texto.label }}</h3>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Valor del Actuador ({{ texto.label }})</mat-label>
+      <input matInput id="actuadorInput-{{ texto }}" [(ngModel)]="valorTextoActuador" />
+    </mat-form-field>
+
+    <button mat-stroked-button color="primary" class="update-btn" (click)="actualizarActuadorTexto()">
+      Actualizar
+    </button>
+
+    <p>Valor Actual: <strong>{{ valorActual }}</strong></p>
+  </div>
+
+  <div class="condition-buttons">
+    <button mat-stroked-button class="createCondition">
+      <mat-icon>add</mat-icon>
+      Crear Condición
+    </button>
+    <button mat-stroked-button class="editCondition">
+      <mat-icon>update</mat-icon>
+      Editar Condición
+    </button>
+    <button mat-stroked-button class="deleteCondition">
+      <mat-icon>delete</mat-icon>
+      Eliminar Condición
+    </button>
+  </div>
+</div>
       </div>
 
       <!-- Información del dispositivo -->
