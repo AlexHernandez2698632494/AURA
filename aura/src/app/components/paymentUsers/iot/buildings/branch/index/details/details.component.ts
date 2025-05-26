@@ -56,11 +56,11 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     dial: any[],
     toggleText: any[]
   } = {
-      toggle: [],
-      analogo: [],
-      dial: [],
-      toggleText: []
-    };
+    toggle: [],
+    analogo: [],
+    dial: [],
+    toggleText: []
+  };
   pastelColor: string = '';
   constructor(
     private paymentUserService: PaymentUserService,
@@ -102,8 +102,11 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
               toggleText: entidad.commandTypes.toggleText || []
             };
             console.log("Actuadores cargados:", this.actuadores);
-            // Inicializa el estado de los toggles
-            this.estadoToggles = this.actuadores.toggle.map(() => false);
+            // Inicializa estados desde los comandos
+            this.estadoToggles = this.actuadores.toggle.map((_, i) => this.obtenerEstadoToggle(i));
+            this.estadoAnalogos = this.actuadores.analogo.map((_, i) => this.obtenerEstadoAnalogo(i));
+            this.estadoDiales = this.actuadores.dial.map((_, i) => this.obtenerEstadoDial(i));
+            this.estadoTextos = this.actuadores.toggleText.map((_, i) => this.obtenerEstadoTexto(i));
           }
 
           if (Array.isArray(entidad.variables) && entidad.variables.length > 0) {
@@ -266,31 +269,66 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     return variable.colorGauge || '#fff';
   }
 
-  // Estado individual para cada toggle
   estadoToggles: boolean[] = [];
+  estadoAnalogos: number[] = [];
+  estadoDiales: string[] = [];
+  estadoTextos: string[] = [];
   valorAnalogico: number = 128;
   dialValue = 0;
   dialRotation = 0;
   valorTextoActuador: string = '';
   valorActual: string = 'Valor inicial';
 
+  obtenerEstadoToggle(index: number): boolean {
+    const estado = this.commands[index]?.states?.trim();
+    return estado ? estado !== '0' && estado.toLowerCase() !== 'off' : false;
+  }
+
+  obtenerEstadoAnalogo(index: number): number {
+    const estado = this.commands[index]?.states?.trim();
+    return estado ? parseInt(estado, 10) : 0;
+  }
+
+  obtenerEstadoDial(index: number): string {
+    return this.commands[index]?.states?.trim() || 'OFF';
+  }
+
+  obtenerEstadoTexto(index: number): string {
+    return this.commands[index]?.states?.trim() || '';
+  }
+
   toggleActuador(index: number): void {
     this.estadoToggles[index] = !this.estadoToggles[index];
-    console.log(`Toggle ${index} encendido: ${this.estadoToggles[index]}`);
+    this.commands[index].states = this.estadoToggles[index] ? 'ON' : 'OFF';
+    console.log(`Toggle ${index} cambiado a ${this.commands[index].states}`);
   }
 
   enviarValorAnalogico(valor: number): void {
+    this.valorAnalogico = valor;
+    this.actuadores.analogo.forEach((_, i) => {
+      this.commands[i].states = valor.toString();
+      this.estadoAnalogos[i] = valor;
+    });
     console.log('Valor analógico enviado:', valor);
   }
 
   changeDial() {
     this.dialValue = (this.dialValue + 1) % 6;
     this.dialRotation = this.dialValue * 60;
-    console.log("Dial en posición:", this.dialValue === 0 ? 'OFF' : this.dialValue);
+    this.selectedDial = this.dialLevels[this.dialValue];
+    this.actuadores.dial.forEach((_, i) => {
+      this.commands[i].states = this.selectedDial;
+      this.estadoDiales[i] = this.selectedDial;
+    });
+    console.log("Dial en posición:", this.selectedDial);
   }
 
   actualizarActuadorTexto(): void {
     this.valorActual = this.valorTextoActuador;
+    this.actuadores.toggleText.forEach((_, i) => {
+      this.commands[i].states = this.valorTextoActuador;
+      this.estadoTextos[i] = this.valorTextoActuador;
+    });
     console.log('Texto actualizado:', this.valorTextoActuador);
   }
 
@@ -304,7 +342,11 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
 
   selectDial(level: string) {
     this.selectedDial = level;
-    console.log("dial seleccionado: ", this.selectedDial);
+    this.actuadores.dial.forEach((_, i) => {
+      this.commands[i].states = level;
+      this.estadoDiales[i] = level;
+    });
+    console.log("Dial seleccionado:", this.selectedDial);
   }
 
   getDialPosition(index: number, total: number): string {
