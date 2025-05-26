@@ -27,14 +27,14 @@
         <h2>Control del Actuador</h2>
 
         <!-- 🔘 Toggle switches -->
-        <div class="deviceActuador" *ngFor="let toggle of actuadores.toggle">
+        <div class="deviceActuador" *ngFor="let toggle of actuadores.toggle; let i = index">
           <div class="conditionsToggle">
             <h3 [ngStyle]="{ 'background-color': pastelColor }">{{ toggle.label }}</h3>
 
-            <button class="toggle-btn" [ngClass]="{ 'on': estadoActuador, 'off': !estadoActuador }"
-              (click)="toggleActuador()">
-              <mat-icon>{{ estadoActuador ? 'power' : 'power_off' }}</mat-icon>
-              {{ estadoActuador ? 'Encendido' : 'Apagado' }}
+            <button class="toggle-btn" [ngClass]="{ 'on': estadoToggles[i], 'off': !estadoToggles[i] }"
+              (click)="toggleActuador(i)">
+              <mat-icon>{{ estadoToggles[i] ? 'power' : 'power_off' }}</mat-icon>
+              {{ estadoToggles[i] ? 'Encendido' : 'Apagado' }}
             </button>
 
             <div class="condition-buttons">

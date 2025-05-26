@@ -50,7 +50,6 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
 
   private chartsRendered = false;
 
-  // NUEVO: Actuadores por tipo
   actuadores: {
     toggle: { label: string }[],
     analogo: any[],
@@ -93,7 +92,6 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
           const entidad = this.entitiesWithAlerts[0];
           this.commands = entidad.commands || [];
 
-          // ✅ Mapear actuadores dinámicamente y parsear si son strings
           if (entidad.commandTypes) {
             this.actuadores = {
               toggle: (entidad.commandTypes.toggle || []).map((item: any) =>
@@ -104,9 +102,10 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
               toggleText: entidad.commandTypes.toggleText || []
             };
             console.log("Actuadores cargados:", this.actuadores);
+            // Inicializa el estado de los toggles
+            this.estadoToggles = this.actuadores.toggle.map(() => false);
           }
 
-          // ✅ Cargar variables solo si hay
           if (Array.isArray(entidad.variables) && entidad.variables.length > 0) {
             this.loadHistoricalData(entidad.id);
           } else {
@@ -267,16 +266,17 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     return variable.colorGauge || '#fff';
   }
 
-  estadoActuador: boolean = false;
+  // Estado individual para cada toggle
+  estadoToggles: boolean[] = [];
   valorAnalogico: number = 128;
   dialValue = 0;
   dialRotation = 0;
   valorTextoActuador: string = '';
   valorActual: string = 'Valor inicial';
 
-  toggleActuador(): void {
-    this.estadoActuador = !this.estadoActuador;
-    console.log('Actuador encendido:', this.estadoActuador);
+  toggleActuador(index: number): void {
+    this.estadoToggles[index] = !this.estadoToggles[index];
+    console.log(`Toggle ${index} encendido: ${this.estadoToggles[index]}`);
   }
 
   enviarValorAnalogico(valor: number): void {
@@ -293,26 +293,25 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     this.valorActual = this.valorTextoActuador;
     console.log('Texto actualizado:', this.valorTextoActuador);
   }
-  // Función que genera colores pastel
+
   getRandomPastelColor(): string {
     const hue = Math.floor(Math.random() * 360);
-    return `hsl(${hue}, 70%, 85%)`; // Saturación alta, luminosidad alta → pastel
+    return `hsl(${hue}, 70%, 85%)`;
   }
+
   dialLevels = ['OFF', '1', '2', '3', '4', '5'];
   selectedDial = 'OFF';
 
   selectDial(level: string) {
     this.selectedDial = level;
-    console.log("dial seleccionado: ", this.selectedDial)
+    console.log("dial seleccionado: ", this.selectedDial);
   }
 
-  // Genera ángulos equidistantes en el círculo
   getDialPosition(index: number, total: number): string {
-    const angle = (360 / total) * index - 90; // -90 para empezar desde arriba
-    const radius = 80; // radio del círculo
+    const angle = (360 / total) * index - 90;
+    const radius = 80;
     const x = radius * Math.cos(angle * (Math.PI / 180));
     const y = radius * Math.sin(angle * (Math.PI / 180));
     return `translate(${x}px, ${y}px)`;
   }
-
 }
