@@ -1,8 +1,9 @@
 .center {
   margin-top: 20px;
   justify-content: center;
-  min-height: 97vh;
+  min-height: auto;
   transition: margin-left 0.3s ease;
+  align-items: center;
 }
 
 .shifted {
@@ -14,9 +15,9 @@
   margin-bottom: 20%;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  max-width: 90%;
+  max-width: 100%;
   padding: 20px;
+  margin-left: 5%;
 }
 
 .back-button {
@@ -35,8 +36,6 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
   margin-bottom: 20px;
-  margin-left: 15%;
-  max-width: 80%;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -50,16 +49,21 @@
 }
 
 .device-columns {
-  margin-top: 30px;
+  margin: 30px auto;
   background-color: #ffffff;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
-  max-width: 80%;
-  margin-left: 15%;
 }
+.header,
+.device-columns {
+  width: 85%;
+  max-width: 1000px;
+  margin: 0 auto 20px auto;
+}
+
 
 .device-columns h1 {
   font-size: 22px;
@@ -67,17 +71,13 @@
   margin-bottom: 20px;
 }
 
-
 .device-actuador {
-  margin-top: 30px;
+  margin: 30px auto 0 auto;
   background-color: #ffffff;
-  border: 1px solid #ddd;
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
-  max-width: 80%;
-  margin-left: 5%;
+  max-width: 95%;
 }
 
 /* Toggle control */
@@ -95,8 +95,8 @@
 
 .conditionsToggle h3 {
   padding: 10px;
-  margin-left: -20px;
-  width: 595px;
+  border-radius: 5px;
+  margin-bottom: 20px;
 }
 
 .toggle-btn {
@@ -197,11 +197,11 @@
   border-radius: 50%;
   background: radial-gradient(circle at center, #dcdcdc 30%, #f3f3f3 100%);
   border: 8px solid #c0c0c0;
-  box-shadow: inset 0 3px 8px rgba(0,0,0,0.2), 0 6px 12px rgba(0,0,0,0.1);
+  box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.2), 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
 .dial::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -210,9 +210,8 @@
   margin: -60px;
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, #cccccc, #888888);
-  box-shadow: inset -2px -2px 5px rgba(255,255,255,0.4),
-              inset 2px 2px 5px rgba(0,0,0,0.2),
-              0 0 8px rgba(0, 0, 0, 0.1);
+  box-shadow: inset -2px -2px 5px rgba(255, 255, 255, 0.4),
+    inset 2px 2px 5px rgba(0, 0, 0, 0.2), 0 0 8px rgba(0, 0, 0, 0.1);
   z-index: 1;
 }
 
@@ -247,7 +246,7 @@
   box-shadow: 0 0 6px rgba(0, 123, 255, 0.5);
   transform: scale(1.3);
 }
- 
+
 /* toggleText control */
 .conditionsToggleText {
   margin-top: 30px;
@@ -325,7 +324,7 @@
 /* Azul */
 .createCondition {
   background-color: transparent !important;
-  color: #003366 !important;  /* azul */
+  color: #003366 !important; /* azul */
   border: 2px solid #003366 !important;
 }
 
@@ -338,12 +337,12 @@
 /* Amarillo */
 .editCondition {
   background-color: transparent !important;
-  color: #FFD700 !important;  /* amarillo */
-  border: 2px solid #FFD700 !important;
+  color: #ffd700 !important; /* amarillo */
+  border: 2px solid #ffd700 !important;
 }
 
 .editCondition:hover {
-  background-color: #FFD700 !important;
+  background-color: #ffd700 !important;
   color: black !important;
   box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
 }
@@ -351,7 +350,7 @@
 /* Rojo */
 .deleteCondition {
   background-color: transparent !important;
-  color: #cc0000 !important;  /* rojo */
+  color: #cc0000 !important; /* rojo */
   border: 2px solid #cc0000 !important;
 }
 
@@ -360,7 +359,6 @@
   color: white !important;
   box-shadow: 0 0 8px rgba(204, 0, 0, 0.6);
 }
-
 
 /*
 .on-btn,
@@ -465,49 +463,108 @@
   margin-bottom: 30px;
 }
 
-@media (max-width: 1024px) {
-  .column {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .header {
-    margin-left: 5%;
-    max-width: 90%;
-  }
+.full-width,
+.responsive-form {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 @media (max-width: 768px) {
-  .column {
-    grid-template-columns: repeat(2, 1fr);
+  .toggle-btn,
+  .update-btn,
+  .condition-buttons button {
+    font-size: 14px;
+    padding: 10px 16px;
+    min-width: 100px;
   }
 
-  .header {
+  .condition-buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .gauge-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .device-actuador{
+    width: 80%;
     margin-left: auto;
     margin-right: auto;
-    max-width: 95%;
+  }
+  .conditionsToggle,
+  .conditionsAnalogo,
+  .conditionsDial,
+  .conditionsToggleText,
+  .device-info-container,
+  .device-historical {
+    width: 95% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
 
-  .back-button {
-    position: absolute;
-    left: 200x;
+  .column {
+    grid-template-columns: repeat(1, 1fr) !important;
   }
 
-  .header h1 {
-    font-size: 18px;
-    text-align: center;
+  .chart-columns {
+    grid-template-columns: repeat(1, 1fr) !important;
   }
-
 
 }
 
 @media (max-width: 480px) {
-  .column {
-    grid-template-columns: 1fr;
+  .toggle-btn,
+  .update-btn,
+  .condition-buttons button {
+    font-size: 12px;
+    padding: 6px 10px;
+    min-width: 90px;
   }
 
-  .header {
-    max-width: 98%;
-    padding: 15px;
+  .header h1 {
+    font-size: 16px;
   }
 
+  .analogo-control input[type="range"] {
+    width: 100%;
+  }
+
+  .dial {
+    width: 180px;
+    height: 180px;
+  }
+
+  .dial::before {
+    width: 90px;
+    height: 90px;
+    margin: -45px;
+  }
+
+  .createCondition span,
+  .editCondition span,
+  .deleteCondition span {
+    display: none;
+  }
+
+  .condition-buttons button {
+    justify-content: center;
+    padding: 10px;
+    min-width: 50px;
+    max-width: 50px;
+    height: 50px;
+    gap: 0;
+  }
+
+  .condition-buttons button .btn-text {
+    display: none;
+  }
+
+  .condition-buttons button .icon {
+    font-size: 20px;
+    margin: 0 auto;
+  }
 }

@@ -39,16 +39,16 @@
 
             <div class="condition-buttons">
               <button mat-icon-button class="createCondition">
-                <mat-icon>add</mat-icon>
-                <p>Crear Condición</p>
+                <mat-icon class="icon">add</mat-icon>
+              <span>Crear condición</span>
               </button>
               <button mat-icon-button class="editCondition">
-                <mat-icon>update</mat-icon>
-                <p>Editar Condición</p>
+                <mat-icon class="icon">update</mat-icon>
+              <span>Editar condición</span>
               </button>
               <button mat-icon-button class="deleteCondition">
-                <mat-icon>delete</mat-icon>
-                <p>Eliminar Condición</p>
+                <mat-icon class="icon">delete</mat-icon>
+              <span>Eliminar condición</span>
               </button>
             </div>
           </div>
@@ -65,85 +65,82 @@
 
           <div class="condition-buttons">
             <button mat-icon-button class="createCondition">
-              <mat-icon>add</mat-icon>
-              <p>Crear Condición</p>
+              <mat-icon class="icon">add</mat-icon>
+              <span>Crear condición</span>
             </button>
             <button mat-icon-button class="editCondition">
-              <mat-icon>update</mat-icon>
-              <p>Editar Condición</p>
+              <mat-icon class="icon">update</mat-icon>
+              <span>Editar condición</span>
             </button>
             <button mat-icon-button class="deleteCondition">
-              <mat-icon>delete</mat-icon>
-              <p>Eliminar Condición</p>
+              <mat-icon class="icon">delete</mat-icon>
+              <span>Eliminar condición</span>
             </button>
           </div>
         </div>
 
         <!-- 🔄 Dial selectors -->
-<div class="conditionsDial">
-  <div class="dial-selector" *ngFor="let dial of actuadores.dial">
-    <h3 [ngStyle]="{ 'background-color': pastelColor }">{{ dial.label }}</h3>
+        <div class="conditionsDial">
+          <div class="dial-selector" *ngFor="let dial of actuadores.dial">
+            <h3 [ngStyle]="{ 'background-color': pastelColor }">{{ dial.label }}</h3>
 
-    <div class="dial">
-      <div 
-        class="dial-option" 
-        *ngFor="let level of dialLevels; let i = index"
-        [class.active]="level === selectedDial"
-        [style.transform]="getDialPosition(i, dialLevels.length)"
-        (click)="selectDial(level)">
-        {{ level }}
-      </div>
-    </div>
-  </div>
+            <div class="dial">
+              <div class="dial-option" *ngFor="let level of dialLevels; let i = index"
+                [class.active]="level === selectedDial" [style.transform]="getDialPosition(i, dialLevels.length)"
+                (click)="selectDial(level)">
+                {{ level }}
+              </div>
+            </div>
+          </div>
 
-  <div class="condition-buttons">
-    <button mat-icon-button class="createCondition">
-      <mat-icon>add</mat-icon>
-      <p>Crear Condición</p>
-    </button>
-    <button mat-icon-button class="editCondition">
-      <mat-icon>update</mat-icon>
-      <p>Editar Condición</p>
-    </button>
-    <button mat-icon-button class="deleteCondition">
-      <mat-icon>delete</mat-icon>
-      <p>Eliminar Condición</p>
-    </button>
-  </div>
-</div>
+          <div class="condition-buttons">
+            <button mat-icon-button class="createCondition">
+              <mat-icon class="icon">add</mat-icon>
+              <span>Crear condición</span>
+            </button>
+            <button mat-icon-button class="editCondition">
+              <mat-icon class="icon">update</mat-icon>
+              <span>Editar condición</span>
+            </button>
+            <button mat-icon-button class="deleteCondition">
+              <mat-icon class="icon">delete</mat-icon>
+              <span>Eliminar condición</span>
+            </button>
+          </div>
+        </div>
 
         <!-- 📝 Actuador de texto -->
-<div class="conditionsToggleText">
-  <div class="actuador-texto" *ngFor="let texto of actuadores.toggleText">
-    <h3 [ngStyle]="{ 'background-color': pastelColor }">{{ texto.label }}</h3>
+        <div class="conditionsToggleText">
+          <div class="actuador-texto" *ngFor="let texto of actuadores.toggleText">
+            <h3 [ngStyle]="{ 'background-color': pastelColor }">{{ texto.label }}</h3>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Valor del Actuador ({{ texto.label }})</mat-label>
-      <input matInput id="actuadorInput-{{ texto }}" [(ngModel)]="valorTextoActuador" />
-    </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width responsive-form" >
+              <mat-label>Valor del Actuador ({{ texto.label }})</mat-label>
+              <input matInput id="actuadorInput-{{ texto }}" [(ngModel)]="valorTextoActuador" />
+            </mat-form-field>
 
-    <button mat-stroked-button color="primary" class="update-btn" (click)="actualizarActuadorTexto()">
-      Actualizar
-    </button>
+            <button mat-stroked-button color="primary" class="update-btn" (click)="actualizarActuadorTexto()">
+              Actualizar
+            </button>
 
-    <p>Valor Actual: <strong>{{ valorActual }}</strong></p>
-  </div>
+            <p>Valor Actual: <strong>{{ valorActual }}</strong></p>
+          </div>
 
-  <div class="condition-buttons">
-    <button mat-stroked-button class="createCondition">
-      <mat-icon>add</mat-icon>
-      Crear Condición
-    </button>
-    <button mat-stroked-button class="editCondition">
-      <mat-icon>update</mat-icon>
-      Editar Condición
-    </button>
-    <button mat-stroked-button class="deleteCondition">
-      <mat-icon>delete</mat-icon>
-      Eliminar Condición
-    </button>
-  </div>
-</div>
+          <div class="condition-buttons">
+            <button mat-stroked-button class="createCondition">
+              <mat-icon class="icon">add</mat-icon>
+              <span>Crear condición</span>
+            </button>
+            <button mat-stroked-button class="editCondition">
+              <mat-icon class="icon">update</mat-icon>
+              <span>Editar condición</span>
+            </button>
+            <button mat-stroked-button class="deleteCondition">
+              <mat-icon class="icon">delete</mat-icon>
+              <span>Eliminar condición</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Información del dispositivo -->
