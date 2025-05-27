@@ -29,7 +29,7 @@ async function getConfig() {
         const apiUrl = url_json.replace("https://", "http://");
 
         // Hacer la solicitud POST al servidor de servicios
-        const response = await axios.post(`${apiUrl}services`, body, {
+        const response = await axios.post(`${apiUrl}iot/services`, body, {
             headers: {
                 'Content-Type': 'application/json',
                 'fiware-service': fiware_service,

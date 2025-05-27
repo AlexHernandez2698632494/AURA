@@ -101,7 +101,7 @@ export const deleteDevice = async(req, res) => {
         const apiUrl = url_json.replace("https://", "http://");
 
         // Hacer la solicitud DELETE al servidor de dispositivos
-        const response = await axios.delete(`${apiUrl}devices/${deviceId}`, {
+        const response = await axios.delete(`${apiUrl}iot/devices/${deviceId}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'fiware-service': fiware_service,

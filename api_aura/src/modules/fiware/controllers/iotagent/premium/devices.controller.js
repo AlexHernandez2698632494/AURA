@@ -96,7 +96,7 @@ export const createServiceDeviceJSON = async (req, res) => {
     const url_json = config.url_json.replace("https://", "http://");
     const url_orion = config.url_orion.replace("https://", "http://");
 
-    const servicesRes = await axios.get(`${url_json}services`, {
+    const servicesRes = await axios.get(`${url_json}iot/services`, {
       headers: {
         "Content-Type": "application/json",
         "fiware-service": fiware_service,
@@ -112,7 +112,7 @@ export const createServiceDeviceJSON = async (req, res) => {
 
     // Validar existencia de deviceId
     for (const record of fiwareRecords) {
-      const { data } = await axios.get(`${url_json}devices`, {
+      const { data } = await axios.get(`${url_json}iot/devices`, {
         headers: {
           "Content-Type": "application/json",
           "fiware-service": record.fiware_service,
@@ -134,7 +134,7 @@ export const createServiceDeviceJSON = async (req, res) => {
     // Crear servicio si no existe
     if (!serviceExists) {
       for (const record of fiwareRecords) {
-        const { data } = await axios.get(`${url_json}services`, {
+        const { data } = await axios.get(`${url_json}iot/services`, {
           headers: {
             "Content-Type": "application/json",
             "fiware-service": record.fiware_service,
@@ -166,7 +166,7 @@ export const createServiceDeviceJSON = async (req, res) => {
         ],
       };
 
-      await axios.post(`${url_json}services`, serviceBody, {
+      await axios.post(`${url_json}iot/services`, serviceBody, {
         headers: {
           "Content-Type": "application/json",
           "fiware-service": fiware_service,
@@ -333,7 +333,7 @@ async function createDevice(
   deviceType,
   fiware_service,
   fiware_servicepath,
-  apiUrl
+  url_json
 ) {
   const entity_name = `urn:ngsi-ld:${deviceId.substring(
     0,
@@ -379,7 +379,7 @@ async function createDevice(
     ],
   };
 
-  await axios.post(`${apiUrl}devices`, deviceBody, {
+  await axios.post(`${url_json}iot/devices`, deviceBody, {
     headers: {
       "Content-Type": "application/json",
       "fiware-service": fiware_service,
@@ -402,7 +402,7 @@ async function createDeviceActuador(
   deviceType,
   fiware_service,
   fiware_servicepath,
-  apiUrl,
+  url_json,
   nameStates,
   commandName,
   commandNameToggle,
@@ -489,7 +489,7 @@ async function createDeviceActuador(
     ],
   };
 
-  await axios.post(`${apiUrl}devices`, deviceBody, {
+  await axios.post(`${url_json}iot/devices`, deviceBody, {
     headers: {
       "Content-Type": "application/json",
       "fiware-service": fiware_service,
@@ -508,7 +508,7 @@ async function createDeviceSensorActuador(
   deviceType,
   fiware_service,
   fiware_servicepath,
-  apiUrl,
+  url_json,
   nameStates,
   commandName,
   commandNameToggle,
@@ -596,7 +596,7 @@ async function createDeviceSensorActuador(
     ],
   };
 
-  await axios.post(`${apiUrl}devices`, deviceBody, {
+  await axios.post(`${url_json}iot/devices`, deviceBody, {
     headers: {
       "Content-Type": "application/json",
       "fiware-service": fiware_service,
