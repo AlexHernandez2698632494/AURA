@@ -59,7 +59,7 @@
           <div class="analogo-control" *ngFor="let analogo of actuadores.analogo">
             <h3 [ngStyle]="{ 'background-color': pastelColor }">{{ analogo.label }}</h3>
             <label for="{{ analogo }}">Valor : <strong>{{ valorAnalogico }}</strong></label>
-            <input type="range" id="{{ analogo }}" min="0" max="255" [(ngModel)]="valorAnalogico"
+            <input type="range" id="{{ analogo }}" min="0" max="100" [(ngModel)]="valorAnalogico"
               (change)="enviarValorAnalogico(valorAnalogico)" />
           </div>
 
