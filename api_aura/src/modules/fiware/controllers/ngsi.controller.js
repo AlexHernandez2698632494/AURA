@@ -6,6 +6,7 @@ import { connectOrionDB } from "../../../config/db.js";
 import Fiware from "../models/fiware.models.js";
 import FiwareBuilding from "../models/fiwareBuilding.models.js";
 import building from "../models/building.models.js";
+import Rule from "../models/Rule.models.js";
 
 const MAPPING_YML_URL =
   "https://raw.githubusercontent.com/AlexHernandez2698632494/AURA/refs/heads/master/api_aura/src/modules/config/ngsi.api.service.yml";
@@ -19,10 +20,13 @@ async function getConfig() {
 }
 
 // Aquí es donde obtienes la configuración
-const config = await getConfig();
+export const config = await getConfig();
 
 // Ahora puedes usar config.url_orion
 const url_orion = config.url_orion;
+
+// Ahora puedes usar config.url_json
+const url_json = config.url_json.replace("https://", "http://");
 
 // Cambia https:// a http:// para la URL base de Orion
 const ORION_BASE_URL = url_orion.replace("https://", "http://");
@@ -365,7 +369,7 @@ export const getEntitiesWithAlerts = async (req, res) => {
     const alerts = await getAlerts();
     const defaultSensorColor = "#fff"; // Blanco para sensores
     const defaultActuatorColor = "#808080"; // Gris para actuadores
-   // console.log("entidades", entities);
+    // console.log("entidades", entities);
 
     const combinedData = entities.map((entity) => {
       const variables = entity.sensors?.value
@@ -538,7 +542,6 @@ export const getEntitiesWithAlerts = async (req, res) => {
   }
 };
 
-
 // Función para formatear el TimeInstant
 function formatTimeInstant(timeInstant) {
   // Crear un objeto Date desde el valor del TimeInstant (es un string con formato ISO 8601)
@@ -596,5 +599,215 @@ export const sendDataToAgent = async (req, res) => {
   } catch (error) {
     console.error("Error al enviar datos al agente:", error);
     return res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+export const updateActuatorStatusController = async (req, res) => {
+  try {
+    const { fiware_service, fiware_servicepath } = req.headers;
+    const { type, id, attributeName, value } = req.body;
+
+    if (!type || !id || !attributeName || typeof value === "undefined") {
+      return res
+        .status(400)
+        .json({
+          message: "Faltan campos obligatorios en el cuerpo de la solicitud.",
+        });
+    }
+
+    const config = await getConfig();
+
+    const url_orion = config.url_orion.replace("https://", "http://");
+    const url_json = config.url_json.replace("https://", "http://");
+
+    // Paso 1: Verificar si el actuador existe
+    const entityUrl = `${url_orion}entities/${id}`;
+
+    try {
+      const response = await axios.get(entityUrl, {
+        headers: {
+          "fiware-service": fiware_service,
+          "fiware-servicepath": fiware_servicepath,
+        },
+      });
+
+      console.log(
+        "Respuesta de Orion al consultar la entidad:",
+        JSON.stringify(response.data, null, 2)
+      );
+
+      // Si quieres devolver la entidad encontrada en la respuesta también, podrías hacerlo aquí.
+      // Pero sigamos con la actualización del estado.
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        return res
+          .status(404)
+          .json({ message: `El actuador con ID '${id}' no existe en Orion.` });
+      } else {
+        console.error("Error consultando la entidad en Orion:", error.message);
+        throw error;
+      }
+    }
+
+    // Paso 2: Si existe, actualizar el estado
+    const updateBody = {
+      actionType: "update",
+      entities: [
+        {
+          type,
+          id,
+          [attributeName]: {
+            value,
+            type: "command",
+          },
+        },
+      ],
+    };
+
+    const updateUrl = `${url_json}v2/op/update`;
+
+    const updateResponse = await axios.post(updateUrl, updateBody, {
+      headers: {
+        "Content-Type": "application/json",
+        "fiware-service": fiware_service,
+        "fiware-servicepath": fiware_servicepath,
+      },
+    });
+
+    return res.status(200).json({
+      message: "Estado del actuador actualizado correctamente.",
+      response: updateResponse.data,
+    });
+  } catch (error) {
+    console.error("Error al actualizar el actuador:", error);
+    return res.status(500).json({
+      message: "Error interno del servidor",
+      error: error.response?.data || error.message,
+    });
+  }
+};
+
+/*  Reglas de condicion */
+export const createRule = async (req, res) => {
+  try {
+    const {
+      conditions,
+      conditionLogic,
+      actuatorEntityId,
+      command,
+      commandValue,
+      enabled,
+    } = req.body;
+const fiware_service = req.headers['fiware-service'];
+    const fiware_servicepath = req.headers['fiware-servicepath'];
+
+    if (!conditions) {
+      return res
+        .status(400)
+        .json({ message: "El campo 'conditions' es obligatorio." });
+    }
+
+    if (!Array.isArray(conditions)) {
+      return res
+        .status(400)
+        .json({ message: "El campo 'conditions' debe ser un arreglo." });
+    }
+
+    if (conditions.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "El arreglo 'conditions' no puede estar vacío." });
+    }
+    // Validación para commandValue
+    if (!commandValue) {
+      return res
+        .status(400)
+        .json({ message: "El campo 'commandValue' es obligatorio." });
+    }
+    if (!Array.isArray(commandValue)) {
+      return res
+        .status(400)
+        .json({ message: "El campo 'commandValue' debe ser un arreglo." });
+    }
+
+    if (!fiware_service) {
+      return res
+        .status(400)
+        .json({ message: "El header 'fiware-service' es obligatorio." });
+    }
+        if (!fiware_servicepath) {
+      return res
+        .status(400)
+        .json({ message: "El header 'fiware-servicepath' es obligatorio." });
+    }
+    const newRule = new Rule({
+      conditions,
+      conditionLogic: conditionLogic || "AND",
+      actuatorEntityId,
+      command,
+      commandValue,
+      enabled: enabled !== undefined ? enabled : true,
+      service: fiware_service,
+      subservice: fiware_servicepath,
+    });
+
+    await newRule.save();
+    res.status(201).json(newRule);
+  } catch (error) {
+    console.error("Error creando la regla:", error);
+    res.status(500).json({ message: "Error al crear la regla." });
+  }
+};
+
+export const getAllRules = async (req, res) => {
+  try {
+    const rules = await Rule.find();
+    res.json(rules);
+  } catch (error) {
+    console.error("Error obteniendo reglas:", error);
+    res.status(500).json({ message: "Error al obtener reglas." });
+  }
+};
+
+export const getRuleById = async (req, res) => {
+  try {
+    const rule = await Rule.findById(req.params.id);
+    if (!rule) {
+      return res.status(404).json({ message: "Regla no encontrada." });
+    }
+    res.json(rule);
+  } catch (error) {
+    console.error("Error obteniendo regla:", error);
+    res.status(500).json({ message: "Error al obtener regla." });
+  }
+};
+
+// 🟢 Actualizar regla
+export const updateRule = async (req, res) => {
+  try {
+    const updatedRule = await Rule.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    if (!updatedRule) {
+      return res.status(404).json({ message: "Regla no encontrada." });
+    }
+    res.json(updatedRule);
+  } catch (error) {
+    console.error("Error actualizando regla:", error);
+    res.status(500).json({ message: "Error al actualizar regla." });
+  }
+};
+
+// 🟢 Eliminar regla
+export const deleteRule = async (req, res) => {
+  try {
+    const deletedRule = await Rule.findByIdAndDelete(req.params.id);
+    if (!deletedRule) {
+      return res.status(404).json({ message: "Regla no encontrada." });
+    }
+    res.json({ message: "Regla eliminada correctamente." });
+  } catch (error) {
+    console.error("Error eliminando regla:", error);
+    res.status(500).json({ message: "Error al eliminar regla." });
   }
 };
