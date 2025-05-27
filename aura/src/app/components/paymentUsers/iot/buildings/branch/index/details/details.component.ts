@@ -273,7 +273,7 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
   estadoAnalogos: number[] = [];
   estadoDiales: string[] = [];
   estadoTextos: string[] = [];
-  valorAnalogico: number = 128;
+  valorAnalogico: number = 0;
   dialValue = 0;
   dialRotation = 0;
   valorTextoActuador: string = '';
