@@ -16,7 +16,9 @@ import statusRoutes from "./modules/auth/routes/checkConnection.routes.js";
 import authModule from "./modules/auth/auth.module.js";
 import orionRoutes from "./modules/fiware/routes/orion/index.routes.js";
 import fiwareModule from "./modules/fiware/fiware.module.js";
-
+// Ruta para recibir notificaciones de Orion
+import moment from "moment"; // Asegúrate de tenerlo instalado
+import Rule from "./modules/fiware/models/Rule.models.js"
 // App y servidor
 const app = express();
 const server = http.createServer(app);
@@ -65,8 +67,6 @@ const getSensorMapping = async () => {
 // Acumulador de notificaciones: solo último mensaje por dispositivo
 const orionMessagesMap = {};
 
-// Ruta para recibir notificaciones de Orion
-import moment from "moment"; // Asegúrate de tenerlo instalado
 
 app.post("/v1/notify/", async (req, res) => {
   const entity = req.body.data?.[0];
@@ -84,6 +84,7 @@ app.post("/v1/notify/", async (req, res) => {
   try {
     const sensorMapping = await getSensorMapping();
     const alerts = await Alert.find({ estadoEliminacion: 0 });
+    const rules = await Rule.find({ enabled: true });
 
     const sensorsRaw = { ...(entity.sensors || {}), ...(entity.actuators || {}) };
     let hasAlert = false;
@@ -155,16 +156,63 @@ app.post("/v1/notify/", async (req, res) => {
       };
     }
 
-    // Solo para actuadores
-    if (entity.deviceName === "ACTUADOR") {
-      enrichedEntity.deviceName = entity.deviceName || "";
-      enrichedEntity.deviceType = entity.deviceType || "";
-      enrichedEntity.commands = entity.commands || [];
-      enrichedEntity.commandTypes = entity.commandTypes || {};
+    for (const rule of rules) {
+      const conditionResults = rule.conditions.map(cond => {
+        const sensorValue = sensorsRaw[cond.sensorAttribute];
+        if (sensorValue === undefined) return false;
+
+        switch (cond.conditionType) {
+          case 'greater':
+            return sensorValue > cond.value;
+          case 'less':
+            return sensorValue < cond.value;
+          case 'equal':
+            return sensorValue === cond.value;
+          case 'between':
+            if (Array.isArray(cond.value) && cond.value.length === 2) {
+              return sensorValue >= cond.value[0] && sensorValue <= cond.value[1];
+            }
+            return false;
+          default:
+            return false;
+        }
+      });
+
+      const ruleTriggered = rule.conditionLogic === "AND"
+        ? conditionResults.every(Boolean)
+        : conditionResults.some(Boolean);
+
+      // Nuevo: chequeamos si commandValue existe y es array
+      const hasCommandValue = rule.commandValue !== null && rule.commandValue !== undefined;
+
+      if (ruleTriggered) {
+        if (hasCommandValue) {
+          console.log(`Regla ${rule._id} activada, enviando comando ${rule.command}`);
+          io.emit("actuator-command", {
+            actuatorEntityId: rule.actuatorEntityId,
+            command: rule.command,
+            commandValue: Array.isArray(rule.commandValue) ? rule.commandValue[0] : rule.commandValue,
+            triggeredBy: rule._id
+          });
+        } else {
+          // Si la regla se cumple pero no hay commandValue, solo logueamos que activada, no se envía comando
+          console.log(`Regla ${rule._id} activada, pero commandValue no definido, comando no enviado`);
+        }
+      } else {
+        // condiciones false
+        if (!hasCommandValue || (Array.isArray(rule.commandValue) && (rule.commandValue[1] === null || rule.commandValue[1] === undefined))) {
+          // commandValue null/undefined y condiciones false
+          console.log(`Regla ${rule._id} no enviada`);
+        } else {
+          console.log(`Regla ${rule._id} desactivada, enviando comando ${rule.command}`);
+          // En tu lógica no dices si emitir o no, solo que muestre mensaje. Aquí no emitimos comando.
+        }
+      }
     }
 
     if (hasAlert || entity.deviceName === "ACTUADOR") {
-      io.emit("orion-alert", enrichedEntity); // Emitimos si hay alerta o si es actuador
+      io.emit("orion-alert", enrichedEntity);
+      //console.log("🚨 Emitiendo alerta por socket:", enrichedEntity);
     }
 
     res.status(200).json({});
@@ -173,6 +221,7 @@ app.post("/v1/notify/", async (req, res) => {
     res.status(500).json({ error: "Error interno" });
   }
 });
+
 
  // Ruta para consultar historial de notificaciones (mapeadas)
 app.get("/v1/messages", async (req, res) => {
