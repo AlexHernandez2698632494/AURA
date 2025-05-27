@@ -24,29 +24,29 @@ services:
     networks:
       - default
 
-  api-aura:
-    build:
-      context: ./api_aura 
-    container_name: api_aura
-    ports:
-      - "8090:8090"
-    env_file:
-      - ./api_aura/.env 
-    depends_on:
-      - mongodb-aura
-    networks:
-      - default
+  # api-aura:
+  #   build:
+  #     context: ./api_aura 
+  #   container_name: api_aura
+  #   ports:
+  #     - "8090:8090"
+  #   env_file:
+  #     - ./api_aura/.env 
+  #   depends_on:
+  #     - mongodb-aura
+  #   networks:
+  #     - default
 
-  aura:
-    build:
-      context: ./aura
-    container_name: aura
-    ports:
-      - "4201:4201" 
-    depends_on:
-      - api-aura
-    networks:
-      - default
+  # aura:
+  #   build:
+  #     context: ./aura
+  #   container_name: aura
+  #   ports:
+  #     - "4201:4201" 
+  #   depends_on:
+  #     - api-aura
+  #   networks:
+  #     - default
 
   orion:
     image: fiware/orion
