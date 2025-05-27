@@ -1,43 +1,76 @@
 <div *ngIf="isLargeScreen">
-    <app-side (sideNavToggle)="onSideNavToggle($event)"></app-side>
+  <app-side (sideNavToggle)="onSideNavToggle($event)"></app-side>
 </div>
 <div *ngIf="!isLargeScreen">
-    <app-bottom-tab></app-bottom-tab>
+  <app-bottom-tab></app-bottom-tab>
 </div>
-<div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
-    <div class="overview-container">
-        <div class="card history-card">
-            <div class="card-header">
-                <img src="assets/imagen/users.png" alt="Users">
-                <h3>Administrador</h3>
-            </div>
-            <div class="card-body">
-                <button class="btn">Registrar Administradores</button>
-                <button class="btn">Control de Administradores</button>
-            </div>
-        </div>
-        <div class="card history-card">
-            <div class="card-header">
-                <img src="assets/imagen/users.png" alt="Users">
-                <h3>Usuarios Premium</h3>
-            </div>
-            <button class="btn">Registrar usuarios Premium</button>
-            <button class="btn">control de usuarios Premium</button>
-        </div>
-        <div class="card history-card">
-            <div class="card-header">
-                <img src="assets/imagen/users.png" alt="Users">
-                <h3>Generar apikey/deviceId</h3>
-            </div>
-            <button class="btn">Generar credenciales</button>
-            <button class="btn">Control de credenciales</button>
-        </div>
-        <div class="card history-card">
-            <div class="card-header">
-                <img src="assets/imagen/users.png" alt="Users">
-                <h3>Historial</h3>
-            </div>
-            <button class="btn">Ver todo en la papelera</button>
-        </div>
+<div class="center" [ngClass]="{ shifted: !isSidebarCollapsed }">
+  <div class="overview-container">
+    <div class="card history-card">
+      <div class="card-header">
+        <img src="assets/imagen/users.png" alt="Users" />
+        <h3>Administrador</h3>
+      </div>
+      <div class="card-body">
+        <button mat-raised-button
+        color="primary"
+        class="register-button"
+        type="submit">Registrar Administradores</button>
+        <button mat-raised-button
+        color="primary"
+        class="register-button"
+        type="submit">Control de Administradores</button>
+      </div>
     </div>
+    <div class="card history-card">
+      <div class="card-header">
+        <img src="assets/imagen/users.png" alt="Users" />
+        <h3>Usuarios Premium</h3>
+      </div>
+      <button mat-raised-button
+        color="primary"
+        class="register-button"
+        type="submit">Registrar usuarios Premium</button>
+      <button mat-raised-button
+        color="primary"
+        class="register-button"
+        type="submit">control de usuarios Premium</button>
+    </div>
+    <div class="card history-card">
+      <div class="card-header">
+        <img src="assets/imagen/users.png" alt="Users" />
+        <h3>Generar apikey/deviceId</h3>
+      </div>
+      <button
+        mat-raised-button
+        color="primary"
+        class="register-button"
+        type="submit"
+      >
+        Generar credenciales
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        class="register-button"
+        type="submit"
+      >
+        Control de credenciales
+      </button>
+    </div>
+    <div class="card history-card">
+      <div class="card-header">
+        <img src="assets/imagen/users.png" alt="Users" />
+        <h3>Historial</h3>
+      </div>
+      <button
+        mat-raised-button
+        color="primary"
+        class="register-button"
+        type="submit"
+      >
+        Ver todo en la papelera
+      </button>
+    </div>
+  </div>
 </div>

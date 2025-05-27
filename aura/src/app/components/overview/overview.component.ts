@@ -2,12 +2,16 @@ import { Component, Output, EventEmitter, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SideComponent } from '../side/side.component';
 import { BottomTabComponent } from '../bottom-tab/bottom-tab.component';
+import { MatButtonModule } from '@angular/material/button';
 
 
 @Component({
   selector: 'app-overview',
   standalone: true,
-  imports: [CommonModule, SideComponent, BottomTabComponent],
+  imports: [CommonModule, 
+    SideComponent, 
+    BottomTabComponent, 
+    MatButtonModule],
   templateUrl: './overview.component.html',
   styleUrl: './overview.component.css'
 })

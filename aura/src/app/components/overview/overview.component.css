@@ -1,126 +1,120 @@
+/* CONTENEDOR PRINCIPAL */
 .overview-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    width: 70%;
-    margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  width: 70%;
+  margin: 0 auto;
 }
 
+@media (max-width: 768px) {
+  .overview-container {
+    grid-template-columns: 1fr; /* De 2 a 1 columna */
+    width: 90%;
+  }
+}
+
+@media (max-width: 480px) {
+  .overview-container {
+    width: 95%;
+  }
+}
+
+/* CONTENEDOR CENTRAL */
 .center {
-    margin-top: 80px;
-    margin-left: 5%;
-    justify-content: center;
-    transition: margin-left 0.3s ease;
+  margin-top: 80px;
+  margin-left: 5%;
+  justify-content: center;
+  transition: margin-left 0.3s ease;
 }
 
 .shifted {
-    margin-left: 14%;
-    transition: margin-left 0.3s ease;
+  margin-left: 14%;
+  transition: margin-left 0.3s ease;
 }
 
-/* Tarjetas */
+@media (max-width: 768px) {
+  .center,
+  .shifted {
+    margin-left: 0;
+  }
+}
+
+/* TARJETAS */
 .card {
-    height: 200px;
-    border: 1px solid #ccc;
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  height: auto; /* más flexible */
+  border: 1px solid #ccc;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-/* Encabezado de la tarjeta */
+/* HEADER DE CADA TARJETA */
 .card-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
 }
+
 
 .card-header img {
-    width: 40px;
-    height: 40px;
+  width: 40px;
+  height: 40px;
 }
 
-/* Subtítulo */
-.sub-title {
+/* BOTONES */
+.register-button {
+  color: #003366;
+  border: none;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 18px;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.register-button:hover {
+  background-color: #003366;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .register-button {
+    font-size: 16px;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-button {
     font-size: 14px;
-    color: #555;
+    padding: 8px;
+  }
 }
 
-/* Listado de suscripciones */
-.subscriptions-list {
-    list-style: none;
-    padding: 0;
-}
-
-.subscriptions-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-/* Estado de los ítems */
-.status.warning {
-    color: orange;
-}
-
-.status.success {
-    color: green;
-}
-
-.status.error {
-    color: red;
-    font-weight: bold;
-}
-
+/* CARD BODY */
 .card-body {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 20px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
 }
 
-.btn {
-    text-align: center;
-    width: 80%;
-    display: flex;
-    background-color: #f3f7fe;
-    color: #003366;
-    border: none;
-    cursor: pointer;
-    border-radius: 8px;
-    height: 45px;
-    transition: 0.3s;
+/* OTROS AJUSTES OPCIONALES */
+.card h3 {
+  font-size: 20px;
+  margin: 0;
 }
 
-.btn:hover {
-    background-color: #003366;
-    box-shadow: 0 0 0 5px #01183c5f;
-    color: #fff;
-}
-
-
-/* Contenedor de issues */
-.issue-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* Enlaces */
-.link {
-    color: #003366;
-    text-decoration: none;
-    font-size: 14px;
-}
-
-/* Tarjeta de historial */
-.history-card {
-    border: 1px solid #ccc;
-    text-align: left;
-}
-
-.history-card .btn {
-    margin: 0 auto;
+@media (max-width: 480px) {
+  .card h3 {
+    font-size: 18px;
+  }
 }
