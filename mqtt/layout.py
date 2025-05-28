@@ -32,13 +32,14 @@ def layout():
 
         # Publicaciones
         dbc.Card([
-            dbc.CardHeader("Publicar Mensajes"),
+            dbc.CardHeader("Mensajes Guardados para Publicar"),
             dbc.CardBody([
                 dbc.Input(id='pub-topic', placeholder='Topic', type='text', className="mb-2"),
                 dbc.Input(id='pub-message', placeholder='Mensaje', type='text', className="mb-2"),
-                dbc.Button("Publicar", id='pub-btn', n_clicks=0, color="warning"),
-                html.H5("Mensajes publicados:", className="mt-3"),
-                html.Ul(id='pub-history')
+                dbc.Button("Guardar", id='save-btn', n_clicks=0, color="info"),
+                html.Div(id='save-status', className="mt-2"),
+                html.H5("Mensajes guardados:", className="mt-3"),
+                html.Div(id='saved-messages')
             ])
         ], className="mb-4"),
 
