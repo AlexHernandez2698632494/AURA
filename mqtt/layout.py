@@ -13,7 +13,7 @@ def layout():
             dbc.CardHeader("Conexión al Broker"),
             dbc.CardBody([
                 dbc.Input(id='host', placeholder='Host del broker', type='text', className="mb-2"),
-                dbc.Input(id='port', placeholder='Puerto', type='number', className="mb-2"),
+                dbc.Input(id='port', placeholder='Puerto', type='text', className="mb-2"),
                 dbc.Button("Conectar", id='connect-btn', n_clicks=0, color="primary"),
                 html.Div(id='connection-status', className="mt-2")
             ])
