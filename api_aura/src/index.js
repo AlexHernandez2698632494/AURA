@@ -18,7 +18,9 @@ import orionRoutes from "./modules/fiware/routes/orion/index.routes.js";
 import fiwareModule from "./modules/fiware/fiware.module.js";
 // Ruta para recibir notificaciones de Orion
 import moment from "moment"; // Asegúrate de tenerlo instalado
-import Rule from "./modules/fiware/models/Rule.models.js"
+import Rule from "./modules/fiware/models/Rule.models.js";
+import { config } from "./modules/fiware/controllers/ngsi.controller.js";
+import axios from "axios";
 // App y servidor
 const app = express();
 const server = http.createServer(app);
@@ -38,8 +40,8 @@ app.use(express.json());
 app.use(bodyParser.json());
 
 // Configuración
-const MAPPING_YML_URL =   "https://raw.githubusercontent.com/AlexHernandez2698632494/AURA/refs/heads/master/api_aura/src/modules/config/ngsi.api.service.yml";
-
+const MAPPING_YML_URL =
+  "https://raw.githubusercontent.com/AlexHernandez2698632494/AURA/refs/heads/master/api_aura/src/modules/config/ngsi.api.service.yml";
 
 // Obtener mappings
 const getSensorMapping = async () => {
@@ -51,8 +53,8 @@ const getSensorMapping = async () => {
     const sensorMapping = {};
 
     for (const [label, data] of Object.entries(mappings)) {
-      const cleanLabel = label.replace(/[\[\]]/g, '').trim();
-      data.alias.forEach(alias => {
+      const cleanLabel = label.replace(/[\[\]]/g, "").trim();
+      data.alias.forEach((alias) => {
         sensorMapping[alias] = { label: cleanLabel, unit: data.unit };
       });
     }
@@ -67,6 +69,8 @@ const getSensorMapping = async () => {
 // Acumulador de notificaciones: solo último mensaje por dispositivo
 const orionMessagesMap = {};
 
+// Almacena el estado anterior de cada regla por entidad
+const lastRuleStatus = {};
 
 app.post("/v1/notify/", async (req, res) => {
   const entity = req.body.data?.[0];
@@ -157,24 +161,23 @@ app.post("/v1/notify/", async (req, res) => {
     }
 
     for (const rule of rules) {
+      const ruleKey = `${entity.id}_${rule._id}`;
+      const previouslyTriggered = lastRuleStatus[ruleKey] || false;
+
       const conditionResults = rule.conditions.map(cond => {
         const sensorValue = sensorsRaw[cond.sensorAttribute];
         if (sensorValue === undefined) return false;
 
         switch (cond.conditionType) {
-          case 'greater':
-            return sensorValue > cond.value;
-          case 'less':
-            return sensorValue < cond.value;
-          case 'equal':
-            return sensorValue === cond.value;
+          case 'greater': return sensorValue > cond.value;
+          case 'less': return sensorValue < cond.value;
+          case 'equal': return sensorValue === cond.value;
           case 'between':
             if (Array.isArray(cond.value) && cond.value.length === 2) {
               return sensorValue >= cond.value[0] && sensorValue <= cond.value[1];
             }
             return false;
-          default:
-            return false;
+          default: return false;
         }
       });
 
@@ -182,37 +185,102 @@ app.post("/v1/notify/", async (req, res) => {
         ? conditionResults.every(Boolean)
         : conditionResults.some(Boolean);
 
-      // Nuevo: chequeamos si commandValue existe y es array
-      const hasCommandValue = rule.commandValue !== null && rule.commandValue !== undefined;
+      lastRuleStatus[ruleKey] = ruleTriggered;
 
-      if (ruleTriggered) {
-        if (hasCommandValue) {
-          console.log(`Regla ${rule._id} activada, enviando comando ${rule.command}`);
+      // ACTIVACIÓN
+      if (ruleTriggered && !previouslyTriggered) {
+        if (rule.commandValue && rule.commandValue[0] !== undefined) {
+          console.log(`✅ Regla ${rule._id} ACTIVADA, enviando comando ${rule.command}`);
+
+          const url_json = config.url_json.replace("https://", "http://");
+          const apiUrl = `${url_json}v2/op/update`;
+          console.log("🔗 Enviando comando a Orion:", apiUrl);
+
+          const type = rule.actuatorEntityId.substring(12, 17);
+          const body = {
+            actionType: "update",
+            entities: [
+              {
+                type,
+                id: rule.actuatorEntityId,
+                [rule.command]: {
+                  value: rule.commandValue[0],
+                  type: "command"
+                }
+              }
+            ]
+          };
+
+          try {
+            const response = await axios.post(apiUrl, body, {
+              headers: {
+                "Content-Type": "application/json",
+                "Fiware-Service": rule.service ,
+                "Fiware-ServicePath": rule.subservice
+              }
+            });
+            console.log("🚀 Comando de ACTIVACIÓN enviado a Orion:", response.data);
+          } catch (error) {
+            console.error("❌ Error enviando comando de ACTIVACIÓN:", error.response?.data || error.message);
+          }
+
           io.emit("actuator-command", {
             actuatorEntityId: rule.actuatorEntityId,
             command: rule.command,
-            commandValue: Array.isArray(rule.commandValue) ? rule.commandValue[0] : rule.commandValue,
+            commandValue: rule.commandValue[0],
             triggeredBy: rule._id
           });
-        } else {
-          // Si la regla se cumple pero no hay commandValue, solo logueamos que activada, no se envía comando
-          console.log(`Regla ${rule._id} activada, pero commandValue no definido, comando no enviado`);
         }
-      } else {
-        // condiciones false
-        if (!hasCommandValue || (Array.isArray(rule.commandValue) && (rule.commandValue[1] === null || rule.commandValue[1] === undefined))) {
-          // commandValue null/undefined y condiciones false
-          console.log(`Regla ${rule._id} no enviada`);
-        } else {
-          console.log(`Regla ${rule._id} desactivada, enviando comando ${rule.command}`);
-          // En tu lógica no dices si emitir o no, solo que muestre mensaje. Aquí no emitimos comando.
+      }
+
+      // DESACTIVACIÓN
+      if (!ruleTriggered && previouslyTriggered) {
+        console.log(`🔻 Regla ${rule._id} DESACTIVADA`);
+
+        if (rule.commandValue && rule.commandValue[1] !== undefined) {
+          const url_json = config.url_json.replace("https://", "http://");
+          const apiUrl = `${url_json}v2/op/update`;
+
+          const type = rule.actuatorEntityId.substring(12, 17);
+          const body = {
+            actionType: "update",
+            entities: [
+              {
+                type,
+                id: rule.actuatorEntityId,
+                [rule.command]: {
+                  value: rule.commandValue[1],
+                  type: "command"
+                }
+              }
+            ]
+          };
+
+          try {
+            const response = await axios.post(apiUrl, body, {
+              headers: {
+                "Content-Type": "application/json",
+                "Fiware-Service": rule.service ,
+                "Fiware-ServicePath": rule.subservice
+              }
+            });
+            console.log("📤 Comando de DESACTIVACIÓN enviado a Orion:", response.data);
+          } catch (error) {
+            console.error("❌ Error enviando comando de DESACTIVACIÓN:", error.response?.data || error.message);
+          }
+
+          io.emit("actuator-command", {
+            actuatorEntityId: rule.actuatorEntityId,
+            command: rule.command,
+            commandValue: rule.commandValue[1],
+            triggeredBy: rule._id
+          });
         }
       }
     }
 
     if (hasAlert || entity.deviceName === "ACTUADOR") {
       io.emit("orion-alert", enrichedEntity);
-      //console.log("🚨 Emitiendo alerta por socket:", enrichedEntity);
     }
 
     res.status(200).json({});
@@ -222,8 +290,7 @@ app.post("/v1/notify/", async (req, res) => {
   }
 });
 
-
- // Ruta para consultar historial de notificaciones (mapeadas)
+// Ruta para consultar historial de notificaciones (mapeadas)
 app.get("/v1/messages", async (req, res) => {
   try {
     const sensorMapping = await getSensorMapping();
@@ -232,7 +299,10 @@ app.get("/v1/messages", async (req, res) => {
 
     const mappedMessages = messagesArray.map(({ timestamp, body }) => {
       const entity = body.data?.[0] || {};
-      const sensorsRaw = { ...(entity.sensors || {}), ...(entity.actuators || {}) };
+      const sensorsRaw = {
+        ...(entity.sensors || {}),
+        ...(entity.actuators || {}),
+      };
 
       let highestAlertName = "";
       let highestAlertVariable = "";
@@ -241,11 +311,21 @@ app.get("/v1/messages", async (req, res) => {
 
       const variables = Object.entries(sensorsRaw).map(([key, value]) => {
         const mappedData = sensorMapping[key] || { label: key, unit: "" };
-        const relatedAlerts = alerts.filter(alert => alert.variable === mappedData.label);
+        const relatedAlerts = alerts.filter(
+          (alert) => alert.variable === mappedData.label
+        );
 
-        const minRange = relatedAlerts.reduce((min, alert) => Math.min(min, alert.initialRange), Infinity);
-        const maxRange = relatedAlerts.reduce((max, alert) => Math.max(max, alert.finalRange), -Infinity);
-        const alert = relatedAlerts.find(alert => value >= alert.initialRange && value <= alert.finalRange);
+        const minRange = relatedAlerts.reduce(
+          (min, alert) => Math.min(min, alert.initialRange),
+          Infinity
+        );
+        const maxRange = relatedAlerts.reduce(
+          (max, alert) => Math.max(max, alert.finalRange),
+          -Infinity
+        );
+        const alert = relatedAlerts.find(
+          (alert) => value >= alert.initialRange && value <= alert.finalRange
+        );
 
         if (alert && alert.level > nivel) {
           nivel = alert.level;
@@ -259,11 +339,13 @@ app.get("/v1/messages", async (req, res) => {
           value: `${value} ${mappedData.unit}`,
           minRange: isFinite(minRange) ? minRange : null,
           maxRange: isFinite(maxRange) ? maxRange : null,
-          alert: alert ? {
-            name: alert.displayName,
-            color: alert.color,
-            level: alert.level
-          } : undefined
+          alert: alert
+            ? {
+                name: alert.displayName,
+                color: alert.color,
+                level: alert.level,
+              }
+            : undefined,
         };
       });
 
@@ -278,7 +360,7 @@ app.get("/v1/messages", async (req, res) => {
         highestAlertVariable,
         timeInstant: entity.TimeInstant
           ? moment(entity.TimeInstant).format("DD-MMM-YYYY hh:mm A")
-          : moment(timestamp).format("DD-MMM-YYYY hh:mm A")
+          : moment(timestamp).format("DD-MMM-YYYY hh:mm A"),
       };
 
       if (entity.location?.coordinates) {
@@ -286,14 +368,14 @@ app.get("/v1/messages", async (req, res) => {
           type: "geo:json",
           value: {
             type: "Point",
-            coordinates: entity.location.coordinates
+            coordinates: entity.location.coordinates,
           },
           metadata: {
             TimeInstant: {
               type: "DateTime",
-              value: entity.TimeInstant || timestamp
-            }
-          }
+              value: entity.TimeInstant || timestamp,
+            },
+          },
         };
       }
 
@@ -314,8 +396,6 @@ app.get("/v1/messages", async (req, res) => {
   }
 });
 
-
- 
 // WebSocket listeners
 io.on("connection", (socket) => {
   console.log("🔌 Cliente WebSocket conectado:", socket.id);
