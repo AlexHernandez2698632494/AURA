@@ -28,7 +28,14 @@ declare var CanvasJS: any;
 @Component({
   selector: 'app-details',
   standalone: true,
-  imports: [CommonModule, PremiumSideComponent, MatIconModule, BottomTabComponent, NgxGaugeModule, FormsModule, MatFormFieldModule, MatInputModule,],
+  imports: [CommonModule, 
+    PremiumSideComponent, 
+    MatIconModule, 
+    BottomTabComponent, 
+    NgxGaugeModule, 
+    FormsModule, 
+    MatFormFieldModule, 
+    MatInputModule,],
   templateUrl: './details.component.html',
   styleUrls: ['./details.component.css']
 })
@@ -356,4 +363,11 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     const y = radius * Math.sin(angle * (Math.PI / 180));
     return `translate(${x}px, ${y}px)`;
   }
+
+onCreateCondition(idActuador: string) {
+  this.router.navigate([
+    `/premium/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${this.deviceName}/${idActuador}/conditions/create`
+  ]);
+}
+
 }

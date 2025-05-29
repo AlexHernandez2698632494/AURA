@@ -59,6 +59,8 @@ import { BuildingBranchCreateComponent } from './app/components/paymentUsers/iot
 import { BuildingBranchIndexComponent } from './app/components/paymentUsers/iot/buildings/branch/index/index.component';
 import { DeviceComponent } from './app/components/paymentUsers/iot/fiware/device/device.component';
 import { DetailsDeviceComponent } from './app/components/paymentUsers/iot/buildings/branch/index/details/details.component';
+import { CreateConditionComponent } from './app/components/paymentUsers/iot/buildings/branch/index/details/conditions/create/create.component';
+import { EditConditionComponent } from './app/components/paymentUsers/iot/buildings/branch/index/details/conditions/edit/edit.component';
 import { PremiumUsersCreateComponent } from './app/components/paymentUsers/users/create/create.component';
 import { KeyIndexComponent } from './app/components/key/index/index.component';
 import { KeyCreateComponent } from './app/components/key/create/create.component';
@@ -303,8 +305,19 @@ const routes: Routes = [
     component: DetailsDeviceComponent,
     canActivate: [AuthGuard],
     data: { authorities: ['super_usuario'] },
-  }
-  ,
+  },
+   {
+    path:'premium/building/:buildingName/level/:id/branch/:branchName/:deviceName/:idActuador/conditions/create',
+    component: CreateConditionComponent,
+    canActivate: [AuthGuard],
+    data: { authorities: ['super_usuario'] },
+  },
+     {
+    path:'premium/building/:buildingName/level/:id/branch/:branchName/:deviceName/conditions/edit',
+    component: EditConditionComponent,
+    canActivate: [AuthGuard],
+    data: { authorities: ['super_usuario'] },
+  },
   {
     path: 'users/cambiarContra',
     component: ChangePasswordComponent,

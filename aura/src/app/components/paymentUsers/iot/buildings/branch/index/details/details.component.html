@@ -38,7 +38,7 @@
             </button>
 
             <div class="condition-buttons">
-              <button mat-icon-button class="createCondition">
+              <button mat-icon-button class="createCondition" (click)="onCreateCondition(commands[i]?.name)">
                 <mat-icon class="icon">add</mat-icon>
               <span>Crear condición</span>
               </button>
