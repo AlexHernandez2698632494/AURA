@@ -1,4 +1,13 @@
-import { Component, OnInit, HostListener, Output, EventEmitter, AfterViewInit, OnDestroy } from '@angular/core';
+// index.ts
+import {
+  Component,
+  OnInit,
+  HostListener,
+  Output,
+  EventEmitter,
+  AfterViewInit,
+  OnDestroy
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -6,7 +15,7 @@ import { PremiumSideComponent } from '../../../../side/side.component';
 import { BottomTabComponent } from '../../../../../bottom-tab/bottom-tab.component';
 import { PaymentUserService } from '../../../../../../services/paymentUser/payment-user.service';
 import { FiwareService } from '../../../../../../services/fiware/fiware.service';
-import { SocketService } from '../../../../../../services/socket/socket.service'; // ✅ Agregado
+import { SocketService } from '../../../../../../services/socket/socket.service';
 import * as L from 'leaflet';
 import { NgxGaugeModule } from 'ngx-gauge';
 
@@ -36,7 +45,7 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
     private activatedRoute: ActivatedRoute,
     private fiwareService: FiwareService,
     private socketService: SocketService
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe(params => {
@@ -55,7 +64,7 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
         this.devicesInfo = entities.map((entity: any) => ({
           deviceName: entity.deviceName,
           color: entity.color,
-          level: entity.level,
+          level: entity.level ?? 0,
           variableCount: entity.variables.length,
           actuadoresCount: entity.commands.length
         }));
@@ -64,7 +73,6 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
       console.error('No se encontraron fiwareService o fiwareServicePath en sessionStorage');
     }
 
-    // ✅ Suscripción al socket con merge inteligente
     this.socketService.entitiesWithAlerts$.subscribe((entities) => {
       console.log('Entidades recibidas por socket:', entities); 
       if (entities && entities.length > 0) {
@@ -76,13 +84,11 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
   private updateEntitiesWithSocket(newEntities: any[]) {
     const newEntitiesMap = new Map(newEntities.map(e => [e.id || e.deviceName, e]));
 
-    // Reemplazar entidades existentes con nuevas si coinciden por ID o deviceName
     this.entitiesWithAlerts = this.entitiesWithAlerts.map(existing => {
       const key = existing.id || existing.deviceName;
       return newEntitiesMap.get(key) || existing;
     });
 
-    // Agregar nuevas entidades que no estaban antes
     newEntities.forEach(newEntity => {
       const key = newEntity.id || newEntity.deviceName;
       if (!this.entitiesWithAlerts.some(e => (e.id || e.deviceName) === key)) {
@@ -90,11 +96,10 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
       }
     });
 
-    // Actualizar devicesInfo con base en la lista fusionada
     this.devicesInfo = this.entitiesWithAlerts.map((entity: any) => ({
       deviceName: entity.raw?.deviceName || entity.deviceName,
-      color: entity.color,
-      level: entity.nivel || entity.level,
+      color: entity.color || '#808080',
+      level: entity.hasOwnProperty('nivel') ? entity.nivel : (entity.hasOwnProperty('level') ? entity.level : 0),
       variableCount: entity.variables?.length || 0,
       actuadoresCount: entity.commands?.length || 0
     }));
@@ -194,121 +199,111 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
       });
   }
 
-private addColoredMarker(
-  lat: number,
-  lng: number,
-  color: string,
-  name: string,
-  variables: any[],
-  commands?: any[],
-  commandTypes?: any,
-  timeInstant?: string
-): L.Marker {
-  if (!this.map) throw new Error('Mapa no inicializado');
+  private addColoredMarker(
+    lat: number,
+    lng: number,
+    color: string,
+    name: string,
+    variables: any[],
+    commands?: any[],
+    commandTypes?: any,
+    timeInstant?: string
+  ): L.Marker {
+    if (!this.map) throw new Error('Mapa no inicializado');
 
-  let popupContent = `<b>${name}</b><br>`;
+    let popupContent = `<b>${name}</b><br>`;
 
-  const hasSensors = Array.isArray(variables) && variables.length > 0;
-  const hasActuators = Array.isArray(commands) && commands.length > 0;
+    const hasSensors = Array.isArray(variables) && variables.length > 0;
+    const hasActuators = Array.isArray(commands) && commands.length > 0;
 
-  // Verificar si **algún comando tiene status definido**
-  let anyCommandHasStatus = false;
-  if (hasActuators) {
-    anyCommandHasStatus = commands!.some(cmd => !!cmd.status);
-  }
+    let anyCommandHasStatus = false;
+    if (hasActuators) {
+      anyCommandHasStatus = commands!.some(cmd => !!cmd.status);
+    }
 
-  const showGlobalAsCreation = !hasSensors && !anyCommandHasStatus;
-  const mainDate = timeInstant || 'No disponible';
+    const showGlobalAsCreation = !hasSensors && !anyCommandHasStatus;
+    const mainDate = timeInstant || 'No disponible';
 
-  if (mainDate) {
-    popupContent += showGlobalAsCreation
-      ? `<br><strong>Fecha de creación:</strong> ${mainDate} 📅<br><br>`
-      : `<br><strong>· Última actualización:</strong> ${mainDate} 🕒<br><br>`;
-  }
+    if (mainDate) {
+      popupContent += showGlobalAsCreation
+        ? `<br><strong>Fecha de creación:</strong> ${mainDate} 📅<br><br>`
+        : `<br><strong>· Última actualización:</strong> ${mainDate} 🕒<br><br>`;
+    }
 
-  // 📡 Sensores
-  if (hasSensors) {
-    popupContent += `<b>📡 Sensores</b><ul>`;
-    variables.forEach(variable => {
-      popupContent += `<li>${variable.name}: ${variable.value}`;
-      if (variable.alert) {
-        popupContent += ` <span style="color:${variable.alert.color}">(${variable.alert.name})</span>`;
-      }
-      popupContent += `</li>`;
-    });
-    popupContent += `</ul>`;
-  }
-
-  // ⚙️ Actuadores
-  if (commandTypes && hasActuators) {
-    popupContent += `<b>⚙️ Actuadores</b><ul>`;
-
-    Object.keys(commandTypes).forEach((typeKey: string) => {
-      const commandList = commandTypes[typeKey];
-
-      commandList.forEach((cmd: any) => {
-        const cmdName = cmd.name;
-        const cmdLabel = cmd.label || cmd.name;
-
-        const commandObj = commands.find(cmdObj => cmdObj.name === cmdName);
-
-        if (!commandObj) {
-          console.warn(`No se encontró un objeto de comando para '${cmdName}' en`, commands);
-          return;
+    if (hasSensors) {
+      popupContent += `<b>📡 Sensores</b><ul>`;
+      variables.forEach(variable => {
+        popupContent += `<li>${variable.name}: ${variable.value}`;
+        if (variable.alert) {
+          popupContent += ` <span style="color:${variable.alert.color}">(${variable.alert.name})</span>`;
         }
+        popupContent += `</li>`;
+      });
+      popupContent += `</ul>`;
+    }
 
-        const status = commandObj.status;
-        const states = commandObj.states;
-        const statusTimeInstant = commandObj.statusTimeInstant || 'No disponible';
+    if (commandTypes && hasActuators) {
+      popupContent += `<b>⚙️ Actuadores</b><ul>`;
 
-        const readableStates = states
-          ? `· Estado actual: <i>${states}</i> ✅`
-          : `· Estado actual: <i style="color:#93c5fd;">No reportado</i> ⚠️`;
+      Object.keys(commandTypes).forEach((typeKey: string) => {
+        const commandList = commandTypes[typeKey];
 
-        let readableStatusText = 'No reportado';
-        let statusColor = '#3498db';
+        commandList.forEach((cmd: any) => {
+          const cmdName = cmd.name;
+          const cmdLabel = cmd.label || cmd.name;
+          const commandObj = commands.find(cmdObj => cmdObj.name === cmdName);
 
-        if (status) {
-          const normalizedStatus = status.toLowerCase();
-          if (normalizedStatus === 'ok') {
-            readableStatusText = 'OK 🟢';
-            statusColor = '#2ecc71';
-          } else if (normalizedStatus === 'pending') {
-            readableStatusText = 'PENDIENTE 🟠';
-            statusColor = '#f39c12';
-          } else {
-            readableStatusText = `${status.toUpperCase()} 🔴`;
-            statusColor = '#e74c3c';
+          if (!commandObj) return;
+
+          const status = commandObj.status;
+          const states = commandObj.states;
+          const statusTimeInstant = commandObj.statusTimeInstant || 'No disponible';
+
+          const readableStates = states
+            ? `· Estado actual: <i>${states}</i> ✅`
+            : `· Estado actual: <i style="color:#93c5fd;">No reportado</i> ⚠️`;
+
+          let readableStatusText = 'No reportado';
+          let statusColor = '#3498db';
+
+          if (status) {
+            const normalizedStatus = status.toLowerCase();
+            if (normalizedStatus === 'ok') {
+              readableStatusText = 'OK 🟢';
+              statusColor = '#2ecc71';
+            } else if (normalizedStatus === 'pending') {
+              readableStatusText = 'PENDIENTE 🟠';
+              statusColor = '#f39c12';
+            } else {
+              readableStatusText = `${status.toUpperCase()} 🔴`;
+              statusColor = '#e74c3c';
+            }
           }
-        }
 
-        const showCommandAsCreation = !status;
+          const showCommandAsCreation = !status;
 
-        popupContent += `
+          popupContent += `
 <li><b>${cmdLabel}</b>:<br>
   ${readableStates}<br>
   · Estado del sistema: <span style="color:${statusColor}; font-weight: bold;">${readableStatusText}</span><br>
   ${showCommandAsCreation
     ? `Fecha de creación: ${statusTimeInstant} 📅`
     : `· Última actualización (hora): ${statusTimeInstant}`}
-</li>
-`;
+</li>`;
+        });
       });
+
+      popupContent += `</ul>`;
+    }
+
+    const customIcon = L.divIcon({
+      className: 'custom-marker',
+      html: `<div style="width: 20px; height: 20px; background-color: ${color}; border-radius: 50%;"></div>`,
+      iconSize: [20, 20],
     });
 
-    popupContent += `</ul>`;
+    return L.marker([lat, lng], { icon: customIcon }).addTo(this.map).bindPopup(popupContent);
   }
-
-  const customIcon = L.divIcon({
-    className: 'custom-marker',
-    html: `<div style="width: 20px; height: 20px; background-color: ${color}; border-radius: 50%;"></div>`,
-    iconSize: [20, 20],
-  });
-
-  return L.marker([lat, lng], { icon: customIcon })
-    .addTo(this.map)
-    .bindPopup(popupContent);
-}
 
   ngOnDestroy(): void {
     window.removeEventListener('resize', () => {
