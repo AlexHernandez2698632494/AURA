@@ -92,6 +92,69 @@ export const getEntities = async (req, res) => {
     }
 };
 
+export const getEntitiesbyId = async (req, res) => {
+    try {
+        const headers = {
+            'Fiware-Service': req.headers['fiware-service'] || 'default',
+            'Fiware-ServicePath': req.headers['fiware-servicepath'] || '/'
+        };
+
+        const { id } = req.params;
+        console.log(id);
+        
+        const params = {
+            type: req.query.type || undefined,
+            limit: req.query.limit || 100
+        };
+
+        const url = `${ORION_BASE_URL}entities/${id}`;
+        console.log("🟢 Enviando solicitud a Orion:", url);
+
+        const sensorMapping = await getSensorMapping(); // Obtener el mapeo desde el YAML
+
+        const response = await axios.get(url, { headers, params });
+
+        // Verifica si response.data es un arreglo
+        const entities = Array.isArray(response.data)
+            ? response.data.map(entity => ({
+                ...entity, // Mantiene toda la estructura original
+                sensors: entity.sensors?.value ? 
+                    Object.fromEntries(
+                        Object.entries(entity.sensors.value).map(([key, value]) => [
+                            sensorMapping[key] || key, value // Utiliza el mapeo desde el YAML
+                        ])
+                    ) : entity.sensors // Si no hay `sensors`, lo deja como está
+            }))
+            : [
+                { 
+                    ...response.data, // Si es un objeto, lo convierte en un arreglo
+                    sensors: response.data.sensors?.value ? 
+                        Object.fromEntries(
+                            Object.entries(response.data.sensors.value).map(([key, value]) => [
+                                sensorMapping[key] || key, value // Utiliza el mapeo desde el YAML
+                            ])
+                        ) : response.data.sensors // Si no hay `sensors`, lo deja como está
+                }
+            ];
+
+        res.json(entities);
+    } catch (error) {
+        console.error("🔴 Error obteniendo entidades de Orion:", error);
+
+        if (error.response) {
+            console.error("🔸 Código de estado:", error.response.status);
+            console.error("🔸 Respuesta del servidor:", error.response.data);
+            res.status(error.response.status).json(error.response.data);
+        } else if (error.request) {
+            console.error("🔸 No hubo respuesta de Orion.");
+            res.status(500).json({ error: "Orion no responde." });
+        } else {
+            console.error("🔸 Error en la petición:", error.message);
+            res.status(500).json({ error: "Error en la API" });
+        }
+    }
+};
+
 export const getTypes = async (req, res) => {
     try {
         const headers = {
