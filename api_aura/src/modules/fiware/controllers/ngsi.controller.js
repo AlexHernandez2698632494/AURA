@@ -608,11 +608,9 @@ export const updateActuatorStatusController = async (req, res) => {
     const { type, id, attributeName, value } = req.body;
 
     if (!type || !id || !attributeName || typeof value === "undefined") {
-      return res
-        .status(400)
-        .json({
-          message: "Faltan campos obligatorios en el cuerpo de la solicitud.",
-        });
+      return res.status(400).json({
+        message: "Faltan campos obligatorios en el cuerpo de la solicitud.",
+      });
     }
 
     const config = await getConfig();
@@ -698,8 +696,8 @@ export const createRule = async (req, res) => {
       commandValue,
       enabled,
     } = req.body;
-const fiware_service = req.headers['fiware-service'];
-    const fiware_servicepath = req.headers['fiware-servicepath'];
+    const fiware_service = req.headers["fiware-service"];
+    const fiware_servicepath = req.headers["fiware-servicepath"];
 
     if (!conditions) {
       return res
@@ -735,7 +733,7 @@ const fiware_service = req.headers['fiware-service'];
         .status(400)
         .json({ message: "El header 'fiware-service' es obligatorio." });
     }
-        if (!fiware_servicepath) {
+    if (!fiware_servicepath) {
       return res
         .status(400)
         .json({ message: "El header 'fiware-servicepath' es obligatorio." });
@@ -755,7 +753,9 @@ const fiware_service = req.headers['fiware-service'];
     res.status(201).json(newRule);
   } catch (error) {
     console.error("Error creando la regla:", error);
-    res.status(500).json({ message: "Error al crear la regla." });
+    res
+      .status(500)
+      .json({ message: "Error al crear la regla.", error: error.message });
   }
 };
 
@@ -809,5 +809,88 @@ export const deleteRule = async (req, res) => {
   } catch (error) {
     console.error("Error eliminando regla:", error);
     res.status(500).json({ message: "Error al eliminar regla." });
+  }
+};
+
+export const getRulesByServiceSubserviceAndActuator = async (req, res) => {
+  try {
+    const actuatorId = req.params.actuatorId;
+    const fiware_service = req.headers["fiware-service"];
+    const fiware_servicepath = req.headers["fiware-servicepath"];
+
+    if (!actuatorId) {
+      return res
+        .status(400)
+        .json({ message: "El parámetro 'actuatorId' es obligatorio." });
+    }
+
+    if (!fiware_service) {
+      return res
+        .status(400)
+        .json({ message: "El header 'fiware-service' es obligatorio." });
+    }
+
+    if (!fiware_servicepath) {
+      return res
+        .status(400)
+        .json({ message: "El header 'fiware-servicepath' es obligatorio." });
+    }
+
+    const rules = await Rule.find({
+      actuatorEntityId: actuatorId,
+      service: fiware_service,
+      subservice: fiware_servicepath,
+    });
+
+    res.json(rules);
+  } catch (error) {
+    console.error(
+      "Error al obtener reglas por servicio, subservicio y actuador:",
+      error
+    );
+    res.status(500).json({ message: "Error al obtener reglas." });
+  }
+};
+
+export const getRulesByServiceSubserviceActuatorAndCommand = async (
+  req,
+  res
+) => {
+  try {
+    const { actuatorId, command } = req.params;
+    const fiware_service = req.headers["fiware-service"];
+    const fiware_servicepath = req.headers["fiware-servicepath"];
+
+    if (!actuatorId || !command) {
+      return res
+        .status(400)
+        .json({
+          message: "Los parámetros 'actuatorId' y 'command' son obligatorios.",
+        });
+    }
+
+    if (!fiware_service) {
+      return res
+        .status(400)
+        .json({ message: "El header 'fiware-service' es obligatorio." });
+    }
+
+    if (!fiware_servicepath) {
+      return res
+        .status(400)
+        .json({ message: "El header 'fiware-servicepath' es obligatorio." });
+    }
+
+    const rules = await Rule.find({
+      actuatorEntityId: actuatorId,
+      command: command,
+      service: fiware_service,
+      subservice: fiware_servicepath,
+    });
+
+    res.json(rules);
+  } catch (error) {
+    console.error("Error al obtener reglas filtradas:", error);
+    res.status(500).json({ message: "Error al obtener reglas." });
   }
 };
