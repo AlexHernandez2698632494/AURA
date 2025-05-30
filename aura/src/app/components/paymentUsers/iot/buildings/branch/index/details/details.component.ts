@@ -109,6 +109,9 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
               toggleText: entidad.commandTypes.toggleText || []
             };
             console.log("Actuadores cargados:", this.actuadores);
+            this.checkReglasActivas(entidad.id);
+
+            console.log(this.checkReglasActivas(entidad.id))
             // Inicializa estados desde los comandos
             this.estadoToggles = this.actuadores.toggle.map((_, i) => this.obtenerEstadoToggle(i));
             this.estadoAnalogos = this.actuadores.analogo.map((_, i) => this.obtenerEstadoAnalogo(i));
@@ -364,10 +367,100 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     return `translate(${x}px, ${y}px)`;
   }
 
-onCreateCondition(idActuador: string) {
+onCreateCondition(idActuador: string,idEntities:string) {
+  this.fiwareService.setIdActuador(idEntities);
   this.router.navigate([
     `/premium/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${this.deviceName}/${idActuador}/conditions/create`
   ]);
 }
 
+ // Añade esta propiedad para almacenar si tiene regla activa por actuador
+reglasActivasToggle: boolean[] = [];
+reglasActivasAnalogo: boolean[] = [];
+reglasActivasDial: boolean[] = [];
+reglasActivasTexto: boolean[] = [];
+
+checkReglasActivas(entityId: string) {
+  // Inicializamos los arrays que marcarán si hay reglas activas
+  this.reglasActivasToggle = [];
+  this.reglasActivasAnalogo = [];
+  this.reglasActivasDial = [];
+  this.reglasActivasTexto = [];
+
+  // Reglas para TOGGLES
+  this.actuadores.toggle.forEach((_, i) => {
+    const command = this.commands[i]?.command || this.commands[i]?.name || '';
+    if (entityId && command) {
+      this.fiwareService.getRulesByServiceSubserviceActuatorAndCommand(entityId, command).subscribe({
+        next: (res) => {
+          this.reglasActivasToggle[i] = Array.isArray(res) ? res.length > 0 : false;
+        },
+        error: (err) => {
+          console.error(`❌ Error en toggle ${i}:`, err);
+          this.reglasActivasToggle[i] = false;
+        }
+      });
+    } else {
+      console.warn(`⚠️ Datos faltantes en toggle ${i}:`, entityId, command);
+      this.reglasActivasToggle[i] = false;
+    }
+  });
+
+  // Reglas para ANALOGO
+  this.actuadores.analogo.forEach((_, i) => {
+    const index = this.actuadores.toggle.length + i;
+    const command = this.commands[index]?.command || this.commands[index]?.name || '';
+    if (entityId && command) {
+      this.fiwareService.getRulesByServiceSubserviceActuatorAndCommand(entityId, command).subscribe({
+        next: (res) => {
+          this.reglasActivasAnalogo[i] = Array.isArray(res) ? res.length > 0 : false;
+        },
+        error: (err) => {
+          console.error(`❌ Error en analogo ${i}:`, err);
+          this.reglasActivasAnalogo[i] = false;
+        }
+      });
+    } else {
+      this.reglasActivasAnalogo[i] = false;
+    }
+  });
+
+  // Reglas para DIAL
+  this.actuadores.dial.forEach((_, i) => {
+    const index = this.actuadores.toggle.length + this.actuadores.analogo.length + i;
+    const command = this.commands[index]?.command || this.commands[index]?.name || '';
+    if (entityId && command) {
+      this.fiwareService.getRulesByServiceSubserviceActuatorAndCommand(entityId, command).subscribe({
+        next: (res) => {
+          this.reglasActivasDial[i] = Array.isArray(res) ? res.length > 0 : false;
+        },
+        error: (err) => {
+          console.error(`❌ Error en dial ${i}:`, err);
+          this.reglasActivasDial[i] = false;
+        }
+      });
+    } else {
+      this.reglasActivasDial[i] = false;
+    }
+  });
+
+  // Reglas para TOGGLE TEXT
+  this.actuadores.toggleText.forEach((_, i) => {
+    const index = this.actuadores.toggle.length + this.actuadores.analogo.length + this.actuadores.dial.length + i;
+    const command = this.commands[index]?.command || this.commands[index]?.name || '';
+    if (entityId && command) {
+      this.fiwareService.getRulesByServiceSubserviceActuatorAndCommand(entityId, command).subscribe({
+        next: (res) => {
+          this.reglasActivasTexto[i] = Array.isArray(res) ? res.length > 0 : false;
+        },
+        error: (err) => {
+          console.error(`❌ Error en texto ${i}:`, err);
+          this.reglasActivasTexto[i] = false;
+        }
+      });
+    } else {
+      this.reglasActivasTexto[i] = false;
+    }
+  });
+}
 }
