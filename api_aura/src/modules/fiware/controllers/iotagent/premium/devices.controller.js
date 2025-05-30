@@ -187,7 +187,8 @@ export const createServiceDeviceJSON = async (req, res) => {
         deviceType,
         fiware_service,
         fiware_servicepath,
-        url_json
+        url_json,
+        isSensorActuador
       );
     } else if (isSensorActuador === 1) {
       await createDeviceActuador(
@@ -206,7 +207,8 @@ export const createServiceDeviceJSON = async (req, res) => {
         commandNameToggle,
         commandNameAnalogo,
         commandNameDial,
-        commandNameToggleText
+        commandNameToggleText,
+        isSensorActuador
       );
     } else if (isSensorActuador === 2) {
       await createDeviceSensorActuador(
@@ -225,7 +227,8 @@ export const createServiceDeviceJSON = async (req, res) => {
         commandNameToggle,
         commandNameAnalogo,
         commandNameDial,
-        commandNameToggleText
+        commandNameToggleText,
+        isSensorActuador
       );
     }
     let result = { success: true, data: {} }; // Valor por defecto
@@ -333,7 +336,8 @@ async function createDevice(
   deviceType,
   fiware_service,
   fiware_servicepath,
-  url_json
+  url_json,
+  isSensorActuador
 ) {
   const entity_name = `urn:ngsi-ld:${deviceId.substring(
     0,
@@ -374,6 +378,11 @@ async function createDevice(
             type: "String",
             value: deviceType,
           },
+          {
+            name: "isSensorActuador",
+            type: "String",
+            value: isSensorActuador,
+          }
         ],
       },
     ],
@@ -408,7 +417,8 @@ async function createDeviceActuador(
   commandNameToggle,
   commandNameAnalogo,
   commandNameDial,
-  commandNameToggleText
+  commandNameToggleText,
+  isSensorActuador
 ) {
   const entity_name = `urn:ngsi-ld:${deviceId.substring(
     0,
@@ -483,7 +493,11 @@ async function createDeviceActuador(
               dial: dialCommands,
               toggleText: toggleTextCommands,
             },
-          },
+          },{
+            name: "isSensorActuador",
+            type: "String",
+            value: isSensorActuador,
+          }
         ],
       },
     ],
@@ -514,7 +528,8 @@ async function createDeviceSensorActuador(
   commandNameToggle,
   commandNameAnalogo,
   commandNameDial,
-  commandNameToggleText
+  commandNameToggleText,
+  isSensorActuador
 ) {
   const entity_name = `urn:ngsi-ld:${deviceId.substring(
     0,
@@ -590,7 +605,11 @@ async function createDeviceSensorActuador(
               dial: dialCommands,
               toggleText: toggleTextCommands,
             },
-          },
+          },{
+            name: "isSensorActuador",
+            type: "String",
+            value: isSensorActuador,
+          }
         ],
       },
     ],
