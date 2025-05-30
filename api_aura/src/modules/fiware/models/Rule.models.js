@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import { connectDB } from "../../../config/db.js";
 
 const RuleSchema = new mongoose.Schema({
-  ruleId: { type: String, unique: true },
   conditions: [
     {
       sensorEntityId: { type: String, required: true }, // Sensor al que se refiere la condición
@@ -21,8 +20,8 @@ const RuleSchema = new mongoose.Schema({
   commandValue: { type: [mongoose.Schema.Types.Mixed], required: true },
   enabled: { type: Boolean, default: true },
   createdAt: { type: Date, default: Date.now },
-  service: { type: String, require: true },
-  subservice: { type: String, require: true },
+  service: { type: String, required: true },
+  subservice: { type: String, required: true },
 });
 
 export default connectDB.model("rule", RuleSchema);
