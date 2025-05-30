@@ -1,0 +1,132 @@
+.center {
+  margin-top: 20px;
+  justify-content: center;
+  min-height: auto;
+  transition: margin-left 0.3s ease;
+  align-items: center;
+}
+
+.shifted {
+  margin-left: 14%;
+  transition: margin-left 0.3s ease;
+}
+
+.main-container {
+  margin-bottom: 20%;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  padding: 20px;
+  margin-left: 5%;
+}
+
+form {
+  flex-direction: column;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: #333;
+}
+
+.header {
+  margin-top: 20px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 24px;
+  flex-grow: 1;
+  text-align: center;
+}
+
+.header,
+.device-columns {
+  width: 85%;
+  max-width: 1000px;
+  margin: 0 auto 20px auto;
+}
+
+.condition-columns {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 85%;
+  max-width: 1000px;
+  margin: 0 auto 20px auto;
+}
+
+.dispositivos-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 90%;
+  margin: auto;
+}
+
+.dispositivo-group {
+  width: 85%;
+  margin: 1rem auto;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: #fafafa;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.cantidad-input {
+  width: 95%;
+  margin-bottom: 20px;
+}
+
+.select-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.input-row {
+  display: grid;
+  grid-template-rows: auto;
+  flex: 1;
+  width: 100%;
+}
+
+.between-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Responsivo para <= 1024px */
+@media (max-width: 1111px) {
+  .select-row {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  mat-form-field[appearance="outline"] {
+    width: 100%;
+  }
+}

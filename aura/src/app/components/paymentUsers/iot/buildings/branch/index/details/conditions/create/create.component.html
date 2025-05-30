@@ -7,70 +7,140 @@
   <app-bottom-tab></app-bottom-tab>
 </div>
 <div class="center" [ngClass]="{ shifted: !isSidebarCollapsed }">
-  <div class="header">
-    <button mat-icon-button class="back-button" (click)="onBackClick()">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    <h1>Actuador</h1>
-  </div>
-  <form
-    [formGroup]="form"
-    (ngSubmit)="submit()"
-    style="width: 500px; margin: auto"
-  >
-    <mat-form-field appearance="outline" style="width: 100%">
-      <mat-label>Cantidad de dispositivos a registrar</mat-label>
-      <input
-        matInput
-        type="number"
-        formControlName="cantidad"
-        (input)="onCantidadChange()"
-      />
-    </mat-form-field>
-
-    <div formArrayName="dispositivos" *ngIf="dispositivos.length">
-      <div
-        *ngFor="let dispositivo of dispositivos.controls; let i = index"
-        [formGroupName]="i"
-        style="margin-top: 1rem"
-      >
-        <mat-form-field appearance="fill" style="width: 100%">
-          <mat-label>Entidad {{ i + 1 }}</mat-label>
-          <mat-select formControlName="entidad">
-            <mat-option *ngFor="let entidad of entidades" [value]="entidad">{{
-              entidad
-            }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="fill" style="width: 100%">
-          <mat-label>Variable {{ i + 1 }}</mat-label>
-          <mat-select formControlName="variable">
-            <mat-option *ngFor="let variable of variables" [value]="variable">{{
-              variable
-            }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="fill" style="width: 100%">
-          <mat-label>Operador {{ i + 1 }}</mat-label>
-          <mat-select formControlName="operador">
-            <mat-option *ngFor="let op of operadores" [value]="op">{{
-              op
-            }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
+  <div class="main-container">
+    <div class="header">
+      <button mat-icon-button class="back-button" (click)="onBackClick()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1>Actuador -</h1>
     </div>
+    <div class="condition-columns">
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <mat-form-field appearance="outline" class="cantidad-input">
+          <mat-label>Cantidad de dispositivos a registrar</mat-label>
+          <input
+            matInput
+            type="number"
+            formControlName="cantidad"
+            (input)="onCantidadChange()"
+          />
+        </mat-form-field>
+        <div
+          formArrayName="dispositivos"
+          *ngIf="dispositivos && dispositivos.length > 0"
+          class="dispositivos-container"
+        >
+          <div
+            *ngFor="let dispositivo of dispositivos.controls; let i = index"
+            [formGroupName]="i"
+            class="dispositivo-group"
+          >
+            <div class="select-row">
+              <mat-form-field appearance="fill">
+                <mat-label>Entidad {{ i + 1 }}</mat-label>
+                <mat-select formControlName="entidad">
+                  <mat-option
+                    *ngFor="let entidad of entidades"
+                    [value]="entidad"
+                    >{{ entidad }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
 
-    <button
-      mat-raised-button
-      color="primary"
-      type="submit"
-      [disabled]="form.invalid"
-      style="margin-top: 1rem"
-    >
-      Enviar
-    </button>
-  </form>
+              <mat-form-field appearance="fill">
+                <mat-label>Variable {{ i + 1 }}</mat-label>
+                <mat-select formControlName="variable">
+                  <mat-option
+                    *ngFor="let variable of variables"
+                    [value]="variable"
+                    >{{ variable }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Operador {{ i + 1 }}</mat-label>
+                <mat-select formControlName="operador">
+                  <mat-option *ngFor="let op of operadores" [value]="op">{{
+                    op
+                  }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="input-row">
+              <mat-form-field
+                *ngIf="dispositivo.get('operador')?.value !== 'entre'"
+                appearance="fill"
+              >
+                <mat-label>Valor</mat-label>
+                <input
+                  matInput
+                  formControlName="valor"
+                  placeholder="Ingrese valor"
+                />
+              </mat-form-field>
+              <div
+                *ngIf="dispositivo.get('operador')?.value === 'entre'"
+                class="between-inputs"
+              >
+                <mat-form-field appearance="fill">
+                  <mat-label>Valor mínimo</mat-label>
+                  <input
+                    matInput
+                    formControlName="valorMinimo"
+                    placeholder="Ej. 10"
+                  />
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                  <mat-label>Valor máximo</mat-label>
+                  <input
+                    matInput
+                    formControlName="valorMaximo"
+                    placeholder="Ej. 20"
+                  />
+                </mat-form-field>
+              </div>
+              <mat-form-field appearance="fill">
+                <mat-label>Selector</mat-label>
+                <mat-select formControlName="selector">
+                  <mat-option
+                    *ngFor="let selector of selectores"
+                    [value]="selector"
+                    >{{ selector }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+        <mat-form-field appearance="fill">
+          <mat-label>Selector</mat-label>
+          <mat-select formControlName="selector">
+            <mat-option
+              *ngFor="let selector of selectores"
+              [value]="selector"
+              >{{ selector }}</mat-option
+            >
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Comando</mat-label>
+          <input
+            matInput
+            formControlName="comando"
+            placeholder="Ingrese comando"
+          />
+        </mat-form-field>
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="form.invalid"
+          style="margin-top: 1rem"
+        >
+          Enviar
+        </button>
+      </form>
+    </div>
+  </div>
 </div>
