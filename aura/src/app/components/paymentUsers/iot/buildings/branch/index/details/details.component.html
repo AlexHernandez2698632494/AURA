@@ -40,7 +40,8 @@
             <p *ngIf="reglasActivasToggle[i]" class="regla-activa">✅ Regla activa para este actuador</p>
 
             <div class="condition-buttons">
-              <button mat-icon-button class="createCondition" (click)="onCreateCondition(commands[i]?.name, entitiesWithAlerts[i]?.id)">
+              <button mat-icon-button class="createCondition"
+                (click)="onCreateCondition(commands[i]?.name, entitiesWithAlerts[0]?.id)">
                 <mat-icon class="icon">add</mat-icon>
                 <span>Crear condición</span>
               </button>
@@ -67,7 +68,8 @@
             <p *ngIf="reglasActivasAnalogo[i]" class="regla-activa">✔️ Regla activa para este actuador analógico</p>
 
             <div class="condition-buttons">
-              <button mat-icon-button class="createCondition" (click)="onCreateCondition(commands[i]?.name, entitiesWithAlerts[i]?.id)">
+              <button mat-icon-button class="createCondition"
+                (click)="onCreateCondition(commands[actuadores.toggle.length + i]?.name, entitiesWithAlerts[0]?.id)">
                 <mat-icon class="icon">add</mat-icon>
                 <span>Crear condición</span>
               </button>
@@ -99,7 +101,8 @@
             <p *ngIf="reglasActivasDial[i]" class="regla-activa">✔️ Regla activa para este actuador de dial</p>
 
             <div class="condition-buttons">
-              <button mat-icon-button class="createCondition" (click)="onCreateCondition(commands[i]?.name, entitiesWithAlerts[i]?.id)">
+              <button mat-icon-button class="createCondition"
+                (click)="onCreateCondition(commands[actuadores.toggle.length + actuadores.analogo.length + i]?.name, entitiesWithAlerts[0]?.id)">
                 <mat-icon class="icon">add</mat-icon>
                 <span>Crear condición</span>
               </button>
@@ -133,7 +136,8 @@
             <p *ngIf="reglasActivasTexto[i]" class="regla-activa">✔️ Regla activa para este actuador de texto</p>
 
             <div class="condition-buttons">
-              <button mat-stroked-button class="createCondition" (click)="onCreateCondition(commands[i]?.name, entitiesWithAlerts[i]?.id)">
+              <button mat-stroked-button class="createCondition"
+                (click)="onCreateCondition(commands[actuadores.toggle.length + actuadores.analogo.length + actuadores.dial.length + i]?.name, entitiesWithAlerts[0]?.id)">
                 <mat-icon class="icon">add</mat-icon>
                 <span>Crear condición</span>
               </button>
@@ -148,6 +152,7 @@
             </div>
           </div>
         </div>
+
       </div>
 
       <!-- Información del dispositivo -->
