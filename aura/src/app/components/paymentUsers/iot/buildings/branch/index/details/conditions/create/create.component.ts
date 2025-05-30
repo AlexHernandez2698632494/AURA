@@ -64,9 +64,13 @@ export class CreateConditionComponent implements OnInit {
     private activatedRoute: ActivatedRoute
   ) {
     this.form = this.fb.group({
-      cantidad: [0, [Validators.required, Validators.min(1)]],
+      cantidad: [ [Validators.required, Validators.min(1), Validators.max(5)]],
       dispositivos: this.fb.array([]),
+      selector: ['', Validators.required],           // 👈 Agregado
+      comando: ['', Validators.required],            // 👈 Agregado
+      nombreActuador: ['', Validators.required],     // 👈 Agregado
     });
+
   }
 
   private createDispositivoGroup(): FormGroup {
@@ -77,8 +81,6 @@ export class CreateConditionComponent implements OnInit {
       valor: ['', Validators.required],
       valorMinimo: [''],
       valorMaximo: [''],
-      comando: ['', Validators.required],
-      selector: ['', Validators.required],
       // valorDesactivacion: ['', Validators.required],
     });
 
@@ -105,7 +107,7 @@ export class CreateConditionComponent implements OnInit {
     operadorControl?.setValue(operadorControl.value);
 
     return group;
-  } 
+  }
 
 
   ngOnInit(): void {
@@ -144,7 +146,7 @@ export class CreateConditionComponent implements OnInit {
 
     this.dispositivos.clear();
 
-    for (let i = 0; i < cantidad; i++) {
+    for (let i = 0; i < cantidad; i++ <= 5) {
       const dispositivoGroup = this.createDispositivoGroup();
       this.dispositivos.push(dispositivoGroup);
     }

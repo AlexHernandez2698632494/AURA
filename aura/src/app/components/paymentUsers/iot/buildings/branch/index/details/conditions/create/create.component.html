@@ -23,7 +23,18 @@
             type="number"
             formControlName="cantidad"
             (input)="onCantidadChange()"
+            max="5"
+            min="1"
           />
+          <mat-error *ngIf="form.get('cantidad')?.hasError('required')">
+            La cantidad es requerida
+          </mat-error>
+          <mat-error *ngIf="form.get('cantidad')?.hasError('min')">
+            Mínimo 1 dispositivo
+          </mat-error>
+          <mat-error *ngIf="form.get('cantidad')?.hasError('max')">
+            Máximo 5 dispositivos
+          </mat-error>
         </mat-form-field>
         <div
           formArrayName="dispositivos"
@@ -100,16 +111,6 @@
                   />
                 </mat-form-field>
               </div>
-              <mat-form-field appearance="fill">
-                <mat-label>Selector</mat-label>
-                <mat-select formControlName="selector">
-                  <mat-option
-                    *ngFor="let selector of selectores"
-                    [value]="selector"
-                    >{{ selector }}</mat-option
-                  >
-                </mat-select>
-              </mat-form-field>
             </div>
           </div>
         </div>
@@ -128,6 +129,14 @@
           <input
             matInput
             formControlName="comando"
+            placeholder="Ingrese comando"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Actuador</mat-label>
+          <input
+            matInput
+            formControlName="nombreActuador"
             placeholder="Ingrese comando"
           />
         </mat-form-field>
