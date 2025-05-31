@@ -604,7 +604,15 @@ export const sendDataToAgent = async (req, res) => {
 
 export const updateActuatorStatusController = async (req, res) => {
   try {
-    const { fiware_service, fiware_servicepath } = req.headers;
+    const headers = {
+      "Fiware-Service": req.headers["fiware-service"] || "default",
+      "Fiware-ServicePath": req.headers["fiware-servicepath"] || "/",
+    };
+    const params = {
+      type: req.query.type || undefined,
+      limit: req.query.limit || 100,
+    };
+
     const { type, id, attributeName, value } = req.body;
 
     if (!type || !id || !attributeName || typeof value === "undefined") {
@@ -620,14 +628,9 @@ export const updateActuatorStatusController = async (req, res) => {
 
     // Paso 1: Verificar si el actuador existe
     const entityUrl = `${url_orion}entities/${id}`;
-
+    console.log("entidadID", entityUrl);
     try {
-      const response = await axios.get(entityUrl, {
-        headers: {
-          "fiware-service": fiware_service,
-          "fiware-servicepath": fiware_servicepath,
-        },
-      });
+      const response = await axios.get(entityUrl, { headers, params });
 
       console.log(
         "Respuesta de Orion al consultar la entidad:",
@@ -663,12 +666,11 @@ export const updateActuatorStatusController = async (req, res) => {
     };
 
     const updateUrl = `${url_json}v2/op/update`;
-
+    console.log("agente", updateUrl);
     const updateResponse = await axios.post(updateUrl, updateBody, {
       headers: {
         "Content-Type": "application/json",
-        "fiware-service": fiware_service,
-        "fiware-servicepath": fiware_servicepath,
+        ...headers,
       },
     });
 
@@ -862,11 +864,9 @@ export const getRulesByServiceSubserviceActuatorAndCommand = async (
     const fiware_servicepath = req.headers["fiware-servicepath"];
 
     if (!actuatorId || !command) {
-      return res
-        .status(400)
-        .json({
-          message: "Los parámetros 'actuatorId' y 'command' son obligatorios.",
-        });
+      return res.status(400).json({
+        message: "Los parámetros 'actuatorId' y 'command' son obligatorios.",
+      });
     }
 
     if (!fiware_service) {
