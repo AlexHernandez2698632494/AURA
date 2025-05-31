@@ -73,10 +73,16 @@ const orionMessagesMap = {};
 const lastRuleStatus = {};
 
 app.post("/v1/notify/", async (req, res) => {
+  console.log("📩 Notificación recibida desde Orion:");
+  console.log(JSON.stringify(req.body, null, 2));
+
   const entity = req.body.data?.[0];
   if (!entity || !entity.id) {
+    console.warn("⚠️ Entidad inválida en notificación:", entity);
     return res.status(400).json({ error: "Entidad inválida" });
   }
+
+  console.log("🔍 Procesando entidad:", entity.id);
 
   const data = {
     timestamp: new Date().toISOString(),
@@ -90,7 +96,20 @@ app.post("/v1/notify/", async (req, res) => {
     const alerts = await Alert.find({ estadoEliminacion: 0 });
     const rules = await Rule.find({ enabled: true });
 
-    const sensorsRaw = { ...(entity.sensors || {}), ...(entity.actuators || {}) };
+    console.log("📦 Sensores brutos recibidos:", JSON.stringify(entity.sensors || {}, null, 2));
+    console.log("📦 Actuadores brutos recibidos:", JSON.stringify(entity.actuators || {}, null, 2));
+
+    const sensorsRaw = {
+      ...(entity.sensors || {}),
+      ...(entity.actuators || {}),
+    };
+
+    // Crear mapa inverso: nombre mapeado -> clave original
+    const reverseSensorMap = {};
+    for (const [originalKey, data] of Object.entries(sensorMapping)) {
+      reverseSensorMap[data.label] = originalKey;
+    }
+
     let hasAlert = false;
     let highestAlertName = '';
     let highestAlertVariable = '';
@@ -129,6 +148,8 @@ app.post("/v1/notify/", async (req, res) => {
       };
     });
 
+    console.log("🧾 Variables procesadas con alertas (si aplica):", JSON.stringify(variables, null, 2));
+
     const enrichedEntity = {
       id: entity.id,
       type: entity.type,
@@ -164,8 +185,14 @@ app.post("/v1/notify/", async (req, res) => {
       const ruleKey = `${entity.id}_${rule._id}`;
       const previouslyTriggered = lastRuleStatus[ruleKey] || false;
 
+      console.log(`🔎 Evaluando regla ${rule._id} para entidad ${entity.id}`);
+      console.log("📐 Condiciones:", rule.conditions);
+
       const conditionResults = rule.conditions.map(cond => {
-        const sensorValue = sensorsRaw[cond.sensorAttribute];
+        const originalKey = reverseSensorMap[cond.sensorAttribute];
+        const sensorValue = sensorsRaw[originalKey];
+        console.log(`⚙️ Evaluando condición: sensor='${cond.sensorAttribute}' (clave='${originalKey}') valor=${sensorValue} condición='${cond.conditionType}' valorCondición=${cond.value}`);
+
         if (sensorValue === undefined) return false;
 
         switch (cond.conditionType) {
@@ -181,10 +208,12 @@ app.post("/v1/notify/", async (req, res) => {
         }
       });
 
+      console.log(`🧠 Resultados individuales: ${conditionResults}`);
       const ruleTriggered = rule.conditionLogic === "AND"
         ? conditionResults.every(Boolean)
         : conditionResults.some(Boolean);
 
+      console.log(`🔁 Estado anterior: ${previouslyTriggered} | Nuevo estado: ${ruleTriggered}`);
       lastRuleStatus[ruleKey] = ruleTriggered;
 
       // ACTIVACIÓN
@@ -215,7 +244,7 @@ app.post("/v1/notify/", async (req, res) => {
             const response = await axios.post(apiUrl, body, {
               headers: {
                 "Content-Type": "application/json",
-                "Fiware-Service": rule.service ,
+                "Fiware-Service": rule.service,
                 "Fiware-ServicePath": rule.subservice
               }
             });
@@ -260,7 +289,7 @@ app.post("/v1/notify/", async (req, res) => {
             const response = await axios.post(apiUrl, body, {
               headers: {
                 "Content-Type": "application/json",
-                "Fiware-Service": rule.service ,
+                "Fiware-Service": rule.service,
                 "Fiware-ServicePath": rule.subservice
               }
             });
@@ -280,12 +309,13 @@ app.post("/v1/notify/", async (req, res) => {
     }
 
     if (hasAlert || entity.deviceName === "ACTUADOR") {
+      console.log("📢 Emitiendo alerta a WebSocket");
       io.emit("orion-alert", enrichedEntity);
     }
 
     res.status(200).json({});
   } catch (e) {
-    console.error("Error evaluando alertas:", e);
+    console.error("💥 Error procesando notificación:", e);
     res.status(500).json({ error: "Error interno" });
   }
 });
