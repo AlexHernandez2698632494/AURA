@@ -1,5 +1,7 @@
 <div *ngIf="isLargeScreen">
-  <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
+  <app-premium-side
+    (sideNavToggle)="onSideNavToggle($event)"
+  ></app-premium-side>
 </div>
 <div *ngIf="!isLargeScreen">
   <app-bottom-tab></app-bottom-tab>
@@ -12,165 +14,203 @@
       </button>
       <h1>Configurar Condiciones</h1>
     </div>
+    <div class="condition-columns">
+      <form [formGroup]="deviceForm">
+        <mat-form-field class="cantidad-input">
+          <mat-label>Cantidad de condiciones</mat-label>
+          <input matInput type="number" formControlName="numDevices" min="1" max="5"/>
+        </mat-form-field>
 
-    <form [formGroup]="deviceForm">
-      <mat-form-field>
-        <mat-label>Cantidad de condiciones</mat-label>
-        <input matInput type="number" formControlName="numDevices" min="1">
-      </mat-form-field>
+        <div formArrayName="devices">
+          <div
+            *ngFor="let device of devices.controls; let i = index"
+            [formGroupName]="i"
+            class="dispositivos-container"
+          >
+            <h3>Condición {{ i + 1 }}</h3>
+            <div class="select-row">
+              <mat-form-field>
+                <mat-label>Dispositivo</mat-label>
+                <mat-select formControlName="entityId">
+                  <mat-option
+                    *ngFor="let entity of entities"
+                    [value]="entity.id"
+                  >
+                    {{ entity.deviceName.value }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
 
-      <div formArrayName="devices">
-        <div *ngFor="let device of devices.controls; let i = index" [formGroupName]="i" style="margin-bottom: 1rem; border: 1px solid #ccc; padding: 1rem;">
-          <h3>Condición {{ i + 1 }}</h3>
+              <!-- Selector de Variable -->
+              <mat-form-field>
+                <mat-label>Variable</mat-label>
+                <mat-select formControlName="variable">
+                  <mat-option
+                    *ngFor="
+                      let variable of getEntityVariables(
+                        device.get('entityId')?.value
+                      )
+                    "
+                    [value]="variable"
+                  >
+                    {{ variable }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
 
-          <!-- Selector de Entidad -->
-          <mat-form-field>
-            <mat-label>Dispositivo</mat-label>
-            <mat-select formControlName="entityId">
-              <mat-option *ngFor="let entity of entities" [value]="entity.id">
-                {{ entity.deviceName.value }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <!-- Selector de Variable -->
-          <mat-form-field>
-            <mat-label>Variable</mat-label>
-            <mat-select formControlName="variable">
-              <mat-option *ngFor="let variable of getEntityVariables(device.get('entityId')?.value)" [value]="variable">
-                {{ variable }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <!-- Selector de Operador -->
-          <mat-form-field>
-            <mat-label>Operador</mat-label>
-            <mat-select formControlName="operator">
-              <mat-option value=">">Mayor que</mat-option>
-              <mat-option value="<">Menor que</mat-option>
-              <mat-option value="=">Igual</mat-option>
-              <mat-option value="entre">Entre</mat-option>
-              <mat-option value="funcion">Función</mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <!-- Inputs Condicionales -->
-          <div *ngIf="device.get('operator')?.value !== 'entre'">
-            <mat-form-field>
-              <mat-label>Valor</mat-label>
-              <input matInput formControlName="value">
-            </mat-form-field>
-          </div>
-          <div *ngIf="device.get('operator')?.value === 'entre'">
-            <mat-form-field>
-              <mat-label>Rango Inicial</mat-label>
-              <input matInput formControlName="rangeStart">
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>Rango Final</mat-label>
-              <input matInput formControlName="rangeEnd">
-            </mat-form-field>
+              <!-- Selector de Operador -->
+              <mat-form-field>
+                <mat-label>Operador</mat-label>
+                <mat-select formControlName="operator">
+                  <mat-option value=">">Mayor que</mat-option>
+                  <mat-option value="<">Menor que</mat-option>
+                  <mat-option value="=">Igual</mat-option>
+                  <mat-option value="entre">Entre</mat-option>
+                  <mat-option value="funcion">Función</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <div
+                *ngIf="device.get('operator')?.value !== 'entre'"
+                class="value-inputs"
+              >
+                <mat-form-field>
+                  <mat-label>Valor</mat-label>
+                  <input matInput formControlName="value" />
+                </mat-form-field>
+              </div>
+              <div
+                *ngIf="device.get('operator')?.value === 'entre'"
+                class="range-inputs"
+              >
+                <mat-form-field>
+                  <mat-label>Rango Inicial</mat-label>
+                  <input matInput formControlName="rangeStart" />
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Rango Final</mat-label>
+                  <input matInput formControlName="rangeEnd" />
+                </mat-form-field>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </form>
-
-    <!-- FORMULARIO ADICIONAL DE COMANDO -->
-    <div *ngIf="showCommandForm" style="margin-top: 2rem; padding: 1rem; border: 2px solid #ccc;">
-      <h2>Configuración de Acción</h2>
-      <form [formGroup]="commandForm">
-
-        <!-- Selector para "cumplir todas" o "una" -->
-        <mat-form-field>
-          <mat-label>Condición de cumplimiento</mat-label>
-          <mat-select formControlName="matchType">
-            <mat-option value="all">Se deben cumplir todas</mat-option>
-            <mat-option value="any">Se debe cumplir una</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <!-- Campos readonly de deviceName y command -->
-        <mat-form-field>
-          <mat-label>Dispositivo</mat-label>
-          <input matInput formControlName="deviceName" [readonly]="true">
-        </mat-form-field>
-
-        <mat-form-field>
-          <mat-label>Comando</mat-label>
-          <input matInput formControlName="command" [readonly]="true">
-        </mat-form-field>
-
-        <!-- Campos dinámicos según tipo de comando -->
-        <!-- Switch o Toggle -->
-        <ng-container *ngIf="commandType === 'switch' || commandType === 'toggle'">
-          <mat-form-field>
-            <mat-label>Parámetro 1</mat-label>
-            <mat-select formControlName="param1">
-              <mat-option value="on">On</mat-option>
-              <mat-option value="off">Off</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Parámetro 2</mat-label>
-            <mat-select formControlName="param2">
-              <mat-option value="on">On</mat-option>
-              <mat-option value="off">Off</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </ng-container>
-
-        <!-- Analogo -->
-        <ng-container *ngIf="commandType === 'analogo'">
-          <mat-form-field>
-            <mat-label>Valor mínimo</mat-label>
-            <input type="number" min="0" max="100" formControlName="param1" matInput>
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Valor máximo</mat-label>
-            <input type="number" min="0" max="100" formControlName="param2" matInput>
-          </mat-form-field>
-        </ng-container>
-
-        <!-- Dial -->
-        <ng-container *ngIf="commandType === 'dial'">
-          <mat-form-field>
-            <mat-label>Parámetro 1</mat-label>
-            <mat-select formControlName="param1">
-              <mat-option value="off">Off</mat-option>
-              <mat-option *ngFor="let i of [1,2,3,4,5]" [value]="i">{{ i }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Parámetro 2</mat-label>
-            <mat-select formControlName="param2">
-              <mat-option value="off">Off</mat-option>
-              <mat-option *ngFor="let i of [1,2,3,4,5]" [value]="i">{{ i }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </ng-container>
-
-        <!-- ToggleText -->
-        <ng-container *ngIf="commandType === 'toggleText'">
-          <mat-form-field>
-            <mat-label>Texto 1</mat-label>
-            <input matInput formControlName="param1">
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Texto 2</mat-label>
-            <input matInput formControlName="param2">
-          </mat-form-field>
-        </ng-container>
       </form>
-    </div>
+      <div *ngIf="showCommandForm" class="parametros-container">
+        <h2>Configuración de Acción</h2>
+        <form [formGroup]="commandForm" class="params-form">
+          <div class="readonly-fields">
+            <!-- Selector para "cumplir todas" o "una" -->
+            <mat-form-field>
+              <mat-label>Condición de cumplimiento</mat-label>
+              <mat-select formControlName="matchType">
+                <mat-option value="all">Se deben cumplir todas</mat-option>
+                <mat-option value="any">Se debe cumplir una</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <!-- Campos readonly de deviceName y command -->
+            <mat-form-field>
+              <mat-label>Dispositivo</mat-label>
+              <input matInput formControlName="deviceName" [readonly]="true" />
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Comando</mat-label>
+              <input matInput formControlName="command" [readonly]="true" />
+            </mat-form-field>
+          </div>
 
-    <!-- BOTÓN DE REGISTRO -->
-    <div style="text-align: center; margin-top: 2rem;" *ngIf="showCommandForm">
-      <button mat-raised-button color="primary"
-              [disabled]="!deviceForm.valid || !commandForm.valid"
-              (click)="onRegisterCondition()">
-        Registrar Condición
-      </button>
+          <!-- Campos dinámicos según tipo de comando -->
+          <!-- Switch o Toggle -->
+          <div
+            *ngIf="commandType === 'switch' || commandType === 'toggle'" class="params-input"
+          >
+            <mat-form-field>
+              <mat-label>Parámetro 1</mat-label>
+              <mat-select formControlName="param1">
+                <mat-option value="on">On</mat-option>
+                <mat-option value="off">Off</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Parámetro 2</mat-label>
+              <mat-select formControlName="param2">
+                <mat-option value="on">On</mat-option>
+                <mat-option value="off">Off</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Analogo -->
+          <div *ngIf="commandType === 'analogo'" class="params-input">
+            <mat-form-field>
+              <mat-label>Valor mínimo</mat-label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                formControlName="param1"
+                matInput
+              />
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Valor máximo</mat-label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                formControlName="param2"
+                matInput
+              />
+            </mat-form-field>
+          </div>
+
+          <!-- Dial -->
+          <div *ngIf="commandType === 'dial'" class="params-input">
+            <mat-form-field>
+              <mat-label>Parámetro 1</mat-label>
+              <mat-select formControlName="param1">
+                <mat-option value="off">Off</mat-option>
+                <mat-option *ngFor="let i of [1, 2, 3, 4, 5]" [value]="i">{{
+                  i
+                }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Parámetro 2</mat-label>
+              <mat-select formControlName="param2">
+                <mat-option value="off">Off</mat-option>
+                <mat-option *ngFor="let i of [1, 2, 3, 4, 5]" [value]="i">{{
+                  i
+                }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- ToggleText -->
+          <div
+            *ngIf="commandType === 'toggleText'" class="params-input">
+            <mat-form-field>
+              <mat-label>Texto 1</mat-label>
+              <input matInput formControlName="param1" />
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Texto 2</mat-label>
+              <input matInput formControlName="param2" />
+            </mat-form-field>
+          </div>
+        </form>
+      </div>
+
+      <!-- BOTÓN DE REGISTRO -->
+      <div style="text-align: center; margin-top: 2rem" *ngIf="showCommandForm">
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="!deviceForm.valid || !commandForm.valid"
+          (click)="onRegisterCondition()"
+        >
+          Registrar Condición
+        </button>
+      </div>
     </div>
   </div>
 </div>

@@ -21,10 +21,11 @@
     <!-- Contenedor de actuador e información -->
     <div class="device-columns">
       <h1>Última Actualización: {{ entitiesWithAlerts[0]?.timeInstant }}</h1>
+      <br>
+              <h2>Control del Actuador</h2>
 
       <!-- Actuador -->
       <div class="device-actuador" *ngIf="commands.length > 0">
-        <h2>Control del Actuador</h2>
 
         <!-- 🔘 Toggle switches -->
         <div class="deviceActuador" *ngFor="let toggle of actuadores.toggle; let i = index">
