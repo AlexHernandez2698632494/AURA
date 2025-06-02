@@ -15,7 +15,8 @@
       <button mat-icon-button class="back-button" (click)="onBackClick()">
         <mat-icon>arrow_back</mat-icon>
       </button>
-      <h1>{{ branchName }} - {{ entitiesWithAlerts[0]?.deviceName }}</h1>
+      <h1>{{ branchName }} - {{ entitiesWithAlerts[0]?.deviceName || entitiesWithAlerts[0]?.raw?.deviceName }}</h1>
+
     </div>
 
     <!-- Contenedor de actuador e información -->
