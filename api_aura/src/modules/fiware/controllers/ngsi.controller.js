@@ -469,6 +469,7 @@ export const getEntitiesWithAlerts = async (req, res) => {
         timeInstant: formattedTimeInstant,
         deviceName: entity.deviceName?.value,
         deviceType: entity.deviceType?.value,
+        isSensorActuador:entity.isSensorActuador?.value,
         commandTypes: entity.commandTypes?.value,
         commands: [], // Lista que contendrá los comandos dinámicamente
       };
