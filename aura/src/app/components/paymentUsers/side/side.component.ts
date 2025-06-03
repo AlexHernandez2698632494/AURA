@@ -72,11 +72,13 @@ export class PremiumSideComponent implements OnInit{
     }
   
     isActive(route: string): boolean {
-      if (!route) {
-        return false;
-      }
-      return this.router.url.startsWith(route);
-    }
+  if (!route) {
+    return false;
+  }
+  const current = this.router.url.split('?')[0].split('#')[0];
+
+  return current === route || current.startsWith(route + '/');
+}
   
     isSubmenuActive(submenu: any[]): boolean {
       return submenu.some(subItem => this.router.url.startsWith(subItem.route));

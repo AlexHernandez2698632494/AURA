@@ -182,11 +182,11 @@ export class SideComponent implements OnInit {
     }
   }
 
-  isActive(route: string): boolean {
+  isActive(route: string, exact: boolean = false): boolean {
     if (!route) {
       return false;
     }
-    return this.router.url.startsWith(route); // Permite marcar como activo si la ruta actual es un subcamino del ítem.
+    return exact ? this.router.url === route : this.router.url.startsWith(route); // Permite marcar como activo si la ruta actual es un subcamino del ítem.
   }
 
   isSubmenuActive(submenu: any[]): boolean {

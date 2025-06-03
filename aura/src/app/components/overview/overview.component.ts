@@ -1,4 +1,5 @@
 import { Component, Output, EventEmitter, HostListener } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SideComponent } from '../side/side.component';
 import { BottomTabComponent } from '../bottom-tab/bottom-tab.component';
@@ -29,6 +30,12 @@ export class AdminOverviewComponent {
 
   onSideNavToggle(collapsed: boolean) {
     this.isSidebarCollapsed = collapsed;
+  }
+
+  constructor(
+    private router: Router,
+  ) {
+    // Inicialización si es necesaria
   }
 
 }
