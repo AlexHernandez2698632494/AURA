@@ -28,13 +28,13 @@ declare var CanvasJS: any;
 @Component({
   selector: 'app-details',
   standalone: true,
-  imports: [CommonModule, 
-    PremiumSideComponent, 
-    MatIconModule, 
-    BottomTabComponent, 
-    NgxGaugeModule, 
-    FormsModule, 
-    MatFormFieldModule, 
+  imports: [CommonModule,
+    PremiumSideComponent,
+    MatIconModule,
+    BottomTabComponent,
+    NgxGaugeModule,
+    FormsModule,
+    MatFormFieldModule,
     MatInputModule,],
   templateUrl: './details.component.html',
   styleUrls: ['./details.component.css']
@@ -52,7 +52,7 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
 
   variables: any[] = [];
   commands: any[] = [];
-private entidadMap: { [id: string]: any } = {};
+  private entidadMap: { [id: string]: any } = {};
 
   @ViewChildren('chartContainer') chartContainers!: QueryList<ElementRef>;
 
@@ -64,11 +64,11 @@ private entidadMap: { [id: string]: any } = {};
     dial: any[],
     toggleText: any[]
   } = {
-    toggle: [],
-    analogo: [],
-    dial: [],
-    toggleText: []
-  };
+      toggle: [],
+      analogo: [],
+      dial: [],
+      toggleText: []
+    };
   pastelColor: string = '';
   constructor(
     private paymentUserService: PaymentUserService,
@@ -79,146 +79,76 @@ private entidadMap: { [id: string]: any } = {};
     private cdr: ChangeDetectorRef
   ) { }
 
-// Agrega esto arriba en tu clase para mantener el estado de las entidades
-private entidadesMap: { [id: string]: any } = {};
+  // Agrega esto arriba en tu clase para mantener el estado de las entidades
+  private entidadesMap: { [id: string]: any } = {};
 
-// ngOnInit() {
-//   // Obtén los parámetros de la ruta
-//   this.activatedRoute.paramMap.subscribe(params => {
-//     this.buildingName = params.get('buildingName') || '';
-//     this.branchName = params.get('branchName') || '';
-//     this.branchId = params.get('id') || '';
-//   });
-
-//   // Obtén el nombre del dispositivo desde la URL
-//   this.deviceName = this.router.url.split('/').pop() || '';
-
-//   const fiwareService = sessionStorage.getItem('fiware-service');
-//   const fiwareServicePath = sessionStorage.getItem('fiware-servicepath');
-
-//   if (fiwareService && fiwareServicePath) {
-//     // Subscríbete a las entidades con alertas que llegan desde el WebSocket
-//     this.socketService.entitiesWithAlerts$.subscribe((entities: any[]) => {
-//       // Verifica los datos que llegan en la suscripción
-//       console.log("Device Name recibido:", this.deviceName);
-//       console.log("Datos recibidos del socket:", entities); // Muestra las entidades recibidas completas
-
-//       // Actualiza el mapa de entidades con los datos nuevos
-//       entities.forEach(entity => {
-//         const id = entity.id;
-//         const entidadAnterior = this.entidadesMap[id] || {};
-
-//         // Combinar los datos nuevos con los anteriores para no perder commandTypes y commands
-//         this.entidadesMap[id] = {
-//           ...entidadAnterior,
-//           ...entity,
-//           commands: (entity.commands && entity.commands.length > 0) ? entity.commands : entidadAnterior.commands,
-//           commandTypes: entity.commandTypes ? entity.commandTypes : entidadAnterior.commandTypes
-//         };
-//       });
-
-//       // Filtra por deviceName como antes, pero desde el mapa actualizado
-//       const todasLasEntidades = Object.values(this.entidadesMap);
-//       this.entitiesWithAlerts = todasLasEntidades.filter(entity => {
-//         const entityDeviceName = entity.deviceName || (entity.raw && entity.raw.deviceName);
-//         return entityDeviceName === this.deviceName;
-//       });
-
-//       // Verifica el resultado del filtro
-//       console.log("Entidad filtrada:", this.entitiesWithAlerts);
-
-//       // Si se encuentra la entidad, procesa los comandos y las reglas
-//       if (this.entitiesWithAlerts.length > 0) {
-//         const entidad = this.entitiesWithAlerts[0];
-//         this.commands = entidad.commands || [];
-
-//         if (entidad.commandTypes) {
-//           // Procesa los tipos de comandos si existen
-//           this.actuadores = {
-//             toggle: (entidad.commandTypes.toggle || []).map((item: any) =>
-//               typeof item === 'string' ? JSON.parse(item) : item
-//             ),
-//             analogo: entidad.commandTypes.analogo || [],
-//             dial: entidad.commandTypes.dial || [],
-//             toggleText: entidad.commandTypes.toggleText || []
-//           };
-
-//           console.log("Actuadores cargados:", this.actuadores);
-
-//           // Llama a la función para verificar las reglas activas
-//           this.checkReglasActivas(entidad.id);
-//           console.log(this.checkReglasActivas(entidad.id));
-
-//           // Inicializa estados desde los comandos
-//           this.estadoToggles = this.actuadores.toggle.map((_, i) => this.obtenerEstadoToggle(i));
-//           this.estadoAnalogos = this.actuadores.analogo.map((_, i) => this.obtenerEstadoAnalogo(i));
-//           this.estadoDiales = this.actuadores.dial.map((_, i) => this.obtenerEstadoDial(i));
-//           this.estadoTextos = this.actuadores.toggleText.map((_, i) => this.obtenerEstadoTexto(i));
-//         }
-
-//         // Si la entidad tiene variables, carga los datos históricos
-//         if (Array.isArray(entidad.variables) && entidad.variables.length > 0) {
-//           this.loadHistoricalData(entidad.id);
-//         } else {
-//           console.warn("⚠️ La entidad no tiene variables. Se omite carga de historial.");
-//         }
-//       }
-
-//       // *** AÑADIDO: Forzar detección de cambios para que el HTML se actualice ***
-//       this.cdr.detectChanges();
-//     });
-
-//     // Si no se reciben datos después de un tiempo, intenta cargar las entidades desde la API
-//     setTimeout(() => {
-//       if (!this.socketService.hasReceivedData()) {
-//         this.socketService.loadEntitiesFromAPI(fiwareService, fiwareServicePath, this.fiwareService);
-//       }
-//     }, 3000);
-//   } else {
-//     console.error('❌ No se encontraron fiwareService o fiwareServicePath en sessionStorage');
-//   }
-
-//   // Asigna un color aleatorio para el pastel
-//   this.pastelColor = this.getRandomPastelColor();
-// }
-
-ngOnInit(){
-  this.ngSensors();
-}
-
-ngSensors() {
+  ngOnInit() {
     this.activatedRoute.paramMap.subscribe(params => {
       this.buildingName = params.get('buildingName') || '';
       this.branchName = params.get('branchName') || '';
       this.branchId = params.get('id') || '';
+      this.deviceName = decodeURIComponent(this.router.url.split('/').pop() || '');
+
     });
 
     const fiwareService = sessionStorage.getItem('fiware-service');
     const fiwareServicePath = sessionStorage.getItem('fiware-servicepath');
 
-    if (fiwareService && fiwareServicePath) {
+    if (!fiwareService || !fiwareServicePath) {
+      console.error('❌ No se encontraron fiwareService o fiwareServicePath en sessionStorage');
+      return;
+    }
 
-      this.socketService.entitiesWithAlerts$.subscribe((entities: any[]) => {
-        this.entitiesWithAlerts = entities;
-        console.log("entidades: ", this.entitiesWithAlerts);
-
-        if (entities.length > 0) {
-          const entityId = entities[0].id;
-          this.loadHistoricalData(entityId);
-        }
+    this.socketService.entitiesWithAlerts$.subscribe((entities: any[]) => {
+      const entidad = entities.find(e => {
+        const name = e.deviceName || (e.raw && e.raw.deviceName);
+        return name === this.deviceName;
       });
 
+      if (!entidad) {
+        console.warn("⚠ No se encontró entidad con deviceName:", this.deviceName);
+        return;
+      }
 
-      setTimeout(() => {
-        if (!this.socketService.hasReceivedData()) {
-          this.socketService.loadEntitiesFromAPI(fiwareService, fiwareServicePath, this.fiwareService);
-        }
-      }, 3000);
-    } else {
-      console.error('❌ No se encontraron fiwareService o fiwareServicePath en sessionStorage');
-    }
+      this.entitiesWithAlerts = [entidad];
+      const tipo = entidad.isSensorActuador;
+      console.log("datos recibidos por socket", this.entitiesWithAlerts)
+      if ((tipo === 0 || tipo === 2) && entidad.variables?.length > 0) {
+        this.loadHistoricalData(entidad.id); // 🔁 Aquí se llena variables con los sensores para los gauges
+      }
+
+      if (tipo === 1 || tipo === 2) {
+        this.commands = entidad.commands || [];
+
+        this.actuadores = {
+          toggle: entidad.commandTypes?.toggle || [],
+          analogo: entidad.commandTypes?.analogo || [],
+          dial: entidad.commandTypes?.dial || [],
+          toggleText: entidad.commandTypes?.toggleText || []
+        };
+
+        this.estadoToggles = this.actuadores.toggle.map((_, i) => this.obtenerEstadoToggle(i));
+        this.estadoAnalogos = this.actuadores.analogo.map((_, i) => this.obtenerEstadoAnalogo(i));
+        this.estadoDiales = this.actuadores.dial.map((_, i) => this.obtenerEstadoDial(i));
+        this.estadoTextos = this.actuadores.toggleText.map((_, i) => this.obtenerEstadoTexto(i));
+
+        this.checkReglasActivas(entidad.id);
+      }
+
+      this.cdr.detectChanges();
+    });
+
+    // Fallback si el socket no envía datos a tiempo
+    setTimeout(() => {
+      if (!this.socketService.hasReceivedData()) {
+        this.socketService.loadEntitiesFromAPI(fiwareService, fiwareServicePath, this.fiwareService);
+      }
+    }, 3000);
+
+    this.pastelColor = this.getRandomPastelColor();
   }
-ngAfterViewChecked(): void {
+
+  ngAfterViewChecked(): void {
     if (this.variables.length > 0 &&
       this.chartContainers.length === this.variables.length &&
       !this.chartsRendered) {
@@ -228,7 +158,7 @@ ngAfterViewChecked(): void {
     }
   }
 
-  loadHistoricalData(entityId: string) {
+loadHistoricalData(entityId: string) {
     this.fiwareService.getHistoricalData(entityId).subscribe(response => {
       console.log("Respuesta de datos históricos:", response);
 
@@ -256,10 +186,12 @@ ngAfterViewChecked(): void {
 
       const mappedVariables = Object.values(parsedData)
         .map((sensor: any) => {
-          const lastValue = sensor.data[sensor.data.length - 1]?.value;
+          const lastEntry = sensor.data[sensor.data.length - 1];
+          const numericValue = parseFloat(lastEntry?.value);
           return {
             ...sensor,
-            value: lastValue + ' ' + sensor.unit,
+            value: numericValue,
+            valueFormatted: `${numericValue} ${sensor.unit}`,
             alert: {
               name: "Fresco",
               color: "#1a5fb4",
@@ -267,10 +199,10 @@ ngAfterViewChecked(): void {
             }
           };
         })
-        .filter(sensor => !isNaN(parseFloat(sensor.value)));
+        .filter(sensor => !isNaN(sensor.value));
 
       if (mappedVariables.length === 0) {
-        console.warn("⚠️ No hay variables válidas con datos numéricos. No se carga historial.");
+        console.warn("⚠ No hay variables válidas con datos numéricos. No se carga historial.");
         return;
       }
 
@@ -447,100 +379,100 @@ ngAfterViewChecked(): void {
     return `translate(${x}px, ${y}px)`;
   }
 
-onCreateCondition(idActuador: string,idEntities:string) {
-  this.fiwareService.setIdActuador(idEntities);
-  this.router.navigate([
-    `/premium/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${this.deviceName}/${idActuador}/conditions/create`
-  ]);
-}
+  onCreateCondition(idActuador: string, idEntities: string) {
+    this.fiwareService.setIdActuador(idEntities);
+    this.router.navigate([
+      `/premium/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${this.deviceName}/${idActuador}/conditions/create`
+    ]);
+  }
 
- // Añade esta propiedad para almacenar si tiene regla activa por actuador
-reglasActivasToggle: boolean[] = [];
-reglasActivasAnalogo: boolean[] = [];
-reglasActivasDial: boolean[] = [];
-reglasActivasTexto: boolean[] = [];
+  // Añade esta propiedad para almacenar si tiene regla activa por actuador
+  reglasActivasToggle: boolean[] = [];
+  reglasActivasAnalogo: boolean[] = [];
+  reglasActivasDial: boolean[] = [];
+  reglasActivasTexto: boolean[] = [];
 
-checkReglasActivas(entityId: string) {
-  // Inicializamos los arrays que marcarán si hay reglas activas
-  this.reglasActivasToggle = [];
-  this.reglasActivasAnalogo = [];
-  this.reglasActivasDial = [];
-  this.reglasActivasTexto = [];
+  checkReglasActivas(entityId: string) {
+    // Inicializamos los arrays que marcarán si hay reglas activas
+    this.reglasActivasToggle = [];
+    this.reglasActivasAnalogo = [];
+    this.reglasActivasDial = [];
+    this.reglasActivasTexto = [];
 
-  // Reglas para TOGGLES
-  this.actuadores.toggle.forEach((_, i) => {
-    const command = this.commands[i]?.command || this.commands[i]?.name || '';
-    if (entityId && command) {
-      this.fiwareService.getRulesByServiceSubserviceActuatorAndCommand(entityId, command).subscribe({
-        next: (res) => {
-          this.reglasActivasToggle[i] = Array.isArray(res) ? res.length > 0 : false;
-        },
-        error: (err) => {
-          console.error(`❌ Error en toggle ${i}:`, err);
-          this.reglasActivasToggle[i] = false;
-        }
-      });
-    } else {
-      console.warn(`⚠️ Datos faltantes en toggle ${i}:`, entityId, command);
-      this.reglasActivasToggle[i] = false;
-    }
-  });
+    // Reglas para TOGGLES
+    this.actuadores.toggle.forEach((_, i) => {
+      const command = this.commands[i]?.command || this.commands[i]?.name || '';
+      if (entityId && command) {
+        this.fiwareService.getRulesByServiceSubserviceActuatorAndCommand(entityId, command).subscribe({
+          next: (res) => {
+            this.reglasActivasToggle[i] = Array.isArray(res) ? res.length > 0 : false;
+          },
+          error: (err) => {
+            console.error(`❌ Error en toggle ${i}:`, err);
+            this.reglasActivasToggle[i] = false;
+          }
+        });
+      } else {
+        console.warn(`⚠️ Datos faltantes en toggle ${i}:`, entityId, command);
+        this.reglasActivasToggle[i] = false;
+      }
+    });
 
-  // Reglas para ANALOGO
-  this.actuadores.analogo.forEach((_, i) => {
-    const index = this.actuadores.toggle.length + i;
-    const command = this.commands[index]?.command || this.commands[index]?.name || '';
-    if (entityId && command) {
-      this.fiwareService.getRulesByServiceSubserviceActuatorAndCommand(entityId, command).subscribe({
-        next: (res) => {
-          this.reglasActivasAnalogo[i] = Array.isArray(res) ? res.length > 0 : false;
-        },
-        error: (err) => {
-          console.error(`❌ Error en analogo ${i}:`, err);
-          this.reglasActivasAnalogo[i] = false;
-        }
-      });
-    } else {
-      this.reglasActivasAnalogo[i] = false;
-    }
-  });
+    // Reglas para ANALOGO
+    this.actuadores.analogo.forEach((_, i) => {
+      const index = this.actuadores.toggle.length + i;
+      const command = this.commands[index]?.command || this.commands[index]?.name || '';
+      if (entityId && command) {
+        this.fiwareService.getRulesByServiceSubserviceActuatorAndCommand(entityId, command).subscribe({
+          next: (res) => {
+            this.reglasActivasAnalogo[i] = Array.isArray(res) ? res.length > 0 : false;
+          },
+          error: (err) => {
+            console.error(`❌ Error en analogo ${i}:`, err);
+            this.reglasActivasAnalogo[i] = false;
+          }
+        });
+      } else {
+        this.reglasActivasAnalogo[i] = false;
+      }
+    });
 
-  // Reglas para DIAL
-  this.actuadores.dial.forEach((_, i) => {
-    const index = this.actuadores.toggle.length + this.actuadores.analogo.length + i;
-    const command = this.commands[index]?.command || this.commands[index]?.name || '';
-    if (entityId && command) {
-      this.fiwareService.getRulesByServiceSubserviceActuatorAndCommand(entityId, command).subscribe({
-        next: (res) => {
-          this.reglasActivasDial[i] = Array.isArray(res) ? res.length > 0 : false;
-        },
-        error: (err) => {
-          console.error(`❌ Error en dial ${i}:`, err);
-          this.reglasActivasDial[i] = false;
-        }
-      });
-    } else {
-      this.reglasActivasDial[i] = false;
-    }
-  });
+    // Reglas para DIAL
+    this.actuadores.dial.forEach((_, i) => {
+      const index = this.actuadores.toggle.length + this.actuadores.analogo.length + i;
+      const command = this.commands[index]?.command || this.commands[index]?.name || '';
+      if (entityId && command) {
+        this.fiwareService.getRulesByServiceSubserviceActuatorAndCommand(entityId, command).subscribe({
+          next: (res) => {
+            this.reglasActivasDial[i] = Array.isArray(res) ? res.length > 0 : false;
+          },
+          error: (err) => {
+            console.error(`❌ Error en dial ${i}:`, err);
+            this.reglasActivasDial[i] = false;
+          }
+        });
+      } else {
+        this.reglasActivasDial[i] = false;
+      }
+    });
 
-  // Reglas para TOGGLE TEXT
-  this.actuadores.toggleText.forEach((_, i) => {
-    const index = this.actuadores.toggle.length + this.actuadores.analogo.length + this.actuadores.dial.length + i;
-    const command = this.commands[index]?.command || this.commands[index]?.name || '';
-    if (entityId && command) {
-      this.fiwareService.getRulesByServiceSubserviceActuatorAndCommand(entityId, command).subscribe({
-        next: (res) => {
-          this.reglasActivasTexto[i] = Array.isArray(res) ? res.length > 0 : false;
-        },
-        error: (err) => {
-          console.error(`❌ Error en texto ${i}:`, err);
-          this.reglasActivasTexto[i] = false;
-        }
-      });
-    } else {
-      this.reglasActivasTexto[i] = false;
-    }
-  });
-}
+    // Reglas para TOGGLE TEXT
+    this.actuadores.toggleText.forEach((_, i) => {
+      const index = this.actuadores.toggle.length + this.actuadores.analogo.length + this.actuadores.dial.length + i;
+      const command = this.commands[index]?.command || this.commands[index]?.name || '';
+      if (entityId && command) {
+        this.fiwareService.getRulesByServiceSubserviceActuatorAndCommand(entityId, command).subscribe({
+          next: (res) => {
+            this.reglasActivasTexto[i] = Array.isArray(res) ? res.length > 0 : false;
+          },
+          error: (err) => {
+            console.error(`❌ Error en texto ${i}:`, err);
+            this.reglasActivasTexto[i] = false;
+          }
+        });
+      } else {
+        this.reglasActivasTexto[i] = false;
+      }
+    });
+  }
 }
