@@ -1,49 +1,76 @@
 <!-- Componente lateral (side) -->
 <div *ngIf="isLargeScreen">
-  <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
+  <app-premium-side
+    (sideNavToggle)="onSideNavToggle($event)"
+  ></app-premium-side>
 </div>
 <div *ngIf="!isLargeScreen">
   <app-bottom-tab></app-bottom-tab>
 </div>
 
 <!-- Contenedor principal -->
-<div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
+<div class="center" [ngClass]="{ shifted: !isSidebarCollapsed }">
   <div class="main-container">
-
     <!-- Header -->
     <div class="header">
       <button mat-icon-button class="back-button" (click)="onBackClick()">
         <mat-icon>arrow_back</mat-icon>
       </button>
-      <h1>{{ branchName }} - {{ entitiesWithAlerts[0]?.deviceName || entitiesWithAlerts[0]?.raw?.deviceName }}</h1>
-
+      <h1>
+        {{ branchName }} -
+        {{
+          entitiesWithAlerts[0]?.deviceName ||
+            entitiesWithAlerts[0]?.raw?.deviceName
+        }}
+      </h1>
     </div>
 
     <!-- Contenedor de actuador e información -->
     <div class="device-columns">
       <h1>Última Actualización: {{ entitiesWithAlerts[0]?.timeInstant }}</h1>
-      <br>
-              <h2>Control del Actuador</h2>
+      <br />
+      <h2>Control del Actuador</h2>
 
       <!-- Actuador -->
       <div class="device-actuador" *ngIf="commands.length > 0">
-
         <!-- 🔘 Toggle switches -->
-        <div class="deviceActuador" *ngFor="let toggle of actuadores.toggle; let i = index">
+        <div
+          class="deviceActuador"
+          *ngFor="let toggle of actuadores.toggle; let i = index"
+        >
           <div class="conditionsToggle">
-            <h3 [ngStyle]="{ 'background-color': pastelColor }">{{ toggle.label }}</h3>
+            <h3 [ngStyle]="{ 'background-color': pastelColor }">
+              {{ toggle.label }}
+            </h3>
 
-            <button class="toggle-btn" [ngClass]="{ 'on': estadoToggles[i], 'off': !estadoToggles[i] }"
-              (click)="toggleActuador(i)">
-              <mat-icon>{{ estadoToggles[i] ? 'power' : 'power_off' }}</mat-icon>
-              {{ estadoToggles[i] ? 'Encendido' : 'Apagado' }}
+            <button
+              class="toggle-btn"
+              [ngClass]="{ on: estadoToggles[i], off: !estadoToggles[i] }"
+              (click)="toggleActuador(i)"
+            >
+              <mat-icon>{{
+                estadoToggles[i] ? "power" : "power_off"
+              }}</mat-icon>
+              {{ estadoToggles[i] ? "Encendido" : "Apagado" }}
             </button>
-
-            <p *ngIf="reglasActivasToggle[i]" class="regla-activa">✅ Regla activa para este actuador</p>
+            <p *ngIf="commands[i]?.status === 'PENDING'" class="status-pending">
+              ⏳ Comando pendiente de ejecución
+            </p>
+            <p *ngIf="reglasActivasToggle[i]" class="regla-activa">
+              ✅ Regla activa para este actuador
+            </p>
 
             <div class="condition-buttons">
-              <button mat-icon-button class="createCondition"
-                (click)="onCreateCondition(commands[i]?.name, entitiesWithAlerts[0]?.id)">
+              <button
+                mat-icon-button
+                class="createCondition"
+                (click)="
+                  onCreateCondition(
+                    commands[i]?.name,
+                    entitiesWithAlerts[0]?.id
+                  )
+                "
+              >
                 <mat-icon class="icon">add</mat-icon>
                 <span>Crear condición</span>
               </button>
@@ -61,17 +88,47 @@
 
         <!-- 🎚️ Analogo sliders -->
         <div class="conditionsAnalogo">
-          <div class="analogo-control" *ngFor="let analogo of actuadores.analogo; let i = index">
-            <h3 [ngStyle]="{ 'background-color': pastelColor }">{{ analogo.label }}</h3>
-            <label for="{{ analogo }}">Valor : <strong>{{ valorAnalogico }}</strong></label>
-            <input type="range" id="{{ analogo }}" min="0" max="100" [(ngModel)]="valorAnalogico"
-              (change)="enviarValorAnalogico(valorAnalogico)" />
-
-            <p *ngIf="reglasActivasAnalogo[i]" class="regla-activa">✔️ Regla activa para este actuador analógico</p>
+          <div
+            class="analogo-control"
+            *ngFor="let analogo of actuadores.analogo; let i = index"
+          >
+            <h3 [ngStyle]="{ 'background-color': pastelColor }">
+              {{ analogo.label }}
+            </h3>
+            <label for="{{ analogo }}"
+              >Valor : <strong>{{ valorAnalogico }}</strong></label
+            >
+            <input
+              type="range"
+              id="{{ analogo }}"
+              min="0"
+              max="100"
+              [(ngModel)]="valorAnalogico"
+              (change)="enviarValorAnalogico(valorAnalogico)"
+            />
+            <p
+              *ngIf="
+                commands[actuadores.toggle.length + i]?.status === 'PENDING'
+              "
+              class="status-pending"
+            >
+              ⏳ Comando pendiente de ejecución
+            </p>
+            <p *ngIf="reglasActivasAnalogo[i]" class="regla-activa">
+              ✔️ Regla activa para este actuador analógico
+            </p>
 
             <div class="condition-buttons">
-              <button mat-icon-button class="createCondition"
-                (click)="onCreateCondition(commands[actuadores.toggle.length + i]?.name, entitiesWithAlerts[0]?.id)">
+              <button
+                mat-icon-button
+                class="createCondition"
+                (click)="
+                  onCreateCondition(
+                    commands[actuadores.toggle.length + i]?.name,
+                    entitiesWithAlerts[0]?.id
+                  )
+                "
+              >
                 <mat-icon class="icon">add</mat-icon>
                 <span>Crear condición</span>
               </button>
@@ -89,22 +146,52 @@
 
         <!-- 🔄 Dial selectors -->
         <div class="conditionsDial">
-          <div class="dial-selector" *ngFor="let dial of actuadores.dial; let i = index">
-            <h3 [ngStyle]="{ 'background-color': pastelColor }">{{ dial.label }}</h3>
+          <div
+            class="dial-selector"
+            *ngFor="let dial of actuadores.dial; let i = index"
+          >
+            <h3 [ngStyle]="{ 'background-color': pastelColor }">
+              {{ dial.label }}
+            </h3>
 
             <div class="dial">
-              <div class="dial-option" *ngFor="let level of dialLevels; let j = index"
-                [class.active]="level === selectedDial" [style.transform]="getDialPosition(j, dialLevels.length)"
-                (click)="selectDial(level)">
+              <div
+                class="dial-option"
+                *ngFor="let level of dialLevels; let j = index"
+                [class.active]="level === selectedDial"
+                [style.transform]="getDialPosition(j, dialLevels.length)"
+                (click)="selectDial(level)"
+              >
                 {{ level }}
               </div>
             </div>
-
-            <p *ngIf="reglasActivasDial[i]" class="regla-activa">✔️ Regla activa para este actuador de dial</p>
+            <p
+              *ngIf="
+                commands[
+                  actuadores.toggle.length + actuadores.analogo.length + i
+                ]?.status === 'PENDING'
+              "
+              class="status-pending"
+            >
+              ⏳ Comando pendiente de ejecución
+            </p>
+            <p *ngIf="reglasActivasDial[i]" class="regla-activa">
+              ✔️ Regla activa para este actuador de dial
+            </p>
 
             <div class="condition-buttons">
-              <button mat-icon-button class="createCondition"
-                (click)="onCreateCondition(commands[actuadores.toggle.length + actuadores.analogo.length + i]?.name, entitiesWithAlerts[0]?.id)">
+              <button
+                mat-icon-button
+                class="createCondition"
+                (click)="
+                  onCreateCondition(
+                    commands[
+                      actuadores.toggle.length + actuadores.analogo.length + i
+                    ]?.name,
+                    entitiesWithAlerts[0]?.id
+                  )
+                "
+              >
                 <mat-icon class="icon">add</mat-icon>
                 <span>Crear condición</span>
               </button>
@@ -122,24 +209,71 @@
 
         <!-- 📝 Actuador de texto -->
         <div class="conditionsToggleText">
-          <div class="actuador-texto" *ngFor="let texto of actuadores.toggleText; let i = index">
-            <h3 [ngStyle]="{ 'background-color': pastelColor }">{{ texto.label }}</h3>
+          <div
+            class="actuador-texto"
+            *ngFor="let texto of actuadores.toggleText; let i = index"
+          >
+            <h3 [ngStyle]="{ 'background-color': pastelColor }">
+              {{ texto.label }}
+            </h3>
 
-            <mat-form-field appearance="outline" class="full-width responsive-form">
+            <mat-form-field
+              appearance="outline"
+              class="full-width responsive-form"
+            >
               <mat-label>Valor del Actuador ({{ texto.label }})</mat-label>
-              <input matInput id="actuadorInput-{{ texto }}" [(ngModel)]="valorTextoActuador" />
+              <input
+                matInput
+                id="actuadorInput-{{ texto }}"
+                [(ngModel)]="valorTextoActuador"
+              />
             </mat-form-field>
 
-            <button mat-stroked-button color="primary" class="update-btn" (click)="actualizarActuadorTexto()">
+            <button
+              mat-stroked-button
+              color="primary"
+              class="update-btn"
+              (click)="actualizarActuadorTexto()"
+            >
               Actualizar
             </button>
 
-            <p>Valor Actual: <strong>{{ valorActual }}</strong></p>
-            <p *ngIf="reglasActivasTexto[i]" class="regla-activa">✔️ Regla activa para este actuador de texto</p>
+            <p>
+              Valor Actual: <strong>{{ valorActual }}</strong>
+            </p>
+            <p
+              *ngIf="
+                commands[
+                  actuadores.toggle.length +
+                    actuadores.analogo.length +
+                    actuadores.dial.length +
+                    i
+                ]?.status === 'PENDING'
+              "
+              class="status-pending"
+            >
+              ⏳ Comando pendiente de ejecución
+            </p>
+            <p *ngIf="reglasActivasTexto[i]" class="regla-activa">
+              ✔️ Regla activa para este actuador de texto
+            </p>
 
             <div class="condition-buttons">
-              <button mat-stroked-button class="createCondition"
-                (click)="onCreateCondition(commands[actuadores.toggle.length + actuadores.analogo.length + actuadores.dial.length + i]?.name, entitiesWithAlerts[0]?.id)">
+              <button
+                mat-stroked-button
+                class="createCondition"
+                (click)="
+                  onCreateCondition(
+                    commands[
+                      actuadores.toggle.length +
+                        actuadores.analogo.length +
+                        actuadores.dial.length +
+                        i
+                    ]?.name,
+                    entitiesWithAlerts[0]?.id
+                  )
+                "
+              >
                 <mat-icon class="icon">add</mat-icon>
                 <span>Crear condición</span>
               </button>
@@ -154,7 +288,6 @@
             </div>
           </div>
         </div>
-
       </div>
 
       <!-- Información del dispositivo -->
@@ -163,10 +296,17 @@
           <div class="column" *ngFor="let entity of entitiesWithAlerts">
             <div *ngFor="let variable of entity.variables">
               <div *ngIf="variable.value">
-                <ngx-gauge [value]="getNumericValue(variable.value)" [min]="getGaugeRange(variable).min"
-                  [max]="getGaugeRange(variable).max" [type]="'arch'" [thick]="10" [size]="120"
-                  [foregroundColor]="variable.colorGauge" [backgroundColor]="'black'"
-                  [thresholds]="getGaugeThresholds(variable)">
+                <ngx-gauge
+                  [value]="getNumericValue(variable.value)"
+                  [min]="getGaugeRange(variable).min"
+                  [max]="getGaugeRange(variable).max"
+                  [type]="'arch'"
+                  [thick]="10"
+                  [size]="120"
+                  [foregroundColor]="variable.colorGauge"
+                  [backgroundColor]="'black'"
+                  [thresholds]="getGaugeThresholds(variable)"
+                >
                 </ngx-gauge>
                 <div class="variable-info">
                   <span class="variable-name">{{ variable.name }}:</span>
@@ -181,7 +321,10 @@
       <!-- Histórico -->
       <div class="device-historical" *ngIf="variables.length > 0">
         <div class="chart-columns">
-          <div *ngFor="let variable of variables; let i = index" class="chart-wrapper">
+          <div
+            *ngFor="let variable of variables; let i = index"
+            class="chart-wrapper"
+          >
             <div #chartContainer class="chart-container"></div>
           </div>
         </div>

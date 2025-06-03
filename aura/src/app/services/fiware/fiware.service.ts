@@ -161,7 +161,14 @@ createRule(payload: any): Observable<any> {
     catchError(this.handleError)
   );
 }
+updateActuador(payload: any): Observable<any> {
+  const headers = this.getAllSubServices();
+  const url = `${this.baseUrl}/v1/ngsi/update/actuator`;
 
+  return this.http.post<any>(url, payload, { headers }).pipe(
+    catchError(this.handleError)
+  );
+}
 private idActuador: string = '';
   setIdActuador(id: string) {
     this.idActuador = id;

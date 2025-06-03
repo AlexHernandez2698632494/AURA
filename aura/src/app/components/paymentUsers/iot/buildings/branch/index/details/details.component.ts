@@ -158,7 +158,7 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     }
   }
 
-loadHistoricalData(entityId: string) {
+  loadHistoricalData(entityId: string) {
     this.fiwareService.getHistoricalData(entityId).subscribe(response => {
       console.log("Respuesta de datos históricos:", response);
 
@@ -304,6 +304,11 @@ loadHistoricalData(entityId: string) {
   obtenerEstadoToggle(index: number): boolean {
     const estado = this.commands[index]?.states?.trim();
     return estado ? estado !== '0' && estado.toLowerCase() !== 'off' : false;
+  }
+
+  getCommandStatus(name: string): string {
+    const command = this.commands.find(c => c.name === name);
+    return command?.status || '';
   }
 
   obtenerEstadoAnalogo(index: number): number {
