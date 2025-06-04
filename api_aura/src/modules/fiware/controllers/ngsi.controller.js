@@ -544,7 +544,7 @@ export const getEntitiesWithAlerts = async (req, res) => {
 };
 
 // Función para formatear el TimeInstant
-function formatTimeInstant(timeInstant) {
+export function formatTimeInstant(timeInstant) {
   // Crear un objeto Date desde el valor del TimeInstant (es un string con formato ISO 8601)
   const date = new Date(timeInstant);
 
