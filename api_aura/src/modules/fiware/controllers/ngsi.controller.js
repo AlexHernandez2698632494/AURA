@@ -614,9 +614,9 @@ export const updateActuatorStatusController = async (req, res) => {
       limit: req.query.limit || 100,
     };
 
-    const { type, id, attributeName, value } = req.body;
+    const {id, attributeName, value } = req.body;
 
-    if (!type || !id || !attributeName || typeof value === "undefined") {
+    if (!id || !attributeName || typeof value === "undefined") {
       return res.status(400).json({
         message: "Faltan campos obligatorios en el cuerpo de la solicitud.",
       });
@@ -650,7 +650,7 @@ export const updateActuatorStatusController = async (req, res) => {
         throw error;
       }
     }
-
+      const type = id.substring(12,17);
     // Paso 2: Si existe, actualizar el estado
     const updateBody = {
       actionType: "update",
