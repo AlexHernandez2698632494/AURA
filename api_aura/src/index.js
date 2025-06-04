@@ -20,7 +20,7 @@ import fiwareModule from "./modules/fiware/fiware.module.js";
 // Ruta para recibir notificaciones de Orion
 import moment from "moment"; // Asegúrate de tenerlo instalado
 import Rule from "./modules/fiware/models/Rule.models.js";
-import { config } from "./modules/fiware/controllers/ngsi.controller.js";
+import { config,formatTimeInstant } from "./modules/fiware/controllers/ngsi.controller.js";
 import axios from "axios";
 // App y servidor
 const app = express();
@@ -105,41 +105,75 @@ app.post("/v1/notify/", async (req, res) => {
     const url_orion = config.url_orion.replace("https://", "http://");
     const url = `${url_orion}entities/${id}`;
     const response = await axios.get(url, { headers, params });
-    console.log("Datos de la entidad desde Orion:", response.data); 
+    console.log("Datos de la entidad desde Orion:", response.data);
     //console.log("commandType",response.data.commandTypes)
     const processCommands = (data) => {
-  const commands = [];
-  
-  // Buscar cada "switch", "dial", "analogo", "switchText" en los datos de la entidad
-  const switches = [
-    "switch01", "switch02", "dial01", "analogo01", "switchText01"
-  ];
+      const result = {
+        commands: [], // Inicializa el array de comandos vacío
+      };
 
-  switches.forEach((switchName) => {
-    const commandInfo = data[`${switchName}_info`]?.value || '';
-    const commandStates = data[`${switchName}_states`]?.value || '';
-    const commandStatus = data[`${switchName}_status`]?.value || '';
-    const timeInstantInfo = data[`${switchName}_info`]?.metadata?.TimeInstant?.value || '';
-    const timeInstantStates = data[`${switchName}_states`]?.metadata?.TimeInstant?.value || '';
-    const timeInstantStatus = data[`${switchName}_status`]?.metadata?.TimeInstant?.value || '';
-    
-    // Si los datos existen, se construye el objeto en el formato esperado
-    if (commandInfo || commandStates || commandStatus) {
-      commands.push({
-        name: switchName,
-        info: commandInfo,
-        infoTimeInstant: moment(timeInstantInfo).format("DD-MMM-YYYY hh:mm A"),
-        states: commandStates,
-        statesTimeInstant: moment(timeInstantStates).format("DD-MMM-YYYY hh:mm A"),
-        status: commandStatus,
-        statusTimeInstant: moment(timeInstantStatus).format("DD-MMM-YYYY hh:mm A"),
-      });
-    }
-  });
+      if (data.commandTypes?.value) {
+        const commandTypes = data.commandTypes.value;
 
-  return commands;
-};
-console.log("commands",processCommands(response.data))
+        for (const [type, commands] of Object.entries(commandTypes)) {
+          for (const commandObj of commands) {
+            const commandName = commandObj?.name;
+            if (!commandName) continue; // Evitar errores con comandos sin nombre
+
+            // Inicializa el objeto de comando
+            const command = {
+              name: commandName, // Nombre del comando
+              status: "", // Inicializa el status
+              states: "", // Inicializa los states
+              info: "", // Inicializa el campo de info
+              statusTimeInstant: "", // Inicializa el timeInstant de status
+              statesTimeInstant: "", // Inicializa el timeInstant de states
+              infoTimeInstant: "", // Inicializa el timeInstant de info
+            };
+
+            // Buscar las claves asociadas al comando
+            const statusKey = `${commandName}_status`;
+            const statesKey = `${commandName}_states`;
+            const infoKey = `${commandName}_info`;
+
+            // Revisar si existen las claves y asignar sus valores
+            if (data[statusKey]?.value !== undefined) {
+              command.status = data[statusKey].value;
+              if (data[statusKey]?.metadata?.TimeInstant?.value) {
+                command.statusTimeInstant = formatTimeInstant(
+                  data[statusKey].metadata.TimeInstant.value
+                );
+              }
+            }
+
+            if (data[statesKey]?.value !== undefined) {
+              command.states = data[statesKey].value;
+              if (data[statesKey]?.metadata?.TimeInstant?.value) {
+                command.statesTimeInstant = formatTimeInstant(
+                  data[statesKey].metadata.TimeInstant.value
+                );
+              }
+            }
+
+            if (data[infoKey]?.value !== undefined) {
+              command.info = data[infoKey].value;
+              if (data[infoKey]?.metadata?.TimeInstant?.value) {
+                command.infoTimeInstant = formatTimeInstant(
+                  data[infoKey].metadata.TimeInstant.value
+                );
+              }
+            }
+
+            // Agregar el objeto de comando al arreglo de "commands"
+            result.commands.push(command);
+          }
+        }
+      }
+
+      // Devolver el resultado con los comandos procesados
+      return result.commands;
+    };
+
     //consultar la entidad en orion
     orionMessagesMap[entity.id] = data;
     try {
@@ -213,8 +247,8 @@ console.log("commands",processCommands(response.data))
         timeInstant: entity.TimeInstant
           ? moment(entity.TimeInstant).format("DD-MMM-YYYY hh:mm A")
           : moment(data.timestamp).format("DD-MMM-YYYY hh:mm A"),
-        commandTypes:response.data.commandTypes,
-        commands: processCommands(response.data)
+        commandTypes: response.data.commandTypes?.value,
+        commands: processCommands(response.data),
       };
 
       if (entity.location?.coordinates) {
