@@ -323,11 +323,33 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
   obtenerEstadoTexto(index: number): string {
     return this.commands[index]?.states?.trim() || '';
   }
+  enviarComandoActuador(attributeName: string, value: any): void {
+    console.log('Enviando comando al actuador:', attributeName, value);
+    console.log('Entidad con alertas:', this.entitiesWithAlerts[0].id);
+  const payload = {
+    id: this.entitiesWithAlerts[0].id,
+    attributeName: attributeName,
+    value: value
+  };
+
+  this.fiwareService.updateActuador(payload).subscribe({
+    next: res => {
+      console.log('Comando enviado con éxito', res);
+    },
+    error: err => {
+      console.error('Error al enviar comando', err);
+    }
+  });
+}
+
 
   toggleActuador(index: number): void {
     this.estadoToggles[index] = !this.estadoToggles[index];
     this.commands[index].states = this.estadoToggles[index] ? 'ON' : 'OFF';
-    console.log(`Toggle ${index} cambiado a ${this.commands[index].states}`);
+    // console.log(`Toggle ${index} cambiado a ${this.commands[index].states}`);
+     const nombre = this.commands[index]?.name;
+     const estado =  this.commands[index].states
+  this.enviarComandoActuador(nombre, estado);
   }
 
   enviarValorAnalogico(valor: number): void {
