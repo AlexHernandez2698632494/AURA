@@ -10,6 +10,7 @@ import morgan from "morgan";
 import yaml from "js-yaml";
 import fetch from "node-fetch";
 import Alert from "./modules/fiware/models/Alert.models.js";
+import Fiware from "./modules/fiware/models/fiware.models.js";
 
 // Importar rutas y módulos
 import statusRoutes from "./modules/auth/routes/checkConnection.routes.js";
@@ -82,246 +83,308 @@ app.post("/v1/notify/", async (req, res) => {
     timestamp: new Date().toISOString(),
     body: req.body,
   };
-
-  orionMessagesMap[entity.id] = data;
+  const id = entity.id;
+  const deviceId = id.match(/[A-Z0-9]+/g)?.join("") || "";
+  const subservice = entity.servicePath;
+  console.log("entity", entity);
+  console.log("entityID", deviceId);
+  console.log("fiware-servicepath", subservice);
 
   try {
-    const sensorMapping = await getSensorMapping();
-    const alerts = await Alert.find({ estadoEliminacion: 0 });
-    const rules = await Rule.find({ enabled: true });
-
-    const sensorsRaw = {
-      ...(entity.sensors || {}),
-      ...(entity.actuators || {}),
+    const fiwareData = await Fiware.findOne({ fiware_servicepath: subservice });
+    const fiwareService = fiwareData.fiware_service;
+    console.log("fiware-service", fiwareService);
+    const headers = {
+      "Fiware-Service": fiwareService,
+      "Fiware-ServicePath": subservice,
     };
-
-    let hasAlert = false;
-    let highestAlertName = "";
-    let highestAlertVariable = "";
-    let nivel = 0;
-    let color = "";
-
-    const variables = Object.entries(sensorsRaw).map(([key, value]) => {
-      const mapped = sensorMapping[key] || { label: key, unit: "" };
-      const relatedAlerts = alerts.filter((a) => a.variable === mapped.label);
-
-      const minRange = relatedAlerts.reduce(
-        (min, a) => Math.min(min, a.initialRange),
-        Infinity
-      );
-      const maxRange = relatedAlerts.reduce(
-        (max, a) => Math.max(max, a.finalRange),
-        -Infinity
-      );
-
-      const matchingAlert = relatedAlerts.find(
-        (a) => value >= a.initialRange && value <= a.finalRange
-      );
-
-      if (matchingAlert) {
-        hasAlert = true;
-        if (matchingAlert.level > nivel) {
-          nivel = matchingAlert.level;
-          color = matchingAlert.color;
-          highestAlertName = matchingAlert.displayName;
-          highestAlertVariable = mapped.label;
-        }
-      }
-
-      return {
-        name: mapped.label,
-        value: `${value} ${mapped.unit}`,
-        minRange: isFinite(minRange) ? minRange : null,
-        maxRange: isFinite(maxRange) ? maxRange : null,
-        alert: matchingAlert
-          ? {
-              name: matchingAlert.displayName,
-              color: matchingAlert.color,
-              level: matchingAlert.level,
-            }
-          : undefined,
-      };
-    });
-
-    const enrichedEntity = {
-      id: entity.id,
-      type: entity.type,
-      timestamp: data.timestamp,
-      variables,
-      raw: entity,
-      nivel,
-      color,
-      highestAlertName,
-      highestAlertVariable,
-      timeInstant: entity.TimeInstant
-        ? moment(entity.TimeInstant).format("DD-MMM-YYYY hh:mm A")
-        : moment(data.timestamp).format("DD-MMM-YYYY hh:mm A"),
+    const params = {
+      type: req.query.type || undefined,
+      limit: req.query.limit || 100,
     };
+    const url_orion = config.url_orion.replace("https://", "http://");
+    const url = `${url_orion}entities/${id}`;
+    const response = await axios.get(url, { headers, params });
+    console.log("Datos de la entidad desde Orion:", response.data); 
+    //console.log("commandType",response.data.commandTypes)
+    const processCommands = (data) => {
+  const commands = [];
+  
+  // Buscar cada "switch", "dial", "analogo", "switchText" en los datos de la entidad
+  const switches = [
+    "switch01", "switch02", "dial01", "analogo01", "switchText01"
+  ];
 
-    if (entity.location?.coordinates) {
-      enrichedEntity.location = {
-        type: "geo:json",
-        value: {
-          type: "Point",
-          coordinates: entity.location.coordinates,
-        },
-        metadata: {
-          TimeInstant: {
-            type: "DateTime",
-            value: entity.TimeInstant || data.timestamp,
-          },
-        },
-      };
+  switches.forEach((switchName) => {
+    const commandInfo = data[`${switchName}_info`]?.value || '';
+    const commandStates = data[`${switchName}_states`]?.value || '';
+    const commandStatus = data[`${switchName}_status`]?.value || '';
+    const timeInstantInfo = data[`${switchName}_info`]?.metadata?.TimeInstant?.value || '';
+    const timeInstantStates = data[`${switchName}_states`]?.metadata?.TimeInstant?.value || '';
+    const timeInstantStatus = data[`${switchName}_status`]?.metadata?.TimeInstant?.value || '';
+    
+    // Si los datos existen, se construye el objeto en el formato esperado
+    if (commandInfo || commandStates || commandStatus) {
+      commands.push({
+        name: switchName,
+        info: commandInfo,
+        infoTimeInstant: moment(timeInstantInfo).format("DD-MMM-YYYY hh:mm A"),
+        states: commandStates,
+        statesTimeInstant: moment(timeInstantStates).format("DD-MMM-YYYY hh:mm A"),
+        status: commandStatus,
+        statusTimeInstant: moment(timeInstantStatus).format("DD-MMM-YYYY hh:mm A"),
+      });
     }
+  });
 
-    for (const rule of rules) {
-      const ruleKey = `${entity.id}_${rule._id}`;
-      const previouslyTriggered = lastRuleStatus[ruleKey] || false;
+  return commands;
+};
+console.log("commands",processCommands(response.data))
+    //consultar la entidad en orion
+    orionMessagesMap[entity.id] = data;
+    try {
+      const sensorMapping = await getSensorMapping();
+      const alerts = await Alert.find({ estadoEliminacion: 0 });
+      const rules = await Rule.find({ enabled: true });
 
-      const conditionResults = rule.conditions.map((cond) => {
-        const sensorValue = sensorsRaw[cond.sensorAttribute];
+      const sensorsRaw = {
+        ...(entity.sensors || {}),
+        ...(entity.actuators || {}),
+      };
 
-        if (sensorValue === undefined) return false;
+      let hasAlert = false;
+      let highestAlertName = "";
+      let highestAlertVariable = "";
+      let nivel = 0;
+      let color = "";
 
-        switch (cond.conditionType) {
-          case "greater":
-            return sensorValue > cond.value;
-          case "less":
-            return sensorValue < cond.value;
-          case "equal":
-            return sensorValue === cond.value;
-          case "between":
-            if (Array.isArray(cond.value) && cond.value.length === 2) {
-              return (
-                sensorValue >= cond.value[0] && sensorValue <= cond.value[1]
-              );
-            }
-            return false;
-          default:
-            return false;
+      const variables = Object.entries(sensorsRaw).map(([key, value]) => {
+        const mapped = sensorMapping[key] || { label: key, unit: "" };
+        const relatedAlerts = alerts.filter((a) => a.variable === mapped.label);
+        console.log(mapped);
+        const minRange = relatedAlerts.reduce(
+          (min, a) => Math.min(min, a.initialRange),
+          Infinity
+        );
+        const maxRange = relatedAlerts.reduce(
+          (max, a) => Math.max(max, a.finalRange),
+          -Infinity
+        );
+
+        const matchingAlert = relatedAlerts.find(
+          (a) => value >= a.initialRange && value <= a.finalRange
+        );
+
+        if (matchingAlert) {
+          hasAlert = true;
+          if (matchingAlert.level > nivel) {
+            nivel = matchingAlert.level;
+            color = matchingAlert.color;
+            highestAlertName = matchingAlert.displayName;
+            highestAlertVariable = mapped.label;
+          }
         }
+
+        return {
+          name: mapped.label,
+          value: `${value} ${mapped.unit}`,
+          minRange: isFinite(minRange) ? minRange : null,
+          maxRange: isFinite(maxRange) ? maxRange : null,
+          alert: matchingAlert
+            ? {
+                name: matchingAlert.displayName,
+                color: matchingAlert.color,
+                level: matchingAlert.level,
+              }
+            : undefined,
+        };
       });
 
-      const ruleTriggered =
-        rule.conditionLogic === "AND"
-          ? conditionResults.every(Boolean)
-          : conditionResults.some(Boolean);
+      const enrichedEntity = {
+        id: entity.id,
+        type: entity.type,
+        timestamp: data.timestamp,
+        variables,
+        raw: entity,
+        nivel,
+        color,
+        highestAlertName,
+        highestAlertVariable,
+        timeInstant: entity.TimeInstant
+          ? moment(entity.TimeInstant).format("DD-MMM-YYYY hh:mm A")
+          : moment(data.timestamp).format("DD-MMM-YYYY hh:mm A"),
+        commandTypes:response.data.commandTypes,
+        commands: processCommands(response.data)
+      };
 
-      lastRuleStatus[ruleKey] = ruleTriggered;
+      if (entity.location?.coordinates) {
+        enrichedEntity.location = {
+          type: "geo:json",
+          value: {
+            type: "Point",
+            coordinates: entity.location.coordinates,
+          },
+          metadata: {
+            TimeInstant: {
+              type: "DateTime",
+              value: entity.TimeInstant || data.timestamp,
+            },
+          },
+        };
+      }
 
-      // ACTIVACIÓN
-      if (ruleTriggered && !previouslyTriggered) {
-        if (rule.commandValue && rule.commandValue[0] !== undefined) {
-          console.log(
-            `✅ Regla ${rule._id} ACTIVADA, enviando comando ${rule.command}`
-          );
+      for (const rule of rules) {
+        const ruleKey = `${entity.id}_${rule._id}`;
+        const previouslyTriggered = lastRuleStatus[ruleKey] || false;
 
-          const url_json = config.url_json.replace("https://", "http://");
-          const apiUrl = `${url_json}v2/op/update`;
-          console.log("🔗 Enviando comando a Orion:", apiUrl);
+        const conditionResults = rule.conditions.map((cond) => {
+          const sensorValue = sensorsRaw[cond.sensorAttribute];
 
-          const type = rule.actuatorEntityId.substring(12, 17);
-          const body = {
-            actionType: "update",
-            entities: [
-              {
-                type,
-                id: rule.actuatorEntityId,
-                [rule.command]: {
-                  value: rule.commandValue[0],
-                  type: "command",
-                },
-              },
-            ],
-          };
+          if (sensorValue === undefined) return false;
 
-          try {
-            const response = await axios.post(apiUrl, body, {
-              headers: {
-                "Content-Type": "application/json",
-                "Fiware-Service": rule.service,
-                "Fiware-ServicePath": rule.subservice,
-              },
-            });
-            console.log(
-              "🚀 Comando de ACTIVACIÓN enviado a Orion:",
-              response.data
-            );
-          } catch (error) {
-            console.error(
-              "❌ Error enviando comando de ACTIVACIÓN:",
-              error.response?.data || error.message
-            );
+          switch (cond.conditionType) {
+            case "greater":
+              return sensorValue > cond.value;
+            case "less":
+              return sensorValue < cond.value;
+            case "equal":
+              return sensorValue === cond.value;
+            case "between":
+              if (Array.isArray(cond.value) && cond.value.length === 2) {
+                return (
+                  sensorValue >= cond.value[0] && sensorValue <= cond.value[1]
+                );
+              }
+              return false;
+            default:
+              return false;
           }
+        });
 
-          io.emit("actuator-command", {
-            actuatorEntityId: rule.actuatorEntityId,
-            command: rule.command,
-            commandValue: rule.commandValue[0],
-            triggeredBy: rule._id,
-          });
+        const ruleTriggered =
+          rule.conditionLogic === "AND"
+            ? conditionResults.every(Boolean)
+            : conditionResults.some(Boolean);
+
+        lastRuleStatus[ruleKey] = ruleTriggered;
+
+        // ACTIVACIÓN
+        if (ruleTriggered && !previouslyTriggered) {
+          if (rule.commandValue && rule.commandValue[0] !== undefined) {
+            console.log(
+              `✅ Regla ${rule._id} ACTIVADA, enviando comando ${rule.command}`
+            );
+
+            const url_json = config.url_json.replace("https://", "http://");
+            const apiUrl = `${url_json}v2/op/update`;
+            console.log("🔗 Enviando comando a Orion:", apiUrl);
+
+            const type = rule.actuatorEntityId.substring(12, 17);
+            const body = {
+              actionType: "update",
+              entities: [
+                {
+                  type,
+                  id: rule.actuatorEntityId,
+                  [rule.command]: {
+                    value: rule.commandValue[0],
+                    type: "command",
+                  },
+                },
+              ],
+            };
+
+            try {
+              const response = await axios.post(apiUrl, body, {
+                headers: {
+                  "Content-Type": "application/json",
+                  "Fiware-Service": rule.service,
+                  "Fiware-ServicePath": rule.subservice,
+                },
+              });
+              console.log(
+                "🚀 Comando de ACTIVACIÓN enviado a Orion:",
+                response.data
+              );
+            } catch (error) {
+              console.error(
+                "❌ Error enviando comando de ACTIVACIÓN:",
+                error.response?.data || error.message
+              );
+            }
+
+            io.emit("actuator-command", {
+              actuatorEntityId: rule.actuatorEntityId,
+              command: rule.command,
+              commandValue: rule.commandValue[0],
+              triggeredBy: rule._id,
+            });
+          }
+        }
+
+        // DESACTIVACIÓN
+        if (!ruleTriggered && previouslyTriggered) {
+          console.log(`🔻 Regla ${rule._id} DESACTIVADA`);
+
+          if (rule.commandValue && rule.commandValue[1] !== undefined) {
+            const url_json = config.url_json.replace("https://", "http://");
+            const apiUrl = `${url_json}v2/op/update`;
+
+            const type = rule.actuatorEntityId.substring(12, 17);
+            const body = {
+              actionType: "update",
+              entities: [
+                {
+                  type,
+                  id: rule.actuatorEntityId,
+                  [rule.command]: {
+                    value: rule.commandValue[1],
+                    type: "command",
+                  },
+                },
+              ],
+            };
+
+            try {
+              const response = await axios.post(apiUrl, body, {
+                headers: {
+                  "Content-Type": "application/json",
+                  "Fiware-Service": rule.service,
+                  "Fiware-ServicePath": rule.subservice,
+                },
+              });
+              console.log(
+                "📤 Comando de DESACTIVACIÓN enviado a Orion:",
+                response.data
+              );
+            } catch (error) {
+              console.error(
+                "❌ Error enviando comando de DESACTIVACIÓN:",
+                error.response?.data || error.message
+              );
+            }
+
+            io.emit("actuator-command", {
+              actuatorEntityId: rule.actuatorEntityId,
+              command: rule.command,
+              commandValue: rule.commandValue[1],
+              triggeredBy: rule._id,
+            });
+          }
         }
       }
 
-      // DESACTIVACIÓN
-      if (!ruleTriggered && previouslyTriggered) {
-        console.log(`🔻 Regla ${rule._id} DESACTIVADA`);
-
-        if (rule.commandValue && rule.commandValue[1] !== undefined) {
-          const url_json = config.url_json.replace("https://", "http://");
-          const apiUrl = `${url_json}v2/op/update`;
-
-          const type = rule.actuatorEntityId.substring(12, 17);
-          const body = {
-            actionType: "update",
-            entities: [
-              {
-                type,
-                id: rule.actuatorEntityId,
-                [rule.command]: {
-                  value: rule.commandValue[1],
-                  type: "command",
-                },
-              },
-            ],
-          };
-
-          try {
-            const response = await axios.post(apiUrl, body, {
-              headers: {
-                "Content-Type": "application/json",
-                "Fiware-Service": rule.service,
-                "Fiware-ServicePath": rule.subservice,
-              },
-            });
-            console.log(
-              "📤 Comando de DESACTIVACIÓN enviado a Orion:",
-              response.data
-            );
-          } catch (error) {
-            console.error(
-              "❌ Error enviando comando de DESACTIVACIÓN:",
-              error.response?.data || error.message
-            );
-          }
-
-          io.emit("actuator-command", {
-            actuatorEntityId: rule.actuatorEntityId,
-            command: rule.command,
-            commandValue: rule.commandValue[1],
-            triggeredBy: rule._id,
-          });
-        }
+      if (hasAlert || entity.deviceName === "ACTUADOR") {
+        io.emit("orion-alert", enrichedEntity);
       }
-    }
 
-    if (hasAlert || entity.deviceName === "ACTUADOR") {
-      io.emit("orion-alert", enrichedEntity);
+      res.status(200).json({});
+    } catch (e) {
+      console.error("Error evaluando alertas:", e);
+      res.status(500).json({ error: "Error interno" });
     }
-
-    res.status(200).json({});
   } catch (e) {
-    console.error("Error evaluando alertas:", e);
+    console.error("Error al obtener el fiware-service:", e);
     res.status(500).json({ error: "Error interno" });
   }
 });
