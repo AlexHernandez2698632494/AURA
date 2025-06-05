@@ -59,7 +59,7 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
   private chartsRendered = false;
 
   actuadores: {
-    toggle: { label: string }[],
+    toggle: any[],
     analogo: any[],
     dial: any[],
     toggleText: any[]
@@ -82,71 +82,83 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
   // Agrega esto arriba en tu clase para mantener el estado de las entidades
   private entidadesMap: { [id: string]: any } = {};
 
-  ngOnInit() {
-    this.activatedRoute.paramMap.subscribe(params => {
-      this.buildingName = params.get('buildingName') || '';
-      this.branchName = params.get('branchName') || '';
-      this.branchId = params.get('id') || '';
-      this.deviceName = decodeURIComponent(this.router.url.split('/').pop() || '');
+ngOnInit() {
+  this.activatedRoute.paramMap.subscribe(params => {
+    this.buildingName = params.get('buildingName') || '';
+    this.branchName = params.get('branchName') || '';
+    this.branchId = params.get('id') || '';
+    this.deviceName = decodeURIComponent(this.router.url.split('/').pop() || '');
+  });
 
+  const fiwareService = sessionStorage.getItem('fiware-service');
+  const fiwareServicePath = sessionStorage.getItem('fiware-servicepath');
+
+  if (!fiwareService || !fiwareServicePath) {
+    console.error('❌ No se encontraron fiwareService o fiwareServicePath en sessionStorage');
+    return;
+  }
+
+  this.socketService.entitiesWithAlerts$.subscribe((entities: any[]) => {
+    const entidad = entities.find(e => {
+      const name = e.deviceName || (e.raw && e.raw.deviceName);
+      return name === this.deviceName;
     });
 
-    const fiwareService = sessionStorage.getItem('fiware-service');
-    const fiwareServicePath = sessionStorage.getItem('fiware-servicepath');
-
-    if (!fiwareService || !fiwareServicePath) {
-      console.error('❌ No se encontraron fiwareService o fiwareServicePath en sessionStorage');
+    if (!entidad) {
+      console.warn("⚠ No se encontró entidad con deviceName:", this.deviceName);
       return;
     }
 
-    this.socketService.entitiesWithAlerts$.subscribe((entities: any[]) => {
-      const entidad = entities.find(e => {
-        const name = e.deviceName || (e.raw && e.raw.deviceName);
-        return name === this.deviceName;
-      });
+    this.entitiesWithAlerts = [entidad];
+    const tipo = entidad.isSensorActuador;
+    console.log("datos recibidos por socket", this.entitiesWithAlerts);
 
-      if (!entidad) {
-        console.warn("⚠ No se encontró entidad con deviceName:", this.deviceName);
-        return;
-      }
+    if ((tipo === 0 || tipo === 2) && entidad.variables?.length > 0) {
+      this.loadHistoricalData(entidad.id); // 🔁 Aquí se llena variables con los sensores para los gauges
+    }
 
-      this.entitiesWithAlerts = [entidad];
-      const tipo = entidad.isSensorActuador;
-      console.log("datos recibidos por socket", this.entitiesWithAlerts)
-      if ((tipo === 0 || tipo === 2) && entidad.variables?.length > 0) {
-        this.loadHistoricalData(entidad.id); // 🔁 Aquí se llena variables con los sensores para los gauges
-      }
+    if (tipo === 1 || tipo === 2) {
+      this.commands = entidad.commands || [];
 
-      if (tipo === 1 || tipo === 2) {
-        this.commands = entidad.commands || [];
+      this.actuadores = {
+        toggle: entidad.commandTypes?.toggle || [],
+        analogo: entidad.commandTypes?.analogo || [],
+        dial: entidad.commandTypes?.dial || [],
+        toggleText: entidad.commandTypes?.toggleText || []
+      };
 
-        this.actuadores = {
-          toggle: entidad.commandTypes?.toggle || [],
-          analogo: entidad.commandTypes?.analogo || [],
-          dial: entidad.commandTypes?.dial || [],
-          toggleText: entidad.commandTypes?.toggleText || []
-        };
+      // Aquí cambiamos para usar `this.commands` y obtener el estado correcto para cada tipo
+      this.estadoToggles = this.actuadores.toggle.map((actuador, i) => this.obtenerEstadoDesdeCommands('switch', actuador.name));  // Cambié 'i' por 'actuador.name'
+      this.estadoAnalogos = this.actuadores.analogo.map((actuador, i) => this.obtenerEstadoDesdeCommands('analogo', actuador.name));  // Cambié 'i' por 'actuador.name'
+      this.estadoDiales = this.actuadores.dial.map((actuador, i) => this.obtenerEstadoDesdeCommands('dial', actuador.name));  // Cambié 'i' por 'actuador.name'
+      this.estadoTextos = this.actuadores.toggleText.map((actuador, i) => this.obtenerEstadoDesdeCommands('switchText', actuador.name));  // Cambié 'i' por 'actuador.name'
 
-        this.estadoToggles = this.actuadores.toggle.map((_, i) => this.obtenerEstadoToggle(i));
-        this.estadoAnalogos = this.actuadores.analogo.map((_, i) => this.obtenerEstadoAnalogo(i));
-        this.estadoDiales = this.actuadores.dial.map((_, i) => this.obtenerEstadoDial(i));
-        this.estadoTextos = this.actuadores.toggleText.map((_, i) => this.obtenerEstadoTexto(i));
+      console.log('Estado de Toggles:', this.estadoToggles);
+      console.log('Estado de Analogos:', this.estadoAnalogos);
+      console.log('Estado de Diales:', this.estadoDiales);
+      console.log('Estado de Textos:', this.estadoTextos);
 
-        this.checkReglasActivas(entidad.id);
-      }
+      this.checkReglasActivas(entidad.id);
+    }
 
-      this.cdr.detectChanges();
-    });
+    this.cdr.detectChanges();
+  });
 
-    // Fallback si el socket no envía datos a tiempo
-    setTimeout(() => {
-      if (!this.socketService.hasReceivedData()) {
-        this.socketService.loadEntitiesFromAPI(fiwareService, fiwareServicePath, this.fiwareService);
-      }
-    }, 3000);
+  // Fallback si el socket no envía datos a tiempo
+  setTimeout(() => {
+    if (!this.socketService.hasReceivedData()) {
+      this.socketService.loadEntitiesFromAPI(fiwareService, fiwareServicePath, this.fiwareService);
+    }
+  }, 3000);
 
-    this.pastelColor = this.getRandomPastelColor();
-  }
+  this.pastelColor = this.getRandomPastelColor();
+}
+
+// Función que obtiene el estado desde `this.commands` usando el nombre del actuador
+obtenerEstadoDesdeCommands(commandType: string, name: string): any {
+  const command = this.commands.find(cmd => cmd.name === name);
+  return command ? command.states : '';  // Retorna el estado si el comando está presente
+}
 
   ngAfterViewChecked(): void {
     if (this.variables.length > 0 &&
@@ -326,30 +338,30 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
   enviarComandoActuador(attributeName: string, value: any): void {
     console.log('Enviando comando al actuador:', attributeName, value);
     console.log('Entidad con alertas:', this.entitiesWithAlerts[0].id);
-  const payload = {
-    id: this.entitiesWithAlerts[0].id,
-    attributeName: attributeName,
-    value: value
-  };
+    const payload = {
+      id: this.entitiesWithAlerts[0].id,
+      attributeName: attributeName,
+      value: value
+    };
 
-  this.fiwareService.updateActuador(payload).subscribe({
-    next: res => {
-      console.log('Comando enviado con éxito', res);
-    },
-    error: err => {
-      console.error('Error al enviar comando', err);
-    }
-  });
-}
+    this.fiwareService.updateActuador(payload).subscribe({
+      next: res => {
+        console.log('Comando enviado con éxito', res);
+      },
+      error: err => {
+        console.error('Error al enviar comando', err);
+      }
+    });
+  }
 
 
   toggleActuador(index: number): void {
     this.estadoToggles[index] = !this.estadoToggles[index];
     this.commands[index].states = this.estadoToggles[index] ? 'ON' : 'OFF';
     // console.log(`Toggle ${index} cambiado a ${this.commands[index].states}`);
-     const nombre = this.commands[index]?.name;
-     const estado =  this.commands[index].states
-  this.enviarComandoActuador(nombre, estado);
+    const nombre = this.commands[index]?.name;
+    const estado = this.commands[index].states
+   // this.enviarComandoActuador(nombre, estado);
   }
 
   enviarValorAnalogico(valor: number): void {
