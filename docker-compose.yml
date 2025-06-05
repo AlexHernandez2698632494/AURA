@@ -128,6 +128,8 @@ services:
       - orion
     ports:
       - "8668:8668"
+    expose:
+      -"8668"
     environment:
       - QL_LOGLEVEL=DEBUG
       - CRATE_HOST=crate-db
