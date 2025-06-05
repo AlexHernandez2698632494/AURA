@@ -96,15 +96,15 @@
               {{ analogo.label }}
             </h3>
             <label for="{{ analogo }}"
-              >Valor : <strong>{{ valorAnalogico }}</strong></label
+              >Valor : <strong>{{ estadoAnalogos[i] }}</strong></label
             >
             <input
               type="range"
               id="{{ analogo }}"
               min="0"
               max="100"
-              [(ngModel)]="valorAnalogico"
-              (change)="enviarValorAnalogico(valorAnalogico)"
+              [(ngModel)]="estadoAnalogos[i]"
+              (change)="enviarValorAnalogico(estadoAnalogos[i])"
             />
             <p
               *ngIf="
@@ -158,9 +158,9 @@
               <div
                 class="dial-option"
                 *ngFor="let level of dialLevels; let j = index"
-                [class.active]="level === selectedDial"
+                [class.active]="level === selectedDiales[i]"
                 [style.transform]="getDialPosition(j, dialLevels.length)"
-                (click)="selectDial(level)"
+                (click)="selectDial(level, i)"
               >
                 {{ level }}
               </div>
@@ -224,8 +224,8 @@
               <mat-label>Valor del Actuador ({{ texto.label }})</mat-label>
               <input
                 matInput
-                id="actuadorInput-{{ texto }}"
-                [(ngModel)]="valorTextoActuador"
+                id="actuadorInput-{{ i }}"
+                [(ngModel)]="valorTextoActuadores[i]"
               />
             </mat-form-field>
 
@@ -233,14 +233,15 @@
               mat-stroked-button
               color="primary"
               class="update-btn"
-              (click)="actualizarActuadorTexto()"
-            >
+              (click)="actualizarActuadorTexto(i)"
+            > 
               Actualizar
             </button>
 
             <p>
-              Valor Actual: <strong>{{ valorActual }}</strong>
+              Valor Actual: <strong>{{ valoresActuales[i] }}</strong>
             </p>
+
             <p
               *ngIf="
                 commands[
