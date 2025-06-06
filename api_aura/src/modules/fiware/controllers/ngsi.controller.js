@@ -469,7 +469,7 @@ export const getEntitiesWithAlerts = async (req, res) => {
         timeInstant: formattedTimeInstant,
         deviceName: entity.deviceName?.value,
         deviceType: entity.deviceType?.value,
-        isSensorActuador:entity.isSensorActuador?.value,
+        isSensorActuador: entity.isSensorActuador?.value,
         commandTypes: entity.commandTypes?.value,
         commands: [], // Lista que contendrá los comandos dinámicamente
       };
@@ -614,7 +614,7 @@ export const updateActuatorStatusController = async (req, res) => {
       limit: req.query.limit || 100,
     };
 
-    const {id, attributeName, value } = req.body;
+    const { id, attributeName, value } = req.body;
 
     if (!id || !attributeName || typeof value === "undefined") {
       return res.status(400).json({
@@ -650,7 +650,7 @@ export const updateActuatorStatusController = async (req, res) => {
         throw error;
       }
     }
-      const type = id.substring(12,17);
+    const type = id.substring(12, 17);
     // Paso 2: Si existe, actualizar el estado
     const updateBody = {
       actionType: "update",
@@ -764,7 +764,7 @@ export const createRule = async (req, res) => {
 
 export const getAllRules = async (req, res) => {
   try {
-    const rules = await Rule.find();
+    const rules = await Rule.find({ enabled: true });
     res.json(rules);
   } catch (error) {
     console.error("Error obteniendo reglas:", error);
@@ -774,7 +774,7 @@ export const getAllRules = async (req, res) => {
 
 export const getRuleById = async (req, res) => {
   try {
-    const rule = await Rule.findById(req.params.id);
+    const rule = await Rule.findOne({ _id: req.params.id, enabled: true });
     if (!rule) {
       return res.status(404).json({ message: "Regla no encontrada." });
     }
@@ -843,7 +843,8 @@ export const getRulesByServiceSubserviceAndActuator = async (req, res) => {
       actuatorEntityId: actuatorId,
       service: fiware_service,
       subservice: fiware_servicepath,
-    });
+      enabled: true, // 👈 filtro por enabled
+    })
 
     res.json(rules);
   } catch (error) {
@@ -881,17 +882,43 @@ export const getRulesByServiceSubserviceActuatorAndCommand = async (
         .status(400)
         .json({ message: "El header 'fiware-servicepath' es obligatorio." });
     }
-
-    const rules = await Rule.find({
+const rules = await Rule.find({
       actuatorEntityId: actuatorId,
-      command: command,
       service: fiware_service,
       subservice: fiware_servicepath,
-    });
+      enabled: true, // 👈 filtro por enabled
+    })
 
     res.json(rules);
   } catch (error) {
     console.error("Error al obtener reglas filtradas:", error);
     res.status(500).json({ message: "Error al obtener reglas." });
+  }
+};
+
+export const updateRuleEnabled = async (req, res) => {
+  try {
+    const { enabled } = req.body;
+
+    if (typeof enabled !== "boolean") {
+      return res.status(400).json({
+        message: "El campo 'enabled' es obligatorio y debe ser booleano.",
+      });
+    }
+
+    const updatedRule = await Rule.findByIdAndUpdate(
+      req.params.id,
+      { enabled },
+      { new: true }
+    );
+
+    if (!updatedRule) {
+      return res.status(404).json({ message: "Regla no encontrada." });
+    }
+
+    res.json(updatedRule);
+  } catch (error) {
+    console.error("Error actualizando 'enabled':", error);
+    res.status(500).json({ message: "Error al actualizar 'enabled'." });
   }
 };
