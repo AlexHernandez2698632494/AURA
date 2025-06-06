@@ -16,11 +16,13 @@ saved_messages = []
     Input('connect-btn', 'n_clicks'),
     State('host', 'value'),
     State('port', 'value'),
+    State('username', 'value'),
+    State('password', 'value'),
     prevent_initial_call=True
 )
-def connect(n_clicks, host, port):
+def connect(n_clicks, host, port, username, password):
     if host and port:
-        return mqtt_client.connect(host, port)
+        return mqtt_client.connect(host, port, username, password)
     return "Ingrese host y puerto válidos"
 
 # Suscribirse a topic

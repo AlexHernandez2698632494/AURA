@@ -10,13 +10,16 @@ class MQTTClient:
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
 
-    def connect(self, host, port):
+    def connect(self, host, port, username=None, password=None):
         try:
+            if username and password:
+                self.client.username_pw_set(username, password)
             self.client.connect(host, int(port), 60)
             self.client.loop_start()
             return "Conectado exitosamente"
         except Exception as e:
             return f"Error de conexión: {e}"
+
 
     def on_connect(self, client, userdata, flags, rc):
         self.connected = rc == 0
