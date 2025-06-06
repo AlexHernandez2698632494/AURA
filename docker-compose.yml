@@ -80,6 +80,10 @@ services:
       - IOTA_NORTH_PORT=4041
       - IOTA_MONGO_HOST=mongo-fiware
       - IOTA_MONGO_PORT=27017
+      # - IOTA_MQTT_HOST=sima.udb.edu.sv
+      # - IOTA_MQTT_USER=simawct
+      # - IOTA_MQTT_PASS=tImEnDuTIoNg
+      # - IOTA_MQTT_PORT=1883
       - IOTA_MQTT_HOST=mosquitto
       - IOTA_MQTT_PORT=1883
       - IOTA_HTTP_PORT=7896
@@ -129,7 +133,7 @@ services:
     ports:
       - "8668:8668"
     expose:
-      -"8668"
+      - "8668"
     environment:
       - QL_LOGLEVEL=DEBUG
       - CRATE_HOST=crate-db
