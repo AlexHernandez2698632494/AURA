@@ -386,20 +386,24 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
 
   toggleActuador(index: number): void {
     this.estadoToggles[index] = !this.estadoToggles[index];
-    this.commands[index].states = this.estadoToggles[index];
+    const estadoStr = this.estadoToggles[index] ? 'ON' : 'OFF';
+    this.commands[index].states = estadoStr;    
     // console.log(`Toggle ${index} cambiado a ${this.commands[index].states}`);
     const nombre = this.commands[index]?.name;
     const estado = this.commands[index].states
-    // this.enviarComandoActuador(nombre, estado);
+    this.enviarComandoActuador(nombre, estado);
   }
 
   enviarValorAnalogico(valor: number): void {
     this.valorAnalogico = valor;
-    this.actuadores.analogo.forEach((_, i) => {
-      this.commands[i].states = valor.toString();
-      this.estadoAnalogos[i] = valor;
-    });
-    console.log('Valor analógico enviado:', valor);
+    this.actuadores.analogo.forEach((analogo, i) => {
+    const commandIndex = this.actuadores.toggle.length + i;
+    this.commands[commandIndex].states = valor.toString();
+    this.estadoAnalogos[i] = valor;
+console.log("nombre",analogo.name)
+    this.enviarComandoActuador(analogo.name, valor.toString());
+  });
+    console.log('Valor analógico enviado:',   );
   }
 
   changeDial(index: number): void {
@@ -420,25 +424,28 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
   }
 
 
-  actualizarActuadorTexto(index: number): void {
-    const nuevoValor = this.valorTextoActuadores[index]?.trim() || '';
-    if (!nuevoValor) return;
+actualizarActuadorTexto(index: number): void {
+  const nuevoValor = this.valorTextoActuadores[index]?.trim() || '';
+  if (!nuevoValor) return;
 
-    const commandIndex = this.actuadores.toggle.length +
-      this.actuadores.analogo.length +
-      this.actuadores.dial.length +
-      index;
+  const commandIndex = this.actuadores.toggle.length +
+    this.actuadores.analogo.length +
+    this.actuadores.dial.length +
+    index;
 
-    if (this.commands[commandIndex]) {
-      this.commands[commandIndex].states = nuevoValor;
-      this.estadoTextos[index] = nuevoValor;
-      this.valoresActuales[index] = nuevoValor;
+  const command = this.commands[commandIndex];
+  const actuador = this.actuadores.toggleText[index];
 
-      this.valorTextoActuadores[index] = '';
+  if (command) {
+    command.states = nuevoValor;
+    this.estadoTextos[index] = nuevoValor;
+    this.valoresActuales[index] = nuevoValor;
 
-      console.log(`Texto del actuador ${index} actualizado a:`, nuevoValor);
-    }
+    this.valorTextoActuadores[index] = '';
+
+    this.enviarComandoActuador(actuador.name, nuevoValor);
   }
+}
 
 
 
@@ -450,19 +457,21 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
   dialLevels = ['OFF', '1', '2', '3', '4', '5'];
   selectedDiales: string[] = [];
 
-  selectDial(level: string, index: number) {
-    this.selectedDiales[index] = level;
+selectDial(level: string, index: number) {
+  this.selectedDiales[index] = level;
 
-    const commandIndex = this.actuadores.toggle.length + this.actuadores.analogo.length + index;
-    const command = this.commands[commandIndex];
+  const commandIndex = this.actuadores.toggle.length + this.actuadores.analogo.length + index;
+  const command = this.commands[commandIndex];
+  const actuador = this.actuadores.dial[index];
 
-    if (command) {
-      command.states = level;
-      this.estadoDiales[index] = level;
-    }
-
-    this.cdr.detectChanges();
+  if (command) {
+    command.states = level;
+    this.estadoDiales[index] = level;
+    this.enviarComandoActuador(actuador.name, level);
   }
+
+  this.cdr.detectChanges();
+}
 
 
   getDialPosition(index: number, total: number): string {
