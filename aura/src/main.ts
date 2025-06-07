@@ -64,6 +64,7 @@ import { EditConditionComponent } from './app/components/paymentUsers/iot/buildi
 import { PremiumUsersCreateComponent } from './app/components/paymentUsers/users/create/create.component';
 import { KeyIndexComponent } from './app/components/key/index/index.component';
 import { KeyCreateComponent } from './app/components/key/create/create.component';
+import { OverviewConditionsComponent } from './app/components/paymentUsers/iot/buildings/branch/index/details/conditions/overview/overview.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
@@ -71,7 +72,7 @@ const routes: Routes = [
   { path: 'about-us', component: AboutUsComponent },
   { path: 'prueba', component: PruebaComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'registrate', component: RegisterComponent},
+  { path: 'registrate', component: RegisterComponent },
   { path: 'register-superadmin', component: FirsSuperAdminComponent },
   { path: 'more', component: MoreComponent },
   { path: 'recuperarView', component: ForgotComponent },
@@ -210,9 +211,9 @@ const routes: Routes = [
   },
   // rutas de Subscriptions o Usuarios con permisos de licencia :
   {
-    path:'premium/overview',
-    component:OverviewComponent,
-    canActivate:[AuthGuard],
+    path: 'premium/overview',
+    component: OverviewComponent,
+    canActivate: [AuthGuard],
     data: { authorities: ['super_usuario'] },
   },
   {
@@ -253,68 +254,73 @@ const routes: Routes = [
     data: { authorities: ['super_usuario'] },
   },
   {
-    path:'premium/building',
+    path: 'premium/building',
     component: BuildingsComponent,
     canActivate: [AuthGuard],
     data: { authorities: ['super_usuario'] },
   },
 
   {
-    path:'premium/building/create',
+    path: 'premium/building/create',
     component: BuildingsCreateComponent,
     canActivate: [AuthGuard],
     data: { authorities: ['super_usuario'] },
   },
   {
-    path:'premium/building/index/:id',
+    path: 'premium/building/index/:id',
     component: BuildingIndexComponent,
     canActivate: [AuthGuard],
     data: { authorities: ['super_usuario'] },
   },
   {
-    path:'premium/building/update',
+    path: 'premium/building/update',
     component: BuildingUpdateComponent,
     canActivate: [AuthGuard],
     data: { authorities: ['super_usuario'] },
   },
   {
-    path:'premium/building/:buildingName/branch/:id',
+    path: 'premium/building/:buildingName/branch/:id',
     component: BuildingBranchComponent,
     canActivate: [AuthGuard],
     data: { authorities: ['super_usuario'] },
   },
   {
-    path:'premium/building/:buildingName/branch/:id/create',
+    path: 'premium/building/:buildingName/branch/:id/create',
     component: BuildingBranchCreateComponent,
     canActivate: [AuthGuard],
     data: { authorities: ['super_usuario'] },
   },
   {
-    path:'premium/building/:buildingName/level/:id/branch/:branchName',
+    path: 'premium/building/:buildingName/level/:id/branch/:branchName',
     component: BuildingBranchIndexComponent,
     data: { authorities: ['super_usuario'] },
   },
   {
-    path:'premium/building/:buildingName/level/:id/branch/:branchName/create/devices',
+    path: 'premium/building/:buildingName/level/:id/branch/:branchName/create/devices',
     component: DeviceComponent,
     canActivate: [AuthGuard],
     data: { authorities: ['super_usuario'] },
   },
   {
-    path:'premium/building/:buildingName/level/:id/branch/:branchName/:deviceName',
+    path: 'premium/building/:buildingName/level/:id/branch/:branchName/:deviceName',
     component: DetailsDeviceComponent,
     canActivate: [AuthGuard],
     data: { authorities: ['super_usuario'] },
   },
-   {
-    path:'premium/building/:buildingName/level/:id/branch/:branchName/:deviceName/:idActuador/conditions/create',
+  {
+    path: 'premium/building/:buildingName/level/:id/branch/:branchName/:deviceName/:idActuador/conditions/create',
     component: CreateConditionComponent,
     canActivate: [AuthGuard],
     data: { authorities: ['super_usuario'] },
   },
-     {
-    path:'premium/building/:buildingName/level/:id/branch/:branchName/:deviceName/conditions/edit',
+  {
+    path: 'premium/building/:buildingName/level/:id/branch/:branchName/:deviceName/conditions/edit',
     component: EditConditionComponent,
+    canActivate: [AuthGuard],
+    data: { authorities: ['super_usuario'] },
+  }, {
+    path: 'premium/iot/building/:buildingName/level/:id/branch/:branchName/:deviceName/:idActuador/overview/conditions',
+    component: OverviewConditionsComponent,
     canActivate: [AuthGuard],
     data: { authorities: ['super_usuario'] },
   },

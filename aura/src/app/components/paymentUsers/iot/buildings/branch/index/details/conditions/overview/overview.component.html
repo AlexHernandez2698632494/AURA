@@ -1,0 +1,42 @@
+<div *ngIf="isLargeScreen">
+    <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
+</div>
+<div *ngIf="!isLargeScreen">
+    <app-bottom-tab></app-bottom-tab>
+</div>
+<div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
+    <div class="overview-container">
+        <div class="card">
+            <div class="card-header">
+                <img src="" alt="condiciones">
+                <h3>Crear Condicion</h3>
+            </div>
+            <p class="sub-title">Número de condiciones creadas <strong></strong></p>
+            <button mat-stroked-button class="btn" (click)="onCreateCondition()">
+                <span>crear condiciónes</span>
+            </button>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <img src="" alt="condiciones">
+                <h3>Ver Condiciones</h3>
+            </div>
+            <p class="sub-title">Número de condiciones activas <strong></strong></p>
+            <a href="" class="btn">ver condiciones</a>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <img src="" alt="condiciones">
+                <h3>Editar Condicion</h3>
+            </div>
+            <a href="" class="btn">editar condiciones</a>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <img src="" alt="condiciones">
+                <h3>Eliminar Condicion</h3>
+            </div>
+            <a href="" class="btn">eliminar condiciones</a>
+        </div>
+    </div>
+</div>

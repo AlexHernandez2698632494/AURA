@@ -158,7 +158,7 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
       if (!this.socketService.hasReceivedData()) {
         this.socketService.loadEntitiesFromAPI(fiwareService, fiwareServicePath, this.fiwareService);
       }
-    }, 3000);
+    }, 0);
 
     this.pastelColor = this.getRandomPastelColor();
   }
@@ -483,7 +483,7 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
   onOverviewCondition(idActuador: string, idEntities: string) {
     this.fiwareService.setIdActuador(idEntities);
     this.router.navigate([
-      `/premium/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${this.deviceName}/${idActuador}/conditions/create`
+      `/premium/iot/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${this.deviceName}/${idActuador}/overview/conditions/`
     ]);
   }
   // Añade esta propiedad para almacenar si tiene regla activa por actuador
