@@ -12,14 +12,13 @@ def layout():
         dbc.Card([
             dbc.CardHeader("Conexión al Broker"),
             dbc.CardBody([
-    dbc.Input(id='host', placeholder='Host del broker', type='text', className="mb-2"),
-    dbc.Input(id='port', placeholder='Puerto', type='text', className="mb-2"),
-    dbc.Input(id='username', placeholder='Usuario (opcional)', type='text', className="mb-2"),
-    dbc.Input(id='password', placeholder='Contraseña (opcional)', type='password', className="mb-2"),
-    dbc.Button("Conectar", id='connect-btn', n_clicks=0, color="primary"),
-    html.Div(id='connection-status', className="mt-2")
-])
-
+                dbc.Input(id='host', placeholder='Host del broker', type='text', className="mb-2"),
+                dbc.Input(id='port', placeholder='Puerto', type='text', className="mb-2"),
+                dbc.Input(id='username', placeholder='Usuario (opcional)', type='text', className="mb-2"),
+                dbc.Input(id='password', placeholder='Contraseña (opcional)', type='password', className="mb-2"),
+                dbc.Button("Conectar", id='connect-btn', n_clicks=0, color="primary"),
+                html.Div(id='connection-status', className="mt-2")
+            ])
         ], className="mb-4"),
 
         # Suscripciones
