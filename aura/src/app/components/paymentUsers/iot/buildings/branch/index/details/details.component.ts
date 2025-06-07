@@ -147,6 +147,7 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
         console.log('Estado de Textos:', this.estadoTextos);
 
         this.checkReglasActivas(entidad.id);
+        this.checkEstadosDeReglas(entidad.id)
       }
 
       this.cdr.detectChanges();
@@ -479,6 +480,12 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     ]);
   }
 
+  onOverviewCondition(idActuador: string, idEntities: string) {
+    this.fiwareService.setIdActuador(idEntities);
+    this.router.navigate([
+      `/premium/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${this.deviceName}/${idActuador}/conditions/create`
+    ]);
+  }
   // Añade esta propiedad para almacenar si tiene regla activa por actuador
   reglasActivasToggle: boolean[] = [];
   reglasActivasAnalogo: boolean[] = [];
@@ -498,7 +505,9 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
       if (entityId && command) {
         this.fiwareService.getRulesByServiceSubserviceActuatorAndCommand(entityId, command).subscribe({
           next: (res) => {
-            this.reglasActivasToggle[i] = Array.isArray(res) ? res.length > 0 : false;
+            this.reglasActivasToggle[i] = Array.isArray(res) && res.some(
+              regla => regla.command === command && regla.actuatorEntityId === entityId && regla.enabled
+            );
           },
           error: (err) => {
             console.error(`❌ Error en toggle ${i}:`, err);
@@ -518,7 +527,9 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
       if (entityId && command) {
         this.fiwareService.getRulesByServiceSubserviceActuatorAndCommand(entityId, command).subscribe({
           next: (res) => {
-            this.reglasActivasAnalogo[i] = Array.isArray(res) ? res.length > 0 : false;
+            this.reglasActivasAnalogo[i] = Array.isArray(res) && res.some(
+              regla => regla.command === command && regla.actuatorEntityId === entityId && regla.enabled
+            );
           },
           error: (err) => {
             console.error(`❌ Error en analogo ${i}:`, err);
@@ -537,7 +548,9 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
       if (entityId && command) {
         this.fiwareService.getRulesByServiceSubserviceActuatorAndCommand(entityId, command).subscribe({
           next: (res) => {
-            this.reglasActivasDial[i] = Array.isArray(res) ? res.length > 0 : false;
+            this.reglasActivasDial[i] = Array.isArray(res) && res.some(
+              regla => regla.command === command && regla.actuatorEntityId === entityId && regla.enabled
+            );
           },
           error: (err) => {
             console.error(`❌ Error en dial ${i}:`, err);
@@ -556,7 +569,9 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
       if (entityId && command) {
         this.fiwareService.getRulesByServiceSubserviceActuatorAndCommand(entityId, command).subscribe({
           next: (res) => {
-            this.reglasActivasTexto[i] = Array.isArray(res) ? res.length > 0 : false;
+            this.reglasActivasTexto[i] = Array.isArray(res) && res.some(
+              regla => regla.command === command && regla.actuatorEntityId === entityId && regla.enabled
+            );
           },
           error: (err) => {
             console.error(`❌ Error en texto ${i}:`, err);
@@ -568,4 +583,69 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
       }
     });
   }
+
+  iconoEstadoReglaToggle: boolean[] = [];
+  iconoEstadoReglaAnalogo: boolean[] = [];
+  iconoEstadoReglaDial: boolean[] = [];
+  iconoEstadoReglaTexto: boolean[] = [];
+
+  checkEstadosDeReglas(entityId: string) {
+    this.iconoEstadoReglaToggle = [];
+    this.iconoEstadoReglaAnalogo = [];
+    this.iconoEstadoReglaDial = [];
+    this.iconoEstadoReglaTexto = [];
+
+    // TOGGLE
+    this.actuadores.toggle.forEach((toggle, i) => {
+      const commandName = toggle.name;
+      this.fiwareService.getRulesByServiceSubserviceActuatorAndCommand(entityId, commandName).subscribe({
+        next: (res) => {
+          this.iconoEstadoReglaToggle[i] = Array.isArray(res) && res.some(
+            regla => regla.command === commandName && regla.actuatorEntityId === entityId && regla.enabled
+          );
+        },
+        error: () => this.iconoEstadoReglaToggle[i] = false
+      });
+    });
+
+    // ANALOGO
+    this.actuadores.analogo.forEach((analogo, i) => {
+      const commandName = analogo.name;
+      this.fiwareService.getRulesByServiceSubserviceActuatorAndCommand(entityId, commandName).subscribe({
+        next: (res) => {
+          this.iconoEstadoReglaAnalogo[i] = Array.isArray(res) && res.some(
+            regla => regla.command === commandName && regla.actuatorEntityId === entityId && regla.enabled
+          );
+        },
+        error: () => this.iconoEstadoReglaAnalogo[i] = false
+      });
+    });
+
+    // DIAL
+    this.actuadores.dial.forEach((dial, i) => {
+      const commandName = dial.name;
+      this.fiwareService.getRulesByServiceSubserviceActuatorAndCommand(entityId, commandName).subscribe({
+        next: (res) => {
+          this.iconoEstadoReglaDial[i] = Array.isArray(res) && res.some(
+            regla => regla.command === commandName && regla.actuatorEntityId === entityId && regla.enabled
+          );
+        },
+        error: () => this.iconoEstadoReglaDial[i] = false
+      });
+    });
+
+    // TOGGLE TEXT
+    this.actuadores.toggleText.forEach((text, i) => {
+      const commandName = text.name;
+      this.fiwareService.getRulesByServiceSubserviceActuatorAndCommand(entityId, commandName).subscribe({
+        next: (res) => {
+          this.iconoEstadoReglaTexto[i] = Array.isArray(res) && res.some(
+            regla => regla.command === commandName && regla.actuatorEntityId === entityId && regla.enabled
+          );
+        },
+        error: () => this.iconoEstadoReglaTexto[i] = false
+      });
+    });
+  }
+
 }
