@@ -6,11 +6,12 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FiwareService } from '../../../../../../../../../services/fiware/fiware.service';
 import { SocketService } from '../../../../../../../../../services/socket/socket.service';
 import { take } from 'rxjs/operators';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-overview-conditions',
   standalone: true,
-  imports: [CommonModule, PremiumSideComponent, BottomTabComponent],
+  imports: [CommonModule, PremiumSideComponent, BottomTabComponent, MatIconModule],
   templateUrl: './overview.component.html',
   styleUrl: './overview.component.css'
 })
@@ -21,7 +22,7 @@ export class OverviewConditionsComponent {
   entitiesWithAlerts: any[] = [];
   deviceName: string = '';
   commandName: string = '';
-  idEntities:string ='';
+  idEntities: string = '';
   commands: any[] = [];
 
   isLargeScreen: boolean = window.innerWidth > 1024;
@@ -74,7 +75,7 @@ export class OverviewConditionsComponent {
       this.entitiesWithAlerts = [entidad];
       const tipo = entidad.isSensorActuador;
       this.idEntities = this.entitiesWithAlerts[0]?.id || '';
-      console.log("id",this.idEntities)
+      console.log("id", this.idEntities)
       console.log("datos recibidos por socket", this.entitiesWithAlerts);
     });
     setTimeout(() => {
@@ -88,6 +89,12 @@ export class OverviewConditionsComponent {
     this.fiwareService.setIdActuador(this.idEntities);
     this.router.navigate([
       `/premium/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${this.deviceName}/${this.commandName}/conditions/create`
+    ]);
+  }
+
+  onBackClick() {
+        this.router.navigate([
+      `/premium/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${this.deviceName}`,
     ]);
   }
 }
