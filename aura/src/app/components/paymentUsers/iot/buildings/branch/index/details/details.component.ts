@@ -22,6 +22,7 @@ import { SocketService } from '../../../../../../../services/socket/socket.servi
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 declare var CanvasJS: any;
 
@@ -35,7 +36,8 @@ declare var CanvasJS: any;
     NgxGaugeModule,
     FormsModule,
     MatFormFieldModule,
-    MatInputModule,],
+    MatInputModule,
+    MatProgressSpinnerModule],
   templateUrl: './details.component.html',
   styleUrls: ['./details.component.css']
 })
@@ -112,14 +114,17 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
       this.entitiesWithAlerts = [entidad];
       const tipo = entidad.isSensorActuador;
       console.log("datos recibidos por socket", this.entitiesWithAlerts);
+      this.commands = (entidad.commands || []).map((cmd: any) => ({
+        ...cmd,
+        status: cmd.status ?? 'OK'
+      }));
 
       if ((tipo === 0 || tipo === 2) && entidad.variables?.length > 0) {
-        this.loadHistoricalData(entidad.id); // 🔁 Aquí se llena variables con los sensores para los gauges
+        this.loadHistoricalData(entidad.id);
       }
 
       if (tipo === 1 || tipo === 2) {
-        this.commands = entidad.commands || [];
-
+        // commands ya asignado arriba
         this.actuadores = {
           toggle: entidad.commandTypes?.toggle || [],
           analogo: entidad.commandTypes?.analogo || [],
@@ -128,16 +133,12 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
         };
 
         // Aquí cambiamos para usar `this.commands` y obtener el estado correcto para cada tipo
-        this.estadoToggles = this.actuadores.toggle.map((actuador, i) => this.obtenerEstadoDesdeCommands('switch', actuador.name));  // Cambié 'i' por 'actuador.name'
-        this.estadoAnalogos = this.actuadores.analogo.map((actuador, i) => this.obtenerEstadoDesdeCommands('analogo', actuador.name));  // Cambié 'i' por 'actuador.name'
-        this.estadoDiales = this.actuadores.dial.map((actuador, i) =>
-          this.obtenerEstadoDesdeCommands('dial', actuador.name)
-        );
+        this.estadoToggles = this.actuadores.toggle.map((actuador, i) => this.obtenerEstadoDesdeCommands('switch', actuador.name));
+        this.estadoAnalogos = this.actuadores.analogo.map((actuador, i) => this.obtenerEstadoDesdeCommands('analogo', actuador.name));
+        this.estadoDiales = this.actuadores.dial.map((actuador, i) => this.obtenerEstadoDesdeCommands('dial', actuador.name));
 
         this.selectedDiales = [...this.estadoDiales];
-        this.valorTextoActuadores = this.actuadores.toggleText.map((actuador, i) =>
-          this.obtenerEstadoDesdeCommands('switchText', actuador.name) || ''
-        );
+        this.valorTextoActuadores = this.actuadores.toggleText.map((actuador, i) => this.obtenerEstadoDesdeCommands('switchText', actuador.name) || '');
 
         this.valoresActuales = [...this.valorTextoActuadores];
 
@@ -147,8 +148,11 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
         console.log('Estado de Textos:', this.estadoTextos);
 
         this.checkReglasActivas(entidad.id);
-        this.checkEstadosDeReglas(entidad.id)
+        this.checkEstadosDeReglas(entidad.id);
       }
+
+      // 🔄 Cada vez que llega info por socket, revisamos estados
+      this.actualizarEstadosDesdeSocket();
 
       this.cdr.detectChanges();
     });
@@ -169,7 +173,7 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     const estado = command?.states?.toLowerCase().trim();
 
     if (commandType === 'switch') {
-      return estado === 'on'; // ✅ "on" será true, cualquier otro será false
+      return estado === 'ON'; // ✅ "on" será true, cualquier otro será false
     }
 
     if (commandType === 'analogo') {
@@ -187,6 +191,13 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     return '';
   }
 
+  actualizarEstadosDesdeSocket(): void {
+    this.commands.forEach((cmd, i) => {
+      if (cmd.status === 'OK') {
+        this.estadoToggles[i] = cmd.states.toLowerCase() === 'on';
+      }
+    });
+  }
 
   ngAfterViewChecked(): void {
     if (this.variables.length > 0 &&
@@ -385,25 +396,36 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
 
 
   toggleActuador(index: number): void {
-    this.estadoToggles[index] = !this.estadoToggles[index];
-    const estadoStr = this.estadoToggles[index] ? 'ON' : 'OFF';
-    this.commands[index].states = estadoStr;    
-    // console.log(`Toggle ${index} cambiado a ${this.commands[index].states}`);
-    const nombre = this.commands[index]?.name;
-    const estado = this.commands[index].states
-    this.enviarComandoActuador(nombre, estado);
+    const cmd = this.commands[index];
+    if (!cmd) {
+      return;
+    }
+    if (cmd.status === 'PENDING') {
+      return; // aún esperando respuesta
+    }
+
+    // Calculamos el próximo estado (ON u OFF)
+    const nextState = cmd.states?.toLowerCase() === 'on' ? 'OFF' : 'ON';
+
+    // Marcamos como pendiente y guardamos el estado solicitado
+    cmd.status = 'PENDING';
+    cmd.states = nextState;
+    this.cdr.detectChanges();
+
+    // Enviamos al backend el nuevo estado requerido
+    this.enviarComandoActuador(cmd.name, nextState);
   }
 
   enviarValorAnalogico(valor: number): void {
     this.valorAnalogico = valor;
     this.actuadores.analogo.forEach((analogo, i) => {
-    const commandIndex = this.actuadores.toggle.length + i;
-    this.commands[commandIndex].states = valor.toString();
-    this.estadoAnalogos[i] = valor;
-console.log("nombre",analogo.name)
-    this.enviarComandoActuador(analogo.name, valor.toString());
-  });
-    console.log('Valor analógico enviado:',   );
+      const commandIndex = this.actuadores.toggle.length + i;
+      this.commands[commandIndex].states = valor.toString();
+      this.estadoAnalogos[i] = valor;
+      console.log("nombre", analogo.name)
+      this.enviarComandoActuador(analogo.name, valor.toString());
+    });
+    console.log('Valor analógico enviado:',);
   }
 
   changeDial(index: number): void {
@@ -424,28 +446,28 @@ console.log("nombre",analogo.name)
   }
 
 
-actualizarActuadorTexto(index: number): void {
-  const nuevoValor = this.valorTextoActuadores[index]?.trim() || '';
-  if (!nuevoValor) return;
+  actualizarActuadorTexto(index: number): void {
+    const nuevoValor = this.valorTextoActuadores[index]?.trim() || '';
+    if (!nuevoValor) return;
 
-  const commandIndex = this.actuadores.toggle.length +
-    this.actuadores.analogo.length +
-    this.actuadores.dial.length +
-    index;
+    const commandIndex = this.actuadores.toggle.length +
+      this.actuadores.analogo.length +
+      this.actuadores.dial.length +
+      index;
 
-  const command = this.commands[commandIndex];
-  const actuador = this.actuadores.toggleText[index];
+    const command = this.commands[commandIndex];
+    const actuador = this.actuadores.toggleText[index];
 
-  if (command) {
-    command.states = nuevoValor;
-    this.estadoTextos[index] = nuevoValor;
-    this.valoresActuales[index] = nuevoValor;
+    if (command) {
+      command.states = nuevoValor;
+      this.estadoTextos[index] = nuevoValor;
+      this.valoresActuales[index] = nuevoValor;
 
-    this.valorTextoActuadores[index] = '';
+      this.valorTextoActuadores[index] = '';
 
-    this.enviarComandoActuador(actuador.name, nuevoValor);
+      this.enviarComandoActuador(actuador.name, nuevoValor);
+    }
   }
-}
 
 
 
@@ -457,21 +479,21 @@ actualizarActuadorTexto(index: number): void {
   dialLevels = ['OFF', '1', '2', '3', '4', '5'];
   selectedDiales: string[] = [];
 
-selectDial(level: string, index: number) {
-  this.selectedDiales[index] = level;
+  selectDial(level: string, index: number) {
+    this.selectedDiales[index] = level;
 
-  const commandIndex = this.actuadores.toggle.length + this.actuadores.analogo.length + index;
-  const command = this.commands[commandIndex];
-  const actuador = this.actuadores.dial[index];
+    const commandIndex = this.actuadores.toggle.length + this.actuadores.analogo.length + index;
+    const command = this.commands[commandIndex];
+    const actuador = this.actuadores.dial[index];
 
-  if (command) {
-    command.states = level;
-    this.estadoDiales[index] = level;
-    this.enviarComandoActuador(actuador.name, level);
+    if (command) {
+      command.states = level;
+      this.estadoDiales[index] = level;
+      this.enviarComandoActuador(actuador.name, level);
+    }
+
+    this.cdr.detectChanges();
   }
-
-  this.cdr.detectChanges();
-}
 
 
   getDialPosition(index: number, total: number): string {
