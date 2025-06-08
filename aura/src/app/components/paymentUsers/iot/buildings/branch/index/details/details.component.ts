@@ -355,7 +355,7 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
 
   obtenerEstadoToggle(index: number): boolean {
     const estado = this.commands[index]?.states?.trim();
-    return estado ? estado !== '0' && estado.toLowerCase() !== 'off' : false;
+    return estado ? estado !== '0' && estado.toLowerCase() !== 'OFF' : false;
   }
 
   getCommandStatus(name: string): string {
@@ -405,7 +405,7 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     }
 
     // Calculamos el próximo estado (ON u OFF)
-    const nextState = cmd.states?.toLowerCase() === 'on' ? 'OFF' : 'ON';
+    const nextState = cmd.states?.toLowerCase() === 'ON' ? 'OFF' : 'ON';
 
     // Marcamos como pendiente y guardamos el estado solicitado
     cmd.status = 'PENDING';
