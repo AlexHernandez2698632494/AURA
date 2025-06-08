@@ -59,8 +59,8 @@ import { BuildingBranchCreateComponent } from './app/components/paymentUsers/iot
 import { BuildingBranchIndexComponent } from './app/components/paymentUsers/iot/buildings/branch/index/index.component';
 import { DeviceComponent } from './app/components/paymentUsers/iot/fiware/device/device.component';
 import { DetailsDeviceComponent } from './app/components/paymentUsers/iot/buildings/branch/index/details/details.component';
-import { CreateConditionComponent } from './app/components/paymentUsers/iot/buildings/branch/index/details/conditions/create/create.component';
-import { EditConditionComponent } from './app/components/paymentUsers/iot/buildings/branch/index/details/conditions/edit/edit.component';
+import { CreateConditionComponent } from './app/components/paymentUsers/iot/buildings/branch/index/details/conditions/overview/create/create.component';
+import { EditConditionComponent } from './app/components/paymentUsers/iot/buildings/branch/index/details/conditions/overview/edit/edit.component';
 import { PremiumUsersCreateComponent } from './app/components/paymentUsers/users/create/create.component';
 import { KeyIndexComponent } from './app/components/key/index/index.component';
 import { KeyCreateComponent } from './app/components/key/create/create.component';

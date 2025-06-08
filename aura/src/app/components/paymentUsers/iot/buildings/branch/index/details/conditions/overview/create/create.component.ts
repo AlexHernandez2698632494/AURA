@@ -23,9 +23,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import Swal from 'sweetalert2';
 
-import { PremiumSideComponent } from '../../../../../../../side/side.component';
-import { BottomTabComponent } from '../../../../../../../../bottom-tab/bottom-tab.component';
-import { FiwareService } from '../../../../../../../../../services/fiware/fiware.service';
+import { PremiumSideComponent } from '../../../../../../../../side/side.component';
+import { BottomTabComponent } from '../../../../../../../../../bottom-tab/bottom-tab.component';
+import { FiwareService } from '../../../../../../../../../../services/fiware/fiware.service';
 
 @Component({
   selector: 'app-create',
