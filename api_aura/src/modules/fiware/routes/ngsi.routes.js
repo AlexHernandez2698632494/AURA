@@ -7,6 +7,7 @@ import {
   getRuleById,
   getRulesByServiceSubserviceActuatorAndCommand,
   getRulesByServiceSubserviceAndActuator,
+  getRuleStats,
   getServicePaths,
   getSubServiceBranch,
   getSubServiceBuilding,
@@ -27,6 +28,7 @@ router.post("/update/actuator", updateActuatorStatusController);
 
 router.get("/rules/actuator/:actuatorId", getRulesByServiceSubserviceAndActuator);
 router.get("/rules/:actuatorId/:command", getRulesByServiceSubserviceActuatorAndCommand);
+router.get("/rules/stats", getRuleStats);
 router.post("/rules", createRule);
 router.get("/rules", getAllRules);
 router.get("/rules/:id", getRuleById);

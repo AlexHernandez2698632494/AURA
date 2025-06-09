@@ -24,6 +24,7 @@ export class OverviewConditionsComponent {
   commandName: string = '';
   idEntities: string = '';
   commands: any[] = [];
+  ruleStats: any = {};
 
   isLargeScreen: boolean = window.innerWidth > 1024;
   @Output() bodySizeChange = new EventEmitter<boolean>();
@@ -49,11 +50,13 @@ export class OverviewConditionsComponent {
       this.branchName = params.get('branchName') || '';
       this.branchId = params.get('id') || '';
       this.deviceName = params.get('deviceName') || '';
-      this.commandName = params.get('idActuador') || ''
+      this.commandName = params.get('idActuador') || '';
     });
-    console.log("params", this.router.url)
-    console.log("deviceName", this.deviceName)
-    console.log("command", this.commandName)
+
+    console.log("params", this.router.url);
+    console.log("deviceName", this.deviceName);
+    console.log("command", this.commandName);
+
     const fiwareService = sessionStorage.getItem('fiware-service');
     const fiwareServicePath = sessionStorage.getItem('fiware-servicepath');
 
@@ -61,6 +64,7 @@ export class OverviewConditionsComponent {
       console.error('❌ No se encontraron fiwareService o fiwareServicePath en sessionStorage');
       return;
     }
+
     this.socketService.entitiesWithAlerts$.pipe(take(1)).subscribe((entities: any[]) => {
       const entidad = entities.find(e => {
         const name = e.deviceName || (e.raw && e.raw.deviceName);
@@ -75,9 +79,18 @@ export class OverviewConditionsComponent {
       this.entitiesWithAlerts = [entidad];
       const tipo = entidad.isSensorActuador;
       this.idEntities = this.entitiesWithAlerts[0]?.id || '';
-      console.log("id", this.idEntities)
+      console.log("id", this.idEntities);
       console.log("datos recibidos por socket", this.entitiesWithAlerts);
+
+      // ✅ Llamamos al servicio getRuleStats
+      const payload = { id: this.idEntities };
+      this.fiwareService.getRuleStats().subscribe(stats => {
+        this.ruleStats = stats;
+        console.log('📊 Stats recibidas:', this.ruleStats);
+        this.cdr.detectChanges(); // Para asegurar que se refleje en el DOM
+      });
     });
+
     setTimeout(() => {
       if (!this.socketService.hasReceivedData()) {
         this.socketService.loadEntitiesFromAPI(fiwareService, fiwareServicePath, this.fiwareService);
@@ -93,7 +106,7 @@ export class OverviewConditionsComponent {
   }
 
   onBackClick() {
-        this.router.navigate([
+    this.router.navigate([
       `/premium/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${this.deviceName}`,
     ]);
   }

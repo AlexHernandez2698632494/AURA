@@ -19,9 +19,12 @@ const RuleSchema = new mongoose.Schema({
   command: { type: String, required: true },
   commandValue: { type: [mongoose.Schema.Types.Mixed], required: true },
   enabled: { type: Boolean, default: true },
-  createdAt: { type: Date, default: Date.now },
+  estadoEliminacion: {
+    type: Number,
+    default: 0, // 0: no eliminado, 1: eliminado
+  },
   service: { type: String, required: true },
   subservice: { type: String, required: true },
-});
+},{ timestamps: true });
 
 export default connectDB.model("rule", RuleSchema);

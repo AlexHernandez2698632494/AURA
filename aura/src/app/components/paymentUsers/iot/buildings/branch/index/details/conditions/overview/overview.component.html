@@ -1,7 +1,5 @@
 <div *ngIf="isLargeScreen">
-  <app-premium-side
-    (sideNavToggle)="onSideNavToggle($event)"
-  ></app-premium-side>
+  <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
 </div>
 <div *ngIf="!isLargeScreen">
   <app-bottom-tab></app-bottom-tab>
@@ -20,15 +18,19 @@
           <img src="" alt="condiciones" />
           <h3>Crear Condicion</h3>
         </div>
-        <p class="sub-title">Número de condiciones creadas <strong></strong></p>
-        <a class="btn" (click)="onCreateCondition()">editar condiciones</a>
+        <p class="sub-title">
+          Número de condiciones creadas: <strong>{{ ruleStats.created || 0 }}</strong>
+        </p>
+        <a class="btn" (click)="onCreateCondition()">crear condiciones</a>
       </div>
       <div class="card">
         <div class="card-header">
           <img src="" alt="condiciones" />
           <h3>Ver Condiciones</h3>
         </div>
-        <p class="sub-title">Número de condiciones activas <strong></strong></p>
+        <p class="sub-title">
+          Número de condiciones activas <strong>{{ ruleStats.enabledTrue || 0 }}</strong>
+        </p>
         <a href="" class="btn">ver condiciones</a>
       </div>
       <div class="card">
@@ -36,6 +38,9 @@
           <img src="" alt="condiciones" />
           <h3>Editar Condicion</h3>
         </div>
+        <p class="sub-title">
+          Condiciones modificadas <strong>{{ ruleStats.modified || 0 }}</strong>
+        </p>
         <a href="" class="btn">editar condiciones</a>
       </div>
       <div class="card">
@@ -43,6 +48,9 @@
           <img src="" alt="condiciones" />
           <h3>Eliminar Condicion</h3>
         </div>
+        <p class="sub-title">
+  Condiciones eliminadas <strong>{{ ruleStats.eliminadas || 0 }}</strong>
+</p>
         <a href="" class="btn">eliminar condiciones</a>
       </div>
     </div>

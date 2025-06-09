@@ -922,3 +922,80 @@ export const updateRuleEnabled = async (req, res) => {
     res.status(500).json({ message: "Error al actualizar 'enabled'." });
   }
 };
+
+export const getRuleStats = async (req, res) => {
+  try {
+    const fiware_service = req.headers["fiware-service"];
+    const fiware_servicepath = req.headers["fiware-servicepath"];
+
+    // Filtro base (opcional por servicio/subservicio)
+    const baseFilter = {};
+    if (fiware_service) baseFilter.service = fiware_service;
+    if (fiware_servicepath) baseFilter.subservice = fiware_servicepath;
+
+    // Conteo total
+    const total = await Rule.countDocuments(baseFilter);
+
+    // enabled: true y estadoEliminacion: 0 (reglas activas no eliminadas)
+    const enabledTrue = await Rule.countDocuments({
+      ...baseFilter,
+      enabled: true,
+      estadoEliminacion: 0,
+    });
+
+    // enabled: false y estadoEliminacion: 1 (reglas desactivadas y eliminadas)
+    const enabledFalse = await Rule.countDocuments({
+      ...baseFilter,
+      enabled: false,
+      estadoEliminacion: 1,
+    });
+
+    // enabled = 1 (por si se guardaron como número)
+    const enabled1 = await Rule.countDocuments({
+      ...baseFilter,
+      enabled: 1,
+    });
+
+    // Reglas con createdAt definido (todas deberían tenerlo si usas timestamps)
+    const created = await Rule.countDocuments({
+      ...baseFilter,
+      createdAt: { $exists: true },
+    });
+
+    // Reglas modificadas (updatedAt > createdAt)
+    const modified = await Rule.countDocuments({
+      ...baseFilter,
+      $expr: { $gt: ["$updatedAt", "$createdAt"] },
+    });
+
+    // Reglas eliminadas (estadoEliminacion = 1)
+    const eliminadas = await Rule.countDocuments({
+      ...baseFilter,
+      estadoEliminacion: 1,
+    });
+
+    // Reglas no eliminadas (estadoEliminacion = 0)
+    const noEliminadas = await Rule.countDocuments({
+      ...baseFilter,
+      estadoEliminacion: 0,
+    });
+
+    // Respuesta final
+    res.json({
+      total,
+      enabledTrue,
+      enabledFalse,
+      enabled1,
+      created,
+      modified,
+      eliminadas,
+      noEliminadas,
+    });
+  } catch (error) {
+    console.error("Error obteniendo estadísticas de reglas:", error);
+    res.status(500).json({
+      message: "Error al obtener estadísticas de reglas.",
+      error: error.message,
+    });
+  }
+};
