@@ -138,55 +138,63 @@ export class FiwareService {
   }
 
   getRulesByServiceSubserviceActuatorAndCommand(actuatorId: string, command: string): Observable<any> {
-  const headers = this.getAllSubServices();
-  const url = `${this.baseUrl}/v1/ngsi/rules/${actuatorId}/${command}`;
+    const headers = this.getAllSubServices();
+    const url = `${this.baseUrl}/v1/ngsi/rules/${actuatorId}/${command}`;
 
-  return this.http.get<any>(url, { headers }).pipe(
-    catchError(this.handleError)
-  );
-}
+    return this.http.get<any>(url, { headers }).pipe(
+      catchError(this.handleError)
+    );
+  }
   getEntities(): Observable<any> {
-  const headers = this.getAllSubServices();
-  const url = `${this.baseUrl}/entities`;
+    const headers = this.getAllSubServices();
+    const url = `${this.baseUrl}/entities`;
 
-  return this.http.get<any>(url, { headers }).pipe(
-    catchError(this.handleError)
-  );
-}
-createRule(payload: any): Observable<any> {
-  const headers = this.getAllSubServices();
-  const url = `${this.baseUrl}/v1/ngsi/rules`;
+    return this.http.get<any>(url, { headers }).pipe(
+      catchError(this.handleError)
+    );
+  }
+  createRule(payload: any): Observable<any> {
+    const headers = this.getAllSubServices();
+    const url = `${this.baseUrl}/v1/ngsi/rules`;
 
-  return this.http.post<any>(url, payload, { headers }).pipe(
-    catchError(this.handleError)
-  );
-}
-updateActuador(payload: any): Observable<any> {
-  const headers = this.getAllSubServices();
-  const url = `${this.baseUrl}/v1/ngsi/update/actuator`;
+    return this.http.post<any>(url, payload, { headers }).pipe(
+      catchError(this.handleError)
+    );
+  }
+  updateActuador(payload: any): Observable<any> {
+    const headers = this.getAllSubServices();
+    const url = `${this.baseUrl}/v1/ngsi/update/actuator`;
 
-  return this.http.post<any>(url, payload, { headers }).pipe(
-    catchError(this.handleError)
-  );
-}
+    return this.http.post<any>(url, payload, { headers }).pipe(
+      catchError(this.handleError)
+    );
+  }
 
-getRuleStats(): Observable<any> {
-  const headers = this.getAllSubServices();
-  const url = `${this.baseUrl}/v1/ngsi/rules/stats`;
+  getRuleStats(): Observable<any> {
+    const headers = this.getAllSubServices();
+    const url = `${this.baseUrl}/v1/ngsi/rules/stats`;
 
-  return this.http.get<any>(url,  { headers }).pipe(
-    catchError(this.handleError)
-  );
-}
-private idActuador: string = '';
+    return this.http.get<any>(url, { headers }).pipe(
+      catchError(this.handleError)
+    );
+  }
+  updateRuleEnabled(payload: any, id: string): Observable<any> {
+    const headers = this.getAllSubServices();
+    const url = `${this.baseUrl}/v1/ngsi/rules/${id}/enabled`;
+
+    return this.http.patch<any>(url, payload, { headers }).pipe(
+      catchError(this.handleError)
+    );
+  }
+  private idActuador: string = '';
   setIdActuador(id: string) {
     this.idActuador = id;
   }
   getIdActuador(): string {
     return this.idActuador;
   }
-  
-  
+
+
   // Manejo de errores
   private handleError(error: any): Observable<never> {
     console.error('Error al obtener datos', error);

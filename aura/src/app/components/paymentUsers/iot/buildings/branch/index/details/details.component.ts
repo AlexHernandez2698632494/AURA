@@ -678,5 +678,63 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
       });
     });
   }
+// Este método se ejecuta al hacer click en el botón de modo manual/automático
+toggleModoManualAutomatico(i: number) {
+  const entity = this.entitiesWithAlerts[0];
+  if (!entity) {
+    console.warn('No hay entidad en entitiesWithAlerts');
+    return;
+  }
+
+  const command = this.commands[i];
+  if (!command) {
+    console.warn(`No hay comando en commands para el índice ${i}`);
+    return;
+  }
+
+  // Obtener si la regla está activa o no (modo automático = regla activa)
+  const reglaActiva = this.reglasActivasToggle[i]; // true o false
+
+  // Payload con el valor contrario de enable
+  const nuevoEstado = !reglaActiva;
+  console.log("Estado nuevo para toggle:", nuevoEstado);
+
+  // Aquí necesitas el ID de la regla para actualizar,
+  // asumamos que tienes una forma de obtenerlo por command y entity
+  this.fiwareService.getRulesByServiceSubserviceActuatorAndCommand(entity.id, command.name).subscribe({
+    next: (rules: any[]) => {
+      console.log("Respuesta de getRulesByServiceSubserviceActuatorAndCommand:", rules);
+      if (rules.length === 0) {
+        console.warn('No se encontró regla para este comando');
+        return;
+      }
+
+      const reglaId = rules[0]._id; // suponer el primer resultado
+      console.log("ID de la regla obtenida:", reglaId);
+
+      if (!reglaId) {
+        console.error('El ID de la regla es undefined o null');
+        return;
+      }
+
+      const payload = { enabled: nuevoEstado };
+
+      this.fiwareService.updateRuleEnabled(payload, reglaId).subscribe({
+        next: () => {
+          console.log(`Regla ${reglaId} actualizada a enabled=${nuevoEstado}`);
+
+          // Actualizamos localmente para reflejar el cambio en UI
+          this.reglasActivasToggle[i] = nuevoEstado;
+          this.iconoEstadoReglaToggle[i] = nuevoEstado;
+
+          // Puedes agregar lógica para actualizar estados o refrescar datos si quieres
+        },
+        error: (err) => console.error('Error actualizando la regla', err)
+      });
+    },
+    error: (err) => console.error('Error obteniendo regla para el comando', err)
+  });
+}
+
 
 }

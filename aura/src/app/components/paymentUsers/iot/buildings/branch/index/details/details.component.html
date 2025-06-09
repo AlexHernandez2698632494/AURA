@@ -86,7 +86,7 @@
               </button>
               <button mat-icon-button class="regla-icono" *ngIf="iconoEstadoReglaToggle[i] !== undefined" [ngClass]="
                   iconoEstadoReglaToggle[i] ? 'status-green' : 'status-red'
-                ">
+                " (click)="toggleModoManualAutomatico(i)">
                 <mat-icon class="icon">rule</mat-icon>
                 <span>{{
                   iconoEstadoReglaToggle[i] ? "Modo Automático" : "Modo Manual"

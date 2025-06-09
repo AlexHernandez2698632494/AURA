@@ -14,7 +14,8 @@ import {
   getSubServiceBuildingAndBranch,
   sendDataToAgent,
   updateActuatorStatusController,
-  updateRule
+  updateRule,
+  updateRuleEnabled
 } from "../controllers/ngsi.controller.js";
 
 const router = express.Router();
@@ -29,9 +30,10 @@ router.post("/update/actuator", updateActuatorStatusController);
 router.get("/rules/actuator/:actuatorId", getRulesByServiceSubserviceAndActuator);
 router.get("/rules/:actuatorId/:command", getRulesByServiceSubserviceActuatorAndCommand);
 router.get("/rules/stats", getRuleStats);
-router.post("/rules", createRule);
 router.get("/rules", getAllRules);
 router.get("/rules/:id", getRuleById);
+router.post("/rules", createRule);
+router.patch("/rules/:id/enabled", updateRuleEnabled);
 router.put("/rules/:id", updateRule);
 router.delete("/rules/:id", deleteRule);
 
