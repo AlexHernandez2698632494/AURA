@@ -65,6 +65,7 @@ import { PremiumUsersCreateComponent } from './app/components/paymentUsers/users
 import { KeyIndexComponent } from './app/components/key/index/index.component';
 import { KeyCreateComponent } from './app/components/key/create/create.component';
 import { OverviewConditionsComponent } from './app/components/paymentUsers/iot/buildings/branch/index/details/conditions/overview/overview.component';
+import { IndexConditionsComponent } from './app/components/paymentUsers/iot/buildings/branch/index/details/conditions/overview/index/index.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
@@ -322,6 +323,12 @@ const routes: Routes = [
     path: 'premium/iot/building/:buildingName/level/:id/branch/:branchName/:deviceName/:idActuador/overview/conditions',
     component: OverviewConditionsComponent,
     canActivate: [AuthGuard],
+    data: { authorities: ['super_usuario'] },
+  },
+  {
+    path: 'premium/iot/building/:buildingName/level/:id/branch/:branchName/:deviceName/:idActuador/overview/conditions/view',
+    component: IndexConditionsComponent,
+    canActivate:[AuthGuard],
     data: { authorities: ['super_usuario'] },
   },
   {
