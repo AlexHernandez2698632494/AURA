@@ -95,7 +95,20 @@ export class CreateConditionComponent implements OnInit {
       });
 
       // ✅ Solución: intenta obtener el id del actuador de FiwareService, si no, usa el id de la URL
-      this.idActuador = this.fiwareService.getIdActuador();
+      let idFromService = this.fiwareService.getIdActuador();
+
+      if (!idFromService) {
+        const idFromSession = sessionStorage.getItem('idActuador');
+        if (idFromSession) {
+          this.idActuador = idFromSession;
+        } else {
+          this.idActuador = this.command;
+          sessionStorage.setItem('idActuador', this.idActuador);
+        }
+      } else {
+        this.idActuador = idFromService;
+        sessionStorage.setItem('idActuador', this.idActuador);
+      }
     });
 
     this.fiwareService.getEntities().subscribe(
