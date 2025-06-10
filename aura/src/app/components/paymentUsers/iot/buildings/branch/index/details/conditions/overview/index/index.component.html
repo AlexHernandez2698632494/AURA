@@ -1,0 +1,46 @@
+<div *ngIf="isLargeScreen">
+    <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
+</div>
+<div *ngIf="!isLargeScreen">
+    <app-bottom-tab></app-bottom-tab>
+</div>
+<div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
+    <div class="main-container">
+        <div class="header">
+            <button mat-icon-button class="back-button" (click)="onBackClick()">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            <h1>Condiciones del actuador: {{ deviceName }} con el comando {{commandName}}</h1>
+        </div>
+
+        <ng-container *ngIf="isLoading">
+            <p>Cargando condiciones...</p>
+        </ng-container>
+
+        <ng-container *ngIf="!isLoading && rulesData">
+            <div class="condition-card" *ngFor="let condition of rulesData.conditions">
+                <div class="condition-info">
+                    <img src="assets/imagen/conditions.png" alt="icono" width="50" height="50">
+                    <div class="conditions">
+                        <p><strong>Sensor:</strong> {{ condition.sensorEntityId }}</p>
+                        <p><strong>Variable:</strong> {{ condition.sensorAttribute }}</p>
+                        <p>
+                            <strong>Condición:</strong>
+                            {{ translateConditionType(condition.conditionType) }}
+                            {{ condition.value }}
+                        </p>
+                        <!-- Mostrar lógica de condición -->
+                        <div class="logic-info">
+                            <p><strong>Lógica entre condiciones:</strong> {{
+                                getConditionLogicText(rulesData.conditionLogic) }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="!isLoading && !rulesData">
+            <p class="condition-card">No hay condiciones configuradas.</p>
+        </ng-container>
+    </div>
+</div>
