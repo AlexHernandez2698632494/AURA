@@ -105,6 +105,13 @@ export class OverviewConditionsComponent {
     ]);
   }
 
+  onViewCondition() {
+    this.fiwareService.setIdActuador(this.idEntities);
+    this.router.navigate([
+      `/premium/iot/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${this.deviceName}/${this.commandName}/overview/conditions/view`
+    ]);
+  }
+
   onBackClick() {
     this.router.navigate([
       `/premium/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${this.deviceName}`,
