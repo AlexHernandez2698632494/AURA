@@ -31,7 +31,7 @@
         <p class="sub-title">
           Número de condiciones activas <strong>{{ ruleStats.enabledTrue || 0 }}</strong>
         </p>
-        <a href="" class="btn">ver condiciones</a>
+        <a (click)="onViewCondition()" class="btn">ver condiciones</a>
       </div>
       <div class="card">
         <div class="card-header">
