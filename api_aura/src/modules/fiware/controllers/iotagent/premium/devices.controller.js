@@ -64,7 +64,7 @@ export const createServiceDeviceJSON = async (req, res) => {
     if (isSensorActuador === 1 || isSensorActuador === 2) {
       const requiredActuatorFields = {
         nameStates,
-        commandName
+        commandName,
       };
 
       for (const [key, value] of Object.entries(requiredActuatorFields)) {
@@ -76,20 +76,16 @@ export const createServiceDeviceJSON = async (req, res) => {
       }
 
       if (!Array.isArray(nameStates) || !Array.isArray(commandName)) {
-        return res
-          .status(400)
-          .json({
-            message: "'nameStates' y 'commandName' deben ser arreglos.",
-          });
+        return res.status(400).json({
+          message: "'nameStates' y 'commandName' deben ser arreglos.",
+        });
       }
 
       if (nameStates.length !== commandName.length) {
-        return res
-          .status(400)
-          .json({
-            message:
-              "'nameStates' y 'commandName' deben tener la misma cantidad de elementos.",
-          });
+        return res.status(400).json({
+          message:
+            "'nameStates' y 'commandName' deben tener la misma cantidad de elementos.",
+        });
       }
     }
 
@@ -382,7 +378,7 @@ async function createDevice(
             name: "isSensorActuador",
             type: "String",
             value: isSensorActuador,
-          }
+          },
         ],
       },
     ],
@@ -427,16 +423,18 @@ async function createDeviceActuador(
   const entity_type = deviceId.substring(0, 5);
 
   // Aseguramos que los campos commandName, commandNameToggle, commandNameAnalogo, etc., sean arrays
-  const toggleCommands = Array.isArray(commandNameToggle)
-    ? commandNameToggle
-    : [];
-  const analogoCommands = Array.isArray(commandNameAnalogo)
-    ? commandNameAnalogo
-    : [];
-  const dialCommands = Array.isArray(commandNameDial) ? commandNameDial : [];
-  const toggleTextCommands = Array.isArray(commandNameToggleText)
-    ? commandNameToggleText
-    : [];
+  const addTimeout = (commands) =>
+    Array.isArray(commands)
+      ? commands.map((cmd) => ({
+          ...cmd,
+          timeout: 15,
+        }))
+      : [];
+
+  const toggleCommands = addTimeout(commandNameToggle);
+  const analogoCommands = addTimeout(commandNameAnalogo);
+  const dialCommands = addTimeout(commandNameDial);
+  const toggleTextCommands = addTimeout(commandNameToggleText);
 
   // Aseguramos que los atributos estén construidos correctamente
   const attributes = [
@@ -493,11 +491,12 @@ async function createDeviceActuador(
               dial: dialCommands,
               toggleText: toggleTextCommands,
             },
-          },{
+          },
+          {
             name: "isSensorActuador",
             type: "String",
             value: isSensorActuador,
-          }
+          },
         ],
       },
     ],
@@ -605,11 +604,12 @@ async function createDeviceSensorActuador(
               dial: dialCommands,
               toggleText: toggleTextCommands,
             },
-          },{
+          },
+          {
             name: "isSensorActuador",
             type: "String",
             value: isSensorActuador,
-          }
+          },
         ],
       },
     ],
@@ -710,7 +710,8 @@ async function createSubscription({
         "TimeInstant",
         "servicePath",
         "deviceName",
-        "status","command"
+        "status",
+        "command",
       ],
       attrsFormat: "keyValues",
     },
