@@ -80,6 +80,45 @@ export const createDevice = async(req, res) => {
 //      }
 //  };
 
+export const getDevicesbyId = async(req, res) => {
+    try {
+        const { 'fiware-service': fiware_service, 'fiware-servicepath': fiware_servicepath } = req.headers;
+        const { deviceId } = req.params; // Obtenemos el ID del dispositivo desde los parámetros de la URL
+
+        // Verificar que los headers requeridos estén presentes
+        if (!fiware_service || !fiware_servicepath) {
+            return res.status(400).json({ error: 'Headers fiware-service y fiware-servicepath son requeridos' });
+        }
+
+        // Verificar que el ID del dispositivo esté presente
+        if (!deviceId) {
+            return res.status(400).json({ error: 'ID del dispositivo es requerido' });
+        }
+
+        // Obtener la URL desde la configuración (debería ser HTTP en este caso)
+        const url_json = await getConfig();
+        // Cambiar la URL de HTTPS a HTTP, si la API en localhost está usando HTTP
+        const apiUrl = url_json.replace("https://", "http://");
+
+        // Hacer la solicitud GET al servidor de dispositivos
+        const response = await axios.get(`${apiUrl}iot/devices/${deviceId}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'fiware-service': fiware_service,
+                'fiware-servicepath': fiware_servicepath
+            }
+        });
+
+        // Responder con el resultado
+        res.status(response.status).json(response.data);
+    } catch (error) {
+        console.error('Error al obtener el dispositivo:', error.message);
+        res.status(error.response?.status || 500).json({
+            error: 'Error al comunicarse con el Agente IoT',
+            details: error.response?.data || error.message
+        });
+    }
+}
 export const deleteDevice = async(req, res) => {
     try {
         const { 'fiware-service': fiware_service, 'fiware-servicepath': fiware_servicepath } = req.headers;
