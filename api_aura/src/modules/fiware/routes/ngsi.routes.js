@@ -2,6 +2,7 @@ import express from "express";
 import {
   createRule,
   deleteRule,
+  FailedStatusGhost,
   getAllRules,
   getEntitiesWithAlerts,
   getRuleById,
@@ -25,6 +26,7 @@ router.get("/services-path", getServicePaths);
 router.get("/services-path/building", getSubServiceBuildingAndBranch);
 router.get("/services-path/branch", getSubServiceBranch);
 router.post("/sendData", sendDataToAgent);
+router.post("/failed/ghost", FailedStatusGhost);
 router.post("/update/actuator", updateActuatorStatusController);
 
 router.get("/rules/actuator/:actuatorId", getRulesByServiceSubserviceAndActuator);

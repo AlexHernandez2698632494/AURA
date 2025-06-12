@@ -369,7 +369,7 @@ export const getEntitiesWithAlerts = async (req, res) => {
     const alerts = await getAlerts();
     const defaultSensorColor = "#fff"; // Blanco para sensores
     const defaultActuatorColor = "#808080"; // Gris para actuadores
-    // console.log("entidades", entities);
+    console.log("entidades", entities);
 
     const combinedData = entities.map((entity) => {
       const variables = entity.sensors?.value
@@ -844,7 +844,7 @@ export const getRulesByServiceSubserviceAndActuator = async (req, res) => {
       service: fiware_service,
       subservice: fiware_servicepath,
       enabled: true, // 👈 filtro por enabled
-    })
+    });
 
     res.json(rules);
   } catch (error) {
@@ -882,12 +882,12 @@ export const getRulesByServiceSubserviceActuatorAndCommand = async (
         .status(400)
         .json({ message: "El header 'fiware-servicepath' es obligatorio." });
     }
-const rules = await Rule.find({
+    const rules = await Rule.find({
       actuatorEntityId: actuatorId,
       service: fiware_service,
       subservice: fiware_servicepath,
       enabled: true, // 👈 filtro por enabled
-    })
+    });
 
     res.json(rules);
   } catch (error) {
@@ -997,5 +997,59 @@ export const getRuleStats = async (req, res) => {
       message: "Error al obtener estadísticas de reglas.",
       error: error.message,
     });
+  }
+};
+
+export const FailedStatusGhost = async (req, res) => {
+  try {
+    // Extrayendo los parámetros, headers y body de la solicitud
+    const { k, i } = req.query; // Parámetros k e i
+    const fiware_service = req.headers["fiware-service"];
+    const fiware_servicepath = req.headers["fiware-servicepath"];
+
+    const body = req.body; // Body de la solicitud
+
+    // URL del agente (puerto 7896)
+    const url_json = config.url_mqtt;
+    const apiUrl = url_json.replace("https://", "http://"); // Aseguramos que use http
+    // Validación de headers requeridos
+    if (!fiware_service) {
+      return res.status(400).json({
+        message: "Header 'fiware-service' son requeridos",
+      });
+    } else if (!fiware_servicepath) {
+      return res.status(400).json({
+        message: "'fiware-servicepath' son requeridos",
+      });
+    } else if (!k) {
+      return res.status(400).json({
+        message: "El parámetro 'k' es requerido",
+      });
+    } else if (!i) {
+      return res.status(400).json({
+        message: "El parámetro 'i' es requerido",
+      });
+    }
+
+    // Enviamos la solicitud al agente en el puerto 7896
+    const response = await axios.post(`${apiUrl}`, body, {
+      headers: {
+        "fiware-service": fiware_service,
+        "fiware-servicepath": fiware_servicepath,
+      },
+      params: {
+        k, // Parámetro k
+        i, // Parámetro i
+      },
+    });
+
+    // Devolvemos la respuesta del agente
+    return res.status(202).json({
+      message: "Comando fantasma actualizado correctamente",
+      response: response.data,
+    });
+  } catch (error) {
+    console.error("Error al enviar datos al agente:", error);
+    return res.status(500).json({ message: "Error interno del servidor" });
   }
 };
