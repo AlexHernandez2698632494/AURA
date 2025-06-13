@@ -129,6 +129,26 @@
   opacity: .6;
 }
 
+.toggle-btn.failed {
+  background: #b71c1c; 
+  color: white;
+}
+
+.status-failed {
+  color: #b71c1c;
+  font-weight: 500;
+}
+
+.toggle-btn.null {
+  background: #1c45b7; 
+  color: white;
+}
+
+.status-null {
+  color: #1c45b7;
+  font-weight: 500;
+}
+
 /* Analogo control */
 .conditionsAnalogo {
   margin-top: 30px;

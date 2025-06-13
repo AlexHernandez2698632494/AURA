@@ -1,6 +1,8 @@
 <!-- Componente lateral (side) -->
 <div *ngIf="isLargeScreen">
-  <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
+  <app-premium-side
+    (sideNavToggle)="onSideNavToggle($event)"
+  ></app-premium-side>
 </div>
 <div *ngIf="!isLargeScreen">
   <app-bottom-tab></app-bottom-tab>
@@ -17,8 +19,8 @@
       <h1>
         {{ branchName }} -
         {{
-        entitiesWithAlerts[0]?.deviceName ||
-        entitiesWithAlerts[0]?.raw?.deviceName
+          entitiesWithAlerts[0]?.deviceName ||
+            entitiesWithAlerts[0]?.raw?.deviceName
         }}
       </h1>
     </div>
@@ -32,42 +34,67 @@
       <!-- Actuador -->
       <div class="device-actuador" *ngIf="commands.length > 0">
         <!-- 🔘 Toggle switches -->
-        <div class="deviceActuador" *ngFor="let toggle of actuadores.toggle; let i = index">
+        <div
+          class="deviceActuador"
+          *ngFor="let toggle of actuadores.toggle; let i = index"
+        >
           <div class="conditionsToggle">
             <h3 [ngStyle]="{ 'background-color': pastelColor }">
               {{ toggle.label }}
             </h3>
 
-            <button class="toggle-btn" [ngClass]="{
+            <button
+              class="toggle-btn"
+              [ngClass]="{
                 on: estadoToggles[i] && commands[i]?.status === 'OK',
                 off: !estadoToggles[i] && commands[i]?.status === 'OK',
-                pending: commands[i]?.status === 'PENDING'
-              }" (click)="toggleActuador(i)" [disabled]="commands[i]?.status === 'PENDING'"
-              *ngIf="iconoEstadoReglaToggle[i] === false">
+                pending: commands[i]?.status === 'PENDING',
+                failed: commands[i]?.status === 'FAILED',
+                null: commands[i]?.status === ''
+              }"
+              (click)="toggleActuador(i, entitiesWithAlerts[0]?.id)"
+              [disabled]="commands[i]?.status === 'PENDING'"
+              *ngIf="iconoEstadoReglaToggle[i] === false"
+            >
               <!-- Ícono / Loader -->
-              <mat-progress-spinner *ngIf="commands[i]?.status === 'PENDING'" mode="indeterminate"
-                diameter="18"></mat-progress-spinner>
+              <mat-progress-spinner
+                *ngIf="commands[i]?.status === 'PENDING'"
+                mode="indeterminate"
+                diameter="18"
+              ></mat-progress-spinner>
 
-              <mat-icon *ngIf="commands[i]?.status !== 'PENDING'">
+              <mat-icon *ngIf="commands[i]?.status === 'FAILED'"
+                >error</mat-icon
+              >
+              <mat-icon *ngIf="commands[i]?.status === ''"
+                >info</mat-icon
+              >
+              <mat-icon
+                *ngIf="
+                  commands[i]?.status !== 'PENDING' &&
+                  commands[i]?.status !== 'FAILED' &&
+                  commands[i]?.status !== ''
+                "
+              >
                 {{ estadoToggles[i] ? "power" : "power_off" }}
               </mat-icon>
 
               <!-- Texto -->
-              {{
-              commands[i]?.status === "PENDING"
-              ? "Esperando…"
-              : estadoToggles[i]
-              ? "Encendido"
-              : "Apagado"
-              }}
+              {{getBotonTexto(i)}}
             </button>
 
+            <!-- Mensajes de estado -->
             <p *ngIf="commands[i]?.status === 'PENDING'" class="status-pending">
               ⏳ Comando pendiente de ejecución
             </p>
+            <p *ngIf="commands[i]?.status === 'FAILED'" class="status-failed">
+              ❌ No se recibió respuesta del dispositivo, intente nuevamente.
+            </p>
+
             <p *ngIf="iconoEstadoReglaToggle[i] === true">
-              El dispositivo "{{ commands[i]?.name || 'sin nombre' }}" se encuentra actualmente en estado
-                {{ commands[i]?.states === 'ON' ? 'Encendido' : 'Apagado' }}.
+              El dispositivo "{{ commands[i]?.name || "sin nombre" }}" se
+              encuentra actualmente en estado
+              {{ commands[i]?.states === "ON" ? "Encendido" : "Apagado" }}.
             </p>
 
             <p *ngIf="reglasActivasToggle[i]" class="regla-activa">
@@ -75,22 +102,32 @@
             </p>
 
             <div class="condition-buttons">
-              <button mat-stroked-button class="detailCondition" (click)="
+              <button
+                mat-stroked-button
+                class="detailCondition"
+                (click)="
                   onOverviewCondition(
                     commands[i]?.name,
                     entitiesWithAlerts[0]?.id
                   )
-                ">
+                "
+              >
                 <mat-icon class="icon">add</mat-icon>
                 <span>detalles condición</span>
               </button>
-              <button mat-icon-button class="regla-icono" *ngIf="iconoEstadoReglaToggle[i] !== undefined" [ngClass]="
+              <button
+                mat-icon-button
+                class="regla-icono"
+                *ngIf="iconoEstadoReglaToggle[i] !== undefined"
+                [ngClass]="
                   iconoEstadoReglaToggle[i] ? 'status-green' : 'status-red'
-                " (click)="toggleModoManualAutomatico(i)">
+                "
+                (click)="toggleModoManualAutomatico(i)"
+              >
                 <mat-icon class="icon">rule</mat-icon>
                 <span>{{
                   iconoEstadoReglaToggle[i] ? "Modo Automático" : "Modo Manual"
-                  }}</span>
+                }}</span>
               </button>
             </div>
           </div>
@@ -98,39 +135,64 @@
 
         <!-- 🎚️ Analogo sliders -->
         <div class="conditionsAnalogo">
-          <div class="analogo-control" *ngFor="let analogo of actuadores.analogo; let i = index">
+          <div
+            class="analogo-control"
+            *ngFor="let analogo of actuadores.analogo; let i = index"
+          >
             <h3 [ngStyle]="{ 'background-color': pastelColor }">
               {{ analogo.label }}
             </h3>
-            <label for="{{ analogo }}" *ngIf="iconoEstadoReglaAnalogo[i] === false">Valor : <strong>{{ estadoAnalogos[i]
-                }}</strong></label>
-            <input type="range" id="{{ analogo }}" min="0" max="100" [(ngModel)]="estadoAnalogos[i]"
-              (change)="enviarValorAnalogico(estadoAnalogos[i])" *ngIf="iconoEstadoReglaAnalogo[i] === false" />
-            <p *ngIf="
+            <label
+              for="{{ analogo }}"
+              *ngIf="iconoEstadoReglaAnalogo[i] === false"
+              >Valor : <strong>{{ estadoAnalogos[i] }}</strong></label
+            >
+            <input
+              type="range"
+              id="{{ analogo }}"
+              min="0"
+              max="100"
+              [(ngModel)]="estadoAnalogos[i]"
+              (change)="enviarValorAnalogico(estadoAnalogos[i])"
+              *ngIf="iconoEstadoReglaAnalogo[i] === false"
+            />
+            <p
+              *ngIf="
                 commands[actuadores.toggle.length + i]?.status === 'PENDING'
-              " class="status-pending">
+              "
+              class="status-pending"
+            >
               ⏳ Comando pendiente de ejecución
             </p>
             <p *ngIf="reglasActivasAnalogo[i]" class="regla-activa">
               ✅ Regla activa para este actuador
             </p>
             <div class="condition-buttons">
-              <button mat-stroked-button class="detailCondition" (click)="
+              <button
+                mat-stroked-button
+                class="detailCondition"
+                (click)="
                   onOverviewCondition(
                     commands[actuadores.toggle.length + i]?.name,
                     entitiesWithAlerts[0]?.id
                   )
-                ">
+                "
+              >
                 <mat-icon class="icon">add</mat-icon>
                 <span>detalles condición</span>
               </button>
-              <button mat-icon-button class="regla-icono" *ngIf="iconoEstadoReglaAnalogo[i] !== undefined" [ngClass]="
+              <button
+                mat-icon-button
+                class="regla-icono"
+                *ngIf="iconoEstadoReglaAnalogo[i] !== undefined"
+                [ngClass]="
                   iconoEstadoReglaAnalogo[i] ? 'status-green' : 'status-red'
-                ">
+                "
+              >
                 <mat-icon class="icon">rule</mat-icon>
                 <span>{{
                   iconoEstadoReglaAnalogo[i] ? "Modo Automático" : "Modo Manual"
-                  }}</span>
+                }}</span>
               </button>
             </div>
           </div>
@@ -138,47 +200,66 @@
 
         <!-- 🔄 Dial selectors -->
         <div class="conditionsDial">
-          <div class="dial-selector" *ngFor="let dial of actuadores.dial; let i = index">
+          <div
+            class="dial-selector"
+            *ngFor="let dial of actuadores.dial; let i = index"
+          >
             <h3 [ngStyle]="{ 'background-color': pastelColor }">
               {{ dial.label }}
             </h3>
 
             <div class="dial" *ngIf="iconoEstadoReglaDial[i] === false">
-              <div class="dial-option" *ngFor="let level of dialLevels; let j = index"
-                [class.active]="level === selectedDiales[i]" [style.transform]="getDialPosition(j, dialLevels.length)"
-                (click)="selectDial(level, i)">
+              <div
+                class="dial-option"
+                *ngFor="let level of dialLevels; let j = index"
+                [class.active]="level === selectedDiales[i]"
+                [style.transform]="getDialPosition(j, dialLevels.length)"
+                (click)="selectDial(level, i)"
+              >
                 {{ level }}
               </div>
             </div>
-            <p *ngIf="
+            <p
+              *ngIf="
                 commands[
                   actuadores.toggle.length + actuadores.analogo.length + i
                 ]?.status === 'PENDING'
-              " class="status-pending">
+              "
+              class="status-pending"
+            >
               ⏳ Comando pendiente de ejecución
             </p>
             <p *ngIf="reglasActivasDial[i]" class="regla-activa">
               ✅ Regla activa para este actuador
             </p>
             <div class="condition-buttons">
-              <button mat-stroked-button class="detailCondition" (click)="
+              <button
+                mat-stroked-button
+                class="detailCondition"
+                (click)="
                   onOverviewCondition(
                     commands[
                       actuadores.toggle.length + actuadores.analogo.length + i
                     ]?.name,
                     entitiesWithAlerts[0]?.id
                   )
-                ">
+                "
+              >
                 <mat-icon class="icon">add</mat-icon>
                 <span>detalles condición</span>
               </button>
-              <button mat-icon-button class="regla-icono" *ngIf="iconoEstadoReglaDial[i] !== undefined" [ngClass]="
+              <button
+                mat-icon-button
+                class="regla-icono"
+                *ngIf="iconoEstadoReglaDial[i] !== undefined"
+                [ngClass]="
                   iconoEstadoReglaDial[i] ? 'status-green' : 'status-red'
-                ">
+                "
+              >
                 <mat-icon class="icon">rule</mat-icon>
                 <span>{{
                   iconoEstadoReglaDial[i] ? "Modo Automático" : "Modo Manual"
-                  }}</span>
+                }}</span>
               </button>
             </div>
           </div>
@@ -186,18 +267,33 @@
 
         <!-- 📝 Actuador de texto -->
         <div class="conditionsToggleText">
-          <div class="actuador-texto" *ngFor="let texto of actuadores.toggleText; let i = index">
+          <div
+            class="actuador-texto"
+            *ngFor="let texto of actuadores.toggleText; let i = index"
+          >
             <h3 [ngStyle]="{ 'background-color': pastelColor }">
               {{ texto.label }}
             </h3>
 
             <div *ngIf="iconoEstadoReglaTexto[i] === false">
-              <mat-form-field appearance="outline" class="full-width responsive-form">
+              <mat-form-field
+                appearance="outline"
+                class="full-width responsive-form"
+              >
                 <mat-label>Valor del Actudador ({{ texto.label }})</mat-label>
-                <input matInput id="actuadorInput-{{ i }}" [(ngModel)]="valorTextoActuadores[i]" />
+                <input
+                  matInput
+                  id="actuadorInput-{{ i }}"
+                  [(ngModel)]="valorTextoActuadores[i]"
+                />
               </mat-form-field>
 
-              <button mat-stroked-button color="primary" class="update-btn" (click)="actualizarActuadorTexto(i)">
+              <button
+                mat-stroked-button
+                color="primary"
+                class="update-btn"
+                (click)="actualizarActuadorTexto(i)"
+              >
                 Actualizar
               </button>
 
@@ -206,21 +302,27 @@
               </p>
             </div>
 
-            <p *ngIf="
+            <p
+              *ngIf="
                 commands[
                   actuadores.toggle.length +
                     actuadores.analogo.length +
                     actuadores.dial.length +
                     i
                 ]?.status === 'PENDING'
-              " class="status-pending">
+              "
+              class="status-pending"
+            >
               ⏳ Comando pendiente de ejecución
             </p>
             <p *ngIf="reglasActivasTexto[i]" class="regla-activa">
               ✅ Regla activa para este actuador
             </p>
             <div class="condition-buttons">
-              <button mat-stroked-button class="detailCondition" (click)="
+              <button
+                mat-stroked-button
+                class="detailCondition"
+                (click)="
                   onOverviewCondition(
                     commands[
                       actuadores.toggle.length +
@@ -230,17 +332,23 @@
                     ]?.name,
                     entitiesWithAlerts[0]?.id
                   )
-                ">
+                "
+              >
                 <mat-icon class="icon">add</mat-icon>
                 <span>detalles condición</span>
               </button>
-              <button mat-icon-button class="regla-icono" *ngIf="iconoEstadoReglaTexto[i] !== undefined" [ngClass]="
+              <button
+                mat-icon-button
+                class="regla-icono"
+                *ngIf="iconoEstadoReglaTexto[i] !== undefined"
+                [ngClass]="
                   iconoEstadoReglaTexto[i] ? 'status-green' : 'status-red'
-                ">
+                "
+              >
                 <mat-icon class="icon">rule</mat-icon>
                 <span>{{
                   iconoEstadoReglaTexto[i] ? "Modo Automático" : "Modo Manual"
-                  }}</span>
+                }}</span>
               </button>
             </div>
           </div>
@@ -253,10 +361,17 @@
           <div class="column" *ngFor="let entity of entitiesWithAlerts">
             <div *ngFor="let variable of entity.variables">
               <div *ngIf="variable.value">
-                <ngx-gauge [value]="getNumericValue(variable.value)" [min]="getGaugeRange(variable).min"
-                  [max]="getGaugeRange(variable).max" [type]="'arch'" [thick]="10" [size]="120"
-                  [foregroundColor]="variable.colorGauge" [backgroundColor]="'black'"
-                  [thresholds]="getGaugeThresholds(variable)">
+                <ngx-gauge
+                  [value]="getNumericValue(variable.value)"
+                  [min]="getGaugeRange(variable).min"
+                  [max]="getGaugeRange(variable).max"
+                  [type]="'arch'"
+                  [thick]="10"
+                  [size]="120"
+                  [foregroundColor]="variable.colorGauge"
+                  [backgroundColor]="'black'"
+                  [thresholds]="getGaugeThresholds(variable)"
+                >
                 </ngx-gauge>
                 <div class="variable-info">
                   <span class="variable-name">{{ variable.name }}:</span>
@@ -271,7 +386,10 @@
       <!-- Histórico -->
       <div class="device-historical" *ngIf="variables.length > 0">
         <div class="chart-columns">
-          <div *ngFor="let variable of variables; let i = index" class="chart-wrapper">
+          <div
+            *ngFor="let variable of variables; let i = index"
+            class="chart-wrapper"
+          >
             <div #chartContainer class="chart-container"></div>
           </div>
         </div>

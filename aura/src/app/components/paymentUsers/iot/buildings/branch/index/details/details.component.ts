@@ -51,7 +51,7 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
   branchId: string = '';
   entitiesWithAlerts: any[] = [];
   deviceName: string = '';
-
+  pendingTimeouts: (ReturnType<typeof setTimeout> | null)[] = [];
   variables: any[] = [];
   commands: any[] = [];
   private entidadMap: { [id: string]: any } = {};
@@ -173,7 +173,7 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     const estado = command?.states?.toLowerCase().trim();
 
     if (commandType === 'switch') {
-      return estado === 'ON'; // ✅ "on" será true, cualquier otro será false
+      return estado === 'on'; // ✅ "on" será true, cualquier otro será false
     }
 
     if (commandType === 'analogo') {
@@ -194,6 +194,10 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
   actualizarEstadosDesdeSocket(): void {
     this.commands.forEach((cmd, i) => {
       if (cmd.status === 'OK') {
+        if (this.pendingTimeouts[i]) {
+          clearTimeout(this.pendingTimeouts[i]!);
+          this.pendingTimeouts[i] = null;
+        }
         this.estadoToggles[i] = cmd.states.toLowerCase() === 'on';
       }
     });
@@ -394,8 +398,20 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     });
   }
 
+getBotonTexto(i: number): string {
+  const command = this.commands[i];
+  const estado = this.estadoToggles[i];
 
-  toggleActuador(index: number): void {
+  if (command?.status === "PENDING") return "Esperando…";
+  if (command?.status === "FAILED") return "Reintentar";
+
+  if (command?.status === "ON" || estado) return "Encendido";
+  if (command?.status === "OFF" || estado) return "Apagado";
+
+  return "No Reportado";
+}
+
+  toggleActuador(index: number, deviceId: string): void {
     const cmd = this.commands[index];
     if (!cmd) {
       return;
@@ -407,7 +423,41 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     // Calculamos el próximo estado (ON u OFF)
     const nextState = cmd.states?.toLowerCase() === 'ON' ? 'OFF' : 'ON';
 
-    // Marcamos como pendiente y guardamos el estado solicitado
+    if (this.pendingTimeouts[index]) { clearTimeout(this.pendingTimeouts[index]!); }
+    this.pendingTimeouts[index] = setTimeout(() => {
+      if (this.commands[index]?.status === 'PENDING') {
+        // status fantasma
+        const rawDeviceId = deviceId;
+        const parts = rawDeviceId.split(':');
+        const cleanDeviceId = parts[2] + parts[3]; 
+        console.log("deviceId", cleanDeviceId);    
+        this.fiwareService.getDeviceById(cleanDeviceId).subscribe({
+          next: (device: any) => {
+            console.log("Dispositivo obtenido:", device);
+            if (device && device.id === cleanDeviceId) {
+              this.fiwareService.FailedStatusGhost(device.apikey, device.id).subscribe({
+                next: (res) => {
+                  console.log("Estado fantasma enviado:", res);
+                  this.commands[index].status = 'FAILED';
+                  this.cdr.detectChanges();
+                },
+                error: (err) => {
+                  console.error("Error al enviar estado fantasma:", err);
+                }
+              });
+            } else {
+              console.warn("No se encontró el dispositivo con ID:", cleanDeviceId);
+            }
+          }
+          ,
+          error: (err) => {
+            console.error("Error al obtener el dispositivo:", err);
+          }
+        });
+      }
+    }, 10000);
+
+
     cmd.status = 'PENDING';
     cmd.states = nextState;
     this.cdr.detectChanges();
@@ -678,63 +728,63 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
       });
     });
   }
-// Este método se ejecuta al hacer click en el botón de modo manual/automático
-toggleModoManualAutomatico(i: number) {
-  const entity = this.entitiesWithAlerts[0];
-  if (!entity) {
-    console.warn('No hay entidad en entitiesWithAlerts');
-    return;
+  // Este método se ejecuta al hacer click en el botón de modo manual/automático
+  toggleModoManualAutomatico(i: number) {
+    const entity = this.entitiesWithAlerts[0];
+    if (!entity) {
+      console.warn('No hay entidad en entitiesWithAlerts');
+      return;
+    }
+
+    const command = this.commands[i];
+    if (!command) {
+      console.warn(`No hay comando en commands para el índice ${i}`);
+      return;
+    }
+
+    // Obtener si la regla está activa o no (modo automático = regla activa)
+    const reglaActiva = this.reglasActivasToggle[i]; // true o false
+
+    // Payload con el valor contrario de enable
+    const nuevoEstado = !reglaActiva;
+    console.log("Estado nuevo para toggle:", nuevoEstado);
+
+    // Aquí necesitas el ID de la regla para actualizar,
+    // asumamos que tienes una forma de obtenerlo por command y entity
+    this.fiwareService.getRulesByServiceSubserviceActuatorAndCommand(entity.id, command.name).subscribe({
+      next: (rules: any[]) => {
+        console.log("Respuesta de getRulesByServiceSubserviceActuatorAndCommand:", rules);
+        if (rules.length === 0) {
+          console.warn('No se encontró regla para este comando');
+          return;
+        }
+
+        const reglaId = rules[0]._id; // suponer el primer resultado
+        console.log("ID de la regla obtenida:", reglaId);
+
+        if (!reglaId) {
+          console.error('El ID de la regla es undefined o null');
+          return;
+        }
+
+        const payload = { enabled: nuevoEstado };
+
+        this.fiwareService.updateRuleEnabled(payload, reglaId).subscribe({
+          next: () => {
+            console.log(`Regla ${reglaId} actualizada a enabled=${nuevoEstado}`);
+
+            // Actualizamos localmente para reflejar el cambio en UI
+            this.reglasActivasToggle[i] = nuevoEstado;
+            this.iconoEstadoReglaToggle[i] = nuevoEstado;
+
+            // Puedes agregar lógica para actualizar estados o refrescar datos si quieres
+          },
+          error: (err) => console.error('Error actualizando la regla', err)
+        });
+      },
+      error: (err) => console.error('Error obteniendo regla para el comando', err)
+    });
   }
-
-  const command = this.commands[i];
-  if (!command) {
-    console.warn(`No hay comando en commands para el índice ${i}`);
-    return;
-  }
-
-  // Obtener si la regla está activa o no (modo automático = regla activa)
-  const reglaActiva = this.reglasActivasToggle[i]; // true o false
-
-  // Payload con el valor contrario de enable
-  const nuevoEstado = !reglaActiva;
-  console.log("Estado nuevo para toggle:", nuevoEstado);
-
-  // Aquí necesitas el ID de la regla para actualizar,
-  // asumamos que tienes una forma de obtenerlo por command y entity
-  this.fiwareService.getRulesByServiceSubserviceActuatorAndCommand(entity.id, command.name).subscribe({
-    next: (rules: any[]) => {
-      console.log("Respuesta de getRulesByServiceSubserviceActuatorAndCommand:", rules);
-      if (rules.length === 0) {
-        console.warn('No se encontró regla para este comando');
-        return;
-      }
-
-      const reglaId = rules[0]._id; // suponer el primer resultado
-      console.log("ID de la regla obtenida:", reglaId);
-
-      if (!reglaId) {
-        console.error('El ID de la regla es undefined o null');
-        return;
-      }
-
-      const payload = { enabled: nuevoEstado };
-
-      this.fiwareService.updateRuleEnabled(payload, reglaId).subscribe({
-        next: () => {
-          console.log(`Regla ${reglaId} actualizada a enabled=${nuevoEstado}`);
-
-          // Actualizamos localmente para reflejar el cambio en UI
-          this.reglasActivasToggle[i] = nuevoEstado;
-          this.iconoEstadoReglaToggle[i] = nuevoEstado;
-
-          // Puedes agregar lógica para actualizar estados o refrescar datos si quieres
-        },
-        error: (err) => console.error('Error actualizando la regla', err)
-      });
-    },
-    error: (err) => console.error('Error obteniendo regla para el comando', err)
-  });
-}
 
 
 }
