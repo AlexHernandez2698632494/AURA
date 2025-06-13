@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ApiConfigService } from '../ApiConfig/api-config.service';
+import { I } from '@angular/cdk/keycodes';
 
 @Injectable({
   providedIn: 'root'
@@ -186,6 +187,24 @@ export class FiwareService {
       catchError(this.handleError)
     );
   }
+
+  FailedStatusGhost(apikey: string, id: string): Observable<any> {
+    const headers = this.getAllSubServices();
+    const url = `${this.baseUrl}/v1/ngsi/failed/ghost?k=${apikey}&i=${id}`;
+
+    return this.http.post<any>(url, { headers }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  getDeviceById(id: string): Observable<any> {
+    const headers = this.getAllSubServices();
+    const url = `${this.baseUrl}/v1/ngsi/device/${id}`;
+    return this.http.get<any>(url, { headers }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   private idActuador: string = '';
   setIdActuador(id: string) {
     this.idActuador = id;
