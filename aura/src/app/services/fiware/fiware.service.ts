@@ -188,11 +188,11 @@ export class FiwareService {
     );
   }
 
-  FailedStatusGhost(apikey: string, id: string): Observable<any> {
+  FailedStatusGhost(apikey: string, id: string,payload:any): Observable<any> {
     const headers = this.getAllSubServices();
     const url = `${this.baseUrl}/v1/ngsi/failed/ghost?k=${apikey}&i=${id}`;
 
-    return this.http.post<any>(url, { headers }).pipe(
+    return this.http.post<any>(url, payload, { headers }).pipe(
       catchError(this.handleError)
     );
   }

@@ -398,44 +398,49 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     });
   }
 
-getBotonTexto(i: number): string {
-  const command = this.commands[i];
-  const estado = this.estadoToggles[i];
+  getBotonTexto(i: number): string {
+    const command = this.commands[i];
+    const estado = this.estadoToggles[i];
 
-  if (command?.status === "PENDING") return "Esperando…";
-  if (command?.status === "FAILED") return "Reintentar";
+    if (command?.status === "PENDING") return "Esperando…";
+    if (command?.status === "FAILED") return "Reintentar";
 
-  if (command?.status === "ON" || estado) return "Encendido";
-  if (command?.status === "OFF" || estado) return "Apagado";
+    if (command?.status === "ON" || estado) return "Encendido";
+    if (command?.status === "OFF" || estado) return "Apagado";
 
-  return "No Reportado";
-}
+    return "No Reportado";
+  }
 
   toggleActuador(index: number, deviceId: string): void {
     const cmd = this.commands[index];
-    if (!cmd) {
-      return;
-    }
-    if (cmd.status === 'PENDING') {
-      return; // aún esperando respuesta
+    if (!cmd) return;
+
+    if (cmd.status === 'PENDING') return;
+
+    const nextState = cmd.states?.toLowerCase() === 'on' ? 'OFF' : 'ON';
+
+    if (this.pendingTimeouts[index]) {
+      clearTimeout(this.pendingTimeouts[index]!);
     }
 
-    // Calculamos el próximo estado (ON u OFF)
-    const nextState = cmd.states?.toLowerCase() === 'ON' ? 'OFF' : 'ON';
-
-    if (this.pendingTimeouts[index]) { clearTimeout(this.pendingTimeouts[index]!); }
     this.pendingTimeouts[index] = setTimeout(() => {
       if (this.commands[index]?.status === 'PENDING') {
-        // status fantasma
         const rawDeviceId = deviceId;
         const parts = rawDeviceId.split(':');
-        const cleanDeviceId = parts[2] + parts[3]; 
-        console.log("deviceId", cleanDeviceId);    
+        const cleanDeviceId = parts[2] + parts[3];
+        console.log("deviceId", cleanDeviceId);
+
         this.fiwareService.getDeviceById(cleanDeviceId).subscribe({
           next: (device: any) => {
             console.log("Dispositivo obtenido:", device);
-            if (device && device.id === cleanDeviceId) {
-              this.fiwareService.FailedStatusGhost(device.apikey, device.id).subscribe({
+
+            if (device && device.device_id === cleanDeviceId) {
+              const commandName = this.commands[index].name;
+              const body = {
+                [`${commandName}_status`]: 'FAILED', 
+              };
+
+              this.fiwareService.FailedStatusGhost(device.apikey, device.device_id, body).subscribe({
                 next: (res) => {
                   console.log("Estado fantasma enviado:", res);
                   this.commands[index].status = 'FAILED';
@@ -448,23 +453,22 @@ getBotonTexto(i: number): string {
             } else {
               console.warn("No se encontró el dispositivo con ID:", cleanDeviceId);
             }
-          }
-          ,
+          },
           error: (err) => {
             console.error("Error al obtener el dispositivo:", err);
           }
         });
       }
-    }, 10000);
-
+    }, 10000); // 10 segundos
 
     cmd.status = 'PENDING';
     cmd.states = nextState;
     this.cdr.detectChanges();
 
-    // Enviamos al backend el nuevo estado requerido
+    // Envía comando al backend
     this.enviarComandoActuador(cmd.name, nextState);
   }
+
 
   enviarValorAnalogico(valor: number): void {
     this.valorAnalogico = valor;
