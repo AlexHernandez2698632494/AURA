@@ -23,8 +23,9 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
-declare var CanvasJS: any;
+declare var CanvasJS: any;    
 
 @Component({
   selector: 'app-details',
@@ -37,7 +38,8 @@ declare var CanvasJS: any;
     FormsModule,
     MatFormFieldModule,
     MatInputModule,
-    MatProgressSpinnerModule],
+    MatProgressSpinnerModule,
+    MatProgressBarModule],
   templateUrl: './details.component.html',
   styleUrls: ['./details.component.css']
 })
@@ -437,7 +439,7 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
             if (device && device.device_id === cleanDeviceId) {
               const commandName = this.commands[index].name;
               const body = {
-                [`${commandName}_status`]: 'FAILED', 
+                [`${commandName}_status`]: 'FAILED',
               };
 
               this.fiwareService.FailedStatusGhost(device.apikey, device.device_id, body).subscribe({
@@ -469,17 +471,56 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     this.enviarComandoActuador(cmd.name, nextState);
   }
 
+  enviarValorAnalogico(valor: number, index: number, deviceId: string): void {
+    const commandIndex = this.actuadores.toggle.length + index;
+    const cmd = this.commands[commandIndex];
+    if (!cmd || cmd.status === 'PENDING') return;
 
-  enviarValorAnalogico(valor: number): void {
-    this.valorAnalogico = valor;
-    this.actuadores.analogo.forEach((analogo, i) => {
-      const commandIndex = this.actuadores.toggle.length + i;
-      this.commands[commandIndex].states = valor.toString();
-      this.estadoAnalogos[i] = valor;
-      console.log("nombre", analogo.name)
-      this.enviarComandoActuador(analogo.name, valor.toString());
-    });
-    console.log('Valor analógico enviado:',);
+    this.commands[commandIndex].status = 'PENDING';
+    this.cdr.detectChanges();
+
+    if (this.pendingTimeouts[commandIndex]) {
+      clearTimeout(this.pendingTimeouts[commandIndex]);
+    }
+
+    this.pendingTimeouts[commandIndex] = setTimeout(() => {
+      if (this.commands[commandIndex]?.status === 'PENDING') {
+        const rawDeviceId = deviceId;
+        const parts = rawDeviceId.split(':');
+        const cleanDeviceId = parts[2] + parts[3];
+
+        this.fiwareService.getDeviceById(cleanDeviceId).subscribe({
+          next: (device: any) => {
+            if (device && device.device_id === cleanDeviceId) {
+              const commandName = this.commands[commandIndex].name;
+              const body = {
+                [`${commandName}_status`]: 'FAILED',
+              };
+              this.fiwareService.FailedStatusGhost(device.apikey, device.device_id, body).subscribe({
+                next: (res) => {
+                  console.log('Estado fantasma enviado:', res);
+                  this.commands[commandIndex].status = 'FAILED';
+
+                  // Obtener valor actual desde backend (states viene como string)
+                  const valorBackend = parseFloat(this.commands[commandIndex].states);
+                  this.estadoAnalogos[index] = isNaN(valorBackend) ? 0 : valorBackend;
+
+                  this.cdr.detectChanges();
+                },
+                error: (err) => {
+                  console.error('Error al enviar estado fantasma:', err);
+                }
+              });
+            }
+          },
+          error: (err) => {
+            console.error('Error al obtener el dispositivo:', err);
+          }
+        });
+      }
+    }, 10000);
+
+    this.enviarComandoActuador(cmd.name, valor.toString());
   }
 
   changeDial(index: number): void {
@@ -548,7 +589,6 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
 
     this.cdr.detectChanges();
   }
-
 
   getDialPosition(index: number, total: number): string {
     const angle = (360 / total) * index - 90;

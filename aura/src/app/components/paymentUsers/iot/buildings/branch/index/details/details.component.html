@@ -66,9 +66,7 @@
               <mat-icon *ngIf="commands[i]?.status === 'FAILED'"
                 >error</mat-icon
               >
-              <mat-icon *ngIf="commands[i]?.status === ''"
-                >info</mat-icon
-              >
+              <mat-icon *ngIf="commands[i]?.status === ''">info</mat-icon>
               <mat-icon
                 *ngIf="
                   commands[i]?.status !== 'PENDING' &&
@@ -80,7 +78,7 @@
               </mat-icon>
 
               <!-- Texto -->
-              {{getBotonTexto(i)}}
+              {{ getBotonTexto(i) }}
             </button>
 
             <!-- Mensajes de estado -->
@@ -144,18 +142,47 @@
             </h3>
             <label
               for="{{ analogo }}"
-              *ngIf="iconoEstadoReglaAnalogo[i] === false"
+              *ngIf="
+                commands[actuadores.toggle.length + i]?.status !== 'PENDING' &&
+                iconoEstadoReglaAnalogo[i] === false
+              "
               >Valor : <strong>{{ estadoAnalogos[i] }}</strong></label
             >
+            <label
+              for="{{ analogo }}"
+              *ngIf="
+                commands[actuadores.toggle.length + i]?.status === 'PENDING' 
+              "
+              >Valor Enviado: <strong>{{ estadoAnalogos[i] }}, Esperando</strong></label
+            >
+            <mat-progress-bar
+              class="analog-progress-bar"
+              *ngIf="
+                commands[actuadores.toggle.length + i]?.status === 'PENDING'
+              "
+              mode="indeterminate"
+            ></mat-progress-bar>
+
+            <!-- Mostrar slider si NO está en PENDING -->
             <input
+              *ngIf="
+                commands[actuadores.toggle.length + i]?.status !== 'PENDING' &&
+                iconoEstadoReglaAnalogo[i] === false
+              "
               type="range"
               id="{{ analogo }}"
               min="0"
               max="100"
               [(ngModel)]="estadoAnalogos[i]"
-              (change)="enviarValorAnalogico(estadoAnalogos[i])"
-              *ngIf="iconoEstadoReglaAnalogo[i] === false"
+              (change)="
+                enviarValorAnalogico(
+                  estadoAnalogos[i],
+                  i,
+                  entitiesWithAlerts[0]?.id
+                )
+              "
             />
+
             <p
               *ngIf="
                 commands[actuadores.toggle.length + i]?.status === 'PENDING'
@@ -163,6 +190,14 @@
               class="status-pending"
             >
               ⏳ Comando pendiente de ejecución
+            </p>
+            <p
+              *ngIf="
+                commands[actuadores.toggle.length + i]?.status === 'FAILED'
+              "
+              class="status-failed"
+            >
+              ❌ No se recibió respuesta del dispositivo, intente nuevamente.
             </p>
             <p *ngIf="reglasActivasAnalogo[i]" class="regla-activa">
               ✅ Regla activa para este actuador
