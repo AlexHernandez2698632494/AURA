@@ -14,7 +14,7 @@ import { SocketService } from './services/socket/socket.service';
 export class AppComponent implements OnInit {
   title = 'IoT';
   private inactivityTimeout: any;
-  private readonly INACTIVITY_LIMIT = 5 * 1000; // 20 minutos en milisegundos
+  private readonly INACTIVITY_LIMIT = 5 * 60 * 1000; // 20 minutos en milisegundos
 
   constructor(
     private renderer: Renderer2,
@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.applyTheme();
     this.setupInactivityListener();
-    this.setupVisibilityListener();
+    // this.setupVisibilityListener();
   }
 
   applyTheme() {
