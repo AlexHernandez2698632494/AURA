@@ -7,50 +7,11 @@ import Fiware from "../models/fiware.models.js";
 import FiwareBuilding from "../models/fiwareBuilding.models.js";
 import building from "../models/building.models.js";
 import Rule from "../models/Rule.models.js";
-
-const MAPPING_YML_URL =
-  "https://raw.githubusercontent.com/AlexHernandez2698632494/AURA/refs/heads/master/api_aura/src/modules/config/ngsi.api.service.yml";
-
-// Función para obtener la URL del servicio de la configuración
-async function getConfig() {
-  const response = await fetch(MAPPING_YML_URL);
-  const text = await response.text();
-  const config = yaml.load(text);
-  return config.sensors; // Devuelve la configuración de los sensores, que incluye la URL de Orion
-}
-
-// Aquí es donde obtienes la configuración
-export const config = await getConfig();
-
-// Ahora puedes usar config.url_orion
-const url_orion = config.url_orion;
-
-// Ahora puedes usar config.url_json
-const url_json = config.url_json.replace("https://", "http://");
-
+import { url_orion,getSensorMapping } from "../../../utils/Github.utils.js";
 // Cambia https:// a http:// para la URL base de Orion
-const ORION_BASE_URL = url_orion.replace("https://", "http://");
+const ORION_BASE_URL = url_orion;
 //const ORION_BASE_URL = "https://orion.sima.udb.edu.sv/v2/"
-const getSensorMapping = async () => {
-  try {
-    const response = await axios.get(MAPPING_YML_URL);
-    const ymlData = yaml.load(response.data);
-    const mappings = ymlData.mappings;
 
-    const sensorMapping = {};
-    for (const [label, data] of Object.entries(mappings)) {
-      const cleanLabel = label.replace(/[\[\]]/g, "").trim();
-      data.alias.forEach((alias) => {
-        sensorMapping[alias] = { label: cleanLabel, unit: data.unit };
-      });
-    }
-
-    return sensorMapping;
-  } catch (error) {
-    console.error("Error obteniendo el archivo YML:", error);
-    return {};
-  }
-};
 
 const getEntities = async (headers, params) => {
   const url = `${ORION_BASE_URL}entities`;
