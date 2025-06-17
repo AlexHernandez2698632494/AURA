@@ -83,7 +83,7 @@ export class BuildingIndexComponent implements OnInit {
   }
 
   navigateToViewBranch(buildingName:string, nivel:number) : void{
-    this.router.navigate([`/premium/building/${buildingName}/branch/${nivel}`]);
+    this.router.navigate([`/premium/iot/overview/building/${buildingName}/branch/${nivel}`]);
   }
 
   @HostListener('window:resize', ['$event'])
@@ -95,6 +95,6 @@ export class BuildingIndexComponent implements OnInit {
     this.isSidebarCollapsed = collapsed;
   }
   onBackClick(): void {
-    this.router.navigate([`/premium/building/`]);
+    this.router.navigate([`/premium/iot/overview/building/`]);
   } 
 }
