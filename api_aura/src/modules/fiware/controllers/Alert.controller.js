@@ -144,7 +144,16 @@ export const restoreAlert = async (req, res) => {
 
 export const getMapping = async (req, res) => {
   try {
-      const response = await axios.get(MAPPING_YML_URL); // Obtener el YAML directamente
+      const response = await fetch(MAPPING_YML_URL, {
+    headers: {
+      Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+      Accept: "application/vnd.github.v3.raw",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
+  }
       const ymlData = yaml.load(response.data); // Cargar el YAML
 
       // Extraer las claves de los mapeos (labels)
