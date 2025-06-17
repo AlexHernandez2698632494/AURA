@@ -112,17 +112,23 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
     this.loadEntitiesWithAlerts();
   }
 
-  private initializeMap(): void {
-    if (!this.map) {
-      this.map = L.map('map', { zoomControl: false })
-        .setView(this.currentLocation, this.currentZoom);
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSpOxpG4Hy_wDmvTHwle-asB2c1SvEsJv84g&s" alt="IIIE" Width="30px"> <a href="" style="font-size:30px;">IIIE</a> <hr>Instituto de Investigación e Innovación en Electronica'
-      }).addTo(this.map);
-    }
+private initializeMap(): void {
+  const mapContainer = document.getElementById('map');
+  if (mapContainer && (mapContainer as any)._leaflet_id) {
+    delete (mapContainer as any)._leaflet_id;
   }
+
+  if (!this.map) {
+    this.map = L.map('map', { zoomControl: false })
+      .setView(this.currentLocation, this.currentZoom);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; IIIE'
+    }).addTo(this.map);
+  }
+}
+
 
   private loadEntitiesWithAlerts(): void {
     const fiwareService = sessionStorage.getItem('fiware-service') || '';
@@ -305,13 +311,18 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
     return L.marker([lat, lng], { icon: customIcon }).addTo(this.map).bindPopup(popupContent);
   }
 
-  ngOnDestroy(): void {
-    window.removeEventListener('resize', () => {
-      if (this.map) {
-        this.map.invalidateSize();
-      }
-    });
+ngOnDestroy(): void {
+  if (this.map) {
+    this.map.remove(); // Libera el contenedor del mapa
+    this.map = undefined;
   }
+
+  window.removeEventListener('resize', () => {
+    if (this.map) {
+      this.map.invalidateSize();
+    }
+  });
+}
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event): void {
