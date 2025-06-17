@@ -335,11 +335,11 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
   }
 
   onBackClick() {
-    this.router.navigate([`/premium/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}`]);
+    this.router.navigate([`/premium/iot/overview/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}`]);
   }
 
   onCreateClick() {
-    this.router.navigate([`/premium/devices`]);
+    this.router.navigate([`/premium/iot/overview/devices`]);
   }
 
   getNumericValue(value: string): number {
@@ -675,14 +675,14 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
   onCreateCondition(idActuador: string, idEntities: string) {
     this.fiwareService.setIdActuador(idEntities);
     this.router.navigate([
-      `/premium/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${this.deviceName}/${idActuador}/conditions/create`
+      `/premium/iot/overview/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${this.deviceName}/${idActuador}/conditions/create`
     ]);
   }
 
   onOverviewCondition(idActuador: string, idEntities: string) {
     this.fiwareService.setIdActuador(idEntities);
     this.router.navigate([
-      `/premium/iot/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${this.deviceName}/${idActuador}/overview/conditions/`
+      `/premium/iot/overview/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${this.deviceName}/${idActuador}/overview/conditions/`
     ]);
   }
   // Añade esta propiedad para almacenar si tiene regla activa por actuador
