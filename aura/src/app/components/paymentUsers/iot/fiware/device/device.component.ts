@@ -269,7 +269,7 @@ registerSensor(): void {
   
 
 onBackClick(): void {
-  this.router.navigate([`/premium/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}`]);
+  this.router.navigate([`/premium/iot/overview/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}`]);
 }
   initializeMap(): void {
     if (this.mapInitialized) return;
