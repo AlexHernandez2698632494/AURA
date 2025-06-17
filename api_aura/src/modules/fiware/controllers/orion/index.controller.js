@@ -1,49 +1,9 @@
 import axios from 'axios';
 import yaml from 'js-yaml';
-
-const MAPPING_YML_URL = "https://raw.githubusercontent.com/AlexHernandez2698632494/AURA/refs/heads/master/api_aura/src/modules/config/ngsi.api.service.yml";
-
-// Función para obtener la URL del servicio de la configuración
-async function getConfig() {
-    const response = await fetch(MAPPING_YML_URL);
-    const text = await response.text();
-    const config = yaml.load(text);
-    return config.sensors; // Devuelve la configuración de los sensores, que incluye la URL de Orion
-}
-
-// Aquí es donde obtienes la configuración
-const config = await getConfig();
-
-// Ahora puedes usar config.url_orion
-const url_orion = config.url_orion;
+import { url_orion,getSensorMapping } from '../../../../utils/Github.utils.js';
 
 // Cambia https:// a http:// para la URL base de Orion
-const ORION_BASE_URL = url_orion.replace("https://", "http://");
-
-// Función para obtener el mapeo desde el archivo YML
-const getSensorMapping = async () => {
-    try {
-        const response = await axios.get(MAPPING_YML_URL);
-        const ymlData = yaml.load(response.data); // Carga el archivo YAML
-        const mappings = ymlData.mappings;
-
-        // Transformar el formato para hacer más fácil el acceso
-        const sensorMapping = {};
-        for (const [label, data] of Object.entries(mappings)) {
-            // Eliminar los corchetes de las claves
-            const cleanLabel = label.replace(/[\[\]]/g, '').trim();
-            
-            data.alias.forEach(alias => {
-                sensorMapping[alias] = cleanLabel;
-            });
-        }
-
-        return sensorMapping;
-    } catch (error) {
-        console.error("Error obteniendo el archivo YML:", error);
-        return {}; // Retorna un objeto vacío en caso de error
-    }
-};
+const ORION_BASE_URL = url_orion;
 
 export const getEntities = async (req, res) => {
     try {
