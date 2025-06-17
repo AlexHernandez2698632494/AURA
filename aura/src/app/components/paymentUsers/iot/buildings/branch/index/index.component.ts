@@ -323,11 +323,11 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
   }
 
   onBackClick() {
-    this.router.navigate([`/premium/building/${this.buildingName}/branch/${this.branchId}`]);
+    this.router.navigate([`/premium/iot/overview/building/${this.buildingName}/branch/${this.branchId}`]);
   }
 
   onCreateClick() {
-    this.router.navigate([`/premium/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/create/devices`]);
+    this.router.navigate([`/premium/iot/overview/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/create/devices`]);
   }
 
   getNumericValue(value: string): number {
@@ -337,7 +337,7 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
   onViewDevice(deviceName: string) {
     console.log('Ver dispositivo:', deviceName);
     this.router.navigate([
-      `/premium/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${deviceName}`
+      `/premium/iot/overview/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${deviceName}`
     ]);
   }
 }
