@@ -1,16 +1,6 @@
 import axios from "axios";
 import yaml from "js-yaml";
-import feth from "node-fetch"
-
-const CONFIG_URL = "https://raw.githubusercontent.com/AlexHernandez2698632494/AURA/refs/heads/master/api_aura/src/modules/config/ngsi.api.service.yml";
-
-// Función para obtener la URL del servicio de la configuración
-async function getConfig() {
-    const response = await fetch(CONFIG_URL);
-    const text = await response.text();
-    const config = yaml.load(text);
-    return config.sensors.url_json;
-}
+import { url_json } from "../../../../utils/Github.utils.js";
 
   export const registerService = async(req, res) => {
     try {
@@ -22,14 +12,8 @@ async function getConfig() {
             return res.status(400).json({ error: 'Headers fiware-service y fiware-servicepath son requeridos' });
         }
 
-        // Obtener la URL desde la configuración (debería ser HTTP en este caso)
-        const url_json = await getConfig();
-
-        // Cambiar la URL de HTTPS a HTTP, si la API en localhost está usando HTTP
-        const apiUrl = url_json.replace("https://", "http://");
-
         // Hacer la solicitud POST al servidor de servicios
-        const response = await axios.post(`${apiUrl}iot/services`, body, {
+        const response = await axios.post(`${url_json}iot/services`, body, {
             headers: {
                 'Content-Type': 'application/json',
                 'fiware-service': fiware_service,
@@ -69,14 +53,8 @@ export const deleteService = async (req, res) => {
             return res.status(400).json({ error: 'El parámetro "resource" no puede estar vacío' });
         }
 
-        // Obtener la URL desde la configuración
-        const url_json = await getConfig();
-
-        // Cambiar la URL de HTTPS a HTTP si es necesario
-        const apiUrl = url_json.replace("https://", "http://");
-
         // Construir la URL para la eliminación, que incluirá los parámetros apikey y resource
-        const urlToDelete = `${apiUrl}services?apikey=${apikey}&resource=${encodeURIComponent(resource)}`;
+        const urlToDelete = `${url_json}services?apikey=${apikey}&resource=${encodeURIComponent(resource)}`;
 
         // Hacer la solicitud DELETE al servidor de servicios
         const response = await axios.delete(urlToDelete, {
