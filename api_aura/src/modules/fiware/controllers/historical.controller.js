@@ -2,40 +2,10 @@ import axios from 'axios';
 import yaml from 'js-yaml';
 import fetch from 'node-fetch';
 import moment from 'moment';
-
-const MAPPING_YML_URL = "https://raw.githubusercontent.com/AlexHernandez2698632494/AURA/refs/heads/master/api_aura/src/modules/config/ngsi.api.service.yml";
-
-// Obtener URL de QuantumLeap desde el archivo YML
-async function getQuantumLeapUrl() {
-    const response = await fetch(MAPPING_YML_URL);
-    const text = await response.text();
-    const config = yaml.load(text);
-    return config.sensors.url_quantumleap.replace("https://", "http://");
-}
-const getSensorMapping = async () => {
-    try {
-        const response = await axios.get(MAPPING_YML_URL);
-        const ymlData = yaml.load(response.data);
-        const mappings = ymlData.mappings;
-
-        const sensorMapping = {};
-        for (const [label, data] of Object.entries(mappings)) {
-            const cleanLabel = label.replace(/[\[\]]/g, '').trim();
-            data.alias.forEach(alias => {
-                sensorMapping[alias] = { label: cleanLabel, unit: data.unit };
-            });
-        }
-
-        return sensorMapping;
-    } catch (error) {
-        console.error("Error obteniendo el archivo YML:", error);
-        return {};
-    }
-};
+import { url_quantumleap,getSensorMapping } from '../../../utils/Github.utils.js';
 // Obtener datos históricos desde QuantumLeap
 async function getHistoricalData(entityId, attrName, fiwareService, fiwareServicePath) {
-    const quantumleap_BASE_URL = await getQuantumLeapUrl();
-    const url = `${quantumleap_BASE_URL}/entities/${entityId}/attrs/${attrName}`;
+    const url = `${url_quantumleap}/entities/${entityId}/attrs/${attrName}`;
 
     const response = await axios.get(url, {
         headers: {
