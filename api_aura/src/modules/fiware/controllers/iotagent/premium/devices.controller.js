@@ -2,18 +2,7 @@ import axios from "axios";
 import yaml from "js-yaml";
 import fetch from "node-fetch";
 import Fiware from "../../../models/fiware.models.js";
-
-const CONFIG_URL =
-  "https://raw.githubusercontent.com/AlexHernandez2698632494/AURA/refs/heads/master/api_aura/src/modules/config/ngsi.api.service.yml";
-
-async function getConfig() {
-  const response = await fetch(CONFIG_URL);
-  const text = await response.text();
-  const config = yaml.load(text);
-  return config.sensors;
-}
-
-const config = await getConfig();
+import { url_json,url_orion,url_mqtt } from "../../../../../utils/Github.utils.js";
 
 export const createServiceDeviceJSON = async (req, res) => {
   try {
@@ -88,9 +77,6 @@ export const createServiceDeviceJSON = async (req, res) => {
         });
       }
     }
-
-    const url_json = config.url_json.replace("https://", "http://");
-    const url_orion = config.url_orion.replace("https://", "http://");
 
     const servicesRes = await axios.get(`${url_json}iot/services`, {
       headers: {
@@ -628,7 +614,6 @@ async function sendData(apikey, deviceId, fiware_service, fiware_servicepath) {
   const k = apikey;
   const i = deviceId;
 
-  const url_mqtt = config.url_mqtt.replace("https://", "http://");
   const body = { sensors: {} };
 
   try {
@@ -656,7 +641,6 @@ async function sendDataActuador(
   const k = apikey;
   const i = deviceId;
 
-  const url_mqtt = config.url_mqtt.replace("https://", "http://");
   const body = {};
 
   try {
