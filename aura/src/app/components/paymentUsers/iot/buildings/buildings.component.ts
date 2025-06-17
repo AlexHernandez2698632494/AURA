@@ -86,18 +86,18 @@ export class BuildingsComponent {
     }
   
     // Redirigir a la vista del edificio
-    this.router.navigate([`/premium/building/index`, buildingId]);
+    this.router.navigate([`/premium/iot/overview/building/index`, buildingId]);
   }
   
   // Método para redirigir a la página de editar edificio
   navigateToEditBuilding(buildingId: string): void {
     console.log(buildingId)
-    this.router.navigate([`/premium/building/update`]);
+    this.router.navigate([`/premium/iot/overview/building/update`]);
   }
 
   // Método para redirigir a la página de crear edificio
   navigateToCreateBuilding(): void {
-    this.router.navigate(['/premium/building/create']);
+    this.router.navigate(['/premium/iot/overview/building/create']);
   }
   deleteBuilding(id: string): void {
     Swal.fire({
