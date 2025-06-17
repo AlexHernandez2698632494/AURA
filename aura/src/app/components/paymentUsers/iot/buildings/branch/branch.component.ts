@@ -91,18 +91,18 @@ export class BuildingBranchComponent {
     const edificioId = this.branches[0]?.salones[0]?.edificioId; // Obtener el id del edificio
     if (edificioId) {
       // Redirigir a la ruta /premium/building/index/:id
-      this.router.navigate([`/premium/building/index/${edificioId}`]);
+      this.router.navigate([`/premium/iot/overview/building/index/${edificioId}`]);
     } else {
       console.error('No se encontró el edificioId');
     }
   }
 
   CreateBranch(buildingName: string, nivel: number): void {
-    this.router.navigate([`/premium/building/${buildingName}/branch/${nivel}/create`]);
+    this.router.navigate([`/premium/iot/overview/building/${buildingName}/branch/${nivel}/create`]);
   }
   navigateToViewBranch(buildingName: string, nivel: number, branchName: string, fiwareServicePath: string): void {
     sessionStorage.setItem('fiware-servicepath', fiwareServicePath);
-    this.router.navigate([`/premium/building/${buildingName}/level/${nivel}/branch/${branchName}`]);
+    this.router.navigate([`/premium/iot/overview/building/${buildingName}/level/${nivel}/branch/${branchName}`]);
   }
 
 }
