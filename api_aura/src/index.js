@@ -20,7 +20,8 @@ import fiwareModule from "./modules/fiware/fiware.module.js";
 // Ruta para recibir notificaciones de Orion
 import moment from "moment"; // Asegúrate de tenerlo instalado
 import Rule from "./modules/fiware/models/Rule.models.js";
-import { config,formatTimeInstant } from "./modules/fiware/controllers/ngsi.controller.js";
+import { formatTimeInstant } from "./modules/fiware/controllers/ngsi.controller.js";
+import { getSensorMapping,url_json,url_orion } from "./utils/Github.utils.js";
 import axios from "axios";
 // App y servidor
 const app = express();
@@ -40,32 +41,6 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(bodyParser.json());
 
-// Configuración
-const MAPPING_YML_URL =
-  "https://raw.githubusercontent.com/AlexHernandez2698632494/AURA/refs/heads/master/api_aura/src/modules/config/ngsi.api.service.yml";
-
-// Obtener mappings
-const getSensorMapping = async () => {
-  try {
-    const response = await fetch(MAPPING_YML_URL);
-    const text = await response.text();
-    const ymlData = yaml.load(text);
-    const mappings = ymlData.mappings;
-    const sensorMapping = {};
-
-    for (const [label, data] of Object.entries(mappings)) {
-      const cleanLabel = label.replace(/[\[\]]/g, "").trim();
-      data.alias.forEach((alias) => {
-        sensorMapping[alias] = { label: cleanLabel, unit: data.unit };
-      });
-    }
-
-    return sensorMapping;
-  } catch (error) {
-    console.error("Error obteniendo el archivo YML:", error);
-    return {};
-  }
-};
 
 // Acumulador de notificaciones: solo último mensaje por dispositivo
 const orionMessagesMap = {};
@@ -102,7 +77,6 @@ app.post("/v1/notify/", async (req, res) => {
       type: req.query.type || undefined,
       limit: req.query.limit || 100,
     };
-    const url_orion = config.url_orion.replace("https://", "http://");
     const url = `${url_orion}entities/${id}`;
     const response = await axios.get(url, { headers, params });
     console.log("Datos de la entidad desde Orion:", response.data);
@@ -309,7 +283,6 @@ app.post("/v1/notify/", async (req, res) => {
               `✅ Regla ${rule._id} ACTIVADA, enviando comando ${rule.command}`
             );
 
-            const url_json = config.url_json.replace("https://", "http://");
             const apiUrl = `${url_json}v2/op/update`;
             console.log("🔗 Enviando comando a Orion:", apiUrl);
 
@@ -361,7 +334,6 @@ app.post("/v1/notify/", async (req, res) => {
           console.log(`🔻 Regla ${rule._id} DESACTIVADA`);
 
           if (rule.commandValue && rule.commandValue[1] !== undefined) {
-            const url_json = config.url_json.replace("https://", "http://");
             const apiUrl = `${url_json}v2/op/update`;
 
             const type = rule.actuatorEntityId.substring(12, 17);
