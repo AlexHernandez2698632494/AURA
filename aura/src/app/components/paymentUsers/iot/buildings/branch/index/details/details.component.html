@@ -151,9 +151,10 @@
             <label
               for="{{ analogo }}"
               *ngIf="
-                commands[actuadores.toggle.length + i]?.status === 'PENDING' 
+                commands[actuadores.toggle.length + i]?.status === 'PENDING'
               "
-              >Valor Enviado: <strong>{{ estadoAnalogos[i] }}, Esperando</strong></label
+              >Valor Enviado:
+              <strong>{{ estadoAnalogos[i] }}, Esperando</strong></label
             >
             <mat-progress-bar
               class="analog-progress-bar"
@@ -162,7 +163,6 @@
               "
               mode="indeterminate"
             ></mat-progress-bar>
-
             <!-- Mostrar slider si NO está en PENDING -->
             <input
               *ngIf="
@@ -182,7 +182,6 @@
                 )
               "
             />
-
             <p
               *ngIf="
                 commands[actuadores.toggle.length + i]?.status === 'PENDING'
@@ -242,8 +241,33 @@
             <h3 [ngStyle]="{ 'background-color': pastelColor }">
               {{ dial.label }}
             </h3>
-
-            <div class="dial" *ngIf="iconoEstadoReglaDial[i] === false">
+            <ng-container
+              *ngIf="
+                commands[
+                  actuadores.toggle.length + actuadores.analogo.length + i
+                ]?.status === 'PENDING'
+              "
+            >
+              <p class="status-pending">
+                Valor enviado:
+                <strong>{{ selectedDiales[i] }}</strong>
+              </p>
+              <div class="loading-spinner">
+                <div class="loader"></div>
+                <p>Esperando</p>
+              </div>
+              <p class="status-pending">⏳ Comando pendiente de ejecución</p>
+            </ng-container>
+            <div
+              class="dial"
+              *ngIf="iconoEstadoReglaDial[i] === false"
+              [ngClass]="{
+                loading:
+                  commands[
+                    actuadores.toggle.length + actuadores.analogo.length + i
+                  ]?.status === 'PENDING'
+              }"
+            >
               <div
                 class="dial-option"
                 *ngFor="let level of dialLevels; let j = index"
@@ -254,19 +278,23 @@
                 {{ level }}
               </div>
             </div>
+
+            <!-- Mensajes -->
             <p
               *ngIf="
                 commands[
                   actuadores.toggle.length + actuadores.analogo.length + i
-                ]?.status === 'PENDING'
+                ]?.status === 'FAILED'
               "
-              class="status-pending"
+              class="status-failed"
             >
-              ⏳ Comando pendiente de ejecución
+              ❌ No se recibió respuesta del dispositivo, intente nuevamente.
             </p>
             <p *ngIf="reglasActivasDial[i]" class="regla-activa">
               ✅ Regla activa para este actuador
             </p>
+
+            <!-- Botones -->
             <div class="condition-buttons">
               <button
                 mat-stroked-button

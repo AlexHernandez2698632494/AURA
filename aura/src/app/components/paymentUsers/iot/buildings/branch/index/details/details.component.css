@@ -64,7 +64,6 @@
   margin: 0 auto 20px auto;
 }
 
-
 .device-columns h1 {
   font-size: 22px;
   color: #003366;
@@ -126,11 +125,11 @@
 
 .toggle-btn.pending {
   cursor: not-allowed;
-  opacity: .6;
+  opacity: 0.6;
 }
 
 .toggle-btn.failed {
-  background: #b71c1c; 
+  background: #b71c1c;
   color: white;
 }
 
@@ -140,13 +139,13 @@
 }
 
 .toggle-btn.null {
-  background: #1c45b7; 
+  background: #1c45b7;
   color: white;
 }
 
 .status-null {
   color: #1c45b7;
-  font-weight: 500;
+  font-weight: 500;
 }
 
 /* Analogo control */
@@ -278,6 +277,70 @@
   transform: scale(1.3);
 }
 
+.dial.loading {
+  display: none;
+}
+
+.dial.loading .dial-option {
+  display: none;
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 5%;
+  cursor: not-allowed;
+  position: relative;
+}
+
+.loading-spinner p {
+  font-size: 18px;
+  color: #003366;
+  font-weight: bold;
+  opacity: 0.6;
+}
+
+.loader {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: conic-gradient(#6699cc, #003366);
+  animation: rotate 2s linear infinite, pulse 2s ease-in-out infinite;
+  position: relative;
+}
+
+.loader::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  background-color: white;
+  border-radius: 50%;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3), 0 0 30px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.5), 0 0 50px rgba(0, 0, 0, 0.2);
+  }
+}
+
 /* toggleText control */
 .conditionsToggleText {
   margin-top: 30px;
@@ -321,7 +384,7 @@
 
 /* conditions buttons */
 .condition-buttons {
-display: grid;
+  display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   justify-content: center;
   gap: 20px;
@@ -404,12 +467,12 @@ display: grid;
 /* Verde metálico */
 .status-green {
   background-color: transparent !important;
-  color: #006B3C !important; /* verde metálico oscuro */
-  border: 2px solid #006B3C !important;
+  color: #006b3c !important; /* verde metálico oscuro */
+  border: 2px solid #006b3c !important;
 }
 
 .status-green:hover {
-  background-color: #006B3C !important;
+  background-color: #006b3c !important;
   color: white !important;
   box-shadow: 0 0 8px rgba(0, 107, 60, 0.6);
 }
@@ -561,7 +624,6 @@ display: grid;
     align-items: center;
   }
 
-
   .column {
     grid-template-columns: repeat(2, 1fr) !important;
   }
@@ -569,7 +631,6 @@ display: grid;
   .chart-columns {
     grid-template-columns: repeat(1, 1fr) !important;
   }
-
 }
 
 @media (max-width: 480px) {
@@ -624,8 +685,8 @@ display: grid;
     margin: 0 auto;
   }
 
-    .column {
-      display: flex;
-      flex-direction: column;
+  .column {
+    display: flex;
+    flex-direction: column;
   }
 }

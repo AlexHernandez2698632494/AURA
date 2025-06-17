@@ -25,7 +25,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 
-declare var CanvasJS: any;    
+declare var CanvasJS: any;
 
 @Component({
   selector: 'app-details',
@@ -200,10 +200,32 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
           clearTimeout(this.pendingTimeouts[i]!);
           this.pendingTimeouts[i] = null;
         }
-        this.estadoToggles[i] = cmd.states.toLowerCase() === 'on';
+
+        // Calcular índices de cada tipo de actuador
+        const toggleLen = this.actuadores.toggle.length;
+        const analogoLen = this.actuadores.analogo.length;
+        const dialLen = this.actuadores.dial.length;
+
+        if (i < toggleLen) {
+          this.estadoToggles[i] = cmd.states?.toLowerCase() === 'on';
+        } else if (i < toggleLen + analogoLen) {
+          const index = i - toggleLen;
+          this.estadoAnalogos[index] = parseInt(cmd.states) || 0;
+        } else if (i < toggleLen + analogoLen + dialLen) {
+          const index = i - toggleLen - analogoLen;
+          this.estadoDiales[index] = cmd.states || 'OFF';
+          this.selectedDiales[index] = cmd.states || 'OFF';
+        } else {
+          const index = i - toggleLen - analogoLen - dialLen;
+          this.estadoTextos[index] = cmd.states || '';
+          this.valoresActuales[index] = cmd.states || '';
+        }
       }
     });
+
+    this.cdr.detectChanges();
   }
+
 
   ngAfterViewChecked(): void {
     if (this.variables.length > 0 &&
@@ -351,6 +373,8 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
   estadoToggles: boolean[] = [];
   estadoAnalogos: number[] = [];
   estadoDiales: string[] = [];
+  timersDial: any[] = [];
+  estadoDialesPrevios: string[] = [];
   estadoTextos: string[] = [];
   valorAnalogico: number = 0;
   dialValue = 0;
@@ -574,20 +598,70 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
   dialLevels = ['OFF', '1', '2', '3', '4', '5'];
   selectedDiales: string[] = [];
 
-  selectDial(level: string, index: number) {
+  selectDial(level: string, index: number): void {
     this.selectedDiales[index] = level;
 
     const commandIndex = this.actuadores.toggle.length + this.actuadores.analogo.length + index;
-    const command = this.commands[commandIndex];
+    const cmd = this.commands[commandIndex];
     const actuador = this.actuadores.dial[index];
 
-    if (command) {
-      command.states = level;
-      this.estadoDiales[index] = level;
-      this.enviarComandoActuador(actuador.name, level);
+    if (!cmd || cmd.status === 'PENDING') return;
+
+    // Guardar el estado anterior
+    this.estadoDialesPrevios = this.estadoDialesPrevios || [];
+    this.estadoDialesPrevios[index] = this.selectedDiales[index];
+
+    this.commands[commandIndex].states = level;
+    this.commands[commandIndex].status = 'PENDING';
+    this.estadoDiales[index] = level;
+    this.cdr.detectChanges();
+
+    // Limpiar timeout si ya existe
+    if (this.pendingTimeouts[commandIndex]) {
+      clearTimeout(this.pendingTimeouts[commandIndex]);
     }
 
-    this.cdr.detectChanges();
+    // Temporizador de 10 segundos
+    this.pendingTimeouts[commandIndex] = setTimeout(() => {
+      if (this.commands[commandIndex]?.status === 'PENDING') {
+        const rawDeviceId = this.entitiesWithAlerts[0]?.id;
+        const parts = rawDeviceId.split(':');
+        const cleanDeviceId = parts[2] + parts[3];
+
+        this.fiwareService.getDeviceById(cleanDeviceId).subscribe({
+          next: (device: any) => {
+            if (device && device.device_id === cleanDeviceId) {
+              const commandName = this.commands[commandIndex].name;
+              const body = {
+                [`${commandName}_status`]: 'FAILED',
+              };
+
+              this.fiwareService.FailedStatusGhost(device.apikey, device.device_id, body).subscribe({
+                next: (res) => {
+                  console.log('📨 Estado FAILED enviado para dial:', res);
+
+                  // Cambiar estado visual
+                  this.commands[commandIndex].status = 'FAILED';
+                  this.selectedDiales[index] = 'OFF';
+                  this.estadoDiales[index] = 'OFF';
+
+                  this.cdr.detectChanges();
+                },
+                error: (err) => {
+                  console.error('❌ Error al enviar estado fantasma para dial:', err);
+                }
+              });
+            }
+          },
+          error: (err) => {
+            console.error('❌ Error al obtener el dispositivo para dial:', err);
+          }
+        });
+      }
+    }, 10000);
+
+    // Enviar comando real al actuador
+    this.enviarComandoActuador(actuador.name, level);
   }
 
   getDialPosition(index: number, total: number): string {
