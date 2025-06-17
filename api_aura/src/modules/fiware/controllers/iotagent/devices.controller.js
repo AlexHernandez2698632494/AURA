@@ -1,15 +1,6 @@
 import axios from "axios";
 import yaml from "js-yaml";
-
-const CONFIG_URL = "https://raw.githubusercontent.com/AlexHernandez2698632494/AURA/refs/heads/master/api_aura/src/modules/config/ngsi.api.service.yml";
-
-// Función para obtener la URL del servicio de la configuración
-async function getConfig() {
-    const response = await fetch(CONFIG_URL);
-    const text = await response.text();
-    const config = yaml.load(text);
-    return config.sensors.url_json;
-}
+import { url_json } from "../../../../utils/Github.utils.js";
 
 // Function to handle the creation of devices
 export const createDevice = async(req, res) => {
@@ -22,13 +13,8 @@ export const createDevice = async(req, res) => {
             return res.status(400).json({ error: 'Headers fiware-service y fiware-servicepath son requeridos' });
         }
 
-        // Obtener la URL desde la configuración (debería ser HTTP en este caso)
-        const url_json = await getConfig();
-        // Cambiar la URL de HTTPS a HTTP, si la API en localhost está usando HTTP
-        const apiUrl = url_json.replace("https://", "http://");
-
         //hacer la solicitud POST al servidor de dispositivos
-        const response = await axios.post(`${apiUrl}devices`, body, {
+        const response = await axios.post(`${url_json}devices`, body, {
             headers: {
                 'Content-Type': 'application/json',
                 'fiware-service': fiware_service,
@@ -95,13 +81,8 @@ export const getDevicesbyId = async(req, res) => {
             return res.status(400).json({ error: 'ID del dispositivo es requerido' });
         }
 
-        // Obtener la URL desde la configuración (debería ser HTTP en este caso)
-        const url_json = await getConfig();
-        // Cambiar la URL de HTTPS a HTTP, si la API en localhost está usando HTTP
-        const apiUrl = url_json.replace("https://", "http://");
-
         // Hacer la solicitud GET al servidor de dispositivos
-        const response = await axios.get(`${apiUrl}iot/devices/${deviceId}`, {
+        const response = await axios.get(`${url_json}iot/devices/${deviceId}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'fiware-service': fiware_service,
@@ -134,13 +115,9 @@ export const deleteDevice = async(req, res) => {
             return res.status(400).json({ error: 'ID del dispositivo es requerido' });
         }
 
-        // Obtener la URL desde la configuración (debería ser HTTP en este caso)
-        const url_json = await getConfig();
-        // Cambiar la URL de HTTPS a HTTP, si la API en localhost está usando HTTP
-        const apiUrl = url_json.replace("https://", "http://");
 
         // Hacer la solicitud DELETE al servidor de dispositivos
-        const response = await axios.delete(`${apiUrl}iot/devices/${deviceId}`, {
+        const response = await axios.delete(`${url_json}iot/devices/${deviceId}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'fiware-service': fiware_service,
