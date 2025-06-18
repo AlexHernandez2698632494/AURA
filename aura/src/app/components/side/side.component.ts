@@ -1,10 +1,11 @@
-import { Component, OnInit, Output, HostListener, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, Output, HostListener, EventEmitter, Input, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router, ActivatedRoute } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ApiConfigService } from '../../services/ApiConfig/api-config.service';
 import { AdminService } from '../../services/admin/admin.service';
+
 import { routes } from '../../app.routes';
 import { icon } from 'leaflet';
 
@@ -90,46 +91,60 @@ export class SideComponent implements OnInit {
   }
 
 
-  constructor(private router: Router, private activatedRoute: ActivatedRoute, private http: HttpClient, private adminService: AdminService, private apiConfig: ApiConfigService) { }
+  constructor(
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private http: HttpClient,
+    private adminService: AdminService,
+    private apiConfig: ApiConfigService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
     this.username = this.adminService.getUsername();
     this.screenWidth = window.innerWidth;
 
-    this.router.events.subscribe(() => {
-      this.currentRoute = this.router.url;
+    // 👉 Escucha las redirecciones
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.currentRoute = event.urlAfterRedirects;
+
+        // 🔄 Refrescar manualmente el componente
+        this.loadUserAuthoritiesAndMenus();
+
+        // 🔁 Forzar redibujo del componente
+        this.cdr.detectChanges();
+      }
     });
 
-    // Cargar las autoridades del usuario desde sessionStorage
-    const storedAuthorities = JSON.parse(sessionStorage.getItem('authorities') || '[]');
-    const storedToken = sessionStorage.getItem('token');
-    this.authorities = storedAuthorities;
-
-    // Verificar las condiciones
-    if (!storedToken || (this.authorities.length === 0 && !storedToken)) {
-      // Si no hay token ni authorities, mostrar solo Home, Info y Login en la sección inferior
-      this.menuItemsTop = [
-        { icon: 'home', label: 'Home', route: '/Home', submenu: [], isSubmenuOpen: false, authorities: [] },
-        { icon: 'help', label: 'About us', route: '/about-us', submenu: [], isSubmenuOpen: false, authorities: [] },
-      ];
-      this.menuItemsBottom = [
-        { icon: 'login', label: 'Login', route: '/login', submenu: [], isSubmenuOpen: false, authorities: [] },
-      ];
-    } else if (storedToken && this.authorities.length === 0) {
-      // Si hay token pero authorities está vacío, mostrar Home, Cambiar Contraseña y Cerrar Sesión
-      this.menuItemsTop = [
-        { icon: 'home', label: 'Home', route: '/', submenu: [], isSubmenuOpen: false, authorities: [] },
-        { icon: 'lock', label: 'Cambiar Contraseña', route: '/users/cambiarContra', submenu: [], isSubmenuOpen: false, authorities: [] },
-      ];
-      this.menuItemsBottom = [
-        { icon: 'logout', label: 'Cerrar Sesión', route: '/logout', submenu: [], isSubmenuOpen: false, authorities: [] },
-      ];
-    } else if (storedToken && this.authorities.length > 0) {
-      // Si hay token y authorities no está vacío, mostrar menú completo filtrado
-      this.filterMenuItems();
-    }
+    this.loadUserAuthoritiesAndMenus();
   }
 
+  loadUserAuthoritiesAndMenus(): void {
+  const storedAuthorities = JSON.parse(sessionStorage.getItem('authorities') || '[]');
+  const storedToken = sessionStorage.getItem('token');
+  this.authorities = storedAuthorities;
+
+  if (!storedToken || (this.authorities.length === 0 && !storedToken)) {
+    this.menuItemsTop = [
+      { icon: 'home', label: 'Home', route: '/Home', submenu: [], isSubmenuOpen: false, authorities: [] },
+      { icon: 'help', label: 'About us', route: '/about-us', submenu: [], isSubmenuOpen: false, authorities: [] },
+    ];
+    this.menuItemsBottom = [
+      { icon: 'login', label: 'Login', route: '/login', submenu: [], isSubmenuOpen: false, authorities: [] },
+    ];
+  } else if (storedToken && this.authorities.length === 0) {
+    this.menuItemsTop = [
+      { icon: 'home', label: 'Home', route: '/', submenu: [], isSubmenuOpen: false, authorities: [] },
+      { icon: 'lock', label: 'Cambiar Contraseña', route: '/users/cambiarContra', submenu: [], isSubmenuOpen: false, authorities: [] },
+    ];
+    this.menuItemsBottom = [
+      { icon: 'logout', label: 'Cerrar Sesión', route: '/logout', submenu: [], isSubmenuOpen: false, authorities: [] },
+    ];
+  } else if (storedToken && this.authorities.length > 0) {
+    this.filterMenuItems();
+  }
+}
 
 
   filterMenuItems(): void {
