@@ -7,7 +7,7 @@ import Fiware from "../models/fiware.models.js";
 import FiwareBuilding from "../models/fiwareBuilding.models.js";
 import building from "../models/building.models.js";
 import Rule from "../models/Rule.models.js";
-import { url_orion,getSensorMapping } from "../../../utils/Github.utils.js";
+import { url_orion,getSensorMapping, url_mqtt,url_json } from "../../../utils/Github.utils.js";
 // Cambia https:// a http:// para la URL base de Orion
 const ORION_BASE_URL = url_orion;
 //const ORION_BASE_URL = "https://orion.sima.udb.edu.sv/v2/"
@@ -537,12 +537,9 @@ export const sendDataToAgent = async (req, res) => {
     const { fiware_service, fiware_servicepath } = req.headers; // Headers fiware-service y fiware-servicepath
     const body = req.body; // Body de la solicitud
 
-    // URL del agente (puerto 7896)
-    const url_json = config.url_mqtt;
-    const apiUrl = url_json.replace("https://", "http://"); // Aseguramos que use http
 
     // Enviamos la solicitud al agente en el puerto 7896
-    const response = await axios.post(`${apiUrl}`, body, {
+    const response = await axios.post(`${url_mqtt}`, body, {
       headers: {
         "fiware-service": fiware_service,
         "fiware-servicepath": fiware_servicepath,
@@ -582,11 +579,6 @@ export const updateActuatorStatusController = async (req, res) => {
         message: "Faltan campos obligatorios en el cuerpo de la solicitud.",
       });
     }
-
-    const config = await getConfig();
-
-    const url_orion = config.url_orion.replace("https://", "http://");
-    const url_json = config.url_json.replace("https://", "http://");
 
     // Paso 1: Verificar si el actuador existe
     const entityUrl = `${url_orion}entities/${id}`;
@@ -971,8 +963,6 @@ export const FailedStatusGhost = async (req, res) => {
     const body = req.body; // Body de la solicitud
 
     // URL del agente (puerto 7896)
-    const url_json = config.url_mqtt;
-    const apiUrl = url_json.replace("https://", "http://"); // Aseguramos que use http
     // Validación de headers requeridos
     if (!fiware_service) {
       return res.status(400).json({
@@ -993,7 +983,7 @@ export const FailedStatusGhost = async (req, res) => {
     }
 
     // Enviamos la solicitud al agente en el puerto 7896
-    const response = await axios.post(`${apiUrl}`, body, {
+    const response = await axios.post(`${url_mqtt}`, body, {
       headers: {
         "fiware-service": fiware_service,
         "fiware-servicepath": fiware_servicepath,
