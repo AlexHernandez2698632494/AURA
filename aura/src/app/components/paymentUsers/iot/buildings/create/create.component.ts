@@ -13,11 +13,12 @@ import { MatChipsModule } from '@angular/material/chips';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
 import * as L from 'leaflet';
 import Swal from 'sweetalert2';
+import { LayoutComponent } from '../../../../layout/layout.component';
 
 @Component({
   selector: 'app-create',
   standalone: true,
-  imports: [CommonModule, PremiumSideComponent, BottomTabComponent, MatChipsModule,
+  imports: [CommonModule, LayoutComponent, MatChipsModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
