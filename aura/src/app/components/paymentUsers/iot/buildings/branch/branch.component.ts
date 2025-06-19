@@ -2,14 +2,13 @@ import { Component, OnInit, HostListener, Output, EventEmitter } from '@angular/
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router'; // Importar ActivatedRoute
 import { MatIconModule } from '@angular/material/icon';
-import { PremiumSideComponent } from '../../../side/side.component';
-import { BottomTabComponent } from '../../../../bottom-tab/bottom-tab.component';
 import { PaymentUserService } from '../../../../../services/paymentUser/payment-user.service';
+import { LayoutComponent } from "../../../../layout/layout.component";
 
 @Component({
   selector: 'app-branch',
   standalone: true,
-  imports: [CommonModule, PremiumSideComponent, MatIconModule, BottomTabComponent],
+  imports: [CommonModule, MatIconModule, LayoutComponent, LayoutComponent],
   templateUrl: './branch.component.html',
   styleUrl: './branch.component.css'
 })
