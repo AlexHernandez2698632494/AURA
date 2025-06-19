@@ -5,11 +5,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { PremiumSideComponent } from '../../../side/side.component';
 import { BottomTabComponent } from '../../../../bottom-tab/bottom-tab.component';
 import { PaymentUserService } from '../../../../../services/paymentUser/payment-user.service';
+import { LayoutComponent } from "../../../../layout/layout.component";
 
 @Component({
   selector: 'app-index',
   standalone: true,
-  imports: [CommonModule, PremiumSideComponent, MatIconModule, BottomTabComponent],
+  imports: [CommonModule,  MatIconModule, LayoutComponent, LayoutComponent],
   templateUrl: './index.component.html',
   styleUrls: ['./index.component.css']
 })
