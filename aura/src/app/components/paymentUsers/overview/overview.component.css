@@ -29,19 +29,6 @@ h1 {
 }
 
 
-.center {
-  margin-top: 80px;
-  align-items: center;
-  margin-left: 5%;
-  justify-content: center;
-  transition: margin-left 0.3s ease;
-}
-
-.shifted {
-  margin-left: 14%;
-  transition: margin-left 0.3s ease;
-}
-
 /* Tarjetas */
 .card {
   border: 1px solid #ccc;

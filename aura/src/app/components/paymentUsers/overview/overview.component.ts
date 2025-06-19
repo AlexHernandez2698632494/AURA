@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { PaymentUserService } from '../../../services/paymentUser/payment-user.service';
 import { PremiumSideComponent } from '../side/side.component';
 import { BottomTabComponent } from '../../bottom-tab/bottom-tab.component';
+import { LayoutComponent } from "../../layout/layout.component";
 
 @Component({
   selector: 'app-overview',
   standalone: true,
-  imports: [CommonModule, PremiumSideComponent, BottomTabComponent],
+  imports: [CommonModule,LayoutComponent],
   templateUrl: './overview.component.html',
   styleUrl: './overview.component.css'
 })
@@ -34,6 +35,10 @@ export class OverviewComponent implements OnInit {
   onSideNavToggle(collapsed: boolean) {
     this.isSidebarCollapsed = collapsed;
   }
+onBodySizeChange(isLarge: boolean) {
+  console.log('El tamaño de la pantalla ha cambiado:', isLarge);
+  this.isLargeScreen = isLarge;
+}
 
   private loadUserSubscriptions(): void {
     const username = sessionStorage.getItem('usuario');

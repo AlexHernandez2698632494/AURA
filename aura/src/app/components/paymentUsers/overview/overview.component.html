@@ -1,10 +1,4 @@
-<div *ngIf="isLargeScreen">
-  <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
-</div>
-<div *ngIf="!isLargeScreen">
-  <app-bottom-tab></app-bottom-tab>
-</div>
-<div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
+<app-layout>
   <div class="cuerpo">
     <div class="overview-container">
       <!-- Subscriptions Card -->
@@ -45,4 +39,4 @@
       </div>
     </div>
   </div>
-</div>
+</app-layout>
