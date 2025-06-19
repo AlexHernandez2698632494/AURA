@@ -1,11 +1,4 @@
-<div *ngIf="isLargeScreen">
-  <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
-</div>
-<div *ngIf="!isLargeScreen">
-  <app-bottom-tab></app-bottom-tab>
-</div>
-
-<div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
+<app-layout>
   <div class="main-container">
     <div class="header">
       <h1 class="title">Registro de nuevo edificio</h1>
@@ -93,4 +86,4 @@
 
     </div>
   </div>
-</div>
+</app-layout>
