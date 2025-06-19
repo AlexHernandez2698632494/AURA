@@ -7,15 +7,16 @@ import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
 import { AdminService } from '../../services/admin/admin.service';
 import { PremiumSideComponent } from '../paymentUsers/side/side.component';
+import { LayoutComponent } from "../layout/layout.component";
 @Component({
   selector: 'app-change-password',
   standalone: true,
   imports: [
-     SideComponent,
-      BottomTabComponent, 
-      PremiumSideComponent,
-      FormsModule, 
-      CommonModule],
+    LayoutComponent,
+    FormsModule,
+    CommonModule,
+    LayoutComponent
+],
   templateUrl: './change-password.component.html',
   styleUrls: ['./change-password.component.css']
 })
