@@ -1,12 +1,4 @@
-<div *ngIf="isLargeScreen">
-  <app-premium-side (sideNavToggle)="onSideNavToggle($event)"></app-premium-side>
-</div>
-
-<div *ngIf="!isLargeScreen">
-  <app-bottom-tab></app-bottom-tab>
-</div>
-
-<div class="center" [ngClass]="{ 'shifted': !isSidebarCollapsed }">
+<app-layout>
   <div class="main-container">
     <div *ngFor="let building of branches" class="header">
       <button mat-icon-button class="back-button" (click)="onBackClick()">
@@ -41,4 +33,4 @@
       </div>
     </div>
   </div>
-</div>
+</app-layout>
