@@ -6,11 +6,12 @@ import { PaymentUserService } from '../../../../services/paymentUser/payment-use
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import Swal from 'sweetalert2';
+import { LayoutComponent } from "../../../layout/layout.component";
 
 @Component({
   selector: 'app-buildings',
   standalone: true,
-  imports: [CommonModule, PremiumSideComponent, MatIconModule, BottomTabComponent],
+  imports: [CommonModule, MatIconModule, LayoutComponent, LayoutComponent],
   templateUrl: './buildings.component.html',
   styleUrl: './buildings.component.css'
 })
