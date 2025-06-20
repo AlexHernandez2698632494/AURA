@@ -428,18 +428,20 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     const command = this.commands[i];
     const estado = this.estadoToggles[i];
 
-    if (command?.status === "PENDING") return "Esperando…";
-    if (command?.status === "FAILED") return "Reintentar";
+    const status = command?.status;
+    const states = command?.states;
 
-    if (command?.status === "ON" || estado) return "Encendido";
-    if (command?.status === "OFF" || estado) return "Apagado";
+    if (status === "PENDING") return "Esperando…";
 
-    if (command?.status === "OK") {
-      return estado ? "Encendido" : "Apagado";
+    if ((status === "CANCELLED" || status === "FAILED" || status === "OK")) {
+      if (states === "ON") return "Encendido";
+      if (states === "OFF") return "Apagado";
+      if (states === null || states === undefined || states === "") return "No reportado";
     }
 
     return "No reportado";
   }
+
 
   toggleActuador(index: number, deviceId: string): void {
     const cmd = this.commands[index];
@@ -558,32 +560,60 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  getBotonClase(index: number): string {
+  getBotonToggle(index: number): string {
     const cmd = this.commands[index];
     const state = cmd?.states?.toUpperCase() || null;
     const status = cmd?.status;
 
     if (status === 'OK') {
-      if (state === 'ON') return 'btn-green';
-      if (state === 'OFF') return 'btn-gray';
-      return 'btn-blue';
+      if (state === 'ON') return 'btn-on';
+      if (state === 'OFF') return 'btn-off';
+      return 'btn-null';
     }
 
-    if (status === 'PENDING') return 'btn-orange';
+    if (status === 'PENDING') return 'btn-pending';
 
     if (status === 'FAILED') {
-      if (state === 'ON') return 'btn-green-red';
-      if (state === 'OFF') return 'btn-gray-red';
-      return 'btn-blue-red';
+      if (state === 'ON') return 'btn-failed-on';
+      if (state === 'OFF') return 'btn-failed-off';
+      return 'btn-failed-null';
     }
 
     if (status === 'CANCELLED') {
-      if (state === 'ON') return 'btn-green-orange';
-      if (state === 'OFF') return 'btn-gray-orange';
-      return 'btn-blue-orange';
+      if (state === 'ON') return 'btn-cancelled-on';
+      if (state === 'OFF') return 'btn-cancelled-off';
+      return 'btn-cancelled-null';
     }
 
-    return '';
+    return 'btn-null';
+  }
+
+  getBotonStatus(index: number): string {
+    const cmd = this.commands[index];
+    const state = cmd?.states?.toUpperCase() || null;
+    const status = cmd?.status;
+
+    if (status === 'OK') {
+      if (state === 'ON') return 'btn-status-on';
+      if (state === 'OFF') return 'btn-status-off';
+      return 'btn-status-null';
+    }
+
+    if (status === 'PENDING') return 'btn-status-pending';
+
+    if (status === 'FAILED') {
+      if (state === 'ON') return 'btn-status-failed-on';
+      if (state === 'OFF') return 'btn-status-failed-off';
+      return 'btn-status-failed-null';
+    }
+
+    if (status === 'CANCELLED') {
+      if (state === 'ON') return 'btn-status-cancelled-on';
+      if (state === 'OFF') return 'btn-status-cancelled-off';
+      return 'btn-status-cancelled-null';
+    }
+
+    return 'btn-status-null';
   }
 
   getRetryIcon(index: number): string {
@@ -595,10 +625,23 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     if (status === 'OK') return state ? 'check_circle_outline' : 'remove_circle_outline';
     if (status === 'FAILED') return 'replay';
     if (status === 'CANCELLED') return 'remove_circle_outline';
+    if (status === '' || status === null) return 'info';
 
-    return 'refresh';
+    return 'info_outline';
   }
 
+  getPlaceholderIcon(index: number): string {
+    const cmd = this.commands[index];
+    const state = cmd?.states?.toUpperCase() || null;
+    const status = cmd?.status;
+
+    if (status === 'PENDING') return 'Cargando...';
+    if (status === 'OK') return 'Recibido';
+    if (status === 'FAILED') return 'Reintentar';
+    if (status === 'CANCELLED') return 'Cancelar';
+
+    return '';
+  }
 
   enviarValorAnalogico(valor: number, index: number, deviceId: string): void {
     const commandIndex = this.actuadores.toggle.length + index;

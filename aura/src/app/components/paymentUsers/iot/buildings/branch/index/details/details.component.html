@@ -46,7 +46,7 @@
               <!-- Retry Button -->
               <button
                 class="retry-btn"
-                [ngClass]="getBotonClase(i)"
+                [ngClass]="getBotonStatus(i)"
                 *ngIf="
                   ['PENDING', 'FAILED', 'CANCELLED', 'OK'].includes(
                     commands[i]?.status
@@ -55,13 +55,16 @@
                 [disabled]="commands[i]?.status === 'OK'"
                 (click)="handleEstadoEspecial(i, entitiesWithAlerts[0]?.id)"
               >
-                <!-- <mat-icon>{{ getRetryIcon(i) }}</mat-icon> -->
+                <span class="placeholder-text">{{
+                  getPlaceholderIcon(i)
+                }}</span>
+                <mat-icon>{{ getRetryIcon(i) }}</mat-icon>
               </button>
 
               <!-- Toggle Button -->
               <button
                 class="toggle-btn"
-                [ngClass]="getBotonClase(i)"
+                [ngClass]="getBotonToggle(i)"
                 (click)="toggleActuador(i, entitiesWithAlerts[0]?.id)"
                 [disabled]="commands[i]?.status === 'PENDING'"
                 *ngIf="iconoEstadoReglaToggle[i] === false"
@@ -80,7 +83,6 @@
                 {{ getBotonTexto(i) }}
               </button>
             </div>
-
             <!-- Mensajes de estado -->
             <p *ngIf="commands[i]?.status === 'PENDING'" class="status-pending">
               ⏳ Comando pendiente de ejecución
@@ -111,7 +113,7 @@
                 "
               >
                 <mat-icon class="icon">add</mat-icon>
-                <span>detalles condición</span>
+                <span>Detalles Condición</span>
               </button>
               <button
                 mat-icon-button
@@ -213,7 +215,7 @@
                 "
               >
                 <mat-icon class="icon">add</mat-icon>
-                <span>detalles condición</span>
+                <span>Detalles Condición</span>
               </button>
               <button
                 mat-icon-button
@@ -309,7 +311,7 @@
                 "
               >
                 <mat-icon class="icon">add</mat-icon>
-                <span>detalles condición</span>
+                <span>Detalles Condición</span>
               </button>
               <button
                 mat-icon-button
@@ -398,7 +400,7 @@
                 "
               >
                 <mat-icon class="icon">add</mat-icon>
-                <span>detalles condición</span>
+                <span>Detalles Condición</span>
               </button>
               <button
                 mat-icon-button

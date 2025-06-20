@@ -111,93 +111,158 @@
   margin-bottom: 30px;
 }
 
-.toggle-btn.on {
+.toggle-btn:hover,
+.toggle-btn:focus {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  outline: none;
+}
+
+.toggle-buttons {
+  margin-top: 30px;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.retry-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  position: relative;
+  overflow: visible;
+  background-color: white;
+}
+
+.retry-btn .placeholder-text {
+  position: absolute;
+  bottom: 100%; /* Coloca el texto justo encima del botón */
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 17px;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.retry-btn:hover .placeholder-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+.btn-on {
   background-color: #28a745;
   color: white;
-  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.4);
 }
 
-.toggle-btn.off {
+.btn-off {
   background-color: #6c757d;
   color: white;
-  box-shadow: 0 4px 8px rgba(108, 117, 125, 0.4);
 }
 
-.toggle-btn.pending {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.toggle-btn.failed {
-  background: #b71c1c;
+.btn-null {
+  background-color: #0000ff;
   color: white;
 }
 
-.status-failed {
-  color: #b71c1c;
-  font-weight: 500;
-}
-
-.toggle-btn.null {
-  background: #1c45b7;
+.btn-failed-on {
+  background-color: #8b0000;
   color: white;
 }
 
-.status-null {
-  color: #1c45b7;
-  font-weight: 500;
-}
-
-/* Colores sólidos */
-.btn-green {
-  background-color: #4caf50;
+.btn-failed-off {
+  background-color: #ff0000;
   color: white;
 }
 
-.btn-gray {
-  background-color: #9e9e9e;
+.btn-failed-null {
+  background-color: #b22222;
   color: white;
 }
 
-.btn-blue {
-  background-color: #1c45b7;
+.btn-cancelled-on {
+  background-color: #ff4500;
   color: white;
 }
 
-.btn-orange {
-  background-color: #ff9800;
+.btn-cancelled-off {
+  background-color: #ff8c00;
   color: white;
 }
 
-/* Degradados */
-.btn-green-red {
-  background: linear-gradient(to bottom, #4caf50, #f44336);
+.btn-cancelled-null {
+  background-color: #ffa500;
   color: white;
 }
 
-.btn-gray-red {
-  background: linear-gradient(to bottom, #9e9e9e, #f44336);
+.btn-pending {
+  background-color: #ffd700;
+  color: black;
+}
+
+.btn-failed {
+  background-color: #4e1315;
   color: white;
 }
 
-.btn-blue-red {
-  background: linear-gradient(to bottom, #1c45b7, #f44336);
-  color: white;
+.btn-status-on {
+  border-color: #28a745;
+  color: #28a745;
 }
 
-.btn-green-orange {
-  background: linear-gradient(to bottom, #4caf50, #ff9800);
-  color: white;
+.btn-status-off {
+  border-color: #6c757d;
+  color: #6c757d;
 }
 
-.btn-gray-orange {
-  background: linear-gradient(to bottom, #9e9e9e, #ff9800);
-  color: white;
+.btn-status-null {
+  border-color: #0000ff;
+  color: #0000ff;
 }
 
-.btn-blue-orange {
-  background: linear-gradient(to bottom, #1c45b7, #ff9800);
-  color: white;
+.btn-status-failed-on {
+  border-color: #8b0000;
+  color: #8b0000;
+}
+
+.btn-status-failed-off {
+  border-color: #ff0000;
+  color: #ff0000;
+}
+
+.btn-status-failed-null {
+  border-color: #b22222;
+  color: #b22222;
+}
+
+.btn-status-cancelled-on {
+  border-color: #ff4500;
+  color: #ff4500;
+}
+
+.btn-status-cancelled-off {
+  border-color: #ff8c00;
+  color: #ff8c00;
+}
+
+.btn-status-cancelled-null {
+  border-color: #ffa500;
+  color: #ffa500;
+}
+
+.btn-status-pending {
+  border-color: #ffd700;
+  color: #ffd700;
+}
+
+.btn-status-failed {
+  border-color: #4e1315;
+  color: #4e1315;
 }
 
 /* Analogo control */
