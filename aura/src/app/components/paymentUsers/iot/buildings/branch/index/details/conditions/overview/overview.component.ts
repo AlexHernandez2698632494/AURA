@@ -101,20 +101,20 @@ export class OverviewConditionsComponent {
   onCreateCondition() {
     this.fiwareService.setIdActuador(this.idEntities);
     this.router.navigate([
-      `/premium/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${this.deviceName}/${this.commandName}/conditions/create`
+      `/premium/iot/overview/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${this.deviceName}/${this.commandName}/conditions/create`
     ]);
   }
 
   onViewCondition() {
     this.fiwareService.setIdActuador(this.idEntities);
     this.router.navigate([
-      `/premium/iot/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${this.deviceName}/${this.commandName}/overview/conditions/view`
+      `/premium/iot/overview/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${this.deviceName}/${this.commandName}/overview/conditions/view`
     ]);
   }
 
   onBackClick() {
     this.router.navigate([
-      `/premium/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${this.deviceName}`,
+      `/premium/iot/overview/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${this.deviceName}`,
     ]);
   }
 }
