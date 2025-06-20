@@ -434,7 +434,11 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     if (command?.status === "ON" || estado) return "Encendido";
     if (command?.status === "OFF" || estado) return "Apagado";
 
-    return "No Reportado";
+    if (command?.status === "OK") {
+      return estado ? "Encendido" : "Apagado";
+    }
+
+    return "No reportado";
   }
 
   toggleActuador(index: number, deviceId: string): void {
@@ -491,9 +495,110 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     cmd.states = nextState;
     this.cdr.detectChanges();
 
-    // Envía comando al backend
     this.enviarComandoActuador(cmd.name, nextState);
   }
+
+  handleEstadoEspecial(index: number, deviceId: string): void {
+    const cmd = this.commands[index];
+    if (!cmd || !deviceId) return;
+
+    const parts = deviceId.split(':');
+    const cleanDeviceId = parts[2] + parts[3];
+    const commandName = cmd.name;
+    const nextState = cmd.states?.toLowerCase() === 'on' ? 'OFF' : 'ON';
+
+    if (cmd.status === 'PENDING') {
+      this.fiwareService.getDeviceById(cleanDeviceId).subscribe({
+        next: (device) => {
+          if (!device) return;
+          const cancelBody = { [`${commandName}_status`]: 'CANCELLED' };
+          this.fiwareService.FailedStatusGhost(device.apikey, device.device_id, cancelBody).subscribe({
+            next: () => {
+              this.commands[index].status = 'OK';
+              this.cdr.detectChanges();
+            },
+            error: (err) => console.error("❌ Error al cancelar comando:", err)
+          });
+        },
+        error: (err) => console.error("❌ Error al obtener dispositivo:", err)
+      });
+      return;
+    }
+
+    if (cmd.status === 'FAILED') {
+      cmd.status = 'PENDING';
+      cmd.states = nextState;
+      this.cdr.detectChanges();
+
+      if (this.pendingTimeouts[index]) {
+        clearTimeout(this.pendingTimeouts[index]!);
+      }
+
+      this.pendingTimeouts[index] = setTimeout(() => {
+        if (this.commands[index]?.status === 'PENDING') {
+          this.fiwareService.getDeviceById(cleanDeviceId).subscribe({
+            next: (device) => {
+              if (!device) return;
+              const body = { [`${commandName}_status`]: 'FAILED' };
+              this.fiwareService.FailedStatusGhost(device.apikey, device.device_id, body).subscribe({
+                next: () => {
+                  this.commands[index].status = 'FAILED';
+                  this.cdr.detectChanges();
+                },
+                error: (err) => console.error("❌ Error al marcar FAILED:", err)
+              });
+            },
+            error: (err) => console.error("❌ Error al obtener dispositivo:", err)
+          });
+        }
+      }, 10000);
+
+      // ✅ Enviar comando correctamente
+      this.enviarComandoActuador(commandName, nextState);
+    }
+  }
+
+  getBotonClase(index: number): string {
+    const cmd = this.commands[index];
+    const state = cmd?.states?.toUpperCase() || null;
+    const status = cmd?.status;
+
+    if (status === 'OK') {
+      if (state === 'ON') return 'btn-green';
+      if (state === 'OFF') return 'btn-gray';
+      return 'btn-blue';
+    }
+
+    if (status === 'PENDING') return 'btn-orange';
+
+    if (status === 'FAILED') {
+      if (state === 'ON') return 'btn-green-red';
+      if (state === 'OFF') return 'btn-gray-red';
+      return 'btn-blue-red';
+    }
+
+    if (status === 'CANCELLED') {
+      if (state === 'ON') return 'btn-green-orange';
+      if (state === 'OFF') return 'btn-gray-orange';
+      return 'btn-blue-orange';
+    }
+
+    return '';
+  }
+
+  getRetryIcon(index: number): string {
+    const cmd = this.commands[index];
+    const state = cmd?.states?.toUpperCase() || null;
+    const status = cmd?.status;
+
+    if (status === 'PENDING') return 'highlight_off';
+    if (status === 'OK') return state ? 'check_circle_outline' : 'remove_circle_outline';
+    if (status === 'FAILED') return 'replay';
+    if (status === 'CANCELLED') return 'remove_circle_outline';
+
+    return 'refresh';
+  }
+
 
   enviarValorAnalogico(valor: number, index: number, deviceId: string): void {
     const commandIndex = this.actuadores.toggle.length + index;

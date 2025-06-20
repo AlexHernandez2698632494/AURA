@@ -148,6 +148,58 @@
   font-weight: 500;
 }
 
+/* Colores sólidos */
+.btn-green {
+  background-color: #4caf50;
+  color: white;
+}
+
+.btn-gray {
+  background-color: #9e9e9e;
+  color: white;
+}
+
+.btn-blue {
+  background-color: #1c45b7;
+  color: white;
+}
+
+.btn-orange {
+  background-color: #ff9800;
+  color: white;
+}
+
+/* Degradados */
+.btn-green-red {
+  background: linear-gradient(to bottom, #4caf50, #f44336);
+  color: white;
+}
+
+.btn-gray-red {
+  background: linear-gradient(to bottom, #9e9e9e, #f44336);
+  color: white;
+}
+
+.btn-blue-red {
+  background: linear-gradient(to bottom, #1c45b7, #f44336);
+  color: white;
+}
+
+.btn-green-orange {
+  background: linear-gradient(to bottom, #4caf50, #ff9800);
+  color: white;
+}
+
+.btn-gray-orange {
+  background: linear-gradient(to bottom, #9e9e9e, #ff9800);
+  color: white;
+}
+
+.btn-blue-orange {
+  background: linear-gradient(to bottom, #1c45b7, #ff9800);
+  color: white;
+}
+
 /* Analogo control */
 .conditionsAnalogo {
   margin-top: 30px;

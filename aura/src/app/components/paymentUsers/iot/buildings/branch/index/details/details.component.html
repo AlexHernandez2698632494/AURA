@@ -42,51 +42,51 @@
             <h3 [ngStyle]="{ 'background-color': pastelColor }">
               {{ toggle.label }}
             </h3>
-
-            <button
-              class="toggle-btn"
-              [ngClass]="{
-                on: estadoToggles[i] && commands[i]?.status === 'OK',
-                off: !estadoToggles[i] && commands[i]?.status === 'OK',
-                pending: commands[i]?.status === 'PENDING',
-                failed: commands[i]?.status === 'FAILED',
-                null: commands[i]?.status === ''
-              }"
-              (click)="toggleActuador(i, entitiesWithAlerts[0]?.id)"
-              [disabled]="commands[i]?.status === 'PENDING'"
-              *ngIf="iconoEstadoReglaToggle[i] === false"
-            >
-              <!-- Ícono / Loader -->
-              <mat-progress-spinner
-                *ngIf="commands[i]?.status === 'PENDING'"
-                mode="indeterminate"
-                diameter="18"
-              ></mat-progress-spinner>
-
-              <mat-icon *ngIf="commands[i]?.status === 'FAILED'"
-                >error</mat-icon
-              >
-              <mat-icon *ngIf="commands[i]?.status === ''">info</mat-icon>
-              <mat-icon
+            <div class="toggle-buttons">
+              <!-- Retry Button -->
+              <button
+                class="retry-btn"
+                [ngClass]="getBotonClase(i)"
                 *ngIf="
-                  commands[i]?.status !== 'PENDING' &&
-                  commands[i]?.status !== 'FAILED' &&
-                  commands[i]?.status !== ''
+                  ['PENDING', 'FAILED', 'CANCELLED', 'OK'].includes(
+                    commands[i]?.status
+                  )
                 "
+                [disabled]="commands[i]?.status === 'OK'"
+                (click)="handleEstadoEspecial(i, entitiesWithAlerts[0]?.id)"
               >
-                {{ estadoToggles[i] ? "power" : "power_off" }}
-              </mat-icon>
+                <!-- <mat-icon>{{ getRetryIcon(i) }}</mat-icon> -->
+              </button>
 
-              <!-- Texto -->
-              {{ getBotonTexto(i) }}
-            </button>
+              <!-- Toggle Button -->
+              <button
+                class="toggle-btn"
+                [ngClass]="getBotonClase(i)"
+                (click)="toggleActuador(i, entitiesWithAlerts[0]?.id)"
+                [disabled]="commands[i]?.status === 'PENDING'"
+                *ngIf="iconoEstadoReglaToggle[i] === false"
+              >
+                <mat-progress-spinner
+                  *ngIf="commands[i]?.status === 'PENDING'"
+                  mode="indeterminate"
+                  diameter="18"
+                ></mat-progress-spinner>
+
+                <mat-icon *ngIf="commands[i]?.status === ''">info</mat-icon>
+                <mat-icon *ngIf="commands[i]?.status === 'OK'">
+                  {{ estadoToggles[i] ? "power" : "power_off" }}
+                </mat-icon>
+
+                {{ getBotonTexto(i) }}
+              </button>
+            </div>
 
             <!-- Mensajes de estado -->
             <p *ngIf="commands[i]?.status === 'PENDING'" class="status-pending">
               ⏳ Comando pendiente de ejecución
             </p>
             <p *ngIf="commands[i]?.status === 'FAILED'" class="status-failed">
-              ❌ No se recibió respuesta del dispositivo, intente nuevamente.
+              ⚠️ No se recibió respuesta del dispositivo, intente nuevamente.
             </p>
 
             <p *ngIf="iconoEstadoReglaToggle[i] === true">
