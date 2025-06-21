@@ -21,18 +21,42 @@ export const getEntities = async (req, res) => {
         console.log("🟢 Enviando solicitud a Orion:", url);
 
         const sensorMapping = await getSensorMapping(); // Obtener el mapeo desde el YAML
+        console.log("🔍 sensorMapping:", sensorMapping);
 
         const response = await axios.get(url, { headers, params });
 
-        const entities = response.data.map(entity => ({
-            ...entity, // Mantiene toda la estructura original
-            sensors: entity.sensors?.value ? 
-                Object.fromEntries(
-                    Object.entries(entity.sensors.value).map(([key, value]) => [
-                        sensorMapping[key] || key, value // Utiliza el mapeo desde el YAML
+        const entities = response.data.map(entity => {
+            console.log("🔍 Entity recibida:", JSON.stringify(entity, null, 2));
+
+            const sensorsRaw = entity.sensors;
+            const sensorsValue = sensorsRaw?.value;
+
+            console.log("🔍 sensors.raw:", JSON.stringify(sensorsRaw));
+            console.log("🔍 sensors.value:", JSON.stringify(sensorsValue));
+
+            let mappedSensors = undefined;
+
+            // Validar que sensors.value sea un objeto plano
+            if (
+                sensorsRaw &&
+                sensorsRaw.type === "Object" &&
+                typeof sensorsValue === "object" &&
+                !Array.isArray(sensorsValue)
+            ) {
+                mappedSensors = Object.fromEntries(
+                    Object.entries(sensorsValue).map(([key, value]) => [
+                        sensorMapping[key]?.label || key,
+                        value
                     ])
-                ) : entity.sensors // Si no hay `sensors`, lo deja como está
-        }));
+                );
+            }
+
+            // Retornar la entidad con o sin sensors, según corresponda
+            return {
+                ...entity,
+                ...(mappedSensors !== undefined && { sensors: mappedSensors })
+            };
+        });
 
         res.json(entities);
     } catch (error) {
