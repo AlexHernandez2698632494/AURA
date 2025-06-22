@@ -52,7 +52,10 @@
                     commands[i]?.status
                   )
                 "
-                [disabled]="commands[i]?.status === 'OK'"
+                [disabled]="
+                  commands[i]?.status === 'OK' ||
+                  commands[i]?.status === 'CANCELLED'
+                "
                 (click)="handleEstadoEspecial(i, entitiesWithAlerts[0]?.id)"
               >
                 <span class="placeholder-text">{{
@@ -87,7 +90,11 @@
             <p *ngIf="commands[i]?.status === 'PENDING'" class="status-pending">
               ⏳ Comando pendiente de ejecución
             </p>
-            <p *ngIf="commands[i]?.status === 'FAILED'" class="status-failed">
+            <p
+              *ngIf="commands[i]?.status === 'FAILED'"
+              class="status-failed"
+              [ngClass]="getBotonStatus(i)"
+            >
               ⚠️ No se recibió respuesta del dispositivo, intente nuevamente.
             </p>
 
@@ -344,6 +351,26 @@
               <mat-form-field
                 appearance="outline"
                 class="full-width responsive-form"
+                *ngIf="
+                  commands[
+                    actuadores.toggle.length +
+                      actuadores.analogo.length +
+                      actuadores.dial.length +
+                      i
+                  ]?.status === 'OK' ||
+                  commands[
+                    actuadores.toggle.length +
+                      actuadores.analogo.length +
+                      actuadores.dial.length +
+                      i
+                  ]?.status === 'CANCELLED' ||
+                  commands[
+                    actuadores.toggle.length +
+                      actuadores.analogo.length +
+                      actuadores.dial.length +
+                      i
+                  ]?.status === ''
+                "
               >
                 <mat-label>Valor del Actudador ({{ texto.label }})</mat-label>
                 <input
@@ -352,21 +379,123 @@
                   [(ngModel)]="valorTextoActuadores[i]"
                 />
               </mat-form-field>
-
-              <button
-                mat-stroked-button
-                color="primary"
-                class="update-btn"
-                (click)="actualizarActuadorTexto(i)"
-              >
-                Actualizar
-              </button>
-
+              <p *ngIf="mensajeErrorTexto[i]" class="error-texto">
+                {{ mensajeErrorTexto[i] }}
+              </p>
+              <div class="toggle-buttons">
+                <button
+                  class="retry-btn"
+                  [ngClass]="getBotonStatusText(getTextoCommandIndex(i))"
+                  *ngIf="
+                    ['PENDING', 'FAILED', 'CANCELLED', 'OK'].includes(
+                      commands[
+                        actuadores.toggle.length +
+                          actuadores.analogo.length +
+                          actuadores.dial.length +
+                          i
+                      ]?.status
+                    )
+                  "
+                  [disabled]="
+                    commands[
+                      actuadores.toggle.length +
+                        actuadores.analogo.length +
+                        actuadores.dial.length +
+                        i
+                    ]?.status === 'OK' ||
+                    commands[
+                      actuadores.toggle.length +
+                        actuadores.analogo.length +
+                        actuadores.dial.length +
+                        i
+                    ]?.status === 'CANCELLED'
+                  "
+                  (click)="manejarRetryTexto(i)"
+                >
+                  <span class="placeholder-text">{{
+                    getPlaceholderIcon(getTextoCommandIndex(i))
+                  }}</span>
+                  <mat-icon>{{
+                    getRetryIcon(getTextoCommandIndex(i))
+                  }}</mat-icon>
+                </button>
+                <button
+                  class="toggle-btn"
+                  [ngClass]="getBotonToggleText(getTextoCommandIndex(i))"
+                  (click)="actualizarActuadorTexto(i)"
+                  [disabled]="
+                    commands[
+                      actuadores.toggle.length +
+                        actuadores.analogo.length +
+                        actuadores.dial.length +
+                        i
+                    ]?.status === 'PENDING'
+                  "
+                  *ngIf="iconoEstadoReglaToggle[i] === false"
+                >
+                  <mat-progress-spinner
+                    *ngIf="
+                      commands[
+                        actuadores.toggle.length +
+                          actuadores.analogo.length +
+                          actuadores.dial.length +
+                          i
+                      ]?.status === 'PENDING'
+                    "
+                    mode="indeterminate"
+                    diameter="18"
+                  ></mat-progress-spinner>
+                  {{ getBotonTextoActualizar(getTextoCommandIndex(i)) }}
+                </button>
+              </div>
               <p>
-                Valor Actual: <strong>{{ valoresActuales[i] }}</strong>
+                <ng-container
+                  *ngIf="
+                    commands[
+                      actuadores.toggle.length +
+                        actuadores.analogo.length +
+                        actuadores.dial.length +
+                        i
+                    ]?.status === 'PENDING';
+                    else failedOrActual
+                  "
+                >
+                  Valor enviado: <strong>{{ valorTextoActuadores[i] }}</strong>
+                </ng-container>
+                <ng-template #failedOrActual>
+                  <ng-container
+                    *ngIf="
+                      commands[
+                        actuadores.toggle.length +
+                          actuadores.analogo.length +
+                          actuadores.dial.length +
+                          i
+                      ]?.status === 'FAILED';
+                      else actualValue
+                    "
+                  >
+                    Valor a enviar:
+                    <strong>{{ valorTextoActuadores[i] }}</strong>
+                  </ng-container>
+                  <ng-template #actualValue>
+                    Valor actual: <strong>{{ valoresActuales[i] }}</strong>
+                  </ng-template>
+                </ng-template>
               </p>
             </div>
-
+            <p
+              *ngIf="
+                commands[
+                  actuadores.toggle.length +
+                    actuadores.analogo.length +
+                    actuadores.dial.length +
+                    i
+                ]?.status === 'FAILED'
+              "
+              class="status-failed"
+            >
+              ❌ No se recibió respuesta del dispositivo, intente nuevamente.
+            </p>
             <p
               *ngIf="
                 commands[

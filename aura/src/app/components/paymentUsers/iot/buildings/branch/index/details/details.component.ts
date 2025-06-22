@@ -381,6 +381,7 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
   dialRotation = 0;
   valorTextoActuadores: string[] = [];
   valoresActuales: string[] = [];
+  mensajeErrorTexto: string[] = [];
 
 
   obtenerEstadoToggle(index: number): boolean {
@@ -441,7 +442,6 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
 
     return "No reportado";
   }
-
 
   toggleActuador(index: number, deviceId: string): void {
     const cmd = this.commands[index];
@@ -587,6 +587,22 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
 
     return 'btn-null';
   }
+  getBotonToggleText(index: number): string {
+    const cmd = this.commands[index];
+    const state = cmd?.states?.toUpperCase() || null;
+    const status = cmd?.status;
+    if (status === 'OK') {
+      return 'btn-on';
+    }
+    if (status === 'PENDING') return 'btn-pending';
+    if (status === 'FAILED') {
+      return 'btn-failed-on';
+    }
+    if (status === 'CANCELLED') {
+      return 'btn-cancelled-off';
+    }
+    return 'btn-null';
+  }
 
   getBotonStatus(index: number): string {
     const cmd = this.commands[index];
@@ -616,6 +632,26 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     return 'btn-status-null';
   }
 
+    getBotonStatusText(index: number): string {
+    const cmd = this.commands[index];
+    const state = cmd?.states?.toUpperCase() || null;
+    const status = cmd?.status;
+    if (status === 'OK') {
+      return 'btn-status-on';
+    }
+
+    if (status === 'PENDING') return 'btn-status-pending';
+
+    if (status === 'FAILED') {
+      return 'btn-status-failed-off';
+    }
+
+    if (status === 'CANCELLED') {
+      return 'btn-status-cancelled-on';
+    }
+    return 'btn-status-null';
+  }
+
   getRetryIcon(index: number): string {
     const cmd = this.commands[index];
     const state = cmd?.states?.toUpperCase() || null;
@@ -635,10 +671,10 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     const state = cmd?.states?.toUpperCase() || null;
     const status = cmd?.status;
 
-    if (status === 'PENDING') return 'Cargando...';
+    if (status === 'PENDING') return 'Cancelar';
     if (status === 'OK') return 'Recibido';
     if (status === 'FAILED') return 'Reintentar';
-    if (status === 'CANCELLED') return 'Cancelar';
+    if (status === 'CANCELLED') return 'Cancelado';
 
     return '';
   }
@@ -712,11 +748,14 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     console.log(`Dial ${index} actualizado a:`, newLevel);
   }
 
-
   actualizarActuadorTexto(index: number): void {
     const nuevoValor = this.valorTextoActuadores[index]?.trim() || '';
-    if (!nuevoValor) return;
-
+    if (!nuevoValor) {
+      this.mensajeErrorTexto[index] = '❗ No se puede enviar un valor vacío o nulo.';
+      this.cdr.detectChanges();
+      return;
+    }
+    this.mensajeErrorTexto[index] = '';
     const commandIndex = this.actuadores.toggle.length +
       this.actuadores.analogo.length +
       this.actuadores.dial.length +
@@ -725,18 +764,128 @@ export class DetailsDeviceComponent implements OnInit, AfterViewChecked {
     const command = this.commands[commandIndex];
     const actuador = this.actuadores.toggleText[index];
 
-    if (command) {
-      command.states = nuevoValor;
-      this.estadoTextos[index] = nuevoValor;
-      this.valoresActuales[index] = nuevoValor;
+    if (!command) return;
 
-      this.valorTextoActuadores[index] = '';
+    if (command.status === 'PENDING') return;
 
-      this.enviarComandoActuador(actuador.name, nuevoValor);
+    if (this.pendingTimeouts[commandIndex]) {
+      clearTimeout(this.pendingTimeouts[commandIndex]);
     }
+
+    command.states = nuevoValor;
+    command.status = 'PENDING';
+    this.cdr.detectChanges();
+
+    this.enviarComandoActuador(actuador.name, nuevoValor);
+
+    this.pendingTimeouts[commandIndex] = setTimeout(() => {
+      if (this.commands[commandIndex]?.status === 'PENDING') {
+        const rawDeviceId = this.entitiesWithAlerts[0]?.id;
+        const parts = rawDeviceId.split(':');
+        const cleanDeviceId = parts[2] + parts[3];
+
+        this.fiwareService.getDeviceById(cleanDeviceId).subscribe({
+          next: (device: any) => {
+            if (device && device.device_id === cleanDeviceId) {
+              const body = {
+                [`${command.name}_status`]: 'FAILED',
+              };
+
+              this.fiwareService.FailedStatusGhost(device.apikey, device.device_id, body).subscribe({
+                next: () => {
+                  this.commands[commandIndex].status = 'FAILED';
+                  this.cdr.detectChanges();
+                },
+                error: (err) => {
+                  console.error("Error al enviar estado FAILED:", err);
+                }
+              });
+            }
+          },
+          error: (err) => {
+            console.error("Error al obtener el dispositivo:", err);
+          }
+        });
+      }
+    }, 10000);
   }
 
+  getTextoCommandIndex(i: number): number {
+    return this.actuadores.toggle.length +
+      this.actuadores.analogo.length +
+      this.actuadores.dial.length +
+      i;
+  }
 
+  getBotonTextoActualizar(index: number): string {
+    const cmd = this.commands[index];
+    const status = cmd?.status;
+
+    if (status === 'PENDING') return 'Esperando...';
+    return 'Enviar';
+  }
+
+  manejarRetryTexto(index: number): void {
+    const commandIndex = this.getTextoCommandIndex(index);
+    const cmd = this.commands[commandIndex];
+    const actuador = this.actuadores.toggleText[index];
+    const nuevoValor = this.valoresActuales[index];
+    const deviceId = this.entitiesWithAlerts[0]?.id;
+
+    if (!cmd || !deviceId) return;
+
+    const parts = deviceId.split(':');
+    const cleanDeviceId = parts[2] + parts[3];
+
+    if (cmd.status === 'PENDING') {
+      // Cancelar el intento pendiente
+      this.fiwareService.getDeviceById(cleanDeviceId).subscribe({
+        next: (device) => {
+          if (!device) return;
+          const cancelBody = { [`${cmd.name}_status`]: 'CANCELLED' };
+          this.fiwareService.FailedStatusGhost(device.apikey, device.device_id, cancelBody).subscribe({
+            next: () => {
+              this.commands[commandIndex].status = 'OK';
+              this.cdr.detectChanges();
+            },
+            error: (err) => console.error("❌ Error al cancelar comando:", err)
+          });
+        },
+        error: (err) => console.error("❌ Error al obtener dispositivo:", err)
+      });
+
+    } else if (cmd.status === 'FAILED') {
+      // Reintentar el comando con el último valor enviado
+      cmd.status = 'PENDING';
+      cmd.states = nuevoValor;
+      this.cdr.detectChanges();
+
+      if (this.pendingTimeouts[commandIndex]) {
+        clearTimeout(this.pendingTimeouts[commandIndex]!);
+      }
+
+      this.pendingTimeouts[commandIndex] = setTimeout(() => {
+        if (this.commands[commandIndex]?.status === 'PENDING') {
+          this.fiwareService.getDeviceById(cleanDeviceId).subscribe({
+            next: (device) => {
+              if (!device) return;
+              const failBody = { [`${cmd.name}_status`]: 'FAILED' };
+              this.fiwareService.FailedStatusGhost(device.apikey, device.device_id, failBody).subscribe({
+                next: () => {
+                  this.commands[commandIndex].status = 'FAILED';
+                  this.cdr.detectChanges();
+                },
+                error: (err) => console.error("❌ Error al marcar FAILED:", err)
+              });
+            },
+            error: (err) => console.error("❌ Error al obtener dispositivo:", err)
+          });
+        }
+      }, 10000);
+
+      this.enviarComandoActuador(cmd.name, nuevoValor);
+    }
+  }
 
   getRandomPastelColor(): string {
     const hue = Math.floor(Math.random() * 360);
