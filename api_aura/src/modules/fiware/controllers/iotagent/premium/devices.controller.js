@@ -413,7 +413,6 @@ async function createDeviceActuador(
     Array.isArray(commands)
       ? commands.map((cmd) => ({
           ...cmd,
-          timeout: 15,
         }))
       : [];
 
