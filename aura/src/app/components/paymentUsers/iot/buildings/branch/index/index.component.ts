@@ -1,4 +1,4 @@
-// index.ts
+// index.component.ts
 import {
   Component,
   OnInit,
@@ -45,7 +45,15 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
     private activatedRoute: ActivatedRoute,
     private fiwareService: FiwareService,
     private socketService: SocketService
-  ) {}
+  ) {
+    // 🛠️ Configuración de íconos de Leaflet para usar tus archivos en assets/images/
+    delete (L.Icon.Default.prototype as any)._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: 'assets/images/marker-icon-2x.png',
+      iconUrl: 'assets/images/marker-icon.png',
+      shadowUrl: 'assets/images/marker-shadow.png'
+    });
+  }
 
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe(params => {
@@ -74,7 +82,7 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
     }
 
     this.socketService.entitiesWithAlerts$.subscribe((entities) => {
-      console.log('Entidades recibidas por socket:', entities); 
+      console.log('Entidades recibidas por socket:', entities);
       if (entities && entities.length > 0) {
         this.updateEntitiesWithSocket(entities);
       }
@@ -108,17 +116,25 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngAfterViewInit(): void {
-    this.initializeMap();
-    this.loadEntitiesWithAlerts();
+    setTimeout(() => {
+      this.initializeMap();
+      this.map?.invalidateSize();
+      this.loadEntitiesWithAlerts();
+    }, 100);
   }
 
-private initializeMap(): void {
-  const mapContainer = document.getElementById('map');
-  if (mapContainer && (mapContainer as any)._leaflet_id) {
-    delete (mapContainer as any)._leaflet_id;
-  }
+  private initializeMap(): void {
+    const mapContainer = document.getElementById('map');
+    if (!mapContainer) {
+      console.warn('El contenedor del mapa no existe aún');
+      return;
+    }
 
-  if (!this.map) {
+    if (this.map) {
+      this.map.remove();
+      this.map = undefined;
+    }
+
     this.map = L.map('map', { zoomControl: false })
       .setView(this.currentLocation, this.currentZoom);
 
@@ -127,8 +143,6 @@ private initializeMap(): void {
       attribution: '&copy; IIIE'
     }).addTo(this.map);
   }
-}
-
 
   private loadEntitiesWithAlerts(): void {
     const fiwareService = sessionStorage.getItem('fiware-service') || '';
@@ -167,6 +181,28 @@ private initializeMap(): void {
           }
         });
 
+        if (!entities || entities.length === 0) {
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+              const lat = position.coords.latitude;
+              const lng = position.coords.longitude;
+
+              this.currentLocation = [lat, lng];
+              this.map?.setView(this.currentLocation, 14);
+
+              const marker = L.marker([lat, lng])
+                .addTo(this.map!)
+                .bindPopup('<b>Tu ubicación actual</b><br>No hay dispositivos registrados.')
+                .openPopup();
+            }, (error) => {
+              console.error('No se pudo obtener la ubicación del navegador', error);
+            });
+          } else {
+            console.warn('Geolocalización no soportada por el navegador.');
+          }
+          return;
+        }
+
         entities.forEach((entity: any) => {
           if (entity.location?.value?.coordinates) {
             const [latitude, longitude] = entity.location.value.coordinates;
@@ -194,10 +230,7 @@ private initializeMap(): void {
         });
 
         if (this.map) {
-          const bounds = L.latLngBounds(
-            [minLat, minLng],
-            [maxLat, maxLng]
-          );
+          const bounds = L.latLngBounds([minLat, minLng], [maxLat, maxLng]);
           this.map.fitBounds(bounds);
         }
       }, (error) => {
@@ -311,18 +344,12 @@ private initializeMap(): void {
     return L.marker([lat, lng], { icon: customIcon }).addTo(this.map).bindPopup(popupContent);
   }
 
-ngOnDestroy(): void {
-  if (this.map) {
-    this.map.remove(); // Libera el contenedor del mapa
-    this.map = undefined;
-  }
-
-  window.removeEventListener('resize', () => {
+  ngOnDestroy(): void {
     if (this.map) {
-      this.map.invalidateSize();
+      this.map.remove();
+      this.map = undefined;
     }
-  });
-}
+  }
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event): void {
