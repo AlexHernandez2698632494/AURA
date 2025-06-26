@@ -22,7 +22,7 @@
 
 
     <!-- Contenedor para el dispositivo y gauges -->
-    <div class="device-info-container">
+    <div class="device-info-container" *ngIf="devicesInfo.length > 0">
       <div class="device-info-item" *ngFor="let device of devicesInfo">
         <h3>{{ device.deviceName }}</h3>
         <p>Sensores: {{ device.variableCount }}</p>
