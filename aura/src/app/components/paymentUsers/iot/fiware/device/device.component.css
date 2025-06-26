@@ -137,6 +137,15 @@ label {
   color: white;
 }
 
+.CommandName-Form{
+  grid-column: span 3;
+  display: flex;
+  flex-direction: row;
+  gap: 1em;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+}
+
 @media (max-width: 1024px) {
 
   .center {

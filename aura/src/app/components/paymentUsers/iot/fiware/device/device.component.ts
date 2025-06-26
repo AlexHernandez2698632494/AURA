@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener, Output, EventEmitter, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router'; import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router'; import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { PaymentUserService } from '../../../../../services/paymentUser/payment-user.service';
 import { ApiConfigService } from '../../../../../services/ApiConfig/api-config.service';
 import { PremiumSideComponent } from '../../../side/side.component';
@@ -34,7 +34,8 @@ import { CommonModule } from '@angular/common';
     PremiumSideComponent,
     BottomTabComponent,
     MatButtonModule,
-    MatTooltipModule
+    MatTooltipModule,
+    FormsModule
   ],
   templateUrl: './device.component.html',
   styleUrls: ['./device.component.css']
@@ -53,7 +54,9 @@ export class DeviceComponent implements OnInit, AfterViewInit {
   }
 
   sensorForm: FormGroup;
-
+  commandConfigs: {
+    [name: string]: { name: string; label: string; timeout: number }
+  } = {};
   map: L.Map | undefined;
   marker: L.Marker | undefined;
   lat: number = 0;
@@ -145,93 +148,95 @@ export class DeviceComponent implements OnInit, AfterViewInit {
 
   isButtonEnabled: boolean | undefined = false;
 
-registerSensor(): void {
-  if (this.sensorForm.valid) {
-    const formData = this.sensorForm.value;
+  registerSensor(): void {
+    if (this.sensorForm.valid) {
+      const formData = this.sensorForm.value;
 
-    // Traducir tipo de transporte
-    let transporte = '';
-    switch (formData.transporte) {
-      case 'jsonMqtt':
-        transporte = 'MQTT';
-        break;
-      case 'jsonHttp':
-        transporte = 'HTTP';
-        break;
-      case 'lorawanMqtt':
-        transporte = 'LORA';
-        break;
-      default:
-        transporte = 'DESCONOCIDO';
-    }
-
-    // Calcular isSensorActuador
-    let isSensorActuador = 0;
-    const roles = this.selectedDeviceRoles;
-    if (roles.includes('SENSOR') && roles.includes('ACTUADOR')) {
-      isSensorActuador = 2;
-    } else if (roles.includes('ACTUADOR')) {
-      isSensorActuador = 1;
-    }
-
-    // Inicializar arrays para los comandos
-    const nameStates: string[] = [];
-    const commandName: string[] = [];
-    const commandNameToggle: string[] = [];
-    const commandNameAnalogo: string[] = [];
-    const commandNameDial: string[] = [];
-    const commandNameToggleText: string[] = [];
-
-    // Separar comandos según tipo
-    this.selectedControlTypes.forEach(control => {
-      if (!control || control.trim() === '') return;
-
-      nameStates.push(`${control}_states`);
-      commandName.push(control);
-
-      if (control.startsWith('switch')) {
-        commandNameToggle.push(control);
-      } else if (control.startsWith('analogo')) {
-        commandNameAnalogo.push(control);
-      } else if (control.startsWith('dial')) {
-        commandNameDial.push(control);
-      } else if (control.startsWith('toggleText')) {
-        commandNameToggleText.push(control);
+      // Traducir tipo de transporte
+      let transporte = '';
+      switch (formData.transporte) {
+        case 'jsonMqtt':
+          transporte = 'MQTT';
+          break;
+        case 'jsonHttp':
+          transporte = 'HTTP';
+          break;
+        case 'lorawanMqtt': 
+          transporte = 'LORA';
+          break;
+        default:
+          transporte = 'DESCONOCIDO';
       }
-    });
 
-    // Utilidad para arrays limpios (sin strings vacíos)
-    const cleanArray = (arr: string[]) => arr.filter(x => x && x.trim() !== '');
+      // Calcular isSensorActuador
+      let isSensorActuador = 0;
+      const roles = this.selectedDeviceRoles;
+      if (roles.includes('SENSOR') && roles.includes('ACTUADOR')) {
+        isSensorActuador = 2;
+      } else if (roles.includes('ACTUADOR')) {
+        isSensorActuador = 1;
+      }
 
-    const url_socket = `${this.apiConfig.getApiUrl()}/v1/notify`;
-    const url_quantumleap = `${this.apiConfig.getApiUrlMoquitto()}/v2/notify`;
+      // Inicializar arrays para los comandos
+      const nameStates: string[] = [];
+      const commandName: string[] = [];
+      const commandNameToggle = this.selectedControlTypes
+        .filter(c => c.startsWith('switch'))
+        .map(name => this.commandConfigs[name]);
 
-    const requestData = {
-      apikey: formData.entityType,
-      deviceId: formData.deviceId,
-      timezone: this.getTimezone(),
-      transporte: transporte,
-      locacion: [
-        parseFloat(formData.latitud),
-        parseFloat(formData.longitud)
-      ],
-      deviceName: formData.name,
-      deviceType: "Building", // Ajusta si es case sensitive
-      url_notify: url_socket,
-      url_notify02: url_quantumleap,
-      description: formData.description,
-      isSensorActuador: isSensorActuador,
-      nameStates: cleanArray(nameStates),
-      commandName: cleanArray(commandName),
-      commandNameToggle: cleanArray(commandNameToggle),
-      commandNameAnalogo: cleanArray(commandNameAnalogo),
-      commandNameDial: cleanArray(commandNameDial),
-      commandNameToggleText: cleanArray(commandNameToggleText)
-    };
+      const commandNameDial = this.selectedControlTypes
+        .filter(c => c.startsWith('dial'))
+        .map(name => this.commandConfigs[name]);
 
-    Swal.fire({
-      title: 'Datos a registrar',
-      html: `
+      const commandNameAnalogo = this.selectedControlTypes
+        .filter(c => c.startsWith('analogo'))
+        .map(name => this.commandConfigs[name]);
+
+      const commandNameToggleText = this.selectedControlTypes
+        .filter(c => c.startsWith('toggleText'))
+        .map(name => this.commandConfigs[name]);
+
+      // Separar comandos según tipo
+      this.selectedControlTypes.forEach(control => {
+        if (!control || control.trim() === '') return;
+
+        nameStates.push(`${control}_states`);
+        commandName.push(control);
+
+      });
+
+      // Utilidad para arrays limpios (sin strings vacíos)
+      const cleanArray = (arr: string[]) => arr.filter(x => x && x.trim() !== '');
+
+      const url_socket = `${this.apiConfig.getApiUrl()}/v1/notify`;
+      const url_quantumleap = `${this.apiConfig.getApiUrlMoquitto()}/v2/notify`;
+
+      const requestData = {
+        apikey: formData.entityType,
+        deviceId: formData.deviceId,
+        timezone: this.getTimezone(),
+        transporte: transporte,
+        locacion: [
+          parseFloat(formData.latitud),
+          parseFloat(formData.longitud)
+        ],
+        deviceName: formData.name,
+        deviceType: "Building", // Ajusta si es case sensitive
+        url_notify: url_socket,
+        url_notify02: url_quantumleap,
+        description: formData.description,
+        isSensorActuador: isSensorActuador,
+        nameStates: cleanArray(nameStates),
+        commandName: cleanArray(commandName),
+        commandNameToggle,
+        commandNameAnalogo,
+        commandNameDial,
+        commandNameToggleText,
+      };
+
+      Swal.fire({
+        title: 'Datos a registrar',
+        html: `
         <strong>Apikey:</strong> ${requestData.apikey} <br>
         <strong>DeviceId:</strong> ${requestData.deviceId} <br>
         <strong>Zona Horaria:</strong> ${requestData.timezone} <br>
@@ -242,35 +247,35 @@ registerSensor(): void {
         <strong>Categoria del dispositivo:</strong> ${this.selectedDeviceRoles.join(', ')} <br>
         <strong>Tipos de Actuador:</strong> ${requestData.commandName.join(', ')} <br>
       `,
-      icon: 'info',
-      confirmButtonText: 'Confirmar',
-      cancelButtonText: 'Cancelar',
-      showCancelButton: true,
-      reverseButtons: true,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.sensorService.registerSerivceDevice(requestData).subscribe(
-          response => {
-            Swal.fire('Éxito', 'Dispositivo registrado correctamente', 'success');
-          },
-          error => {
-            Swal.fire('Error', 'Hubo un error al registrar el dispositivo', 'error');
-          }
-        );
-      } else if (result.isDismissed) {
-        console.log('Registro cancelado');
-      }
-    });
-  } else {
-    Swal.fire('Error', 'Por favor, completa el formulario correctamente.', 'error');
+        icon: 'info',
+        confirmButtonText: 'Confirmar',
+        cancelButtonText: 'Cancelar',
+        showCancelButton: true,
+        reverseButtons: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.sensorService.registerSerivceDevice(requestData).subscribe(
+            response => {
+              Swal.fire('Éxito', 'Dispositivo registrado correctamente', 'success');
+            },
+            error => {
+              Swal.fire('Error', 'Hubo un error al registrar el dispositivo', 'error');
+            }
+          );
+        } else if (result.isDismissed) {
+          console.log('Registro cancelado');
+        }
+      });
+    } else {
+      Swal.fire('Error', 'Por favor, completa el formulario correctamente.', 'error');
+    }
   }
-}
 
-  
 
-onBackClick(): void {
-  this.router.navigate([`/premium/iot/overview/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}`]);
-}
+
+  onBackClick(): void {
+    this.router.navigate([`/premium/iot/overview/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}`]);
+  }
   initializeMap(): void {
     if (this.mapInitialized) return;
 
@@ -406,26 +411,34 @@ onBackClick(): void {
     } else {
       this.controlTypeCounters[type]++;
     }
-  
+
     const newName = `${type}${this.controlTypeCounters[type].toString().padStart(2, '0')}`;
     this.selectedControlTypes.push(newName);
-  
+
+    this.commandConfigs[newName] = {
+      name: newName,
+      label: '',
+      timeout: NaN
+    };
+
     // Resetear el selector para permitir seleccionar el mismo tipo nuevamente
     if (selectRef) {
       selectRef.value = null;
       selectRef.writeValue(null); // Asegura que se limpie visualmente
     }
   }
-  
+
 
   removeControlType(type: string): void {
     const index = this.selectedControlTypes.indexOf(type);
     if (index >= 0) {
       this.selectedControlTypes.splice(index, 1);
+      delete this.commandConfigs[type];
     }
   }
+
   isActuatorSelected(): boolean {
     return this.selectedDeviceRoles.includes('ACTUADOR');
   }
-  
+
 }
