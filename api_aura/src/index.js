@@ -21,7 +21,7 @@ import fiwareModule from "./modules/fiware/fiware.module.js";
 import moment from "moment"; // Asegúrate de tenerlo instalado
 import Rule from "./modules/fiware/models/Rule.models.js";
 import { formatTimeInstant } from "./modules/fiware/controllers/ngsi.controller.js";
-import { getSensorMapping,url_json,url_orion } from "./utils/Github.utils.js";
+import { getSensorMapping, url_json, url_orion } from "./utils/Github.utils.js";
 import axios from "axios";
 // App y servidor
 const app = express();
@@ -40,7 +40,6 @@ app.use(compression());
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(bodyParser.json());
-
 
 // Acumulador de notificaciones: solo último mensaje por dispositivo
 const orionMessagesMap = {};
@@ -103,13 +102,14 @@ app.post("/v1/notify/", async (req, res) => {
               statusTimeInstant: "", // Inicializa el timeInstant de status
               statesTimeInstant: "", // Inicializa el timeInstant de states
               infoTimeInstant: "", // Inicializa el timeInstant de info
+              rules: null, // Inicializa el campo de reglas
             };
 
             // Buscar las claves asociadas al comando
             const statusKey = `${commandName}_status`;
             const statesKey = `${commandName}_states`;
             const infoKey = `${commandName}_info`;
-
+            const rulesKey = `$rules_${commandName}`; // Nueva clave para reglas
             // Revisar si existen las claves y asignar sus valores
             if (data[statusKey]?.value !== undefined) {
               command.status = data[statusKey].value;
@@ -137,7 +137,16 @@ app.post("/v1/notify/", async (req, res) => {
                 );
               }
             }
-
+            if (entity[rulesKey] && entity[rulesKey].type === "object") {
+              command.rules = {
+                value: entity[rulesKey].value || {},
+                timeInstant: entity[rulesKey]?.metadata?.TimeInstant?.value
+                  ? formatTimeInstant(
+                      entity[rulesKey].metadata.TimeInstant.value
+                    )
+                  : null,
+              };
+            }
             // Agregar el objeto de comando al arreglo de "commands"
             result.commands.push(command);
           }
