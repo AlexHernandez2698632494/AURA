@@ -7,11 +7,16 @@ import Fiware from "../models/fiware.models.js";
 import FiwareBuilding from "../models/fiwareBuilding.models.js";
 import building from "../models/building.models.js";
 import Rule from "../models/Rule.models.js";
-import { url_orion,getSensorMapping, url_mqtt,url_json } from "../../../utils/Github.utils.js";
+import LocalRule from "../models/LocalRule.models.js";
+import {
+  url_orion,
+  getSensorMapping,
+  url_mqtt,
+  url_json,
+} from "../../../utils/Github.utils.js";
 // Cambia https:// a http:// para la URL base de Orion
 const ORION_BASE_URL = url_orion;
 //const ORION_BASE_URL = "https://orion.sima.udb.edu.sv/v2/"
-
 
 const getEntities = async (headers, params) => {
   const url = `${ORION_BASE_URL}entities`;
@@ -452,12 +457,14 @@ export const getEntitiesWithAlerts = async (req, res) => {
               statusTimeInstant: "", // Inicializa el timeInstant de status
               statesTimeInstant: "", // Inicializa el timeInstant de states
               infoTimeInstant: "", // Inicializa el timeInstant de info
+              rules: null,
             };
 
             // Buscar las claves asociadas al comando
             const statusKey = `${commandName}_status`;
             const statesKey = `${commandName}_states`;
             const infoKey = `${commandName}_info`;
+            const rulesKey = `$rules_{commandName}`;
             //console.log(statusKey);
 
             // Revisar si existen las claves y asignar sus valores
@@ -488,6 +495,16 @@ export const getEntitiesWithAlerts = async (req, res) => {
               }
             }
 
+            if (entity[rulesKey] && entity[rulesKey].type === "object") {
+              command.rules = {
+                value: entity[rulesKey].value || {},
+                timeInstant: entity[rulesKey]?.metadata?.TimeInstant?.value
+                  ? formatTimeInstant(
+                      entity[rulesKey].metadata.TimeInstant.value
+                    )
+                  : null,
+              };
+            }
             // Agregar el objeto de comando al arreglo de "commands"
             result.commands.push(command);
           }
@@ -536,7 +553,6 @@ export const sendDataToAgent = async (req, res) => {
     const { k, i } = req.query; // Parámetros k e i
     const { fiware_service, fiware_servicepath } = req.headers; // Headers fiware-service y fiware-servicepath
     const body = req.body; // Body de la solicitud
-
 
     // Enviamos la solicitud al agente en el puerto 7896
     const response = await axios.post(`${url_mqtt}`, body, {
@@ -717,7 +733,7 @@ export const createRule = async (req, res) => {
 
 export const getAllRules = async (req, res) => {
   try {
-    const rules = await Rule.find({ enabled: true });
+    const rules = await Rule.find({});
     res.json(rules);
   } catch (error) {
     console.error("Error obteniendo reglas:", error);
@@ -1002,5 +1018,273 @@ export const FailedStatusGhost = async (req, res) => {
   } catch (error) {
     console.error("Error al enviar datos al agente:", error);
     return res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+export const updateRuleType = async (req, res) => {
+  try {
+    const fiware_service = req.headers["fiware-service"];
+    const fiware_servicepath = req.headers["fiware-servicepath"];
+    const { deviceId, value } = req.body;
+    if (!fiware_service) {
+      return res.status(400).json({
+        message: "El header 'fiware-service' es obligatorio.",
+      });
+    } else if (!fiware_servicepath) {
+      return res.status(400).json({
+        message: "El header 'fiware-servicepath' es obligatorio.",
+      });
+    } else if (!deviceId) {
+      return res.status(400).json({
+        message: "El campo 'deviceId' es obligatorio.",
+      });
+    } else if (typeof value !== "string") {
+      return res.status(400).json({
+        message: "El campo 'value' debe ser una cadena de texto.",
+      });
+    } else if (!value) {
+      return res.status(400).json({
+        message: "El campo 'value' no puede estar vacío.",
+      });
+    }
+
+    console.log("deviceId", deviceId);
+    const parts = deviceId.split(":");
+    if (parts.length < 4) {
+      return res.status(400).json({ message: "deviceId inválido" });
+    }
+    const shortDeviceId = parts.slice(-2).join("");
+    console.log("shortDeviceId", shortDeviceId);
+
+    const orionResponse = await axios.post(
+      `${url_orion}entities/${deviceId}/attrs`,
+      {
+        ruleType: {
+          value: value,
+          type: "String",
+        },
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Fiware-Service": fiware_service,
+          "Fiware-ServicePath": fiware_servicepath,
+        },
+      }
+    );
+    const deviceResponse = await axios.get(
+      `${url_json}iot/devices/${shortDeviceId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Fiware-Service": fiware_service,
+          "Fiware-ServicePath": fiware_servicepath,
+        },
+      }
+    );
+
+    const device = deviceResponse.data;
+
+    // 3. Copiar los static_attributes y actualizar/agregar ruleType
+    let staticAttrs = device.static_attributes || [];
+
+    const existingIndex = staticAttrs.findIndex(
+      (attr) => attr.name === "ruleType"
+    );
+    if (existingIndex !== -1) {
+      staticAttrs[existingIndex].value = value;
+    } else {
+      staticAttrs.push({
+        name: "ruleType",
+        type: "String",
+        value: value,
+      });
+    }
+    // Actualizacion de tipo de regla en Iot Agent
+    const iotAgentResponse = await axios.put(
+      `${url_json}iot/devices/${shortDeviceId}`,
+      { static_attributes: staticAttrs },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Fiware-Service": fiware_service,
+          "Fiware-ServicePath": fiware_servicepath,
+        },
+      }
+    );
+
+    res.status(200).json({
+      message: "Tipo de regla actualizado correctamente.",
+      orionStatus: orionResponse.status,
+      // iotAgentStatus: iotAgentResponse.status,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error al actualizar el tipo de regla.",
+      error: error.message,
+    });
+  }
+};
+
+export const updateRuleCommand = async (req, res) => {
+  try {
+    const fiware_service = req.headers["fiware-service"];
+    const fiware_servicepath = req.headers["fiware-servicepath"];
+    const {
+      deviceId,
+      deviceName,
+      description,
+      apikey,
+      attributeSensor,
+      serviceSensor,
+      subserviceSensor,
+      operatorCondition,
+      attributeCondition,
+      operatorConditions,
+      value,
+      deviceActuadorId,
+      deviceActuadorName,
+      deviceActuadorApikey,
+      command,
+      payload,
+      serviceActuador,
+      subserviceActuador,
+    } = req.body;
+
+    const requiredFields = [
+      "description",
+      "deviceId",
+      "deviceName",
+      "apikey",
+      "attributeSensor",
+      "serviceSensor",
+      "subserviceSensor",
+      "operatorCondition",
+      "attributeCondition",
+      "operatorConditions",
+      "value",
+      "deviceActuadorId",
+      "deviceActuadorName",
+      "deviceActuadorApikey",
+      "command",
+      "payload",
+      "serviceActuador",
+      "subserviceActuador",
+    ];
+
+    for (const field of requiredFields) {
+      if (!req.body[field]) {
+        return res.status(400).json({
+          message: `Falta el campo'${field}', el nombre de ese campo es requerido.`,
+        });
+      }
+    }
+    if (!fiware_service) {
+      return res.status(400).json({
+        message: "El header 'fiware-service' es obligatorio.",
+      });
+    } else if (!fiware_servicepath) {
+      return res.status(400).json({
+        message: "El header 'fiware-servicepath' es obligatorio.",
+      });
+    }
+    const parts = deviceId.split(":");
+    if (parts.length < 4) {
+      return res.status(400).json({ message: "deviceId inválido" });
+    }
+    const shortDeviceId = parts.slice(-2).join("");
+
+    const sensorTopic = `/json/${apikey}/${shortDeviceId}/attrs/sensors`;
+    const rulesAttributeName = `rules_${command}`;
+
+    const ruleData = {
+      description,
+      source: [
+        {
+          deviceId,
+          deviceName,
+          apikey,
+          attribute: Array.isArray(attributeSensor)
+            ? attributeSensor[0]
+            : attributeSensor,
+          service: serviceSensor,
+          subservice: subserviceSensor,
+          topic: sensorTopic,
+        },
+      ],
+      condition: {
+        operator: operatorCondition,
+        conditions: attributeCondition.map((attr, idx) => ({
+          attribute: attr,
+          operator: operatorConditions[idx],
+          value: Array.isArray(value) ? value[idx] : value,
+        })),
+      },
+      target: {
+        deviceActuadorId,
+        deviceActuadorName,
+        deviceActuadorApikey,
+        command,
+        payload,
+        service: serviceActuador,
+        subservice: subserviceActuador,
+      },
+    };
+
+    const updatePayload = {
+      [rulesAttributeName]: {
+        value: ruleData,
+        type: "object",
+      },
+    };
+
+    // Verificar que la entidad existe antes de actualizar
+    try {
+      await axios.get(`${url_orion}entities/${deviceActuadorId}`, {
+        headers: {
+          "Fiware-Service": fiware_service,
+          "Fiware-ServicePath": fiware_servicepath,
+        },
+      });
+    } catch (err) {
+      return res.status(404).json({
+        message:
+          "El deviceActuadorId no existe en Orion con el service/servicePath proporcionados.",
+        error: err.response?.data || err.message,
+      });
+    }
+
+    // Actualizar el atributo en Orion
+    const response = await axios.post(
+      `${url_orion}entities/${deviceActuadorId}/attrs`,
+      updatePayload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Fiware-Service": fiware_service,
+          "Fiware-ServicePath": fiware_servicepath,
+        },
+      }
+    );
+
+    // Guardar la regla en el modelo LocalRule (MongoDB)
+    try {
+      const localRule = new LocalRule(ruleData);
+      await localRule.save();
+    } catch (err) {
+      // Si falla la base de datos, igual responde éxito pero avisa en consola
+      console.error("Error guardando la regla en LocalRule:", err.message);
+    }
+
+    res.status(201).json({
+      message: "Comando de la regla actualizado correctamente.",
+      data: response.data,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error al actualizar el comando de la regla.",
+      error: error.message,
+      details: error.response?.data,
+    });
   }
 };
