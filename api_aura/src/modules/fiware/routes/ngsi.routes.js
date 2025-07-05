@@ -16,7 +16,9 @@ import {
   sendDataToAgent,
   updateActuatorStatusController,
   updateRule,
-  updateRuleEnabled
+  updateRuleCommand,
+  updateRuleEnabled,
+  updateRuleType
 } from "../controllers/ngsi.controller.js";
 
 const router = express.Router();
@@ -36,6 +38,8 @@ router.get("/rules", getAllRules);
 router.get("/rules/:id", getRuleById);
 router.post("/rules", createRule);
 router.patch("/rules/:id/enabled", updateRuleEnabled);
+router.post("/rules/ruleType",updateRuleType);
+router.post("/rules/ruleCommand", updateRuleCommand); 
 router.put("/rules/:id", updateRule);
 router.delete("/rules/:id", deleteRule);
 
