@@ -16,15 +16,14 @@ const RuleSchema = new mongoose.Schema(
         value: { type: mongoose.Schema.Types.Mixed, required: true },
       },
     ],
-    conditionLogic: { type: String, default: "AND", enum: ["AND", "OR"] },
+    conditionLogic: { type: String,  enum: ["AND", "OR"] },
     actuatorEntityId: { type: String, required: true },
     actuatorEntityName: { type: String, required: true },
     command: { type: String, required: true },
     commandValue: { type: [mongoose.Schema.Types.Mixed], required: true },
-    enabled: { type: Boolean, default: true },
+    enabled: { type: Boolean},
     estadoEliminacion: {
       type: Number,
-      default: 0, // 0: no eliminado, 1: eliminado
     },
     service: { type: String, required: true },
     subservice: { type: String, required: true },
