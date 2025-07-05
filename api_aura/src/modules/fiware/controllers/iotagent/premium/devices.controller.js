@@ -2,7 +2,11 @@ import axios from "axios";
 import yaml from "js-yaml";
 import fetch from "node-fetch";
 import Fiware from "../../../models/fiware.models.js";
-import { url_json,url_orion,url_mqtt } from "../../../../../utils/Github.utils.js";
+import {
+  url_json,
+  url_orion,
+  url_mqtt,
+} from "../../../../../utils/Github.utils.js";
 
 export const createServiceDeviceJSON = async (req, res) => {
   try {
@@ -232,7 +236,8 @@ export const createServiceDeviceJSON = async (req, res) => {
         apikey,
         deviceId,
         fiware_service,
-        fiware_servicepath
+        fiware_servicepath,
+        commandName
       );
 
       if (!result.success) {
@@ -429,6 +434,11 @@ async function createDeviceActuador(
       type: "text",
       object_id: name,
     })),
+    ...commandName.map((cmdName) => ({
+      name: `rules_${cmdName}`,
+      type: "object",
+      object_id: `rules_${cmdName}`,
+    })),
   ];
 
   const commands = commandName.map((name) => ({
@@ -481,6 +491,11 @@ async function createDeviceActuador(
             name: "isSensorActuador",
             type: "String",
             value: isSensorActuador,
+          },
+          {
+            name: "ruleType",
+            type: "String",
+            value: "manual",
           },
         ],
       },
@@ -542,6 +557,11 @@ async function createDeviceSensorActuador(
       type: "text",
       object_id: name,
     })),
+    ...commandName.map((cmdName) => ({
+      name: `rules_${cmdName}`,
+      type: "object",
+      object_id: `rules_${cmdName}`,
+    })),
   ];
 
   const commands = commandName.map((name) => ({
@@ -595,6 +615,11 @@ async function createDeviceSensorActuador(
             type: "String",
             value: isSensorActuador,
           },
+          {
+            name: "ruleType",
+            type: "String",
+            value: "manual",
+          },
         ],
       },
     ],
@@ -635,13 +660,17 @@ async function sendDataActuador(
   apikey,
   deviceId,
   fiware_service,
-  fiware_servicepath
+  fiware_servicepath,
+  commandNameList = []
 ) {
   const k = apikey;
   const i = deviceId;
 
   const body = {};
 
+  for (const cmd of commandNameList) {
+    body[`rules_${cmd}`] = {};
+  }
   try {
     const response = await axios.post(`${url_mqtt}`, body, {
       headers: {
