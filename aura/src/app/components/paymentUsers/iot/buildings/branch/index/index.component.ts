@@ -70,6 +70,7 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
         this.entitiesWithAlerts = entities;
 
         this.devicesInfo = entities.map((entity: any) => ({
+          deviceId: entity.id,
           deviceName: entity.deviceName,
           color: entity.color,
           level: entity.level ?? 0,
@@ -372,8 +373,10 @@ export class BuildingBranchIndexComponent implements OnInit, AfterViewInit, OnDe
     return parseFloat(value) || 0;
   }
 
-  onViewDevice(deviceName: string) {
+  onViewDevice(deviceName: string, deviceId: string) {
     console.log('Ver dispositivo:', deviceName);
+    console.log('ID del dispositivo:', deviceId);
+    this.fiwareService.setIdActuador(deviceId);
     this.router.navigate([
       `/premium/iot/overview/building/${this.buildingName}/level/${this.branchId}/branch/${this.branchName}/${deviceName}`
     ]);
